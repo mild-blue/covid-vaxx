@@ -1,0 +1,10 @@
+Makefile
+.gradle
+.idea
+build
+.gitignore
+LICENSE
+*.md
+out
+Dockerfile
+docker-compose.yml
