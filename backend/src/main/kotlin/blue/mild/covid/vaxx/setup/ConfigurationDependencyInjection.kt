@@ -41,7 +41,9 @@ fun DI.MainBuilder.bindConfiguration() {
         )
     }
 
-    bind<String>("version") with singleton {
-        loadVersion("development")
+    bind<String>("version") with singleton { loadVersion("development") }
+
+    bind<String>("frontend") with singleton {
+        getEnvOrLogDefault("FRONTEND_PATH", "../frontend/dist/frontend")
     }
 }

@@ -1,10 +1,11 @@
 Makefile
-.gradle
+backend/.gradle
+backend/build
 .idea
-build
 .gitignore
 LICENSE
 *.md
-out
 Dockerfile
 docker-compose.yml
+frontend/dist
+frontend/node_modules
