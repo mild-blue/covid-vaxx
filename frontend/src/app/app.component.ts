@@ -1,6 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { FormBuilder, FormControl, FormGroup, Validators } from '@angular/forms';
 import { PatientInfo } from './model/PatientInfo';
+import { InsuranceCompany } from './model/InsuranceCompany';
 
 @Component({
   selector: 'app-root',
@@ -13,6 +14,7 @@ export class AppComponent implements OnInit {
   secondFormGroup: FormGroup;
 
   public patientInfo = new PatientInfo();
+  public allInsuranceCompanies: string[] = Object.values(InsuranceCompany);
 
   constructor(private _formBuilder: FormBuilder) {}
 
@@ -20,7 +22,8 @@ export class AppComponent implements OnInit {
     this.firstFormGroup = this._formBuilder.group({
       firstName: ['', Validators.required],
       lastName: ['', Validators.required],
-      insurance: ['', Validators.required],
+      birthNumber: ['', Validators.required], // todo: validate
+      insuranceCompany: ['', Validators.required],
       phone: ['', [Validators.required]], // todo: validate phone
       email: ['', [Validators.required, Validators.email]]
     });

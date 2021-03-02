@@ -1,9 +1,9 @@
 export class PatientInfo {
   first_name: string;
-  last_ame: string;
+  last_name: string;
   birth_number: number;
   insurance_company: string;
-  phone_number: string;
+  phone: string;
   email: string;
 
   is_sick: boolean;

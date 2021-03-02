@@ -13,6 +13,35 @@
             <mat-label>Jméno</mat-label>
             <input [(ngModel)]="patientInfo.first_name" formControlName="firstName" matInput placeholder="Vaše jméno" required>
           </mat-form-field>
+
+          <mat-form-field>
+            <mat-label>Příjmení</mat-label>
+            <input [(ngModel)]="patientInfo.last_name" formControlName="lastName" matInput placeholder="Vaše příjmení" required>
+          </mat-form-field>
+
+          <mat-form-field>
+            <mat-label>Rodné číslo</mat-label>
+            <input [(ngModel)]="patientInfo.birth_number" formControlName="birthNumber" matInput placeholder="Vaše rodné číslo" required>
+          </mat-form-field>
+
+          <mat-form-field>
+            <mat-label>Zdravotní pojišťovna</mat-label>
+            <mat-select formControlName="insuranceCompany" [(ngModel)]="patientInfo.insurance_company">
+              <mat-option *ngFor="let insuranceCompany of allInsuranceCompanies" [value]="insuranceCompany">
+                {{insuranceCompany}}
+              </mat-option>
+            </mat-select>
+          </mat-form-field>
+
+          <mat-form-field>
+            <mat-label>Telefonní číslo</mat-label>
+            <input [(ngModel)]="patientInfo.phone" formControlName="phone" matInput placeholder="Vaše telefonní číslo" required>
+          </mat-form-field>
+          <mat-form-field>
+            <mat-label>E-mail</mat-label>
+            <input [(ngModel)]="patientInfo.email" formControlName="email" matInput placeholder="Váš e-mail" required>
+          </mat-form-field>
+
         </form>
       </mat-step>
       <mat-step [stepControl]="secondFormGroup" label="Zdravotní informace">
