@@ -9,6 +9,7 @@ import blue.mild.covid.vaxx.utils.createLogger
 import com.fasterxml.jackson.databind.SerializationFeature
 import io.ktor.application.Application
 import io.ktor.application.install
+import io.ktor.features.CORS
 import io.ktor.features.CallId
 import io.ktor.features.CallLogging
 import io.ktor.features.ContentNegotiation
@@ -99,6 +100,13 @@ fun Application.installFrameworks() {
             enable(SerializationFeature.INDENT_OUTPUT)
             dateFormat = DateFormat.getDateTimeInstance()
         }
+    }
+
+    install(CORS) {
+        // TODO correct urls
+        anyHost()
+        allowCredentials = true
+        allowNonSimpleContentTypes = true
     }
 
     install(DefaultHeaders)
