@@ -1,3 +1,6 @@
+const apiVersion = 'v1';
+
 export const environment = {
-  production: true
+  production: true,
+  apiUrl: `${window.location.origin}/${apiVersion}`
 };
