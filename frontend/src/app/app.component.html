@@ -16,12 +16,63 @@
         </form>
       </mat-step>
       <mat-step [stepControl]="secondFormGroup" label="Zdravotní informace">
-        <form [formGroup]="secondFormGroup">
-          <mat-form-field>
-            <mat-label>Address</mat-label>
-            <input matInput formControlName="secondCtrl" placeholder="Ex. 1 Main St, New York, NY"
-                   required>
-          </mat-form-field>
+        <form>
+          <div class="form-field">
+            <mat-label>Cítíte se v tuto chvílí nemocný/á</mat-label>
+            <mat-button-toggle-group [(ngModel)]="patientInfo.is_sick" name="is_sick">
+              <mat-button-toggle [checked]="patientInfo.is_sick" value="true">Ano</mat-button-toggle>
+              <mat-button-toggle [checked]="!patientInfo.is_sick" value="false">Ne</mat-button-toggle>
+            </mat-button-toggle-group>
+          </div>
+          <div class="form-field">
+            <mat-label>Prodělal/a jste onemocnění COVID-19 nebo jste měl/a pozitivní PCR test?</mat-label>
+            <mat-button-toggle-group [(ngModel)]="patientInfo.did_have_covid" name="did_have_covid">
+              <mat-button-toggle [checked]="patientInfo.did_have_covid" value="true">Ano</mat-button-toggle>
+              <mat-button-toggle [checked]="!patientInfo.did_have_covid" value="false">Ne</mat-button-toggle>
+            </mat-button-toggle-group>
+          </div>
+          <div class="form-field">
+            <mat-label>Byl/a jste již očkován/a proti nemoci COVID-19</mat-label>
+            <mat-button-toggle-group [(ngModel)]="patientInfo.is_vaccinated_against_covid" name="is_vaccinated_against_covid">
+              <mat-button-toggle [checked]="patientInfo.is_vaccinated_against_covid" value="true">Ano</mat-button-toggle>
+              <mat-button-toggle [checked]="!patientInfo.is_vaccinated_against_covid" value="false">Ne</mat-button-toggle>
+            </mat-button-toggle-group>
+          </div>
+          <div class="form-field">
+            <mat-label>Měl/a jste někdy závažnou alergickou reakci po očkování?</mat-label>
+            <mat-button-toggle-group [(ngModel)]="patientInfo.had_allergic_reaction" name="had_allergic_reaction">
+              <mat-button-toggle [checked]="patientInfo.had_allergic_reaction" value="true">Ano</mat-button-toggle>
+              <mat-button-toggle [checked]="!patientInfo.had_allergic_reaction" value="false">Ne</mat-button-toggle>
+            </mat-button-toggle-group>
+          </div>
+          <div class="form-field">
+            <mat-label>Máte nějakou krvácivou poruchu nebo berete léky na ředění krve?</mat-label>
+            <mat-button-toggle-group [(ngModel)]="patientInfo.has_blood_problems" name="has_blood_problems">
+              <mat-button-toggle [checked]="patientInfo.has_blood_problems" value="true">Ano</mat-button-toggle>
+              <mat-button-toggle [checked]="!patientInfo.has_blood_problems" value="false">Ne</mat-button-toggle>
+            </mat-button-toggle-group>
+          </div>
+          <div class="form-field">
+            <mat-label>Máte nějakou zývažnou poruchu imunity?</mat-label>
+            <mat-button-toggle-group [(ngModel)]="patientInfo.has_immunity_problems" name="has_immunity_problems">
+              <mat-button-toggle [checked]="patientInfo.has_immunity_problems" value="true">Ano</mat-button-toggle>
+              <mat-button-toggle [checked]="!patientInfo.has_immunity_problems" value="false">Ne</mat-button-toggle>
+            </mat-button-toggle-group>
+          </div>
+          <div class="form-field">
+            <mat-label>Jste těhotná nebo kojíte?</mat-label>
+            <mat-button-toggle-group [(ngModel)]="patientInfo.is_pregnant" name="is_pregnant">
+              <mat-button-toggle [checked]="patientInfo.is_pregnant" value="true">Ano</mat-button-toggle>
+              <mat-button-toggle [checked]="!patientInfo.is_pregnant" value="false">Ne</mat-button-toggle>
+            </mat-button-toggle-group>
+          </div>
+          <div class="form-field">
+            <mat-label>Absolvovala jste v posledních dvou týdnech nějaké jiné očkování?</mat-label>
+            <mat-button-toggle-group [(ngModel)]="patientInfo.is_vaccinated_in_last_two_weeks" name="is_vaccinated_in_last_two_weeks">
+              <mat-button-toggle [checked]="patientInfo.is_vaccinated_in_last_two_weeks" value="true">Ano</mat-button-toggle>
+              <mat-button-toggle [checked]="!patientInfo.is_vaccinated_in_last_two_weeks" value="false">Ne</mat-button-toggle>
+            </mat-button-toggle-group>
+          </div>
         </form>
       </mat-step>
       <mat-step label="Odeslání požadavku">

@@ -25,14 +25,14 @@ export class AppComponent implements OnInit {
       email: ['', [Validators.required, Validators.email]]
     });
     this.secondFormGroup = this._formBuilder.group({
-      secondCtrl: ['', Validators.required]
+      isSick: ['', Validators.required]
     });
   }
 
   public submit() {
-    if(this.firstFormGroup.invalid) {
-      return;
-    }
+    // if(this.firstFormGroup.invalid) {
+    //   return;
+    // }
     console.log('submit', this.patientInfo);
   }
 }
