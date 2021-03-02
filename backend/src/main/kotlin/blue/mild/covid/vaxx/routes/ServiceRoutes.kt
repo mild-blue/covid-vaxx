@@ -38,7 +38,7 @@ fun Routing.serviceRoutes() {
         if (DatabaseSetup.isConnected()) {
             call.respond(mapOf("health" to "healthy"))
         } else {
-            call.respond(HttpStatusCode.ServiceUnavailable, "DB connection is not working")
+            call.respond(HttpStatusCode.ServiceUnavailable, mapOf("health" to "DB connection is not working"))
         }
     }
 }
