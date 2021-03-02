@@ -11,9 +11,9 @@ create table patient
 
 create table question
 (
-    id          varchar(36) unique not null,
-    placeholder varchar(256)       not null,
-    cs          text               not null,
-    eng         text               not null,
+    id          varchar(36) unique  not null,
+    placeholder varchar(256) unique not null,
+    cs          text                not null,
+    eng         text                not null,
     primary key (id)
 );
