@@ -21,7 +21,7 @@
 
               <mat-form-field>
                 <mat-label>Rodné číslo</mat-label>
-                <input [(ngModel)]="patientInfo.birthNumber" type="number" formControlName="birthNumber" matInput placeholder="Vaše rodné číslo" required>
+                <input [(ngModel)]="patientInfo.personalNumber" type="number" formControlName="birthNumber" matInput placeholder="Vaše rodné číslo" required>
               </mat-form-field>
 
               <mat-form-field>
@@ -97,7 +97,7 @@
               <div class="form-field">
                 <mat-label>Rodné číslo:</mat-label>
                 <mat-label *ngIf="basicInfoForm.controls['birthNumber'].valid else unspecified;">
-                  {{ patientInfo.birthNumber }}
+                  {{ patientInfo.personalNumber }}
                 </mat-label>
               </div>
               <mat-divider></mat-divider>

@@ -1,7 +1,7 @@
 export class PatientInfo {
   firstName: string;
   lastName: string;
-  birthNumber: number;
+  personalNumber: number;
   insuranceCompany: string;
   phone: string;
   email: string;
