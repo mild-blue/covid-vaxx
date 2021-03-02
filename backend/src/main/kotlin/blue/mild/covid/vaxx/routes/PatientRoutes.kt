@@ -15,7 +15,7 @@ import org.kodein.di.ktor.di
 fun Routing.patientRoutes() {
     val service by di().instance<PatientService>()
 
-    get(apiName("/patients")) {
+    get(apiName("/patient")) {
         call.respond(service.getAllPatients())
     }
 

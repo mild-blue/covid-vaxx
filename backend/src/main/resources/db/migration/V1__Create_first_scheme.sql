@@ -1,10 +1,19 @@
 create table patient
 (
-    id             varchar(36) unique not null,
-    firstName      varchar(256)       not null,
-    lastName       varchar(256)       not null,
-    personalNumber varchar(11)        not null,
-    phoneNumber    varchar(13)        not null,
-    email          varchar(256)       not null,
+    id              varchar(36) unique not null,
+    first_name      varchar(256)       not null,
+    last_name       varchar(256)       not null,
+    personal_number varchar(11)        not null,
+    phone_number    varchar(13)        not null,
+    email           varchar(256)       not null,
+    primary key (id)
+);
+
+create table question
+(
+    id          varchar(36) unique not null,
+    placeholder varchar(256)       not null,
+    cs          text               not null,
+    eng         text               not null,
     primary key (id)
 );
