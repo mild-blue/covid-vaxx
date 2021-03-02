@@ -4,9 +4,17 @@ import java.util.UUID
 
 data class PatientDto(
     val id: UUID,
-    val name: String
+    val firstName: String,
+    val lastName: String,
+    val personalNumber: String,
+    val phoneNumber: String,
+    val email: String
 )
 
 data class NewPatientDto(
-    val name: String
+    val firstName: String,
+    val lastName: String,
+    val personalNumber: String,
+    val phoneNumber: String,
+    val email: String
 )

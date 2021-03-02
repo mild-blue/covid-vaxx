@@ -14,7 +14,11 @@ class PatientService {
         Patient.selectAll().map {
             PatientDto(
                 id = it[Patient.id].toUuid(),
-                name = it[Patient.name]
+                firstName = it[Patient.firstName],
+                lastName = it[Patient.lastName],
+                personalNumber = it[Patient.personalNumber],
+                phoneNumber = it[Patient.phoneNumber],
+                email = it[Patient.email]
             )
         }
     }
@@ -22,7 +26,11 @@ class PatientService {
     suspend fun savePatient(patientDto: NewPatientDto) = newSuspendedTransaction {
         Patient.insert {
             it[id] = UUID.randomUUID().toString()
-            it[name] = patientDto.name
+            it[firstName] = patientDto.firstName
+            it[lastName] = patientDto.lastName
+            it[personalNumber] = patientDto.personalNumber
+            it[phoneNumber] = patientDto.phoneNumber
+            it[email] = patientDto.email
         }
     }
 }
