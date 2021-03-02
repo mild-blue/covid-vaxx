@@ -7,6 +7,7 @@ object Routes {
     val version = apiName("/version")
     val status = apiName("/status")
     val statusHealth = apiName("/status/health")
+
     private fun apiName(name: String) = "/api/$name"
 }
 
