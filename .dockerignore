@@ -8,3 +8,5 @@ LICENSE
 out
 Dockerfile
 docker-compose.yml
+dist
+node_modules
