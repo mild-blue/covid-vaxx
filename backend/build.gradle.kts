@@ -62,10 +62,6 @@ dependencies {
     implementation("org.jetbrains.exposed", "exposed-jdbc", exposedVersion)
     implementation("org.jetbrains.exposed", "exposed-java-time", exposedVersion)
 
-    val coroutinesVersion = "1.4.2"
-    implementation("org.jetbrains.kotlinx", "kotlinx-coroutines-core", coroutinesVersion)
-    implementation("org.jetbrains.kotlinx", "kotlinx-coroutines-core-jvm", coroutinesVersion)
-
     // database migrations from the code
     implementation("org.flywaydb", "flyway-core", "7.5.4")
 
