@@ -10,16 +10,19 @@ import { InsuranceCompany } from './model/InsuranceCompany';
 })
 export class AppComponent implements OnInit {
   isLinear = false;
-  firstFormGroup: FormGroup;
-  secondFormGroup: FormGroup;
+  basicInfoForm: FormGroup;
 
   public patientInfo = new PatientInfo();
   public allInsuranceCompanies: string[] = Object.values(InsuranceCompany);
 
-  constructor(private _formBuilder: FormBuilder) {}
+  public agreementCheckboxValue: boolean = false;
+  public confirmationCheckboxValue: boolean = false;
+
+  constructor(private _formBuilder: FormBuilder) {
+  }
 
   ngOnInit() {
-    this.firstFormGroup = this._formBuilder.group({
+    this.basicInfoForm = this._formBuilder.group({
       firstName: ['', Validators.required],
       lastName: ['', Validators.required],
       birthNumber: ['', Validators.required], // todo: validate
@@ -27,15 +30,17 @@ export class AppComponent implements OnInit {
       phone: ['', [Validators.required]], // todo: validate phone
       email: ['', [Validators.required, Validators.email]]
     });
-    this.secondFormGroup = this._formBuilder.group({
-      isSick: ['', Validators.required]
-    });
   }
 
   public submit() {
-    // if(this.firstFormGroup.invalid) {
-    //   return;
-    // }
     console.log('submit', this.patientInfo);
+    if (!(this.basicInfoForm.valid && this.allQuestionsAnswered)) {
+      return;
+    }
+  }
+
+  get allQuestionsAnswered(): boolean {
+    const unanswered = this.patientInfo.questions.filter(q => q.value === undefined);
+    return unanswered.length === 0;
   }
 }

@@ -1,123 +1,174 @@
 <mat-toolbar color="primary">
-  <div class="container">
-    Dotazník před očkováním proti nemoci COVID-19
-  </div>
+  Dotazník před očkováním proti nemoci COVID-19
 </mat-toolbar>
 
 <main>
-  <div class="container">
-    <mat-horizontal-stepper [linear]="isLinear" #stepper>
-      <mat-step [stepControl]="firstFormGroup" label="Osobní informace">
-        <form [formGroup]="firstFormGroup">
-          <mat-form-field>
-            <mat-label>Jméno</mat-label>
-            <input [(ngModel)]="patientInfo.first_name" formControlName="firstName" matInput placeholder="Vaše jméno" required>
-          </mat-form-field>
+  <mat-horizontal-stepper [linear]="isLinear" #stepper>
+    <mat-step [stepControl]="basicInfoForm" label="Osobní informace">
+      <div class="container">
+        <mat-card>
+          <mat-card-content>
+            <form [formGroup]="basicInfoForm">
+              <mat-form-field>
+                <mat-label>Jméno</mat-label>
+                <input [(ngModel)]="patientInfo.first_name" formControlName="firstName" matInput placeholder="Vaše jméno" required>
+              </mat-form-field>
 
-          <mat-form-field>
-            <mat-label>Příjmení</mat-label>
-            <input [(ngModel)]="patientInfo.last_name" formControlName="lastName" matInput placeholder="Vaše příjmení" required>
-          </mat-form-field>
+              <mat-form-field>
+                <mat-label>Příjmení</mat-label>
+                <input [(ngModel)]="patientInfo.last_name" formControlName="lastName" matInput placeholder="Vaše příjmení" required>
+              </mat-form-field>
 
-          <mat-form-field>
-            <mat-label>Rodné číslo</mat-label>
-            <input [(ngModel)]="patientInfo.birth_number" formControlName="birthNumber" matInput placeholder="Vaše rodné číslo" required>
-          </mat-form-field>
+              <mat-form-field>
+                <mat-label>Rodné číslo</mat-label>
+                <input [(ngModel)]="patientInfo.birth_number" type="number" formControlName="birthNumber" matInput placeholder="Vaše rodné číslo" required>
+              </mat-form-field>
 
-          <mat-form-field>
-            <mat-label>Zdravotní pojišťovna</mat-label>
-            <mat-select formControlName="insuranceCompany" [(ngModel)]="patientInfo.insurance_company">
-              <mat-option *ngFor="let insuranceCompany of allInsuranceCompanies" [value]="insuranceCompany">
-                {{insuranceCompany}}
-              </mat-option>
-            </mat-select>
-          </mat-form-field>
+              <mat-form-field>
+                <mat-label>Zdravotní pojišťovna</mat-label>
+                <mat-select formControlName="insuranceCompany" [(ngModel)]="patientInfo.insurance_company">
+                  <mat-option *ngFor="let insuranceCompany of allInsuranceCompanies" [value]="insuranceCompany">
+                    {{insuranceCompany}}
+                  </mat-option>
+                </mat-select>
+              </mat-form-field>
 
-          <mat-form-field>
-            <mat-label>Telefonní číslo</mat-label>
-            <input [(ngModel)]="patientInfo.phone" formControlName="phone" matInput placeholder="Vaše telefonní číslo" required>
-          </mat-form-field>
-          <mat-form-field>
-            <mat-label>E-mail</mat-label>
-            <input [(ngModel)]="patientInfo.email" formControlName="email" matInput placeholder="Váš e-mail" required>
-          </mat-form-field>
+              <mat-form-field>
+                <mat-label>Telefonní číslo</mat-label>
+                <input [(ngModel)]="patientInfo.phone" formControlName="phone" matInput placeholder="Vaše telefonní číslo" required>
+              </mat-form-field>
+              <mat-form-field>
+                <mat-label>E-mail</mat-label>
+                <input [(ngModel)]="patientInfo.email" formControlName="email" matInput placeholder="Váš e-mail" required>
+              </mat-form-field>
+            </form>
+          </mat-card-content>
+        </mat-card>
 
-        </form>
-      </mat-step>
-      <mat-step [stepControl]="secondFormGroup" label="Zdravotní informace">
-        <form>
-          <div class="form-field">
-            <mat-label>Cítíte se v tuto chvílí nemocný/á</mat-label>
-            <mat-button-toggle-group [(ngModel)]="patientInfo.is_sick" name="is_sick">
-              <mat-button-toggle [checked]="patientInfo.is_sick" value="true">Ano</mat-button-toggle>
-              <mat-button-toggle [checked]="!patientInfo.is_sick" value="false">Ne</mat-button-toggle>
-            </mat-button-toggle-group>
-          </div>
-          <div class="form-field">
-            <mat-label>Prodělal/a jste onemocnění COVID-19 nebo jste měl/a pozitivní PCR test?</mat-label>
-            <mat-button-toggle-group [(ngModel)]="patientInfo.did_have_covid" name="did_have_covid">
-              <mat-button-toggle [checked]="patientInfo.did_have_covid" value="true">Ano</mat-button-toggle>
-              <mat-button-toggle [checked]="!patientInfo.did_have_covid" value="false">Ne</mat-button-toggle>
-            </mat-button-toggle-group>
-          </div>
-          <div class="form-field">
-            <mat-label>Byl/a jste již očkován/a proti nemoci COVID-19</mat-label>
-            <mat-button-toggle-group [(ngModel)]="patientInfo.is_vaccinated_against_covid" name="is_vaccinated_against_covid">
-              <mat-button-toggle [checked]="patientInfo.is_vaccinated_against_covid" value="true">Ano</mat-button-toggle>
-              <mat-button-toggle [checked]="!patientInfo.is_vaccinated_against_covid" value="false">Ne</mat-button-toggle>
-            </mat-button-toggle-group>
-          </div>
-          <div class="form-field">
-            <mat-label>Měl/a jste někdy závažnou alergickou reakci po očkování?</mat-label>
-            <mat-button-toggle-group [(ngModel)]="patientInfo.had_allergic_reaction" name="had_allergic_reaction">
-              <mat-button-toggle [checked]="patientInfo.had_allergic_reaction" value="true">Ano</mat-button-toggle>
-              <mat-button-toggle [checked]="!patientInfo.had_allergic_reaction" value="false">Ne</mat-button-toggle>
-            </mat-button-toggle-group>
-          </div>
-          <div class="form-field">
-            <mat-label>Máte nějakou krvácivou poruchu nebo berete léky na ředění krve?</mat-label>
-            <mat-button-toggle-group [(ngModel)]="patientInfo.has_blood_problems" name="has_blood_problems">
-              <mat-button-toggle [checked]="patientInfo.has_blood_problems" value="true">Ano</mat-button-toggle>
-              <mat-button-toggle [checked]="!patientInfo.has_blood_problems" value="false">Ne</mat-button-toggle>
-            </mat-button-toggle-group>
-          </div>
-          <div class="form-field">
-            <mat-label>Máte nějakou zývažnou poruchu imunity?</mat-label>
-            <mat-button-toggle-group [(ngModel)]="patientInfo.has_immunity_problems" name="has_immunity_problems">
-              <mat-button-toggle [checked]="patientInfo.has_immunity_problems" value="true">Ano</mat-button-toggle>
-              <mat-button-toggle [checked]="!patientInfo.has_immunity_problems" value="false">Ne</mat-button-toggle>
-            </mat-button-toggle-group>
-          </div>
-          <div class="form-field">
-            <mat-label>Jste těhotná nebo kojíte?</mat-label>
-            <mat-button-toggle-group [(ngModel)]="patientInfo.is_pregnant" name="is_pregnant">
-              <mat-button-toggle [checked]="patientInfo.is_pregnant" value="true">Ano</mat-button-toggle>
-              <mat-button-toggle [checked]="!patientInfo.is_pregnant" value="false">Ne</mat-button-toggle>
-            </mat-button-toggle-group>
-          </div>
-          <div class="form-field">
-            <mat-label>Absolvovala jste v posledních dvou týdnech nějaké jiné očkování?</mat-label>
-            <mat-button-toggle-group [(ngModel)]="patientInfo.is_vaccinated_in_last_two_weeks" name="is_vaccinated_in_last_two_weeks">
-              <mat-button-toggle [checked]="patientInfo.is_vaccinated_in_last_two_weeks" value="true">Ano</mat-button-toggle>
-              <mat-button-toggle [checked]="!patientInfo.is_vaccinated_in_last_two_weeks" value="false">Ne</mat-button-toggle>
-            </mat-button-toggle-group>
-          </div>
-        </form>
-      </mat-step>
-      <mat-step label="Odeslání požadavku">
-        <p>You are now done.</p>
-      </mat-step>
-    </mat-horizontal-stepper>
-  </div>
+        <div class="nav-buttons">
+          <div></div>
+          <button color="primary" mat-raised-button matStepperNext>Další krok</button>
+        </div>
+      </div>
+    </mat-step>
+    <mat-step label="Zdravotní informace">
+      <div class="container">
+        <mat-card class="py-0">
+          <mat-card-content>
+            <form>
+              <ng-container *ngFor="let q of patientInfo.questions; let i = index">
+                <div class="form-field">
+                  <mat-label>{{ q.label }}</mat-label>
+                  <mat-button-toggle-group [(ngModel)]="q.value" [name]="q.name">
+                    <mat-button-toggle value="true">Ano</mat-button-toggle>
+                    <mat-button-toggle value="false">Ne</mat-button-toggle>
+                  </mat-button-toggle-group>
+                </div>
+                <mat-divider *ngIf="i < patientInfo.questions.length - 1"></mat-divider>
+              </ng-container>
+            </form>
+          </mat-card-content>
+        </mat-card>
+        <div class="nav-buttons">
+          <button color="secondary" mat-raised-button matStepperPrevious>Předchozí krok</button>
+          <button color="primary" mat-raised-button matStepperNext>Další krok</button>
+        </div>
+      </div>
+    </mat-step>
+    <mat-step label="Odeslání požadavku">
+      <div class="container container--wide">
+        <div class="confirmation-step">
+          <mat-card class="py-0">
+            <mat-card-content>
+              <div class="form-field">
+                <mat-label>Jméno:</mat-label>
+                <mat-label *ngIf="basicInfoForm.controls['firstName'].valid else unspecified;">
+                  {{ patientInfo.first_name }}
+                </mat-label>
+              </div>
+              <mat-divider></mat-divider>
+              <div class="form-field">
+                <mat-label>Příjmení:</mat-label>
+                <mat-label *ngIf="basicInfoForm.controls['lastName'].valid else unspecified;">
+                  {{ patientInfo.last_name }}
+                </mat-label>
+              </div>
+              <mat-divider></mat-divider>
+              <div class="form-field">
+                <mat-label>Rodné číslo:</mat-label>
+                <mat-label *ngIf="basicInfoForm.controls['birthNumber'].valid else unspecified;">
+                  {{ patientInfo.birth_number }}
+                </mat-label>
+              </div>
+              <mat-divider></mat-divider>
+              <div class="form-field">
+                <mat-label>Pojištovna:</mat-label>
+                <mat-label *ngIf="basicInfoForm.controls['insuranceCompany'].valid else unspecified;">
+                  {{ patientInfo.insurance_company }}
+                </mat-label>
+              </div>
+              <mat-divider></mat-divider>
+              <div class="form-field">
+                <mat-label>Telefon:</mat-label>
+                <mat-label *ngIf="basicInfoForm.controls['phone'].valid else unspecified;">
+                  {{ patientInfo.phone }}
+                </mat-label>
+              </div>
+              <mat-divider></mat-divider>
+              <div class="form-field">
+                <mat-label>E-mail:</mat-label>
+                <mat-label *ngIf="basicInfoForm.controls['email'].valid else unspecified;">
+                  {{ patientInfo.email }}
+                </mat-label>
+              </div>
+            </mat-card-content>
+          </mat-card>
+
+          <mat-card class="py-0">
+            <mat-card-content>
+              <ng-container *ngFor="let q of patientInfo.questions; let i = index">
+                <div class="form-field">
+                  <mat-label>{{ q.label }}</mat-label>
+                  <mat-label [ngSwitch]="q.value">
+                    <span *ngSwitchCase="'true'">Ano</span>
+                    <span *ngSwitchCase="'false'">Ne</span>
+                    <ng-container *ngSwitchDefault [ngTemplateOutlet]="unspecified"></ng-container>
+                  </mat-label>
+                </div>
+                <mat-divider *ngIf="i < patientInfo.questions.length - 1"></mat-divider>
+              </ng-container>
+            </mat-card-content>
+          </mat-card>
+        </div>
+
+        <div class="checkboxes">
+          <mat-checkbox [(ngModel)]="confirmationCheckboxValue">
+            Potvrzuji, že jsem nezamlčel/a žádné informace o svém zdravotním stavu.
+          </mat-checkbox>
+
+          <mat-checkbox [(ngModel)]="agreementCheckboxValue">
+            Souhlasím s aplikací očkovací látky proti onemocnění COVID-19.
+          </mat-checkbox>
+        </div>
+
+        <div class="nav-buttons">
+          <button color="secondary" mat-raised-button matStepperPrevious>Předchozí krok</button>
+          <button color="primary" mat-raised-button (click)="submit()"
+                  [disabled]="!(basicInfoForm.valid && allQuestionsAnswered && agreementCheckboxValue && confirmationCheckboxValue)"
+                  matStepperNext>Odeslat požadavek</button>
+        </div>
+      </div>
+    </mat-step>
+  </mat-horizontal-stepper>
 </main>
 
 <footer>
-  <div class="container">
-    <div>
-      <button mat-button (click)="stepper.previous()">Předchozí krok</button>
-      <button mat-button (click)="stepper.next()">Další krok</button>
-      <button mat-button (click)="submit()">Odeslat</button>
-    </div>
-  </div>
+  <span>Powered by </span><a href="https://mild.blue" target="_blank">mild.blue</a>
 </footer>
+
+<ng-template #unspecified>
+  <span class="unspecified">
+    Neuvedeno
+  </span>
+</ng-template>
 
