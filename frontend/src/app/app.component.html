@@ -153,8 +153,9 @@
 
         <div class="nav-buttons">
           <button color="secondary" mat-raised-button matStepperPrevious>Předchozí krok</button>
-          <button color="primary" mat-raised-button (click)="submit()"
-                  [disabled]="!(basicInfoForm.valid && allQuestionsAnswered && agreementCheckboxValue && confirmationCheckboxValue)"
+          <button color="primary" mat-raised-button
+                  (click)="submit()"
+                  [disabled]="!canSubmit"
                   matStepperNext>Odeslat požadavek</button>
         </div>
       </div>

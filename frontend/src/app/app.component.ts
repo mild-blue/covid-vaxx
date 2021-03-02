@@ -2,6 +2,8 @@ import { Component, OnInit } from '@angular/core';
 import { FormBuilder, FormControl, FormGroup, Validators } from '@angular/forms';
 import { PatientInfo } from './model/PatientInfo';
 import { InsuranceCompany } from './model/InsuranceCompany';
+import { MatDialog } from '@angular/material/dialog';
+import { DialogComponent } from './components/dialog/dialog.component';
 
 @Component({
   selector: 'app-root',
@@ -18,7 +20,8 @@ export class AppComponent implements OnInit {
   public agreementCheckboxValue: boolean = false;
   public confirmationCheckboxValue: boolean = false;
 
-  constructor(private _formBuilder: FormBuilder) {
+  constructor(private _formBuilder: FormBuilder,
+              public _dialog: MatDialog) {
   }
 
   ngOnInit() {
@@ -33,14 +36,27 @@ export class AppComponent implements OnInit {
   }
 
   public submit() {
-    console.log('submit', this.patientInfo);
-    if (!(this.basicInfoForm.valid && this.allQuestionsAnswered)) {
+    if (!this.canSubmit) {
       return;
     }
+
+    // todo send data to BE
+    this.openDialog();
+  }
+
+  public openDialog(): void {
+    const dialogRef = this._dialog.open(DialogComponent, {
+      width: '250px',
+      data: this.patientInfo
+    });
   }
 
   get allQuestionsAnswered(): boolean {
     const unanswered = this.patientInfo.questions.filter(q => q.value === undefined);
     return unanswered.length === 0;
+  }
+
+  get canSubmit(): boolean {
+    return this.basicInfoForm.valid && this.allQuestionsAnswered && this.agreementCheckboxValue && this.confirmationCheckboxValue;
   }
 }
