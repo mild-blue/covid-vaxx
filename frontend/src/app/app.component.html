@@ -10,8 +10,8 @@
       <mat-step [stepControl]="firstFormGroup" label="Osobní informace">
         <form [formGroup]="firstFormGroup">
           <mat-form-field>
-            <mat-label>Name</mat-label>
-            <input matInput placeholder="Last name, First name" formControlName="firstCtrl" required>
+            <mat-label>Jméno</mat-label>
+            <input [(ngModel)]="patientInfo.first_name" formControlName="firstName" matInput placeholder="Vaše jméno" required>
           </mat-form-field>
         </form>
       </mat-step>
@@ -36,6 +36,7 @@
     <div>
       <button mat-button (click)="stepper.previous()">Předchozí krok</button>
       <button mat-button (click)="stepper.next()">Další krok</button>
+      <button mat-button (click)="submit()">Odeslat</button>
     </div>
   </div>
 </footer>
