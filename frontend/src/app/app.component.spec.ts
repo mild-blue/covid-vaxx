@@ -3,6 +3,7 @@ import { RouterTestingModule } from '@angular/router/testing';
 import { AppComponent } from './app.component';
 
 describe('AppComponent', () => {
+  /* tslint:disable:deprecation */ // TODO
   beforeEach(async(() => {
     TestBed.configureTestingModule({
       imports: [

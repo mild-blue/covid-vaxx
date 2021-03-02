@@ -21,7 +21,7 @@
 
               <mat-form-field>
                 <mat-label>Rodné číslo</mat-label>
-                <input [(ngModel)]="patientInfo.personalNumber" type="number" formControlName="birthNumber" matInput placeholder="Vaše rodné číslo" required>
+                <input [(ngModel)]="patientInfo.personalNumber" formControlName="personalNumber" matInput placeholder="Vaše rodné číslo ve formátu RRMMDD/ČČČ(Č)" required>
               </mat-form-field>
 
               <mat-form-field>
@@ -35,7 +35,7 @@
 
               <mat-form-field>
                 <mat-label>Telefonní číslo</mat-label>
-                <input [(ngModel)]="patientInfo.phone" formControlName="phone" matInput placeholder="Vaše telefonní číslo" required>
+                <input [(ngModel)]="patientInfo.phone" formControlName="phone" matInput placeholder="Vaše telefonní číslo ve formátu +420123456789" required>
               </mat-form-field>
               <mat-form-field>
                 <mat-label>E-mail</mat-label>
@@ -47,7 +47,10 @@
 
         <div class="nav-buttons">
           <div></div>
-          <button color="primary" mat-raised-button matStepperNext>Další krok</button>
+          <button
+            color="primary"
+            [disabled]="basicInfoForm.invalid"
+            mat-raised-button matStepperNext>Další krok</button>
         </div>
       </div>
     </mat-step>
@@ -71,7 +74,12 @@
         </mat-card>
         <div class="nav-buttons">
           <button color="secondary" mat-raised-button matStepperPrevious>Předchozí krok</button>
-          <button color="primary" mat-raised-button matStepperNext>Další krok</button>
+          <!-- TODO: Validace, ze je vse zaskrtnute ANO/NE -->
+          <button
+            color="primary"
+            [disabled]="basicInfoForm.invalid"
+            mat-raised-button matStepperNext
+          >Další krok</button>
         </div>
       </div>
     </mat-step>
@@ -96,7 +104,7 @@
               <mat-divider></mat-divider>
               <div class="form-field">
                 <mat-label>Rodné číslo:</mat-label>
-                <mat-label *ngIf="basicInfoForm.controls['birthNumber'].valid else unspecified;">
+                <mat-label *ngIf="basicInfoForm.controls['personalNumber'].valid else unspecified;">
                   {{ patientInfo.personalNumber }}
                 </mat-label>
               </div>
@@ -109,7 +117,7 @@
               </div>
               <mat-divider></mat-divider>
               <div class="form-field">
-                <mat-label>Telefon:</mat-label>
+                <mat-label>Telefonní číslo:</mat-label>
                 <mat-label *ngIf="basicInfoForm.controls['phone'].valid else unspecified;">
                   {{ patientInfo.phone }}
                 </mat-label>
