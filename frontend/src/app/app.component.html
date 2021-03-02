@@ -3,7 +3,7 @@
 </mat-toolbar>
 
 <main>
-  <mat-horizontal-stepper [linear]="isLinear" #stepper>
+  <mat-horizontal-stepper [linear]="false">
     <mat-step [stepControl]="basicInfoForm" label="Osobní informace">
       <div class="container">
         <mat-card>
@@ -11,22 +11,22 @@
             <form [formGroup]="basicInfoForm">
               <mat-form-field>
                 <mat-label>Jméno</mat-label>
-                <input [(ngModel)]="patientInfo.first_name" formControlName="firstName" matInput placeholder="Vaše jméno" required>
+                <input [(ngModel)]="patientInfo.firstName" formControlName="firstName" matInput placeholder="Vaše jméno" required>
               </mat-form-field>
 
               <mat-form-field>
                 <mat-label>Příjmení</mat-label>
-                <input [(ngModel)]="patientInfo.last_name" formControlName="lastName" matInput placeholder="Vaše příjmení" required>
+                <input [(ngModel)]="patientInfo.lastName" formControlName="lastName" matInput placeholder="Vaše příjmení" required>
               </mat-form-field>
 
               <mat-form-field>
                 <mat-label>Rodné číslo</mat-label>
-                <input [(ngModel)]="patientInfo.birth_number" type="number" formControlName="birthNumber" matInput placeholder="Vaše rodné číslo" required>
+                <input [(ngModel)]="patientInfo.birthNumber" type="number" formControlName="birthNumber" matInput placeholder="Vaše rodné číslo" required>
               </mat-form-field>
 
               <mat-form-field>
                 <mat-label>Zdravotní pojišťovna</mat-label>
-                <mat-select formControlName="insuranceCompany" [(ngModel)]="patientInfo.insurance_company">
+                <mat-select formControlName="insuranceCompany" [(ngModel)]="patientInfo.insuranceCompany">
                   <mat-option *ngFor="let insuranceCompany of allInsuranceCompanies" [value]="insuranceCompany">
                     {{insuranceCompany}}
                   </mat-option>
@@ -83,28 +83,28 @@
               <div class="form-field">
                 <mat-label>Jméno:</mat-label>
                 <mat-label *ngIf="basicInfoForm.controls['firstName'].valid else unspecified;">
-                  {{ patientInfo.first_name }}
+                  {{ patientInfo.firstName }}
                 </mat-label>
               </div>
               <mat-divider></mat-divider>
               <div class="form-field">
                 <mat-label>Příjmení:</mat-label>
                 <mat-label *ngIf="basicInfoForm.controls['lastName'].valid else unspecified;">
-                  {{ patientInfo.last_name }}
+                  {{ patientInfo.lastName }}
                 </mat-label>
               </div>
               <mat-divider></mat-divider>
               <div class="form-field">
                 <mat-label>Rodné číslo:</mat-label>
                 <mat-label *ngIf="basicInfoForm.controls['birthNumber'].valid else unspecified;">
-                  {{ patientInfo.birth_number }}
+                  {{ patientInfo.birthNumber }}
                 </mat-label>
               </div>
               <mat-divider></mat-divider>
               <div class="form-field">
                 <mat-label>Pojištovna:</mat-label>
                 <mat-label *ngIf="basicInfoForm.controls['insuranceCompany'].valid else unspecified;">
-                  {{ patientInfo.insurance_company }}
+                  {{ patientInfo.insuranceCompany }}
                 </mat-label>
               </div>
               <mat-divider></mat-divider>

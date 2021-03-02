@@ -1,8 +1,8 @@
 export class PatientInfo {
-  first_name: string;
-  last_name: string;
-  birth_number: number;
-  insurance_company: string;
+  firstName: string;
+  lastName: string;
+  birthNumber: number;
+  insuranceCompany: string;
   phone: string;
   email: string;
 
@@ -11,7 +11,7 @@ export class PatientInfo {
   constructor() {
     this.questions.push(...[
       { label: 'Cítíte se v tuto chvílí nemocný/á', name: 'is_sick' },
-      { label: 'Prodělal/a jste onemocnění COVID-19 nebo jste měl/a pozitivní PCR test?', name: 'did_have_covid' },
+      { label: 'Prodělal/a jste onemocnění COVID-19 nebo jste měl/a pozitivní PCR test?', name: 'had_covid' },
       { label: 'Byl/a jste již očkován/a proti nemoci COVID-19', name: 'is_vaccinated_against_covid' },
       { label: 'Měl/a jste někdy závažnou alergickou reakci po očkování?', name: 'had_allergic_reaction' },
       { label: 'Máte nějakou krvácivou poruchu nebo berete léky na ředění krve?', name: 'has_blood_problems' },
