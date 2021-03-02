@@ -11,7 +11,7 @@ import org.kodein.di.ktor.di
 fun Routing.questionRoutes() {
     val service by di().instance<QuestionService>()
 
-    get(apiName("/question")) {
+    get(Routes.question) {
         call.respond(service.getAllQuestions())
     }
 }

@@ -20,21 +20,21 @@ fun Routing.serviceRoutes() {
     /**
      * Send data about version.
      */
-    get(apiName("/version")) {
+    get(Routes.version) {
         call.respond(VersionDto(version))
     }
 
     /**
      * Responds only 200 for ingres.
      */
-    get(apiName("/status")) {
+    get(Routes.status) {
         call.respond(HttpStatusCode.OK)
     }
 
     /**
      * More complex API for indication of all resources.
      */
-    get(apiName("/status/health")) {
+    get(Routes.statusHealth) {
         if (DatabaseSetup.isConnected()) {
             call.respond(mapOf("health" to "healthy"))
         } else {
