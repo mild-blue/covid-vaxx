@@ -60,7 +60,7 @@ fun Application.init() {
 /**
  * Connect bot to the database.
  */
-fun connectDatabase(k: LazyDI) {
+private fun connectDatabase(k: LazyDI) {
     installationLogger.info { "Connecting to the DB" }
     val dbConfig by k.instance<DatabaseConfigurationDto>()
     DatabaseSetup.connect(dbConfig)
@@ -77,7 +77,7 @@ fun connectDatabase(k: LazyDI) {
 /**
  * Migrate database using flyway.
  */
-fun migrateDatabase(dbConfig: DatabaseConfigurationDto) {
+private fun migrateDatabase(dbConfig: DatabaseConfigurationDto) {
     installationLogger.info { "Migrating database." }
     val migrateResult = Flyway
         .configure()
@@ -94,7 +94,7 @@ fun migrateDatabase(dbConfig: DatabaseConfigurationDto) {
 /**
  * Configure Ktor and install necessary extensions.
  */
-fun Application.installFrameworks() {
+private fun Application.installFrameworks() {
     install(ContentNegotiation) {
         jackson {
             // enable pretty print for JSONs
@@ -127,4 +127,7 @@ fun Application.installFrameworks() {
     }
 
     install(CallId) { generate { UUID.randomUUID().toString() } }
+
+    // register exception handling
+    registerExceptionHandlers()
 }
