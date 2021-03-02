@@ -15,11 +15,11 @@ import org.kodein.di.ktor.di
 fun Routing.patientRoutes() {
     val service by di().instance<PatientService>()
 
-    get("/patients") {
+    get(apiName("/patients")) {
         call.respond(service.getAllPatients())
     }
 
-    post("/patient") {
+    post(apiName("/patient")) {
         val patient = call.receive<NewPatientDto>()
         service.savePatient(patient)
         call.respond(HttpStatusCode.NoContent)

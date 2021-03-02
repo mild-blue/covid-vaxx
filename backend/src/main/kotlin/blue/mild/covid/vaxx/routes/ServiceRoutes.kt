@@ -18,30 +18,23 @@ fun Routing.serviceRoutes() {
     val version by di().instance<String>("version")
 
     /**
-     * Static assets files.
-     */
-    get("/") {
-        // TODO assets
-    }
-
-    /**
      * Send data about version.
      */
-    get("/version") {
+    get(apiName("/version")) {
         call.respond(VersionDto(version))
     }
 
     /**
      * Responds only 200 for ingres.
      */
-    get("/status") {
+    get(apiName("/status")) {
         call.respond(HttpStatusCode.OK)
     }
 
     /**
      * More complex API for indication of all resources.
      */
-    get("/status/health") {
+    get(apiName("/status/health")) {
         if (DatabaseSetup.isConnected()) {
             call.respond(mapOf("health" to "healthy"))
         } else {
