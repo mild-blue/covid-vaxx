@@ -1,16 +1,18 @@
 package blue.mild.covid.vaxx.routes
 
-import io.ktor.application.call
-import io.ktor.response.respond
+import io.ktor.http.content.default
+import io.ktor.http.content.files
+import io.ktor.http.content.static
 import io.ktor.routing.Routing
-import io.ktor.routing.get
+import org.kodein.di.instance
+import org.kodein.di.ktor.di
 
 fun Routing.staticContentRoutes() {
-    /**
-     * Static assets files.
-     */
-    get("{...}") {
-        // TODO assets
-        call.respond("some static assets")
+
+    val basePath by di().instance<String>("frontend")
+
+    static {
+        files(basePath)
+        default("$basePath/index.html")
     }
 }

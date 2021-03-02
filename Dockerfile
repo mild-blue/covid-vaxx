@@ -1,6 +1,11 @@
-FROM adoptopenjdk/openjdk11:alpine AS build
-LABEL description="Mild Blue Covid Vaxx"
-LABEL project="mild-blue:covid-vaxx"
+FROM node:alpine as frontend-build
+
+COPY frontend/ ./frontend
+WORKDIR ./frontend
+RUN npm i
+RUN npm run build-prod
+
+FROM adoptopenjdk/openjdk11:alpine AS backend-build
 
 ENV PROJECT_ROOT /src
 WORKDIR $PROJECT_ROOT
@@ -22,12 +27,18 @@ RUN ./gradlew distTar --no-daemon
 
 # Runtime
 FROM adoptopenjdk/openjdk11:alpine-jre
+LABEL description="Mild Blue Covid Vaxx"
+LABEL project="mild-blue:covid-vaxx"
 
 ENV APP_ROOT /app
 WORKDIR $APP_ROOT
 
-# Obtain built from the base
-COPY --from=build /src/build/distributions/app.tar $APP_ROOT/
+# Copy frontend
+ENV FRONTEND_PATH=/app/frontend
+COPY --from=frontend-build ./frontend/dist/frontend $FRONTEND_PATH
+
+# Copy backend
+COPY --from=backend-build /src/build/distributions/app.tar $APP_ROOT/
 
 # Extract executables
 RUN mkdir $APP_ROOT/run
