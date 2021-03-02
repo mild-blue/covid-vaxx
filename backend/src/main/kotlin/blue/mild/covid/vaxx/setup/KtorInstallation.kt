@@ -4,6 +4,7 @@ import blue.mild.covid.vaxx.dao.DatabaseSetup
 import blue.mild.covid.vaxx.dto.DatabaseConfigurationDto
 import blue.mild.covid.vaxx.monitoring.APP_REQUEST
 import blue.mild.covid.vaxx.monitoring.INFRA_REQUEST
+import blue.mild.covid.vaxx.routes.apiName
 import blue.mild.covid.vaxx.routes.registerRoutes
 import blue.mild.covid.vaxx.utils.createLogger
 import com.fasterxml.jackson.databind.SerializationFeature
@@ -120,7 +121,7 @@ fun Application.installFrameworks() {
 
         // enable logging for all routes that are not /status
         // this filter does not influence MDC
-        filter { it.request.uri != "/status" }
+        filter { it.request.uri != apiName("/status") }
         level = Level.DEBUG
         logger = createLogger("HttpCallLogger")
     }
