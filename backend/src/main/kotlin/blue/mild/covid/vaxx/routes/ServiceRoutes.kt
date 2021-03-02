@@ -9,8 +9,6 @@ import io.ktor.routing.get
 import org.kodein.di.instance
 import org.kodein.di.ktor.di
 
-data class VersionDto(val version: String)
-
 /**
  * Registers prometheus data.
  */
@@ -21,7 +19,7 @@ fun Routing.serviceRoutes() {
      * Send data about version.
      */
     get(Routes.version) {
-        call.respond(VersionDto(version))
+        call.respond(mapOf("version" to version))
     }
 
     /**

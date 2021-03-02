@@ -1,4 +1,4 @@
-create table patient
+create table patients
 (
     id              varchar(36) unique not null,
     first_name      varchar(256)       not null,
@@ -9,7 +9,7 @@ create table patient
     primary key (id)
 );
 
-create table question
+create table questions
 (
     id          varchar(36) unique  not null,
     placeholder varchar(256) unique not null,

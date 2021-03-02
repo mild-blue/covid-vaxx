@@ -2,7 +2,7 @@ package blue.mild.covid.vaxx.dao
 
 import org.jetbrains.exposed.sql.Table
 
-object Patient : Table() {
+object Patient : Table("patients") {
     val id = varchar("id", 36)
 
     val firstName = varchar("first_name", 256)
