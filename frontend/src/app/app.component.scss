@@ -1,0 +1,172 @@
+.container {
+  max-width: 650px;
+  width: 100%;
+
+  margin: auto;
+
+  &--wide {
+    max-width: 1200px;
+  }
+}
+
+.form-field {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 10px 0;
+
+  @media (max-width: 600px) {
+    flex-direction: column;
+    align-items: flex-start;
+
+    > *:last-child {
+      margin-top: 10px;
+    }
+  }
+}
+
+.nav-buttons {
+  display: flex;
+  justify-content: space-between;
+  margin-top: 30px;
+
+  button:not(:first-child) {
+    margin-left: 20px;
+  }
+}
+
+footer {
+  width: 100%;
+}
+
+:host {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+}
+
+main {
+  flex: 1;
+}
+
+mat-toolbar {
+  span {
+    max-width: 100%;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: normal;
+    @media (max-width: 600px) {
+      font-size: 14px;
+    }
+  }
+}
+
+mat-horizontal-stepper {
+  background-color: transparent;
+}
+
+mat-form-field {
+  display: block;
+}
+
+mat-button-toggle {
+  width: 50%;
+
+  &.mat-button-toggle-checked {
+    &[value="true"] {
+      background-color: rgba(#28a745, 0.2);
+      color: #28a745;
+    }
+    &[value="false"] {
+      background-color: rgba(#dc3545, 0.2);
+      color: #dc3545;
+    }
+  }
+
+  ::ng-deep .mat-button-toggle-label-content {
+    line-height: 36px;
+  }
+}
+
+mat-card {
+  margin: 30px 0;
+}
+
+.py-0 {
+  padding-top: 0;
+  padding-bottom: 0;
+}
+
+.confirmation-step {
+  display: flex;
+
+  margin-left: -20px;
+  margin-right: -20px;
+
+  @media (max-width: 600px) {
+    flex-direction: column;
+    align-items: flex-start;
+    margin: 0;
+  }
+
+  mat-card {
+    flex: 1;
+    margin: 0 20px;
+
+    @media (max-width: 600px) {
+      width: 100%;
+      margin: 0;
+
+      &:last-child {
+        margin-top: 20px;
+      }
+    }
+  }
+}
+
+.checkboxes {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin-top: 30px;
+
+  mat-checkbox + mat-checkbox {
+    margin-top: 10px;
+  }
+
+  ::ng-deep .mat-checkbox-layout {
+    white-space: normal;
+  }
+
+  @media (max-width: 600px) {
+    align-items: flex-start;
+  }
+}
+
+.unspecified {
+  padding: 2px 5px;
+  border-radius: 4px;
+  background: rgba(#c17a3c, 0.2);
+  color: #c17a3c;
+}
+
+footer {
+  padding: 30px 15px;
+  text-align: center;
+
+  > * {
+    opacity: .5;
+  }
+
+  a {
+    color: black;
+    text-decoration: none;
+    font-weight: bold;
+
+    &:hover {
+      color: #2D4496;
+      opacity: 1;
+    }
+  }
+}
