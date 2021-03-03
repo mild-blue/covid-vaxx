@@ -6,11 +6,8 @@
       "node"
     ]
   },
-  "files": [
-    "src/main.ts",
-    "src/polyfills.ts"
-  ],
   "include": [
-    "src/**/*.d.ts"
+    "src/**/*.ts",
+    "e2e/src/**/*.ts"
   ]
 }
