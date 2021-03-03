@@ -1,5 +1,6 @@
 package blue.mild.covid.vaxx.routes
 
+import blue.mild.covid.vaxx.dto.PatientDtoOut
 import blue.mild.covid.vaxx.dto.PatientRegistrationDtoIn
 import blue.mild.covid.vaxx.service.PatientService
 import io.ktor.application.call
@@ -20,7 +21,18 @@ fun Routing.patientRoutes() {
 
     route(Routes.patient) {
         get {
-            call.respond(service.getAllPatients())
+            val params = call.request.queryParameters
+
+            val response: Any = when {
+                params.contains(PatientDtoOut::id.name) ->
+                    service.getPatientById(params.getOrFail(PatientDtoOut::id.name).toUuid())
+                params.contains(PatientDtoOut::personalNumber.name) ->
+                    service.getPatientsByPersonalNumber(params.getOrFail(PatientDtoOut::personalNumber.name))
+                params.contains(PatientDtoOut::email.name) ->
+                    service.getPatientsByEmail(params.getOrFail(PatientDtoOut::email.name))
+                else -> service.getAllPatients()
+            }
+            call.respond(response)
         }
 
         get("/{id}") {

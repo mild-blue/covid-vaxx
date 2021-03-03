@@ -6,6 +6,8 @@ import blue.mild.covid.vaxx.dto.AnswerDto
 import blue.mild.covid.vaxx.dto.PatientDtoOut
 import blue.mild.covid.vaxx.dto.PatientRegistrationDtoIn
 import blue.mild.covid.vaxx.error.entityNotFound
+import org.jetbrains.exposed.sql.Op
+import org.jetbrains.exposed.sql.SqlExpressionBuilder
 import org.jetbrains.exposed.sql.batchInsert
 import org.jetbrains.exposed.sql.insert
 import org.jetbrains.exposed.sql.leftJoin
@@ -16,47 +18,36 @@ import pw.forst.tools.katlib.toUuid
 import java.util.UUID
 
 class PatientService {
-    suspend fun getAllPatients(): List<PatientDtoOut> = newSuspendedTransaction {
-        Patient
-            .leftJoin(Answer, { id }, { patientId })
-            .selectAll()
-            .map {
-                object {
-                    val patient = PatientDtoOut(
-                        id = it[Patient.id].toUuid(),
-                        firstName = it[Patient.firstName],
-                        lastName = it[Patient.lastName],
-                        personalNumber = it[Patient.personalNumber],
-                        phoneNumber = it[Patient.phoneNumber],
-                        email = it[Patient.email],
-                        answers = emptyList() // filled in the next step
-                    )
-                    val questionId = it[Answer.questionId].toUuid()
-                    val answerValue = it[Answer.value]
-                }
-            }
-            .groupBy { it.patient }
-            .map { (patient, answerRows) ->
-                patient.copy(answers = answerRows.map { AnswerDto(it.questionId, it.answerValue) })
-            }
-    }
-
-    suspend fun getPatientById(patientId: UUID) = newSuspendedTransaction {
-        val patientRow = Patient.select { Patient.id eq patientId.toString() }
-            .singleOrNull() ?: throw entityNotFound<Patient>(patientId)
-        val answers = Answer.select { Answer.patientId eq patientId.toString() }
+    suspend fun getPatientById(patientId: UUID): PatientDtoOut = newSuspendedTransaction {
+        val query = Patient
+            .leftJoin(Answer, { id }, { Answer.patientId })
+            .select { Patient.id eq patientId.toString() }
+        val answers = query
             .map { AnswerDto(it[Answer.questionId].toUuid(), it[Answer.value]) }
 
-        PatientDtoOut(
-            id = patientRow[Patient.id].toUuid(),
-            firstName = patientRow[Patient.firstName],
-            lastName = patientRow[Patient.lastName],
-            personalNumber = patientRow[Patient.personalNumber],
-            phoneNumber = patientRow[Patient.phoneNumber],
-            email = patientRow[Patient.email],
-            answers = answers
-        )
+        query
+            .firstOrNull()
+            ?.let {
+                PatientDtoOut(
+                    id = it[Patient.id].toUuid(),
+                    firstName = it[Patient.firstName],
+                    lastName = it[Patient.lastName],
+                    personalNumber = it[Patient.personalNumber],
+                    phoneNumber = it[Patient.phoneNumber],
+                    email = it[Patient.email],
+                    answers = answers
+                )
+            } ?: throw entityNotFound<Patient>(Patient::id, patientId)
     }
+
+    suspend fun getAllPatients(): List<PatientDtoOut> =
+        newSuspendedTransaction { getAndMapPatients() }
+
+    suspend fun getPatientsByPersonalNumber(patientPersonalNumber: String): List<PatientDtoOut> =
+        newSuspendedTransaction { getAndMapPatients { Patient.personalNumber eq patientPersonalNumber } }
+
+    suspend fun getPatientsByEmail(email: String): List<PatientDtoOut> =
+        newSuspendedTransaction { getAndMapPatients { Patient.email eq email } }
 
     suspend fun savePatient(patientDto: PatientRegistrationDtoIn) = newSuspendedTransaction {
         val patientId = UUID.randomUUID().toString()
@@ -76,4 +67,27 @@ class PatientService {
             this[Answer.value] = it.value
         }
     }
+
+    private fun getAndMapPatients(where: (SqlExpressionBuilder.() -> Op<Boolean>)? = null) =
+        Patient
+            .leftJoin(Answer, { id }, { patientId })
+            .let { if (where != null) it.select(where) else it.selectAll() }
+            .let { query ->
+                val answers = query
+                    .groupBy({ it[Patient.id] }, { AnswerDto(it[Answer.questionId].toUuid(), it[Answer.value]) })
+
+                query
+                    .distinctBy { it[Patient.id] }
+                    .map {
+                        PatientDtoOut(
+                            id = it[Patient.id].toUuid(),
+                            firstName = it[Patient.firstName],
+                            lastName = it[Patient.lastName],
+                            personalNumber = it[Patient.personalNumber],
+                            phoneNumber = it[Patient.phoneNumber],
+                            email = it[Patient.email],
+                            answers = answers.getValue(it[Patient.id])
+                        )
+                    }
+            }
 }
