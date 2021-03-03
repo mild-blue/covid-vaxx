@@ -5,9 +5,11 @@ import blue.mild.covid.vaxx.dao.Patient
 import blue.mild.covid.vaxx.dto.AnswerDto
 import blue.mild.covid.vaxx.dto.PatientDto
 import blue.mild.covid.vaxx.dto.PatientRegistrationDto
+import blue.mild.covid.vaxx.error.entityNotFound
 import org.jetbrains.exposed.sql.batchInsert
 import org.jetbrains.exposed.sql.insert
 import org.jetbrains.exposed.sql.leftJoin
+import org.jetbrains.exposed.sql.select
 import org.jetbrains.exposed.sql.selectAll
 import org.jetbrains.exposed.sql.transactions.experimental.newSuspendedTransaction
 import pw.forst.tools.katlib.toUuid
@@ -37,6 +39,23 @@ class PatientService {
             .map { (patient, answerRows) ->
                 patient.copy(answers = answerRows.map { AnswerDto(it.questionId, it.answerValue) })
             }
+    }
+
+    suspend fun getPatientById(patientId: UUID) = newSuspendedTransaction {
+        val patientRow = Patient.select { Patient.id eq patientId.toString() }
+            .singleOrNull() ?: throw entityNotFound<Patient>(patientId)
+        val answers = Answer.select { Answer.patientId eq patientId.toString() }
+            .map { AnswerDto(it[Answer.questionId].toUuid(), it[Answer.value]) }
+
+        PatientDto(
+            id = patientRow[Patient.id].toUuid(),
+            firstName = patientRow[Patient.firstName],
+            lastName = patientRow[Patient.lastName],
+            personalNumber = patientRow[Patient.personalNumber],
+            phoneNumber = patientRow[Patient.phoneNumber],
+            email = patientRow[Patient.email],
+            answers = answers
+        )
     }
 
     suspend fun savePatient(patientDto: PatientRegistrationDto) = newSuspendedTransaction {

@@ -1,5 +1,6 @@
 package blue.mild.covid.vaxx.setup
 
+import blue.mild.covid.vaxx.error.EntityNotFoundException
 import blue.mild.covid.vaxx.utils.createLogger
 import io.ktor.application.Application
 import io.ktor.application.ApplicationCall
@@ -19,6 +20,11 @@ fun Application.registerExceptionHandlers() {
         exception<Exception> { cause ->
             logger.error(cause) { "Exception occurred in the application: ${cause.message}" }
             call.errorResponse(HttpStatusCode.InternalServerError, cause.message)
+        }
+
+        exception<EntityNotFoundException> { cause ->
+            logger.warn { cause.message }
+            call.errorResponse(HttpStatusCode.NotFound, "Not found.")
         }
     }
 }
