@@ -1,10 +1,10 @@
 export class PatientInfo {
-  firstName: string;
-  lastName: string;
-  personalNumber: number;
-  insuranceCompany: string;
-  phone: string;
-  email: string;
+  firstName?: string;
+  lastName?: string;
+  personalNumber?: number;
+  insuranceCompany?: string;
+  phone?: string;
+  email?: string;
 
   questions: YesNoQuestion[] = [];
 

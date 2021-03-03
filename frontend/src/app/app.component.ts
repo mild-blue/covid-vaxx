@@ -1,11 +1,11 @@
-import {Component, OnInit} from '@angular/core';
-import {FormBuilder, FormGroup, Validators} from '@angular/forms';
-import {PatientInfo} from './model/PatientInfo';
-import {InsuranceCompany} from './model/InsuranceCompany';
-import {MatDialog} from '@angular/material/dialog';
-import {DialogComponent} from './components/dialog/dialog.component';
-import {PatientService} from './services/patient.service';
-import {validatePersonalNumber, validatePhoneNumber} from './app.validators';
+import { Component, OnInit } from '@angular/core';
+import { FormBuilder, FormGroup, Validators } from '@angular/forms';
+import { PatientInfo } from './model/PatientInfo';
+import { InsuranceCompany } from './model/InsuranceCompany';
+import { MatDialog } from '@angular/material/dialog';
+import { DialogComponent } from './components/dialog/dialog.component';
+import { PatientService } from './services/patient/patient.service';
+import { validatePersonalNumber, validatePhoneNumber } from './app.validators';
 
 @Component({
   selector: 'app-root',
@@ -14,11 +14,28 @@ import {validatePersonalNumber, validatePhoneNumber} from './app.validators';
 })
 export class AppComponent implements OnInit {
 
-  constructor(
-    private formBuilder: FormBuilder,
-    private dialog: MatDialog,
-    private patientService: PatientService
-  ) {
+  public basicInfoForm?: FormGroup;
+
+  public patientInfo: PatientInfo = new PatientInfo();
+  public allInsuranceCompanies: string[] = Object.values(InsuranceCompany);
+
+  public agreementCheckboxValue: boolean = false;
+  public confirmationCheckboxValue: boolean = false;
+
+  constructor(private _formBuilder: FormBuilder,
+              private _dialog: MatDialog,
+              private _patientService: PatientService) {
+  }
+
+  ngOnInit() {
+    this.basicInfoForm = this._formBuilder.group({
+      firstName: ['', Validators.required],
+      lastName: ['', Validators.required],
+      personalNumber: ['', [Validators.required, validatePersonalNumber]],
+      insuranceCompany: ['', Validators.required],
+      phone: ['', [Validators.required, validatePhoneNumber]],
+      email: ['', [Validators.required, Validators.email]]
+    });
   }
 
   get allQuestionsAnswered(): boolean {
@@ -27,27 +44,7 @@ export class AppComponent implements OnInit {
   }
 
   get canSubmit(): boolean {
-    return this.basicInfoForm.valid && this.allQuestionsAnswered && this.agreementCheckboxValue && this.confirmationCheckboxValue;
-  }
-
-  public basicInfoForm: FormGroup;
-
-  public patientInfo = new PatientInfo();
-  public allInsuranceCompanies: string[] = Object.values(InsuranceCompany);
-
-  public agreementCheckboxValue = false;
-  public confirmationCheckboxValue = false;
-
-
-  ngOnInit() {
-    this.basicInfoForm = this.formBuilder.group({
-      firstName: ['', Validators.required],
-      lastName: ['', Validators.required],
-      personalNumber: ['', [Validators.required, validatePersonalNumber]], // todo: validate
-      insuranceCompany: ['', Validators.required],
-      phone: ['', [Validators.required, validatePhoneNumber]], // todo: validate phone
-      email: ['', [Validators.required, Validators.email]]
-    });
+    return !!this.basicInfoForm?.valid && this.allQuestionsAnswered && this.agreementCheckboxValue && this.confirmationCheckboxValue;
   }
 
   public submit() {
@@ -55,13 +52,13 @@ export class AppComponent implements OnInit {
       return;
     }
 
-    this.patientService.savePatientInfo(this.patientInfo).then(res => {
+    this._patientService.savePatientInfo(this.patientInfo).then(() => {
       this.openDialog();
     });
   }
 
   public openDialog(): void {
-    const dialogRef = this.dialog.open(DialogComponent, {
+    this._dialog.open(DialogComponent, {
       width: '250px',
       data: this.patientInfo
     });
