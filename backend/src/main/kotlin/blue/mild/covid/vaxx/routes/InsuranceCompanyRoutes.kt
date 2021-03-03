@@ -7,9 +7,9 @@ import com.papsign.ktor.openapigen.route.path.normal.get
 import com.papsign.ktor.openapigen.route.response.respond
 import com.papsign.ktor.openapigen.route.route
 
-fun NormalOpenAPIRoute.insuranceCompaniesRoutes() {
+fun NormalOpenAPIRoute.insuranceCompanyRoutes() {
 
-    route(Routes.insuranceCompanies) {
+    route(Routes.insuranceCompany) {
         get<Unit, List<InsuranceCompanyDetailsDtoOut>> {
             respond(InsuranceCompany.values().map(::InsuranceCompanyDetailsDtoOut))
         }
