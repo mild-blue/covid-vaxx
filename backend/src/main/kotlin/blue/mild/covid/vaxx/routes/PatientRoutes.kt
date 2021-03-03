@@ -1,6 +1,6 @@
 package blue.mild.covid.vaxx.routes
 
-import blue.mild.covid.vaxx.dto.PatientRegistrationDto
+import blue.mild.covid.vaxx.dto.PatientRegistrationDtoIn
 import blue.mild.covid.vaxx.service.PatientService
 import io.ktor.application.call
 import io.ktor.http.HttpStatusCode
@@ -29,7 +29,7 @@ fun Routing.patientRoutes() {
         }
 
         post {
-            val patient = call.receive<PatientRegistrationDto>()
+            val patient = call.receive<PatientRegistrationDtoIn>()
             service.savePatient(patient)
             call.respond(HttpStatusCode.NoContent)
         }

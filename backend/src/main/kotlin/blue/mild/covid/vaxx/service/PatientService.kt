@@ -3,8 +3,8 @@ package blue.mild.covid.vaxx.service
 import blue.mild.covid.vaxx.dao.Answer
 import blue.mild.covid.vaxx.dao.Patient
 import blue.mild.covid.vaxx.dto.AnswerDto
-import blue.mild.covid.vaxx.dto.PatientDto
-import blue.mild.covid.vaxx.dto.PatientRegistrationDto
+import blue.mild.covid.vaxx.dto.PatientDtoOut
+import blue.mild.covid.vaxx.dto.PatientRegistrationDtoIn
 import blue.mild.covid.vaxx.error.entityNotFound
 import org.jetbrains.exposed.sql.batchInsert
 import org.jetbrains.exposed.sql.insert
@@ -16,13 +16,13 @@ import pw.forst.tools.katlib.toUuid
 import java.util.UUID
 
 class PatientService {
-    suspend fun getAllPatients(): List<PatientDto> = newSuspendedTransaction {
+    suspend fun getAllPatients(): List<PatientDtoOut> = newSuspendedTransaction {
         Patient
             .leftJoin(Answer, { id }, { patientId })
             .selectAll()
             .map {
                 object {
-                    val patient = PatientDto(
+                    val patient = PatientDtoOut(
                         id = it[Patient.id].toUuid(),
                         firstName = it[Patient.firstName],
                         lastName = it[Patient.lastName],
@@ -47,7 +47,7 @@ class PatientService {
         val answers = Answer.select { Answer.patientId eq patientId.toString() }
             .map { AnswerDto(it[Answer.questionId].toUuid(), it[Answer.value]) }
 
-        PatientDto(
+        PatientDtoOut(
             id = patientRow[Patient.id].toUuid(),
             firstName = patientRow[Patient.firstName],
             lastName = patientRow[Patient.lastName],
@@ -58,7 +58,7 @@ class PatientService {
         )
     }
 
-    suspend fun savePatient(patientDto: PatientRegistrationDto) = newSuspendedTransaction {
+    suspend fun savePatient(patientDto: PatientRegistrationDtoIn) = newSuspendedTransaction {
         val patientId = UUID.randomUUID().toString()
 
         Patient.insert {
