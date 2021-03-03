@@ -17,3 +17,11 @@ create table questions
     eng         text                not null,
     primary key (id)
 );
+
+create table answers
+(
+    question_id varchar(36) not null references questions (id),
+    patient_id  varchar(36) not null references patients (id),
+    value       bool        not null,
+    primary key (question_id, patient_id)
+)

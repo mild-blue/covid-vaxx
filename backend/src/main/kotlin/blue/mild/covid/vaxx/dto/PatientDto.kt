@@ -8,13 +8,6 @@ data class PatientDto(
     val lastName: String,
     val personalNumber: String,
     val phoneNumber: String,
-    val email: String
-)
-
-data class NewPatientDto(
-    val firstName: String,
-    val lastName: String,
-    val personalNumber: String,
-    val phoneNumber: String,
-    val email: String
+    val email: String,
+    val answers: List<AnswerDto>
 )
