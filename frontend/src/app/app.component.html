@@ -61,7 +61,7 @@
         <mat-card class="py-0">
           <mat-card-content>
             <form>
-              <ng-container *ngFor="let q of patientInfo.questions; let i = index">
+              <ng-container *ngFor="let q of questions; let i = index">
                 <div class="form-field">
                   <mat-label>{{ q.label }}</mat-label>
                   <mat-button-toggle-group [(ngModel)]="q.value" [name]="q.name">
@@ -69,7 +69,7 @@
                     <mat-button-toggle value="false">Ne</mat-button-toggle>
                   </mat-button-toggle-group>
                 </div>
-                <mat-divider *ngIf="i < patientInfo.questions.length - 1"></mat-divider>
+                <mat-divider *ngIf="i < questions.length - 1"></mat-divider>
               </ng-container>
             </form>
           </mat-card-content>
@@ -136,7 +136,7 @@
 
           <mat-card class="py-0">
             <mat-card-content>
-              <ng-container *ngFor="let q of patientInfo.questions; let i = index">
+              <ng-container *ngFor="let q of questions; let i = index">
                 <div class="form-field">
                   <mat-label>{{ q.label }}</mat-label>
                   <mat-label [ngSwitch]="q.value">
@@ -145,7 +145,7 @@
                     <ng-container *ngSwitchDefault [ngTemplateOutlet]="unspecified"></ng-container>
                   </mat-label>
                 </div>
-                <mat-divider *ngIf="i < patientInfo.questions.length - 1"></mat-divider>
+                <mat-divider *ngIf="i < questions.length - 1"></mat-divider>
               </ng-container>
             </mat-card-content>
           </mat-card>
