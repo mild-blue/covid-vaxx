@@ -4,6 +4,7 @@ import blue.mild.covid.vaxx.dto.PatientRegistrationDtoIn
 import blue.mild.covid.vaxx.error.EmptyStringException
 import blue.mild.covid.vaxx.error.ValidationException
 import kotlinx.coroutines.runBlocking
+import pw.forst.tools.katlib.mapToSet
 import java.time.LocalDate
 
 class ValidationService(private val questionService: QuestionService) {
@@ -29,9 +30,9 @@ class ValidationService(private val questionService: QuestionService) {
             patientRegistrationDto.confirmation.healthStateDisclosureConfirmation
         )
 
-        val answersByQuestion = patientRegistrationDto.answers.map { it.questionId to it }.toMap()
-        val allQuestions = runBlocking { questionService.getAllQuestions() }.map { it.id to it }.toMap()
-        val diff = allQuestions.keys.subtract(answersByQuestion.keys)
+        val answersByQuestion = patientRegistrationDto.answers.mapToSet { it.questionId }
+        val allQuestions = runBlocking { questionService.getAllQuestions() }.mapToSet { it.id }
+        val diff = allQuestions.subtract(answersByQuestion)
         if (diff.isNotEmpty()) {
             throw ValidationException(
                 "answers",
