@@ -3,7 +3,6 @@ package blue.mild.covid.vaxx.service
 import blue.mild.covid.vaxx.dto.PatientRegistrationDtoIn
 import blue.mild.covid.vaxx.error.EmptyStringException
 import blue.mild.covid.vaxx.error.ValidationException
-import kotlinx.coroutines.runBlocking
 import pw.forst.tools.katlib.mapToSet
 import java.time.LocalDate
 
@@ -15,7 +14,7 @@ class ValidationService(private val questionService: QuestionService) {
         private const val unprobableMonthAddition = 20;
     }
 
-    fun validatePatientRegistrationAndThrow(patientRegistrationDto: PatientRegistrationDtoIn) {
+    suspend fun validatePatientRegistrationAndThrow(patientRegistrationDto: PatientRegistrationDtoIn) {
         validateEmptyStringAndThrow("firstName", patientRegistrationDto.firstName)
         validateEmptyStringAndThrow("lastName", patientRegistrationDto.lastName)
         validatePersonalNumberAndThrow(patientRegistrationDto.personalNumber)
@@ -31,7 +30,7 @@ class ValidationService(private val questionService: QuestionService) {
         )
 
         val answersByQuestion = patientRegistrationDto.answers.mapToSet { it.questionId }
-        val allQuestions = runBlocking { questionService.getAllQuestions() }.mapToSet { it.id }
+        val allQuestions = questionService.getAllQuestions().mapToSet { it.id }
         val diff = allQuestions.subtract(answersByQuestion)
         if (diff.isNotEmpty()) {
             throw ValidationException(
