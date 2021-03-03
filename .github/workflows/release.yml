@@ -7,9 +7,6 @@ env:
 on:
   # manual dispatch
   workflow_dispatch:
-  push:
-    branches:
-      - production-pipeline
   release:
     types: [ published ]
 
@@ -53,21 +50,19 @@ jobs:
         uses: docker/build-push-action@v2
         with:
           tags: |
+            ${{ steps.login-ecr.outputs.registry }}/${{ env.AWS_ECR_REPOSITORY }}:${{ env.RELEASE_VERSION }}
             ${{ steps.login-ecr.outputs.registry }}/${{ env.AWS_ECR_REPOSITORY }}:latest
-          #          tags: |
-          #            ${{ steps.login-ecr.outputs.registry }}/${{ env.AWS_ECR_REPOSITORY }}:${{ env.RELEASE_VERSION }}
-          #            ${{ steps.login-ecr.outputs.registry }}/${{ env.AWS_ECR_REPOSITORY }}:latest
           labels: ${{ steps.docker_meta.outputs.labels }}
           push: true
           build-args: |
             release_version=${{ env.RELEASE_VERSION }}
-#
-#      - name: Install SSH key
-#        uses: shimataro/ssh-key-action@v2
-#        with:
-#          key: ${{ secrets.PROD_SSH_KEY }}
-#          known_hosts: ${{ secrets.PROD_KNOWN_HOST }}
-#
-#      - name: Redeploy application
-#        run: |
-#          ssh "${{ secrets.PROD_SSH_CONNECTION }}" "cd /srv/service && ./redeploy.sh ${DEPLOYMENT_SERVICE}"
+
+      - name: Install SSH key
+        uses: shimataro/ssh-key-action@v2
+        with:
+          key: ${{ secrets.PROD_SSH_KEY }}
+          known_hosts: ${{ secrets.PROD_KNOWN_HOST }}
+
+      - name: Redeploy application
+        run: |
+          ssh "${{ secrets.PROD_SSH_CONNECTION }}" "cd /srv/service && ./redeploy.sh ${DEPLOYMENT_SERVICE}"
