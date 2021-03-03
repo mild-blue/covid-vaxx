@@ -3,12 +3,14 @@ package blue.mild.covid.vaxx.service
 import blue.mild.covid.vaxx.dao.Answer
 import blue.mild.covid.vaxx.dao.Patient
 import blue.mild.covid.vaxx.dto.AnswerDto
+import blue.mild.covid.vaxx.dto.PatientDeletedDtoOut
 import blue.mild.covid.vaxx.dto.PatientDtoOut
 import blue.mild.covid.vaxx.dto.PatientRegistrationDtoIn
 import blue.mild.covid.vaxx.error.entityNotFound
 import org.jetbrains.exposed.sql.Op
 import org.jetbrains.exposed.sql.SqlExpressionBuilder
 import org.jetbrains.exposed.sql.batchInsert
+import org.jetbrains.exposed.sql.deleteWhere
 import org.jetbrains.exposed.sql.insert
 import org.jetbrains.exposed.sql.leftJoin
 import org.jetbrains.exposed.sql.select
@@ -66,6 +68,12 @@ class PatientService {
             this[Answer.questionId] = it.questionId.toString()
             this[Answer.value] = it.value
         }
+    }
+
+    suspend fun deletePatientById(patientId: UUID) = newSuspendedTransaction {
+        val count = Patient.deleteWhere { Patient.id eq patientId.toString() }
+        if (count == 1) PatientDeletedDtoOut(true)
+        else throw entityNotFound<Patient>(Patient::id, patientId)
     }
 
     private fun getAndMapPatients(where: (SqlExpressionBuilder.() -> Op<Boolean>)? = null) =

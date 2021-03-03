@@ -8,6 +8,7 @@ import io.ktor.http.HttpStatusCode
 import io.ktor.request.receive
 import io.ktor.response.respond
 import io.ktor.routing.Routing
+import io.ktor.routing.delete
 import io.ktor.routing.get
 import io.ktor.routing.post
 import io.ktor.routing.route
@@ -38,6 +39,11 @@ fun Routing.patientRoutes() {
         get("/{id}") {
             val patientId = call.parameters.getOrFail("id").toUuid()
             call.respond(service.getPatientById(patientId))
+        }
+
+        delete("/{id}") {
+            val patientId = call.parameters.getOrFail("id").toUuid()
+            call.respond(service.deletePatientById(patientId))
         }
 
         post {

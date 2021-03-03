@@ -20,8 +20,8 @@ create table questions
 
 create table answers
 (
-    question_id varchar(36) not null references questions (id),
-    patient_id  varchar(36) not null references patients (id),
+    question_id varchar(36) not null references questions (id) on delete cascade,
+    patient_id  varchar(36) not null references patients (id) on delete cascade,
     value       bool        not null,
     primary key (question_id, patient_id)
 )
