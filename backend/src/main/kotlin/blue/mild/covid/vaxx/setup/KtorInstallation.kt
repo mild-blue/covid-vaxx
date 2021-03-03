@@ -2,6 +2,7 @@ package blue.mild.covid.vaxx.setup
 
 import blue.mild.covid.vaxx.dao.DatabaseSetup
 import blue.mild.covid.vaxx.dto.DatabaseConfigurationDto
+import blue.mild.covid.vaxx.error.registerExceptionHandlers
 import blue.mild.covid.vaxx.monitoring.CALL_ID
 import blue.mild.covid.vaxx.routes.Routes
 import blue.mild.covid.vaxx.routes.registerRoutes

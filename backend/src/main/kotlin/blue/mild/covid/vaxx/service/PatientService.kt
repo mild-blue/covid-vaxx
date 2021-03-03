@@ -19,7 +19,8 @@ import org.jetbrains.exposed.sql.transactions.experimental.newSuspendedTransacti
 import pw.forst.tools.katlib.toUuid
 import java.util.UUID
 
-class PatientService {
+class PatientService(private val validationService: ValidationService) {
+
     suspend fun getPatientById(patientId: UUID): PatientDtoOut = newSuspendedTransaction {
         val data = Patient
             .leftJoin(Answer, { id }, { Answer.patientId })
@@ -48,26 +49,32 @@ class PatientService {
     suspend fun getAllPatients(): List<PatientDtoOut> =
         newSuspendedTransaction { getAndMapPatients() }
 
-    suspend fun getPatientsByPersonalNumber(patientPersonalNumber: String): List<PatientDtoOut> =
-        newSuspendedTransaction { getAndMapPatients { Patient.personalNumber eq patientPersonalNumber } }
+    suspend fun getPatientsByPersonalNumber(patientPersonalNumber: String): List<PatientDtoOut> {
+        validationService.validatePersonalNumberAndThrow(patientPersonalNumber)
+        return newSuspendedTransaction { getAndMapPatients { Patient.personalNumber eq patientPersonalNumber } }
+    }
 
-    suspend fun getPatientsByEmail(email: String): List<PatientDtoOut> =
-        newSuspendedTransaction { getAndMapPatients { Patient.email eq email } }
+    suspend fun getPatientsByEmail(email: String): List<PatientDtoOut> {
+        validationService.validateEmailAndThrow(email)
+        return newSuspendedTransaction { getAndMapPatients { Patient.email eq email } }
+    }
 
-    suspend fun savePatient(patientDto: PatientRegistrationDtoIn) = newSuspendedTransaction {
+    suspend fun savePatient(patientRegistrationDto: PatientRegistrationDtoIn) = newSuspendedTransaction {
+        validationService.validatePatientRegistrationAndThrow(patientRegistrationDto)
+
         val patientId = UUID.randomUUID().toString()
 
         Patient.insert {
             it[id] = patientId
-            it[firstName] = patientDto.firstName
-            it[lastName] = patientDto.lastName
-            it[personalNumber] = patientDto.personalNumber
-            it[phoneNumber] = patientDto.phoneNumber
-            it[email] = patientDto.email
-            it[insuranceCompany] = patientDto.insuranceCompany
+            it[firstName] = patientRegistrationDto.firstName
+            it[lastName] = patientRegistrationDto.lastName
+            it[personalNumber] = patientRegistrationDto.personalNumber
+            it[phoneNumber] = patientRegistrationDto.phoneNumber
+            it[email] = patientRegistrationDto.email
+            it[insuranceCompany] = patientRegistrationDto.insuranceCompany
         }
 
-        Answer.batchInsert(patientDto.answers) {
+        Answer.batchInsert(patientRegistrationDto.answers) {
             this[Answer.patientId] = patientId
             this[Answer.questionId] = it.questionId.toString()
             this[Answer.value] = it.value
