@@ -2,11 +2,14 @@ package blue.mild.covid.vaxx.setup
 
 import blue.mild.covid.vaxx.service.PatientService
 import blue.mild.covid.vaxx.service.QuestionService
+import blue.mild.covid.vaxx.service.ValidationService
 import org.kodein.di.DI
 import org.kodein.di.bind
+import org.kodein.di.instance
 import org.kodein.di.singleton
 
 fun DI.MainBuilder.registerClasses() {
-    bind<PatientService>() with singleton { PatientService() }
+    bind<ValidationService>() with singleton { ValidationService() }
+    bind<PatientService>() with singleton { PatientService(instance()) }
     bind<QuestionService>() with singleton { QuestionService() }
 }
