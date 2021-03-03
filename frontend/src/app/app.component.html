@@ -3,8 +3,8 @@
 </mat-toolbar>
 
 <main>
-  <mat-horizontal-stepper [linear]="false">
-    <mat-step [stepControl]="basicInfoForm" label="Osobní informace">
+  <mat-horizontal-stepper [linear]="true">
+    <mat-step *ngIf="basicInfoForm" [completed]="canProceedToStep2" label="Osobní informace">
       <div class="container">
         <mat-card>
           <mat-card-content>
@@ -21,7 +21,8 @@
 
               <mat-form-field>
                 <mat-label>Rodné číslo</mat-label>
-                <input [(ngModel)]="patientInfo.personalNumber" formControlName="personalNumber" matInput placeholder="Vaše rodné číslo ve formátu RRMMDD/ČČČ(Č)" required>
+                <input [(ngModel)]="patientInfo.personalNumber" formControlName="personalNumber" matInput placeholder="Vaše rodné číslo" required>
+                <mat-hint>Rodné číslo ve formátu RRMMDD/ČČČ(Č)</mat-hint>
               </mat-form-field>
 
               <mat-form-field>
@@ -35,7 +36,8 @@
 
               <mat-form-field>
                 <mat-label>Telefonní číslo</mat-label>
-                <input [(ngModel)]="patientInfo.phone" formControlName="phone" matInput placeholder="Vaše telefonní číslo ve formátu +420123456789" required>
+                <input [(ngModel)]="patientInfo.phone" formControlName="phone" matInput placeholder="Vaše telefonní číslo" required>
+                <mat-hint>Telefonní číslo ve formátu +420XXXXXXXXX</mat-hint>
               </mat-form-field>
               <mat-form-field>
                 <mat-label>E-mail</mat-label>
@@ -47,14 +49,14 @@
 
         <div class="nav-buttons">
           <div></div>
-          <button
-            color="primary"
-            [disabled]="basicInfoForm.invalid"
-            mat-raised-button matStepperNext>Další krok</button>
+          <button [disabled]="!canProceedToStep2"
+                  color="primary" mat-raised-button matStepperNext>
+            Další krok
+          </button>
         </div>
       </div>
     </mat-step>
-    <mat-step label="Zdravotní informace">
+    <mat-step label="Zdravotní informace" [completed]="canProceedToStep3">
       <div class="container">
         <mat-card class="py-0">
           <mat-card-content>
@@ -73,59 +75,59 @@
           </mat-card-content>
         </mat-card>
         <div class="nav-buttons">
-          <button color="secondary" mat-raised-button matStepperPrevious>Předchozí krok</button>
-          <!-- TODO: Validace, ze je vse zaskrtnute ANO/NE -->
-          <button
-            color="primary"
-            [disabled]="basicInfoForm.invalid"
-            mat-raised-button matStepperNext
-          >Další krok</button>
+          <button color="secondary" mat-raised-button matStepperPrevious>
+            Předchozí krok
+          </button>
+          <button [disabled]="!canProceedToStep3"
+                  color="primary" mat-raised-button matStepperNext>
+            Další krok
+          </button>
         </div>
       </div>
     </mat-step>
     <mat-step label="Odeslání požadavku">
       <div class="container container--wide">
         <div class="confirmation-step">
-          <mat-card class="py-0">
+          <mat-card *ngIf="basicInfoForm" class="py-0">
             <mat-card-content>
               <div class="form-field">
                 <mat-label>Jméno:</mat-label>
-                <mat-label *ngIf="basicInfoForm.controls['firstName'].valid else unspecified;">
+                <mat-label *ngIf="basicInfoForm.controls['firstName']?.valid else unspecified;">
                   {{ patientInfo.firstName }}
                 </mat-label>
               </div>
               <mat-divider></mat-divider>
               <div class="form-field">
                 <mat-label>Příjmení:</mat-label>
-                <mat-label *ngIf="basicInfoForm.controls['lastName'].valid else unspecified;">
+                <mat-label *ngIf="basicInfoForm.controls['lastName']?.valid else unspecified;">
                   {{ patientInfo.lastName }}
                 </mat-label>
               </div>
               <mat-divider></mat-divider>
               <div class="form-field">
                 <mat-label>Rodné číslo:</mat-label>
-                <mat-label *ngIf="basicInfoForm.controls['personalNumber'].valid else unspecified;">
+                <mat-label *ngIf="basicInfoForm.controls['personalNumber']?.valid else unspecified;">
                   {{ patientInfo.personalNumber }}
                 </mat-label>
               </div>
               <mat-divider></mat-divider>
               <div class="form-field">
                 <mat-label>Pojištovna:</mat-label>
-                <mat-label *ngIf="basicInfoForm.controls['insuranceCompany'].valid else unspecified;">
+                <mat-label *ngIf="basicInfoForm.controls['insuranceCompany']?.valid else unspecified;">
                   {{ patientInfo.insuranceCompany }}
                 </mat-label>
               </div>
               <mat-divider></mat-divider>
               <div class="form-field">
                 <mat-label>Telefonní číslo:</mat-label>
-                <mat-label *ngIf="basicInfoForm.controls['phone'].valid else unspecified;">
+                <mat-label *ngIf="basicInfoForm.controls['phone']?.valid else unspecified;">
                   {{ patientInfo.phone }}
                 </mat-label>
               </div>
               <mat-divider></mat-divider>
               <div class="form-field">
                 <mat-label>E-mail:</mat-label>
-                <mat-label *ngIf="basicInfoForm.controls['email'].valid else unspecified;">
+                <mat-label *ngIf="basicInfoForm.controls['email']?.valid else unspecified;">
                   {{ patientInfo.email }}
                 </mat-label>
               </div>
@@ -160,11 +162,14 @@
         </div>
 
         <div class="nav-buttons">
-          <button color="secondary" mat-raised-button matStepperPrevious>Předchozí krok</button>
-          <button color="primary" mat-raised-button
-                  (click)="submit()"
+          <button color="secondary" mat-raised-button matStepperPrevious>
+            Předchozí krok
+          </button>
+          <button (click)="submit()"
                   [disabled]="!canSubmit"
-                  matStepperNext>Odeslat požadavek</button>
+                  color="primary" mat-raised-button matStepperNext>
+            Odeslat požadavek
+          </button>
         </div>
       </div>
     </mat-step>

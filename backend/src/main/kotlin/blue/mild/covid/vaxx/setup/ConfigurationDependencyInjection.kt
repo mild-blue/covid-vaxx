@@ -1,6 +1,7 @@
 package blue.mild.covid.vaxx.setup
 
 import blue.mild.covid.vaxx.dto.DatabaseConfigurationDto
+import blue.mild.covid.vaxx.dto.VersionDtoOut
 import blue.mild.covid.vaxx.utils.createLogger
 import org.kodein.di.DI
 import org.kodein.di.bind
@@ -16,7 +17,6 @@ private fun getEnvOrLogDefault(env: String, defaultValue: String) =
         .whenNull { logger.warn { "Env variable $env not set! Using default value - $defaultValue" } } ?: defaultValue
 
 
-@Suppress("SameParameterValue") // we don't care...
 private fun loadVersion(defaultVersion: String = "development"): String = runCatching {
     getEnv("RELEASE_FILE_PATH")
         ?.let { File(it).readText().trim() }
@@ -41,7 +41,7 @@ fun DI.MainBuilder.bindConfiguration() {
         )
     }
 
-    bind<String>("version") with singleton { loadVersion("development") }
+    bind<VersionDtoOut>() with singleton { VersionDtoOut(loadVersion()) }
 
     bind<String>("frontend") with singleton {
         getEnvOrLogDefault("FRONTEND_PATH", "../frontend/dist/frontend")

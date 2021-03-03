@@ -2,6 +2,7 @@ package blue.mild.covid.vaxx.setup
 
 import blue.mild.covid.vaxx.dao.DatabaseSetup
 import blue.mild.covid.vaxx.dto.DatabaseConfigurationDto
+import blue.mild.covid.vaxx.error.registerExceptionHandlers
 import blue.mild.covid.vaxx.monitoring.CALL_ID
 import blue.mild.covid.vaxx.routes.Routes
 import blue.mild.covid.vaxx.routes.registerRoutes
@@ -68,18 +69,6 @@ fun Application.init() {
         }
     }
 
-    // install swagger routes
-    // TODO maybe conditional once we're in the production
-    routing {
-        // register swagger routes
-        get(Routes.openApiJson) {
-            call.respond(openAPIGen.api.serialize())
-        }
-        get(Routes.swaggerUi) {
-            call.respondRedirect("/swagger-ui/index.html?url=${Routes.openApiJson}", true)
-        }
-    }
-
     // register routing with swagger
     apiRouting {
         registerRoutes(di)
@@ -124,19 +113,22 @@ private fun migrateDatabase(dbConfig: DatabaseConfigurationDto) {
  * Configure Ktor and install necessary extensions.
  */
 private fun Application.installFrameworks() {
+    // default headers
+    install(DefaultHeaders)
+    // initialize Jackson
     install(ContentNegotiation) {
         jackson {
             dateFormat = DateFormat.getDateTimeInstance()
         }
     }
-
+    // enable CORS
     install(CORS) {
         // TODO correct urls
         anyHost()
         allowCredentials = true
         allowNonSimpleContentTypes = true
     }
-
+    // install swagger
     install(OpenAPIGen) {
         info {
             version = "0.0.1"
@@ -148,9 +140,18 @@ private fun Application.installFrameworks() {
             }
         }
     }
-
-    install(DefaultHeaders)
-
+    // install swagger routes
+    // TODO maybe conditional once we're in the production
+    routing {
+        // register swagger routes
+        get(Routes.openApiJson) {
+            call.respond(openAPIGen.api.serialize())
+        }
+        get(Routes.swaggerUi) {
+            call.respondRedirect("/swagger-ui/index.html?url=${Routes.openApiJson}", true)
+        }
+    }
+    // requests logging in debug mode + MDC tracing
     install(CallLogging) {
         // put call id to the mdc
         mdc(CALL_ID) { it.callId }
@@ -161,7 +162,7 @@ private fun Application.installFrameworks() {
         level = Level.DEBUG
         logger = createLogger("HttpCallLogger")
     }
-
+    // MDC call id setup
     install(CallId) {
         retrieveFromHeader("X-Request-Id")
         generate {
@@ -170,7 +171,6 @@ private fun Application.installFrameworks() {
             UUID(Random.nextLong(), Random.nextLong()).toString()
         }
     }
-
     // register exception handling
     registerExceptionHandlers()
 }
