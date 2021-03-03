@@ -8,7 +8,6 @@ const unprobableMonthAddition = 20;
 
 /**
  * Validates phone number in format +123456789123.
- * @param control
  */
 export function validatePhoneNumber(control: AbstractControl): ValidationErrors | null {
   const regex = /^\+\d{12}$/;
@@ -20,7 +19,6 @@ export function validatePhoneNumber(control: AbstractControl): ValidationErrors 
 
 /**
  * Validates personal number.
- * @param control
  */
 export function validatePersonalNumber(control: AbstractControl): ValidationErrors | null {
   if (!control.value) {
@@ -89,9 +87,6 @@ export function validatePersonalNumber(control: AbstractControl): ValidationErro
 
 /**
  * Validates if date parts can form valid date.
- * @param year
- * @param month
- * @param day
  */
 function isDateValid(year: number, month: number, day: number): boolean {
   const fullYear = year >= tenDigitPersonalNumberIssueYear ? 1900 + year : 2000 + year;

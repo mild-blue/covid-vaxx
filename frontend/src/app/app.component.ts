@@ -5,7 +5,7 @@ import {InsuranceCompany} from './model/InsuranceCompany';
 import {MatDialog} from '@angular/material/dialog';
 import {DialogComponent} from './components/dialog/dialog.component';
 import {PatientService} from './services/patient.service';
-import {validatePersonalNumber, validatePhoneNumber} from "./app.validators";
+import {validatePersonalNumber, validatePhoneNumber} from './app.validators';
 
 @Component({
   selector: 'app-root',
