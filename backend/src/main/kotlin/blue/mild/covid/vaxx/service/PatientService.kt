@@ -39,6 +39,7 @@ class PatientService {
                     personalNumber = it[Patient.personalNumber],
                     phoneNumber = it[Patient.phoneNumber],
                     email = it[Patient.email],
+                    insuranceCompany = it[Patient.insuranceCompany],
                     answers = answers
                 )
             } ?: throw entityNotFound<Patient>(Patient::id, patientId)
@@ -63,6 +64,7 @@ class PatientService {
             it[personalNumber] = patientDto.personalNumber
             it[phoneNumber] = patientDto.phoneNumber
             it[email] = patientDto.email
+            it[insuranceCompany] = patientDto.insuranceCompany
         }
 
         Answer.batchInsert(patientDto.answers) {
@@ -99,6 +101,7 @@ class PatientService {
                             personalNumber = it[Patient.personalNumber],
                             phoneNumber = it[Patient.phoneNumber],
                             email = it[Patient.email],
+                            insuranceCompany = it[Patient.insuranceCompany],
                             answers = answers.getValue(it[Patient.id])
                         )
                     }

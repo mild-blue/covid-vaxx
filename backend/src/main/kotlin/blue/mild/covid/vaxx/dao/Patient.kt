@@ -10,6 +10,7 @@ object Patient : Table("patients") {
     val personalNumber = varchar("personal_number", 11)
     val phoneNumber = varchar("phone_number", 13)
     val email = varchar("email", 256)
+    val insuranceCompany = enumerationByName("insurance_company", 4, InsuranceCompany::class)
 
     override val primaryKey = PrimaryKey(id)
 }
