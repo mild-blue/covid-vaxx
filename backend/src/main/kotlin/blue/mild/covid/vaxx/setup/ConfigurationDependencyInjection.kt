@@ -17,7 +17,6 @@ private fun getEnvOrLogDefault(env: String, defaultValue: String) =
         .whenNull { logger.warn { "Env variable $env not set! Using default value - $defaultValue" } } ?: defaultValue
 
 
-@Suppress("SameParameterValue") // we don't care...
 private fun loadVersion(defaultVersion: String = "development"): String = runCatching {
     getEnv("RELEASE_FILE_PATH")
         ?.let { File(it).readText().trim() }
@@ -42,7 +41,7 @@ fun DI.MainBuilder.bindConfiguration() {
         )
     }
 
-    bind<VersionDtoOut>() with singleton { VersionDtoOut(loadVersion("development")) }
+    bind<VersionDtoOut>() with singleton { VersionDtoOut(loadVersion()) }
 
     bind<String>("frontend") with singleton {
         getEnvOrLogDefault("FRONTEND_PATH", "../frontend/dist/frontend")
