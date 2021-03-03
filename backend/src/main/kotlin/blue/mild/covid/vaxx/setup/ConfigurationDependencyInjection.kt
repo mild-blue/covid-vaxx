@@ -1,6 +1,7 @@
 package blue.mild.covid.vaxx.setup
 
 import blue.mild.covid.vaxx.dto.DatabaseConfigurationDto
+import blue.mild.covid.vaxx.dto.VersionDtoOut
 import blue.mild.covid.vaxx.utils.createLogger
 import org.kodein.di.DI
 import org.kodein.di.bind
@@ -41,7 +42,7 @@ fun DI.MainBuilder.bindConfiguration() {
         )
     }
 
-    bind<String>("version") with singleton { loadVersion("development") }
+    bind<VersionDtoOut>() with singleton { VersionDtoOut(loadVersion("development")) }
 
     bind<String>("frontend") with singleton {
         getEnvOrLogDefault("FRONTEND_PATH", "../frontend/dist/frontend")
