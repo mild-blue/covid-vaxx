@@ -1,5 +1,6 @@
 package blue.mild.covid.vaxx.service
 
+import blue.mild.covid.vaxx.dto.PatientRegistrationDtoIn
 import blue.mild.covid.vaxx.error.EmptyStringException
 import blue.mild.covid.vaxx.error.ValidationException
 import java.time.LocalDate
@@ -10,6 +11,22 @@ class ValidationService {
         private const val tenDigitPersonalNumberIssueYear = 54;
         private const val womanMonthAddition = 50;
         private const val unprobableMonthAddition = 20;
+    }
+
+    fun validatePatientRegistrationAndThrow(patientRegistrationDto: PatientRegistrationDtoIn) {
+        validateEmptyStringAndThrow("firstName", patientRegistrationDto.firstName)
+        validateEmptyStringAndThrow("lastName", patientRegistrationDto.lastName)
+        validatePersonalNumberAndThrow(patientRegistrationDto.personalNumber)
+        validatePhoneNumberAndThrow(patientRegistrationDto.phoneNumber)
+        validateEmailAndThrow(patientRegistrationDto.email)
+        validateTrueAndThrow(
+            "covid19VaccinationAgreement",
+            patientRegistrationDto.confirmation.covid19VaccinationAgreement
+        )
+        validateTrueAndThrow(
+            "healthStateDisclosureConfirmation",
+            patientRegistrationDto.confirmation.healthStateDisclosureConfirmation
+        )
     }
 
     fun validatePhoneNumberAndThrow(phoneNumber: String) {
@@ -25,7 +42,7 @@ class ValidationService {
     }
 
     fun validatePersonalNumberAndThrow(personalNumber: String) {
-        if (!validatePhoneNumber(personalNumber)) {
+        if (!validatePersonalNumber(personalNumber)) {
             throw ValidationException("personalNumber", personalNumber)
         }
     }
@@ -42,14 +59,20 @@ class ValidationService {
         }
     }
 
-    fun validateEmptyString(value: String): Boolean = value.isNullOrEmpty()
+    private fun validateEmptyString(value: String): Boolean = value.isNullOrEmpty()
 
-    fun validatePhoneNumber(phoneNumber: String): Boolean = """^\+\d{12}$""".toRegex() matches phoneNumber
+    private fun validatePhoneNumber(phoneNumber: String): Boolean = """^\+\d{12}$""".toRegex() matches phoneNumber
 
-    fun validateEmail(email: String): Boolean =
+    /**
+     * Source: https://emailregex.com/
+     *
+     * @param email
+     * @return
+     */
+    private fun validateEmail(email: String): Boolean =
         """(?:[a-z0-9!#${'$'}%&'*+/=?^_`{|}~-]+(?:\.[a-z0-9!#${'$'}%&'*+/=?^_`{|}~-]+)*|"(?:[\x01-\x08\x0b\x0c\x0e-\x1f\x21\x23-\x5b\x5d-\x7f]|\\[\x01-\x09\x0b\x0c\x0e-\x7f])*")@(?:(?:[a-z0-9](?:[a-z0-9-]*[a-z0-9])?\.)+[a-z0-9](?:[a-z0-9-]*[a-z0-9])?|\[(?:(?:(2(5[0-5]|[0-4][0-9])|1[0-9][0-9]|[1-9]?[0-9]))\.){3}(?:(2(5[0-5]|[0-4][0-9])|1[0-9][0-9]|[1-9]?[0-9])|[a-z0-9-]*[a-z0-9]:(?:[\x01-\x08\x0b\x0c\x0e-\x1f\x21-\x5a\x53-\x7f]|\\[\x01-\x09\x0b\x0c\x0e-\x7f])+)\])""".toRegex() matches email
 
-    fun validatePersonalNumber(personalNumber: String): Boolean {
+    private fun validatePersonalNumber(personalNumber: String): Boolean {
         if (personalNumber.isNullOrEmpty()) {
             return false
         }

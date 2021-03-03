@@ -16,13 +16,10 @@ import org.jetbrains.exposed.sql.leftJoin
 import org.jetbrains.exposed.sql.select
 import org.jetbrains.exposed.sql.selectAll
 import org.jetbrains.exposed.sql.transactions.experimental.newSuspendedTransaction
-import org.kodein.di.LazyDI
-import org.kodein.di.instance
 import pw.forst.tools.katlib.toUuid
 import java.util.UUID
 
-class PatientService(di: LazyDI) {
-    val validationService by di.instance<ValidationService>()
+class PatientService(private val validationService: ValidationService) {
 
     suspend fun getPatientById(patientId: UUID): PatientDtoOut = newSuspendedTransaction {
         val data = Patient
@@ -57,40 +54,27 @@ class PatientService(di: LazyDI) {
         return newSuspendedTransaction { getAndMapPatients { Patient.personalNumber eq patientPersonalNumber } }
     }
 
-
     suspend fun getPatientsByEmail(email: String): List<PatientDtoOut> {
         validationService.validateEmailAndThrow(email)
         return newSuspendedTransaction { getAndMapPatients { Patient.email eq email } }
     }
 
-    suspend fun savePatient(patientDto: PatientRegistrationDtoIn) = newSuspendedTransaction {
-        validationService.validateEmptyStringAndThrow("firstName", patientDto.firstName)
-        validationService.validateEmptyStringAndThrow("lastName", patientDto.lastName)
-        validationService.validatePersonalNumberAndThrow(patientDto.personalNumber)
-        validationService.validatePhoneNumberAndThrow(patientDto.phoneNumber)
-        validationService.validateEmailAndThrow(patientDto.email)
-        validationService.validateTrueAndThrow(
-            "covid19VaccinationAgreement",
-            patientDto.confirmation.covid19VaccinationAgreement
-        )
-        validationService.validateTrueAndThrow(
-            "healthStateDisclosureConfirmation",
-            patientDto.confirmation.healthStateDisclosureConfirmation
-        )
+    suspend fun savePatient(patientRegistrationDto: PatientRegistrationDtoIn) = newSuspendedTransaction {
+        validationService.validatePatientRegistrationAndThrow(patientRegistrationDto)
 
         val patientId = UUID.randomUUID().toString()
 
         Patient.insert {
             it[id] = patientId
-            it[firstName] = patientDto.firstName
-            it[lastName] = patientDto.lastName
-            it[personalNumber] = patientDto.personalNumber
-            it[phoneNumber] = patientDto.phoneNumber
-            it[email] = patientDto.email
-            it[insuranceCompany] = patientDto.insuranceCompany
+            it[firstName] = patientRegistrationDto.firstName
+            it[lastName] = patientRegistrationDto.lastName
+            it[personalNumber] = patientRegistrationDto.personalNumber
+            it[phoneNumber] = patientRegistrationDto.phoneNumber
+            it[email] = patientRegistrationDto.email
+            it[insuranceCompany] = patientRegistrationDto.insuranceCompany
         }
 
-        Answer.batchInsert(patientDto.answers) {
+        Answer.batchInsert(patientRegistrationDto.answers) {
             this[Answer.patientId] = patientId
             this[Answer.questionId] = it.questionId.toString()
             this[Answer.value] = it.value

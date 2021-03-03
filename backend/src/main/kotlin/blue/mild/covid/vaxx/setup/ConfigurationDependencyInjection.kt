@@ -1,9 +1,11 @@
 package blue.mild.covid.vaxx.setup
 
 import blue.mild.covid.vaxx.dto.DatabaseConfigurationDto
+import blue.mild.covid.vaxx.service.PatientService
 import blue.mild.covid.vaxx.utils.createLogger
 import org.kodein.di.DI
 import org.kodein.di.bind
+import org.kodein.di.instance
 import org.kodein.di.singleton
 import pw.forst.tools.katlib.getEnv
 import pw.forst.tools.katlib.whenNull
@@ -46,4 +48,6 @@ fun DI.MainBuilder.bindConfiguration() {
     bind<String>("frontend") with singleton {
         getEnvOrLogDefault("FRONTEND_PATH", "../frontend/dist/frontend")
     }
+
+    bind<PatientService>("PatientService") with singleton { PatientService(instance()) }
 }
