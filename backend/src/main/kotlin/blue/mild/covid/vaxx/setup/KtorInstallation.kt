@@ -2,8 +2,7 @@ package blue.mild.covid.vaxx.setup
 
 import blue.mild.covid.vaxx.dao.DatabaseSetup
 import blue.mild.covid.vaxx.dto.DatabaseConfigurationDto
-import blue.mild.covid.vaxx.monitoring.APP_REQUEST
-import blue.mild.covid.vaxx.monitoring.INFRA_REQUEST
+import blue.mild.covid.vaxx.monitoring.CALL_ID
 import blue.mild.covid.vaxx.routes.Routes
 import blue.mild.covid.vaxx.routes.registerRoutes
 import blue.mild.covid.vaxx.utils.createLogger
@@ -23,7 +22,6 @@ import io.ktor.http.content.default
 import io.ktor.http.content.files
 import io.ktor.http.content.static
 import io.ktor.jackson.jackson
-import io.ktor.request.header
 import io.ktor.request.uri
 import io.ktor.response.respond
 import io.ktor.response.respondRedirect
@@ -36,6 +34,7 @@ import org.kodein.di.ktor.di
 import org.slf4j.event.Level
 import java.text.DateFormat
 import java.util.UUID
+import kotlin.random.Random
 
 
 private val installationLogger = createLogger("ApplicationSetup")
@@ -153,11 +152,8 @@ private fun Application.installFrameworks() {
     install(DefaultHeaders)
 
     install(CallLogging) {
-        // insert nginx id to MDC
-        mdc(INFRA_REQUEST) { it.request.header("X-Request-Id") }
-
-        // use generated call id and insert it to MDC
-        mdc(APP_REQUEST) { it.callId }
+        // put call id to the mdc
+        mdc(CALL_ID) { it.callId }
 
         // enable logging for all routes that are not /status
         // this filter does not influence MDC
@@ -166,7 +162,14 @@ private fun Application.installFrameworks() {
         logger = createLogger("HttpCallLogger")
     }
 
-    install(CallId) { generate { UUID.randomUUID().toString() } }
+    install(CallId) {
+        retrieveFromHeader("X-Request-Id")
+        generate {
+            // this is not "secure" as Random does not have necessary entropy (we don't need that here)
+            // but it's way faster, see https://stackoverflow.com/a/14534126/7169288
+            UUID(Random.nextLong(), Random.nextLong()).toString()
+        }
+    }
 
     // register exception handling
     registerExceptionHandlers()
