@@ -6,6 +6,7 @@ describe('DialogComponent', () => {
   let component: DialogComponent;
   let fixture: ComponentFixture<DialogComponent>;
 
+  /* tslint:disable:deprecation */ // TODO
   beforeEach(async(() => {
     TestBed.configureTestingModule({
       declarations: [ DialogComponent ]

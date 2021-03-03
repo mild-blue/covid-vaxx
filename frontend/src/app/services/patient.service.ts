@@ -9,11 +9,11 @@ import { HttpClient } from '@angular/common/http';
 })
 export class PatientService {
 
-  constructor(private _http: HttpClient) {
+  constructor(private http: HttpClient) {
   }
 
   public async savePatientInfo(patientInfo: PatientInfo): Promise<any> {
-    return this._http.post<any>(
+    return this.http.post<any>(
       `${environment.apiUrl}/patient-info`,
       patientInfo
     ).pipe(
