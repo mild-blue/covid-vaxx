@@ -1,7 +1,7 @@
 <configuration>
     <appender name="local" class="ch.qos.logback.core.ConsoleAppender">
         <encoder>
-            <pattern>%d{dd/MM/yyyy HH:mm:ss} [%level] [%X{mdc-val}] %logger{36} - %msg%n</pattern>
+            <pattern>%d{dd/MM/yyyy HH:mm:ss} [%level] [%X{call-id}] %logger{36} - %msg%n</pattern>
         </encoder>
     </appender>
 
