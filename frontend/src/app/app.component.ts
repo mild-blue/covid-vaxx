@@ -43,6 +43,14 @@ export class AppComponent implements OnInit {
     return unanswered.length === 0;
   }
 
+  get canProceedToStep2(): boolean {
+    return !!this.basicInfoForm?.valid;
+  }
+
+  get canProceedToStep3(): boolean {
+    return !!this.basicInfoForm?.valid && this.allQuestionsAnswered;
+  }
+
   get canSubmit(): boolean {
     return !!this.basicInfoForm?.valid && this.allQuestionsAnswered && this.agreementCheckboxValue && this.confirmationCheckboxValue;
   }
