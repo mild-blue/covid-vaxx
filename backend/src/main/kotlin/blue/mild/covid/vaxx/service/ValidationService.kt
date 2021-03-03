@@ -3,9 +3,10 @@ package blue.mild.covid.vaxx.service
 import blue.mild.covid.vaxx.dto.PatientRegistrationDtoIn
 import blue.mild.covid.vaxx.error.EmptyStringException
 import blue.mild.covid.vaxx.error.ValidationException
+import pw.forst.tools.katlib.mapToSet
 import java.time.LocalDate
 
-class ValidationService {
+class ValidationService(private val questionService: QuestionService) {
     companion object {
         private const val personalNumberAddingTwentyIssueYear = 4;
         private const val tenDigitPersonalNumberIssueYear = 54;
@@ -13,7 +14,7 @@ class ValidationService {
         private const val unprobableMonthAddition = 20;
     }
 
-    fun validatePatientRegistrationAndThrow(patientRegistrationDto: PatientRegistrationDtoIn) {
+    suspend fun validatePatientRegistrationAndThrow(patientRegistrationDto: PatientRegistrationDtoIn) {
         validateEmptyStringAndThrow("firstName", patientRegistrationDto.firstName)
         validateEmptyStringAndThrow("lastName", patientRegistrationDto.lastName)
         validatePersonalNumberAndThrow(patientRegistrationDto.personalNumber)
@@ -27,6 +28,16 @@ class ValidationService {
             "healthStateDisclosureConfirmation",
             patientRegistrationDto.confirmation.healthStateDisclosureConfirmation
         )
+
+        val answersByQuestion = patientRegistrationDto.answers.mapToSet { it.questionId }
+        val allQuestions = questionService.getAllQuestions().mapToSet { it.id }
+        val diff = allQuestions.subtract(answersByQuestion)
+        if (diff.isNotEmpty()) {
+            throw ValidationException(
+                "answers",
+                patientRegistrationDto.answers.joinToString(",") { "${it.questionId} -> ${it.value}" }
+            )
+        }
     }
 
     fun validatePhoneNumberAndThrow(phoneNumber: String) {
