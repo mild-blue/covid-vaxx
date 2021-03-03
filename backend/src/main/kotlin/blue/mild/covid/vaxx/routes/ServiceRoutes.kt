@@ -19,7 +19,7 @@ fun Routing.serviceRoutes() {
      * Send data about version.
      */
     get(Routes.version) {
-        call.respond(mapOf("version" to version))
+        call.respond(VersionDtoOut(version))
     }
 
     /**
@@ -34,9 +34,12 @@ fun Routing.serviceRoutes() {
      */
     get(Routes.statusHealth) {
         if (DatabaseSetup.isConnected()) {
-            call.respond(mapOf("health" to "healthy"))
+            call.respond(HealthDtoOut("healthy"))
         } else {
-            call.respond(HttpStatusCode.ServiceUnavailable, mapOf("health" to "DB connection is not working"))
+            call.respond(HttpStatusCode.ServiceUnavailable, HealthDtoOut("DB connection is not working"))
         }
     }
 }
+
+data class VersionDtoOut(val version: String)
+data class HealthDtoOut(val health: String)

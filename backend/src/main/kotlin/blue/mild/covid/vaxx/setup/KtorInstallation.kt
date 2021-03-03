@@ -7,7 +7,6 @@ import blue.mild.covid.vaxx.monitoring.INFRA_REQUEST
 import blue.mild.covid.vaxx.routes.Routes
 import blue.mild.covid.vaxx.routes.registerRoutes
 import blue.mild.covid.vaxx.utils.createLogger
-import com.fasterxml.jackson.databind.SerializationFeature
 import io.ktor.application.Application
 import io.ktor.application.install
 import io.ktor.features.CORS
@@ -97,8 +96,6 @@ private fun migrateDatabase(dbConfig: DatabaseConfigurationDto) {
 private fun Application.installFrameworks() {
     install(ContentNegotiation) {
         jackson {
-            // enable pretty print for JSONs
-            enable(SerializationFeature.INDENT_OUTPUT)
             dateFormat = DateFormat.getDateTimeInstance()
         }
     }
