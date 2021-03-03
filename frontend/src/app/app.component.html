@@ -36,7 +36,7 @@
 
               <mat-form-field>
                 <mat-label>Telefonní číslo</mat-label>
-                <input [(ngModel)]="patientInfo.phone" formControlName="phone" matInput placeholder="Vaše telefonní číslo" required>
+                <input [(ngModel)]="patientInfo.phoneNumber" formControlName="phone" matInput placeholder="Vaše telefonní číslo" required>
                 <mat-hint>Telefonní číslo ve formátu +420XXXXXXXXX</mat-hint>
               </mat-form-field>
               <mat-form-field>
@@ -121,7 +121,7 @@
               <div class="form-field">
                 <mat-label>Telefonní číslo:</mat-label>
                 <mat-label *ngIf="basicInfoForm.controls['phone']?.valid else unspecified;">
-                  {{ patientInfo.phone }}
+                  {{ patientInfo.phoneNumber }}
                 </mat-label>
               </div>
               <mat-divider></mat-divider>

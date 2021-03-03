@@ -3,7 +3,7 @@ export class PatientInfo {
   lastName?: string;
   personalNumber?: number;
   insuranceCompany?: string;
-  phone?: string;
+  phoneNumber?: string;
   email?: string;
 }
 

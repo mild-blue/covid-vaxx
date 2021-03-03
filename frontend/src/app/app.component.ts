@@ -69,8 +69,10 @@ export class AppComponent implements OnInit {
       return;
     }
 
-    this._patientService.savePatientInfo(this.patientInfo).then(() => {
-      this.openDialog();
+    this._patientService.savePatientInfo(this.patientInfo, this.questions, this.agreementCheckboxValue, this.confirmationCheckboxValue).then((result) => {
+      if (result.patientId) {
+        this.openDialog();
+      }
     });
   }
 
