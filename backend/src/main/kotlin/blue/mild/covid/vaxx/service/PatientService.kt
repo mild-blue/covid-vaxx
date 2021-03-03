@@ -21,13 +21,15 @@ import java.util.UUID
 
 class PatientService {
     suspend fun getPatientById(patientId: UUID): PatientDtoOut = newSuspendedTransaction {
-        val query = Patient
+        val data = Patient
             .leftJoin(Answer, { id }, { Answer.patientId })
             .select { Patient.id eq patientId.toString() }
-        val answers = query
+            .toList() // eager fetch all data from the database
+
+        val answers = data
             .map { AnswerDto(it[Answer.questionId].toUuid(), it[Answer.value]) }
 
-        query
+        data
             .firstOrNull()
             ?.let {
                 PatientDtoOut(
@@ -68,6 +70,8 @@ class PatientService {
             this[Answer.questionId] = it.questionId.toString()
             this[Answer.value] = it.value
         }
+
+        patientId
     }
 
     suspend fun deletePatientById(patientId: UUID) = newSuspendedTransaction {
@@ -80,11 +84,12 @@ class PatientService {
         Patient
             .leftJoin(Answer, { id }, { patientId })
             .let { if (where != null) it.select(where) else it.selectAll() }
-            .let { query ->
-                val answers = query
+            .toList() // eager fetch all data from the database
+            .let { data ->
+                val answers = data
                     .groupBy({ it[Patient.id] }, { AnswerDto(it[Answer.questionId].toUuid(), it[Answer.value]) })
 
-                query
+                data
                     .distinctBy { it[Patient.id] }
                     .map {
                         PatientDtoOut(

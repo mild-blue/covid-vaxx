@@ -7,7 +7,11 @@ import blue.mild.covid.vaxx.monitoring.INFRA_REQUEST
 import blue.mild.covid.vaxx.routes.Routes
 import blue.mild.covid.vaxx.routes.registerRoutes
 import blue.mild.covid.vaxx.utils.createLogger
+import com.papsign.ktor.openapigen.OpenAPIGen
+import com.papsign.ktor.openapigen.openAPIGen
+import com.papsign.ktor.openapigen.route.apiRouting
 import io.ktor.application.Application
+import io.ktor.application.call
 import io.ktor.application.install
 import io.ktor.features.CORS
 import io.ktor.features.CallId
@@ -15,9 +19,15 @@ import io.ktor.features.CallLogging
 import io.ktor.features.ContentNegotiation
 import io.ktor.features.DefaultHeaders
 import io.ktor.features.callId
+import io.ktor.http.content.default
+import io.ktor.http.content.files
+import io.ktor.http.content.static
 import io.ktor.jackson.jackson
 import io.ktor.request.header
 import io.ktor.request.uri
+import io.ktor.response.respond
+import io.ktor.response.respondRedirect
+import io.ktor.routing.get
 import io.ktor.routing.routing
 import org.flywaydb.core.Flyway
 import org.kodein.di.LazyDI
@@ -40,19 +50,40 @@ fun Application.init() {
         registerClasses()
     }
     // now kodein is running and can be used
-    val k by di()
+    val di by di()
 
     installationLogger.debug { "DI container started." }
 
     // connect to the database
-    connectDatabase(k)
+    connectDatabase(di)
 
     // configure Ktor
     installFrameworks()
 
-    // register routing
+    // configure static routes to serve frontend
+    val frontendBasePath by di().instance<String>("frontend")
     routing {
-        registerRoutes()
+        static {
+            files(frontendBasePath)
+            default("$frontendBasePath/index.html")
+        }
+    }
+
+    // install swagger routes
+    // TODO maybe conditional once we're in the production
+    routing {
+        // register swagger routes
+        get(Routes.openApiJson) {
+            call.respond(openAPIGen.api.serialize())
+        }
+        get(Routes.swaggerUi) {
+            call.respondRedirect("/swagger-ui/index.html?url=${Routes.openApiJson}", true)
+        }
+    }
+
+    // register routing with swagger
+    apiRouting {
+        registerRoutes(di)
     }
 }
 
@@ -105,6 +136,18 @@ private fun Application.installFrameworks() {
         anyHost()
         allowCredentials = true
         allowNonSimpleContentTypes = true
+    }
+
+    install(OpenAPIGen) {
+        info {
+            version = "0.0.1"
+            title = "Mild Blue - Covid Vaxx"
+            description = "Covid Vaxx API"
+            contact {
+                name = "Mild Blue s.r.o."
+                email = "covid-vaxx@mild.blue"
+            }
+        }
     }
 
     install(DefaultHeaders)
