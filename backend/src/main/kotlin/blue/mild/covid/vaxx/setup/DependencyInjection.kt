@@ -9,7 +9,7 @@ import org.kodein.di.instance
 import org.kodein.di.singleton
 
 fun DI.MainBuilder.registerClasses() {
-    bind<ValidationService>() with singleton { ValidationService() }
-    bind<PatientService>() with singleton { PatientService(instance()) }
     bind<QuestionService>() with singleton { QuestionService() }
+    bind<ValidationService>() with singleton { ValidationService(instance()) }
+    bind<PatientService>() with singleton { PatientService(instance()) }
 }

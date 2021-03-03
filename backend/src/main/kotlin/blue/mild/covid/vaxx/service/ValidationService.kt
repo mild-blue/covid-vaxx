@@ -3,9 +3,10 @@ package blue.mild.covid.vaxx.service
 import blue.mild.covid.vaxx.dto.PatientRegistrationDtoIn
 import blue.mild.covid.vaxx.error.EmptyStringException
 import blue.mild.covid.vaxx.error.ValidationException
+import kotlinx.coroutines.runBlocking
 import java.time.LocalDate
 
-class ValidationService {
+class ValidationService(private val questionService: QuestionService) {
     companion object {
         private const val personalNumberAddingTwentyIssueYear = 4;
         private const val tenDigitPersonalNumberIssueYear = 54;
@@ -27,6 +28,16 @@ class ValidationService {
             "healthStateDisclosureConfirmation",
             patientRegistrationDto.confirmation.healthStateDisclosureConfirmation
         )
+
+        val answersByQuestion = patientRegistrationDto.answers.map { it.questionId to it }.toMap()
+        val allQuestions = runBlocking { questionService.getAllQuestions() }.map { it.id to it }.toMap()
+        val diff = allQuestions.keys.subtract(answersByQuestion.keys)
+        if (diff.isNotEmpty()) {
+            throw ValidationException(
+                "answers",
+                patientRegistrationDto.answers.joinToString(",") { "${it.questionId} -> ${it.value}" }
+            )
+        }
     }
 
     fun validatePhoneNumberAndThrow(phoneNumber: String) {
