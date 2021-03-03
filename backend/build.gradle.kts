@@ -1,3 +1,6 @@
+import java.net.URI
+
+
 plugins {
     kotlin("jvm") version "1.4.31"
     application
@@ -16,6 +19,9 @@ application {
 
 repositories {
     jcenter()
+    maven {
+        url = URI.create("https://jitpack.io")
+    }
 }
 
 dependencies {
@@ -34,6 +40,8 @@ dependencies {
     implementation("io.ktor", "ktor-client-jackson", ktorVersion)
     implementation("io.ktor", "ktor-client-apache", ktorVersion)
     implementation("io.ktor", "ktor-client-logging-jvm", ktorVersion)
+
+    implementation("com.github.papsign", "Ktor-OpenAPI-Generator", "0.2-beta.14")
 
     // logging
     implementation("io.github.microutils", "kotlin-logging", "2.0.4")

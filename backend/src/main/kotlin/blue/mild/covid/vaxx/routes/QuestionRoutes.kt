@@ -1,17 +1,20 @@
 package blue.mild.covid.vaxx.routes
 
+import blue.mild.covid.vaxx.dto.QuestionDtoOut
 import blue.mild.covid.vaxx.service.QuestionService
-import io.ktor.application.call
-import io.ktor.response.respond
-import io.ktor.routing.Routing
-import io.ktor.routing.get
+import com.papsign.ktor.openapigen.route.path.normal.NormalOpenAPIRoute
+import com.papsign.ktor.openapigen.route.path.normal.get
+import com.papsign.ktor.openapigen.route.response.respond
+import com.papsign.ktor.openapigen.route.route
+import org.kodein.di.LazyDI
 import org.kodein.di.instance
-import org.kodein.di.ktor.di
 
-fun Routing.questionRoutes() {
-    val service by di().instance<QuestionService>()
+fun NormalOpenAPIRoute.questionRoutes(di: LazyDI) {
+    val service by di.instance<QuestionService>()
 
-    get(Routes.question) {
-        call.respond(service.getAllQuestions())
+    route(Routes.question) {
+        get<Unit, List<QuestionDtoOut>> {
+            respond(service.getAllQuestions())
+        }
     }
 }

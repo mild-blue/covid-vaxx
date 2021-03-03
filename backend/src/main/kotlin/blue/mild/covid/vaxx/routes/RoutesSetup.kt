@@ -1,11 +1,10 @@
 package blue.mild.covid.vaxx.routes
 
-import io.ktor.routing.Routing
+import com.papsign.ktor.openapigen.route.path.normal.NormalOpenAPIRoute
+import org.kodein.di.LazyDI
 
-fun Routing.registerRoutes() {
-    patientRoutes()
-    questionRoutes()
-
-    serviceRoutes()
-    staticContentRoutes()
+fun NormalOpenAPIRoute.registerRoutes(di: LazyDI) {
+    patientRoutes(di)
+    questionRoutes(di)
+    serviceRoutes(di)
 }

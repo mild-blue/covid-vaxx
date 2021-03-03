@@ -1,43 +1,35 @@
 package blue.mild.covid.vaxx.routes
 
 import blue.mild.covid.vaxx.dao.DatabaseSetup
-import io.ktor.application.call
-import io.ktor.http.HttpStatusCode
-import io.ktor.response.respond
-import io.ktor.routing.Routing
-import io.ktor.routing.get
+import com.papsign.ktor.openapigen.route.path.normal.NormalOpenAPIRoute
+import com.papsign.ktor.openapigen.route.path.normal.get
+import com.papsign.ktor.openapigen.route.response.respond
+import com.papsign.ktor.openapigen.route.route
+import org.kodein.di.LazyDI
 import org.kodein.di.instance
-import org.kodein.di.ktor.di
 
 /**
  * Registers prometheus data.
  */
-fun Routing.serviceRoutes() {
-    val version by di().instance<String>("version")
+fun NormalOpenAPIRoute.serviceRoutes(di: LazyDI) {
+    val version by di.instance<String>("version")
 
     /**
      * Send data about version.
      */
-    get(Routes.version) {
-        call.respond(VersionDtoOut(version))
-    }
+    route(Routes.version).get<Unit, VersionDtoOut> { respond(VersionDtoOut(version)) }
 
-    /**
-     * Responds only 200 for ingres.
-     */
-    get(Routes.status) {
-        call.respond(HttpStatusCode.OK)
-    }
+    route(Routes.status).get<Unit, Unit> { respond(Unit) }
 
-    /**
-     * More complex API for indication of all resources.
-     */
-    get(Routes.statusHealth) {
+    route(Routes.statusHealth).get<Unit, HealthDtoOut> {
         if (DatabaseSetup.isConnected()) {
-            call.respond(HealthDtoOut("healthy"))
+            respond(HealthDtoOut("healthy"))
         } else {
-            call.respond(HttpStatusCode.ServiceUnavailable, HealthDtoOut("DB connection is not working"))
+            // TODO solve how to use different response code
+            // https://github.com/papsign/Ktor-OpenAPI-Generator/wiki/A-few-examples
+            respond(HealthDtoOut("DB connection is not working"))
         }
+
     }
 }
 
