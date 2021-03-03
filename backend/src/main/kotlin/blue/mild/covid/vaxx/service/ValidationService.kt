@@ -1,5 +1,7 @@
 package blue.mild.covid.vaxx.service
 
+import blue.mild.covid.vaxx.error.EmptyStringException
+import blue.mild.covid.vaxx.error.ValidationException
 import java.time.LocalDate
 
 class ValidationService {
@@ -10,9 +12,44 @@ class ValidationService {
         private const val unprobableMonthAddition = 20;
     }
 
-    private fun validatePhoneNumber(phoneNumber: String): Boolean = """^\+\d{12}$""".toRegex() matches phoneNumber
+    fun validatePhoneNumberAndThrow(phoneNumber: String) {
+        if (!validatePhoneNumber(phoneNumber)) {
+            throw ValidationException("phoneNumber", phoneNumber)
+        }
+    }
 
-    private fun validatePersonalNumber(personalNumber: String): Boolean {
+    fun validateEmailAndThrow(email: String) {
+        if (!validateEmail(email)) {
+            throw ValidationException("email", email)
+        }
+    }
+
+    fun validatePersonalNumberAndThrow(personalNumber: String) {
+        if (!validatePhoneNumber(personalNumber)) {
+            throw ValidationException("personalNumber", personalNumber)
+        }
+    }
+
+    fun validateEmptyStringAndThrow(parameterName: String, value: String) {
+        if (!validateEmptyString(value)) {
+            throw EmptyStringException(parameterName)
+        }
+    }
+
+    fun validateTrueAndThrow(parameterName: String, value: Boolean) {
+        if (!value) {
+            throw ValidationException(parameterName, value)
+        }
+    }
+
+    fun validateEmptyString(value: String): Boolean = value.isNullOrEmpty()
+
+    fun validatePhoneNumber(phoneNumber: String): Boolean = """^\+\d{12}$""".toRegex() matches phoneNumber
+
+    fun validateEmail(email: String): Boolean =
+        """(?:[a-z0-9!#${'$'}%&'*+/=?^_`{|}~-]+(?:\.[a-z0-9!#${'$'}%&'*+/=?^_`{|}~-]+)*|"(?:[\x01-\x08\x0b\x0c\x0e-\x1f\x21\x23-\x5b\x5d-\x7f]|\\[\x01-\x09\x0b\x0c\x0e-\x7f])*")@(?:(?:[a-z0-9](?:[a-z0-9-]*[a-z0-9])?\.)+[a-z0-9](?:[a-z0-9-]*[a-z0-9])?|\[(?:(?:(2(5[0-5]|[0-4][0-9])|1[0-9][0-9]|[1-9]?[0-9]))\.){3}(?:(2(5[0-5]|[0-4][0-9])|1[0-9][0-9]|[1-9]?[0-9])|[a-z0-9-]*[a-z0-9]:(?:[\x01-\x08\x0b\x0c\x0e-\x1f\x21-\x5a\x53-\x7f]|\\[\x01-\x09\x0b\x0c\x0e-\x7f])+)\])""".toRegex() matches email
+
+    fun validatePersonalNumber(personalNumber: String): Boolean {
         if (personalNumber.isNullOrEmpty()) {
             return false
         }

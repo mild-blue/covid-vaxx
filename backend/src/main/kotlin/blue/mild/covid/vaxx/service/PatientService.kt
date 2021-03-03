@@ -16,10 +16,14 @@ import org.jetbrains.exposed.sql.leftJoin
 import org.jetbrains.exposed.sql.select
 import org.jetbrains.exposed.sql.selectAll
 import org.jetbrains.exposed.sql.transactions.experimental.newSuspendedTransaction
+import org.kodein.di.LazyDI
+import org.kodein.di.instance
 import pw.forst.tools.katlib.toUuid
 import java.util.UUID
 
-class PatientService {
+class PatientService(di: LazyDI) {
+    val validationService by di.instance<ValidationService>()
+
     suspend fun getPatientById(patientId: UUID): PatientDtoOut = newSuspendedTransaction {
         val data = Patient
             .leftJoin(Answer, { id }, { Answer.patientId })
@@ -48,13 +52,32 @@ class PatientService {
     suspend fun getAllPatients(): List<PatientDtoOut> =
         newSuspendedTransaction { getAndMapPatients() }
 
-    suspend fun getPatientsByPersonalNumber(patientPersonalNumber: String): List<PatientDtoOut> =
-        newSuspendedTransaction { getAndMapPatients { Patient.personalNumber eq patientPersonalNumber } }
+    suspend fun getPatientsByPersonalNumber(patientPersonalNumber: String): List<PatientDtoOut> {
+        validationService.validatePersonalNumberAndThrow(patientPersonalNumber)
+        return newSuspendedTransaction { getAndMapPatients { Patient.personalNumber eq patientPersonalNumber } }
+    }
 
-    suspend fun getPatientsByEmail(email: String): List<PatientDtoOut> =
-        newSuspendedTransaction { getAndMapPatients { Patient.email eq email } }
+
+    suspend fun getPatientsByEmail(email: String): List<PatientDtoOut> {
+        validationService.validateEmailAndThrow(email)
+        return newSuspendedTransaction { getAndMapPatients { Patient.email eq email } }
+    }
 
     suspend fun savePatient(patientDto: PatientRegistrationDtoIn) = newSuspendedTransaction {
+        validationService.validateEmptyStringAndThrow("firstName", patientDto.firstName)
+        validationService.validateEmptyStringAndThrow("lastName", patientDto.lastName)
+        validationService.validatePersonalNumberAndThrow(patientDto.personalNumber)
+        validationService.validatePhoneNumberAndThrow(patientDto.phoneNumber)
+        validationService.validateEmailAndThrow(patientDto.email)
+        validationService.validateTrueAndThrow(
+            "covid19VaccinationAgreement",
+            patientDto.confirmation.covid19VaccinationAgreement
+        )
+        validationService.validateTrueAndThrow(
+            "healthStateDisclosureConfirmation",
+            patientDto.confirmation.healthStateDisclosureConfirmation
+        )
+
         val patientId = UUID.randomUUID().toString()
 
         Patient.insert {
