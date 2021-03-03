@@ -73,11 +73,11 @@ fun Application.init() {
     // TODO maybe conditional once we're in the production
     routing {
         // register swagger routes
-        get("/openapi.json") {
+        get(Routes.openApiJson) {
             call.respond(openAPIGen.api.serialize())
         }
-        get("/swagger-ui") {
-            call.respondRedirect("/swagger-ui/index.html?url=/openapi.json", true)
+        get(Routes.swaggerUi) {
+            call.respondRedirect("/swagger-ui/index.html?url=${Routes.openApiJson}", true)
         }
     }
 

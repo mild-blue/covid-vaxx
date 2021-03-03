@@ -30,29 +30,29 @@ data class PatientQueryDtoIn(
 data class PatientCreatedDtoOut(val patientId: String)
 
 fun NormalOpenAPIRoute.patientRoutes(di: LazyDI) {
-    val service by di.instance<PatientService>()
+    val patientService by di.instance<PatientService>()
 
     route(Routes.patient) {
         get<PatientIdDtoIn, PatientDtoOut> { (id) ->
-            respond(service.getPatientById(id))
+            respond(patientService.getPatientById(id))
         }
 
         delete<PatientIdDtoIn, PatientDeletedDtoOut> { (id) ->
-            respond(service.deletePatientById(id))
+            respond(patientService.deletePatientById(id))
         }
 
         get<PatientQueryDtoIn, List<PatientDtoOut>> { patientQuery ->
             val response = when {
-                patientQuery.id != null -> service.getPatientById(patientQuery.id).asList()
-                patientQuery.personalNumber != null -> service.getPatientsByPersonalNumber(patientQuery.personalNumber)
-                patientQuery.email != null -> service.getPatientsByEmail(patientQuery.email)
-                else -> service.getAllPatients()
+                patientQuery.id != null -> patientService.getPatientById(patientQuery.id).asList()
+                patientQuery.personalNumber != null -> patientService.getPatientsByPersonalNumber(patientQuery.personalNumber)
+                patientQuery.email != null -> patientService.getPatientsByEmail(patientQuery.email)
+                else -> patientService.getAllPatients()
             }
             respond(response)
         }
 
         post<Unit, PatientCreatedDtoOut, PatientRegistrationDtoIn> { _, patientRegistration ->
-            val patientId = service.savePatient(patientRegistration)
+            val patientId = patientService.savePatient(patientRegistration)
             respond(PatientCreatedDtoOut(patientId))
         }
     }
