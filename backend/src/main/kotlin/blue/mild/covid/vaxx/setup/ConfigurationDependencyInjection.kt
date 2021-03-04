@@ -1,5 +1,6 @@
 package blue.mild.covid.vaxx.setup
 
+import blue.mild.covid.vaxx.auth.JwtConfigurationDto
 import blue.mild.covid.vaxx.dto.DatabaseConfigurationDto
 import blue.mild.covid.vaxx.dto.VersionDtoOut
 import blue.mild.covid.vaxx.utils.createLogger
@@ -45,5 +46,15 @@ fun DI.MainBuilder.bindConfiguration() {
 
     bind<String>("frontend") with singleton {
         getEnvOrLogDefault("FRONTEND_PATH", "../frontend/dist/frontend")
+    }
+
+    bind<JwtConfigurationDto>() with singleton {
+        JwtConfigurationDto(
+            realm = "Mild Blue Covid Vaxx",
+            issuer = "vaccination.mild.blue",
+            audience = "default",
+            expirationInMinutes = 10,
+            signingSecret = "secret"
+        )
     }
 }

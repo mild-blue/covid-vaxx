@@ -1,18 +1,25 @@
 package blue.mild.covid.vaxx.setup
 
+import blue.mild.covid.vaxx.auth.JwtConfigurationDto
+import blue.mild.covid.vaxx.auth.JwtService
+import blue.mild.covid.vaxx.auth.RoleBasedAuthorization
+import blue.mild.covid.vaxx.auth.registerAuth
 import blue.mild.covid.vaxx.dao.DatabaseSetup
 import blue.mild.covid.vaxx.dto.DatabaseConfigurationDto
-import blue.mild.covid.vaxx.error.registerExceptionHandlers
+import blue.mild.covid.vaxx.error.installExceptionHandling
 import blue.mild.covid.vaxx.monitoring.CALL_ID
 import blue.mild.covid.vaxx.routes.Routes
 import blue.mild.covid.vaxx.routes.registerRoutes
 import blue.mild.covid.vaxx.utils.createLogger
+import com.auth0.jwt.JWTVerifier
 import com.papsign.ktor.openapigen.OpenAPIGen
 import com.papsign.ktor.openapigen.openAPIGen
 import com.papsign.ktor.openapigen.route.apiRouting
 import io.ktor.application.Application
 import io.ktor.application.call
 import io.ktor.application.install
+import io.ktor.auth.Authentication
+import io.ktor.auth.jwt.jwt
 import io.ktor.features.CORS
 import io.ktor.features.CallId
 import io.ktor.features.CallLogging
@@ -47,6 +54,7 @@ fun Application.init() {
     // setup DI
     di {
         bindConfiguration()
+        registerAuth()
         registerClasses()
     }
     // now kodein is running and can be used
@@ -58,7 +66,7 @@ fun Application.init() {
     connectDatabase(di)
 
     // configure Ktor
-    installFrameworks()
+    installFrameworks(di)
 
     // configure static routes to serve frontend
     val frontendBasePath by di().instance<String>("frontend")
@@ -112,7 +120,15 @@ private fun migrateDatabase(dbConfig: DatabaseConfigurationDto) {
 /**
  * Configure Ktor and install necessary extensions.
  */
-private fun Application.installFrameworks() {
+private fun Application.installFrameworks(di: LazyDI) {
+    installBasics()
+    installAuthentication(di)
+    installMonitoring()
+    installSwagger()
+    installExceptionHandling()
+}
+
+private fun Application.installBasics() {
     // default headers
     install(DefaultHeaders)
     // initialize Jackson
@@ -128,6 +144,9 @@ private fun Application.installFrameworks() {
         allowCredentials = true
         allowNonSimpleContentTypes = true
     }
+}
+
+private fun Application.installSwagger() {
     // install swagger
     install(OpenAPIGen) {
         info {
@@ -151,11 +170,14 @@ private fun Application.installFrameworks() {
             call.respondRedirect("/swagger-ui/index.html?url=${Routes.openApiJson}", true)
         }
     }
+
+}
+
+private fun Application.installMonitoring() {
     // requests logging in debug mode + MDC tracing
     install(CallLogging) {
         // put call id to the mdc
         mdc(CALL_ID) { it.callId }
-
         // enable logging for all routes that are not /status
         // this filter does not influence MDC
         filter { it.request.uri != Routes.status }
@@ -171,7 +193,20 @@ private fun Application.installFrameworks() {
             UUID(Random.nextLong(), Random.nextLong()).toString()
         }
     }
+}
 
-    // register exception handling
-    registerExceptionHandlers()
+private fun Application.installAuthentication(di: LazyDI) {
+    val jwtConfigurationDto by di.instance<JwtConfigurationDto>()
+    val jwtVerifier by di.instance<JWTVerifier>()
+    val jwtService by di.instance<JwtService>()
+
+    install(Authentication) {
+        jwt {
+            realm = jwtConfigurationDto.realm
+            verifier { jwtVerifier }
+            validate { credentials -> jwtService.principalFromToken(credentials) }
+        }
+    }
+
+    install(RoleBasedAuthorization)
 }

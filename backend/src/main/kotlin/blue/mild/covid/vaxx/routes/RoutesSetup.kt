@@ -7,5 +7,7 @@ fun NormalOpenAPIRoute.registerRoutes(di: LazyDI) {
     patientRoutes(di)
     questionRoutes(di)
     insuranceCompanyRoutes()
+    userRoutes(di)
+
     serviceRoutes(di)
 }

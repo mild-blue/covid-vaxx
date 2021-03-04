@@ -14,7 +14,7 @@ private val logger = createLogger("ExceptionHandler")
 /**
  * Registers exception handling.
  */
-fun Application.registerExceptionHandlers() {
+fun Application.installExceptionHandling() {
     install(StatusPages) {
         exception<Exception> { cause ->
             logger.error(cause) { "Exception occurred in the application: ${cause.message}" }
