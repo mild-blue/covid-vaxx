@@ -12,8 +12,11 @@ import io.ktor.auth.authenticate
 import io.ktor.auth.authentication
 import io.ktor.util.pipeline.PipelineContext
 
+/**
+ * Auth provider implementation for JWT.
+ */
 class JwtAuthProvider : AuthProvider<UserPrincipal> {
-
+    // scopes just for the swagger
     enum class Scopes(override val description: String) : Described { Default("default") }
 
     override val security: Iterable<Iterable<AuthProvider.Security<*>>> =
@@ -33,7 +36,7 @@ class JwtAuthProvider : AuthProvider<UserPrincipal> {
 
     override suspend fun getAuth(pipeline: PipelineContext<Unit, ApplicationCall>): UserPrincipal =
         pipeline.context.authentication.principal()
-            ?: throw AuthorizationException("No JWTPrincipal")
+            ?: throw GenericAuthException("No JWTPrincipal!")
 
     override fun apply(route: NormalOpenAPIRoute): OpenAPIAuthenticatedRoute<UserPrincipal> {
         val authenticatedKtorRoute = route.ktorRoute.authenticate {}

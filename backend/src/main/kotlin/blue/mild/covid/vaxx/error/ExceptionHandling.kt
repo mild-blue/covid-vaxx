@@ -1,5 +1,7 @@
 package blue.mild.covid.vaxx.error
 
+import blue.mild.covid.vaxx.auth.AuthorizationException
+import blue.mild.covid.vaxx.auth.InsufficientRightsException
 import blue.mild.covid.vaxx.utils.createLogger
 import io.ktor.application.Application
 import io.ktor.application.ApplicationCall
@@ -19,6 +21,14 @@ fun Application.installExceptionHandling() {
         exception<Exception> { cause ->
             logger.error(cause) { "Exception occurred in the application: ${cause.message}" }
             call.errorResponse(HttpStatusCode.InternalServerError, cause.message)
+        }
+
+        exception<InsufficientRightsException> {
+            call.respond(HttpStatusCode.Forbidden)
+        }
+
+        exception<AuthorizationException> {
+            call.respond(HttpStatusCode.Unauthorized)
         }
 
         exception<EntityNotFoundException> { cause ->

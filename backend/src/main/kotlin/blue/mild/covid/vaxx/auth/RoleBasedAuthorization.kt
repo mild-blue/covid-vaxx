@@ -4,44 +4,47 @@ import blue.mild.covid.vaxx.dao.UserRole
 import io.ktor.application.ApplicationCallPipeline
 import io.ktor.application.ApplicationFeature
 import io.ktor.application.call
-import io.ktor.application.feature
 import io.ktor.auth.Authentication
-import io.ktor.auth.authenticate
 import io.ktor.auth.authentication
-import io.ktor.routing.Route
-import io.ktor.routing.RouteSelector
-import io.ktor.routing.RouteSelectorEvaluation
-import io.ktor.routing.RoutingResolveContext
-import io.ktor.routing.application
 import io.ktor.util.AttributeKey
 import io.ktor.util.pipeline.PipelinePhase
 
 
+/**
+ * Ktor feature that allows us to implement role based authorization.
+ */
 class RoleBasedAuthorization {
 
     private val interceptPhase = PipelinePhase("Authorization")
 
+    /**
+     * Request call pipeline interception that injects role based authorization.
+     * If [anyOf] is not empty, the intercept requires for at least one of the roles
+     * to be present in the [RegisteredUserPrincipal].
+     *
+     * However, if [anyOf] is empty, the interceptor still requires at least any principals to be present.
+     * Thus, all instances of [UserPrincipal] are allowed.
+     */
     fun interceptPipeline(
         pipeline: ApplicationCallPipeline,
         anyOf: Set<UserRole> = emptySet()
     ) = with(pipeline) {
+        // install this intercept to the authentication phase
         insertPhaseAfter(ApplicationCallPipeline.Features, Authentication.ChallengePhase)
         insertPhaseAfter(Authentication.ChallengePhase, interceptPhase)
-        // todo correct exceptions
         intercept(interceptPhase) {
             when (val principal = call.authentication.principal<UserPrincipal>()) {
                 is PatientPrincipal -> {
                     if (anyOf.isNotEmpty()) {
-                        throw AuthorizationException("Wrong token type.")
+                        throw InsufficientRightsException("You must be registered user to perform this action.")
                     }
                 }
                 is RegisteredUserPrincipal -> {
-                    // todo maybe check for empty anyO
-                    if (principal.userRole !in anyOf) {
-                        throw AuthorizationException("No sufficient rights!")
+                    if (anyOf.isNotEmpty() && principal.userRole !in anyOf) {
+                        throw InsufficientRightsException("This action requires to be one of ${anyOf.joinToString(", ")}.")
                     }
                 }
-                null -> throw AuthorizationException("Missing principal")
+                null -> throw GenericAuthException("Missing principal!")
             }
         }
     }

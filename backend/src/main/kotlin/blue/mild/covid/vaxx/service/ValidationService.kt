@@ -1,6 +1,6 @@
 package blue.mild.covid.vaxx.service
 
-import blue.mild.covid.vaxx.dto.PatientRegistrationDtoIn
+import blue.mild.covid.vaxx.dto.request.PatientRegistrationDtoIn
 import blue.mild.covid.vaxx.error.EmptyStringException
 import blue.mild.covid.vaxx.error.ValidationException
 import pw.forst.tools.katlib.mapToSet

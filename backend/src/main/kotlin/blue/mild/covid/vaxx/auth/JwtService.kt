@@ -1,6 +1,8 @@
 package blue.mild.covid.vaxx.auth
 
 import blue.mild.covid.vaxx.dao.UserRole
+import blue.mild.covid.vaxx.dto.JwtConfigurationDto
+import blue.mild.covid.vaxx.dto.response.JwtResponseDtoOut
 import com.auth0.jwt.JWT
 import com.auth0.jwt.JWTCreator
 import com.auth0.jwt.JWTVerifier
@@ -10,6 +12,9 @@ import mu.KLogging
 import pw.forst.tools.katlib.toUuid
 import java.util.Date
 
+/**
+ * Service for issuing JWTs.
+ */
 class JwtService(
     private val algorithm: Algorithm,
     private val jwtConfiguration: JwtConfigurationDto
@@ -33,7 +38,7 @@ class JwtService(
     /**
      * Generate and sign JWT for given principal.¬
      */
-    fun generateToken(principal: UserPrincipal): String {
+    fun generateToken(principal: UserPrincipal): JwtResponseDtoOut {
         val builder = JWT.create()
             .withIssuer(jwtConfiguration.issuer)
             .withAudience(jwtConfiguration.audience)
@@ -44,7 +49,7 @@ class JwtService(
         return when (principal) {
             is PatientPrincipal -> builder.forPatientRegistration()
             is RegisteredUserPrincipal -> builder.forRegisteredUser(principal)
-        }.sign(algorithm)
+        }.sign(algorithm).let(::JwtResponseDtoOut)
     }
 
     private fun JWTCreator.Builder.forPatientRegistration() = withSubject(PUBLIC_SUBJECT)
@@ -65,16 +70,15 @@ class JwtService(
                         userId = subject.toUuid(),
                         userRole = UserRole.valueOf(claims.getValue(ROLE).asString())
                     )
-                    else -> throw AuthorizationException("Invalid JWT!")
+                    else -> throw InvalidJwtException("Invalid JWT!")
                 }
             }
-        }.getOrElse { throw AuthorizationException("Invalid JWT!") }
+        }.getOrElse { throw InvalidJwtException("Invalid JWT!") }
 
     private fun obtainExpirationDate(principal: UserPrincipal): Date =
-        // TODO correct values
         when (principal) {
-            is PatientPrincipal -> Date(System.currentTimeMillis() + 10000000000)
-            is RegisteredUserPrincipal -> Date(System.currentTimeMillis() + 10000000000)
+            is PatientPrincipal -> Date(System.currentTimeMillis() + jwtConfiguration.patientUserJwtExpirationInMinutes * 60_000)
+            is RegisteredUserPrincipal -> Date(System.currentTimeMillis() + jwtConfiguration.registeredUserJwtExpirationInMinutes * 60_000)
         }
 
     // as we're using just sealed classes, we can require not null here

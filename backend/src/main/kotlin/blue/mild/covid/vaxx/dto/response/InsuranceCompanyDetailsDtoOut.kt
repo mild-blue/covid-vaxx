@@ -1,4 +1,4 @@
-package blue.mild.covid.vaxx.dto
+package blue.mild.covid.vaxx.dto.response
 
 import blue.mild.covid.vaxx.dao.InsuranceCompany
 import com.fasterxml.jackson.annotation.JsonIgnore

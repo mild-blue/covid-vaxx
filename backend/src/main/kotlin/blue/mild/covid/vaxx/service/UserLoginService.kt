@@ -5,7 +5,8 @@ import blue.mild.covid.vaxx.dao.UserRole
 import java.util.UUID
 
 class UserLoginService {
+
     fun verifyCredentials(username: String, password: String): RegisteredUserPrincipal =
-        // TODO fix this
+        // TODO implement this
         RegisteredUserPrincipal(UUID.randomUUID(), UserRole.ADMIN)
 }

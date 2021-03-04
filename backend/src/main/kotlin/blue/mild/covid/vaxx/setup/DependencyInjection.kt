@@ -1,6 +1,5 @@
 package blue.mild.covid.vaxx.setup
 
-import blue.mild.covid.vaxx.auth.registerAuth
 import blue.mild.covid.vaxx.service.PatientService
 import blue.mild.covid.vaxx.service.QuestionService
 import blue.mild.covid.vaxx.service.UserLoginService

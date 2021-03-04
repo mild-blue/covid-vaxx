@@ -3,9 +3,10 @@ package blue.mild.covid.vaxx.service
 import blue.mild.covid.vaxx.dao.Answer
 import blue.mild.covid.vaxx.dao.Patient
 import blue.mild.covid.vaxx.dto.AnswerDto
-import blue.mild.covid.vaxx.dto.PatientDeletedDtoOut
-import blue.mild.covid.vaxx.dto.PatientDtoOut
-import blue.mild.covid.vaxx.dto.PatientRegistrationDtoIn
+import blue.mild.covid.vaxx.dto.request.PatientCreatedDtoOut
+import blue.mild.covid.vaxx.dto.response.PatientDeletedDtoOut
+import blue.mild.covid.vaxx.dto.response.PatientDtoOut
+import blue.mild.covid.vaxx.dto.request.PatientRegistrationDtoIn
 import blue.mild.covid.vaxx.error.entityNotFound
 import org.jetbrains.exposed.sql.Op
 import org.jetbrains.exposed.sql.SqlExpressionBuilder
@@ -64,10 +65,11 @@ class PatientService(private val validationService: ValidationService) {
     suspend fun savePatient(patientRegistrationDto: PatientRegistrationDtoIn) = newSuspendedTransaction {
         validationService.validatePatientRegistrationAndThrow(patientRegistrationDto)
 
-        val patientId = UUID.randomUUID().toString()
+        val patientId: UUID = UUID.randomUUID()
+        val patientIdString = patientId.toString()
 
         Patient.insert {
-            it[id] = patientId
+            it[id] = patientIdString
             it[firstName] = patientRegistrationDto.firstName
             it[lastName] = patientRegistrationDto.lastName
             it[personalNumber] = normalizePersonalNumber(patientRegistrationDto.personalNumber)
@@ -77,12 +79,12 @@ class PatientService(private val validationService: ValidationService) {
         }
 
         Answer.batchInsert(patientRegistrationDto.answers) {
-            this[Answer.patientId] = patientId
+            this[Answer.patientId] = patientIdString
             this[Answer.questionId] = it.questionId.toString()
             this[Answer.value] = it.value
         }
 
-        patientId
+        PatientCreatedDtoOut(patientId)
     }
 
     suspend fun deletePatientById(patientId: UUID) = newSuspendedTransaction {

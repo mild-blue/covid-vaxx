@@ -1,8 +1,8 @@
 package blue.mild.covid.vaxx.setup
 
-import blue.mild.covid.vaxx.auth.JwtConfigurationDto
 import blue.mild.covid.vaxx.dto.DatabaseConfigurationDto
-import blue.mild.covid.vaxx.dto.VersionDtoOut
+import blue.mild.covid.vaxx.dto.JwtConfigurationDto
+import blue.mild.covid.vaxx.dto.response.VersionDtoOut
 import blue.mild.covid.vaxx.utils.createLogger
 import org.kodein.di.DI
 import org.kodein.di.bind
@@ -10,6 +10,7 @@ import org.kodein.di.singleton
 import pw.forst.tools.katlib.getEnv
 import pw.forst.tools.katlib.whenNull
 import java.io.File
+import java.util.UUID
 
 private val logger = createLogger("EnvironmentLoaderLogger")
 
@@ -48,13 +49,15 @@ fun DI.MainBuilder.bindConfiguration() {
         getEnvOrLogDefault("FRONTEND_PATH", "../frontend/dist/frontend")
     }
 
+    // TODO load this from the env / config
     bind<JwtConfigurationDto>() with singleton {
         JwtConfigurationDto(
             realm = "Mild Blue Covid Vaxx",
             issuer = "vaccination.mild.blue",
             audience = "default",
-            expirationInMinutes = 10,
-            signingSecret = "secret"
+            registeredUserJwtExpirationInMinutes = 60 * 24 * 5, // 5 days
+            patientUserJwtExpirationInMinutes = 15,
+            signingSecret = UUID.randomUUID().toString()
         )
     }
 }
