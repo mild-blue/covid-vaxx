@@ -73,6 +73,14 @@ dependencies {
     // database migrations from the code
     implementation("org.flywaydb", "flyway-core", "7.5.4")
 
+    // tests
+    testImplementation("io.mockk", "mockk", "1.10.6")
+    testImplementation(kotlin("test"))
+    testImplementation(kotlin("test-junit5"))
+    val junitVersion = "5.7.1"
+    testRuntimeOnly("org.junit.jupiter", "junit-jupiter-engine", junitVersion)
+
+
 }
 
 tasks {
