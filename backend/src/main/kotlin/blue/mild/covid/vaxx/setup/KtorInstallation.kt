@@ -169,10 +169,10 @@ private fun Application.installSwagger() {
         }
         // dto naming without package names
         replaceModule(DefaultSchemaNamer, object : SchemaNamer {
-            val regex = Regex("[A-Za-z0-9_.]+")
-            override fun get(type: KType): String {
-                return type.toString().replace(regex) { it.value.split(".").last() }.replace(Regex(">|<|, "), "_")
-            }
+            override fun get(type: KType) = type
+                .toString()
+                .replace(Regex("[A-Za-z0-9_.]+")) { it.value.split(".").last() }
+                .replace(Regex(">|<|, "), "_")
         })
 
     }
