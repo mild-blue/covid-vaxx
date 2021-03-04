@@ -70,7 +70,7 @@ class ValidationService(private val questionService: QuestionService) {
         }
     }
 
-    private fun validateEmptyString(value: String): Boolean = value.isNullOrEmpty()
+    private fun validateEmptyString(value: String): Boolean = !value.isNullOrEmpty()
 
     private fun validatePhoneNumber(phoneNumber: String): Boolean = """^\+\d{12}$""".toRegex() matches phoneNumber
 
