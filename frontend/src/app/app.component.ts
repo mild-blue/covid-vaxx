@@ -36,7 +36,7 @@ export class AppComponent implements OnInit {
       lastName: ['', Validators.required],
       personalNumber: ['', [Validators.required, validatePersonalNumber]],
       insuranceCompany: ['', Validators.required],
-      phone: ['', [Validators.required, validatePhoneNumber]],
+      phoneNumber: ['', [Validators.required, validatePhoneNumber]],
       email: ['', [Validators.required, Validators.email]]
     });
 
