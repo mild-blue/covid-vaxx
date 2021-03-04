@@ -44,7 +44,7 @@ class JwtService(
             .withAudience(jwtConfiguration.audience)
             .withExpiresAt(obtainExpirationDate(principal))
             .withIssuedAt(Date())
-            .withClaim(TYPE, principal::class.simpleName)
+            .withClaim(TYPE, nameOf(principal))
 
         return when (principal) {
             is PatientPrincipal -> builder.forPatientRegistration()
@@ -83,4 +83,5 @@ class JwtService(
 
     // as we're using just sealed classes, we can require not null here
     private inline fun <reified T : Any> nameOf(): String = requireNotNull(T::class.simpleName)
+    private inline fun <reified T : Any> nameOf(obj: T): String = requireNotNull(obj::class.simpleName)
 }
