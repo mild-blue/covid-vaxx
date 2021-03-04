@@ -28,12 +28,12 @@ fun Application.registerExceptionHandlers() {
 
         exception<ValidationException> { cause ->
             logger.warn { cause.message }
-            call.errorResponse(HttpStatusCode.BadRequest, "Bad request.")
+            call.errorResponse(HttpStatusCode.BadRequest, "Bad request. ${cause.message}")
         }
 
         exception<EmptyStringException> { cause ->
             logger.warn { cause.message }
-            call.errorResponse(HttpStatusCode.BadRequest, "Bad request.")
+            call.errorResponse(HttpStatusCode.BadRequest, "Bad request. ${cause.message}")
         }
     }
 }
