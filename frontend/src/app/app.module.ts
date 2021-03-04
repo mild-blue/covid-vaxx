@@ -19,11 +19,13 @@ import { MatCheckboxModule } from '@angular/material/checkbox';
 import { DialogComponent } from './components/dialog/dialog.component';
 import { MatDialogModule } from '@angular/material/dialog';
 import { HttpClientModule } from '@angular/common/http';
+import { HomeComponent } from './pages/home/home.component';
 
 @NgModule({
   declarations: [
     AppComponent,
-    DialogComponent
+    DialogComponent,
+    HomeComponent
   ],
   imports: [
     BrowserModule,
