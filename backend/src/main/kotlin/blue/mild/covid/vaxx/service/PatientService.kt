@@ -51,7 +51,7 @@ class PatientService(private val validationService: ValidationService) {
 
     suspend fun getPatientsByPersonalNumber(patientPersonalNumber: String): List<PatientDtoOut> {
         validationService.validatePersonalNumberAndThrow(patientPersonalNumber)
-        return newSuspendedTransaction { getAndMapPatients { Patient.personalNumber eq patientPersonalNumber } }
+        return newSuspendedTransaction { getAndMapPatients { Patient.personalNumber eq normalizePersonalNumber(patientPersonalNumber) } }
     }
 
     suspend fun getPatientsByEmail(email: String): List<PatientDtoOut> {
@@ -68,7 +68,7 @@ class PatientService(private val validationService: ValidationService) {
             it[id] = patientId
             it[firstName] = patientRegistrationDto.firstName
             it[lastName] = patientRegistrationDto.lastName
-            it[personalNumber] = patientRegistrationDto.personalNumber
+            it[personalNumber] = normalizePersonalNumber(patientRegistrationDto.personalNumber)
             it[phoneNumber] = patientRegistrationDto.phoneNumber
             it[email] = patientRegistrationDto.email
             it[insuranceCompany] = patientRegistrationDto.insuranceCompany
@@ -88,6 +88,8 @@ class PatientService(private val validationService: ValidationService) {
         if (count == 1) PatientDeletedDtoOut(true)
         else throw entityNotFound<Patient>(Patient::id, patientId)
     }
+
+    private fun normalizePersonalNumber(personalNumber: String ): String = personalNumber.replace("/", "")
 
     private fun getAndMapPatients(where: (SqlExpressionBuilder.() -> Op<Boolean>)? = null) =
         Patient
