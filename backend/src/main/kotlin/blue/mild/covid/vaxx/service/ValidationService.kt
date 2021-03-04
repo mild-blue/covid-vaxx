@@ -93,7 +93,7 @@ class ValidationService(private val questionService: QuestionService) {
 
         val parts = personalNumber.split("/");
         if (parts.size == 1) {
-            firstPart = personalNumber.substring(0, 5);
+            firstPart = personalNumber.substring(0, 6);
             secondPart = personalNumber.substring(6);
         } else {
             firstPart = parts[0];
@@ -104,20 +104,20 @@ class ValidationService(private val questionService: QuestionService) {
             return false
         }
 
-        val year = firstPart.substring(0, 1).toInt()
-        var month = firstPart.substring(2, 3).toInt()
-        val day = firstPart.substring(4, 5).toInt()
+        val year = firstPart.substring(0, 2).toInt()
+        var month = firstPart.substring(2, 4).toInt()
+        val day = firstPart.substring(4, 6).toInt()
 
         val currentYear = LocalDate.now().year % 100
 
         if (year >= tenDigitPersonalNumberIssueYear || year <= currentYear) {
             if (secondPart.length == 4) {
-                val controlDigit = secondPart.substring(3, 3).toInt()
-                val concatenated = (firstPart + secondPart).toInt()
+                val controlDigit = secondPart.substring(3, 4).toInt()
+                val concatenated = (firstPart + secondPart).toLong()
 
-                val moduloElevenOk = concatenated % 11 == 0;
-                val withoutLastDigit = concatenated / 10;
-                val moduloTenOk = (withoutLastDigit % 11) == 10 && controlDigit == 0;
+                val moduloElevenOk = concatenated % 11 == 0L
+                val withoutLastDigit = concatenated / 10
+                val moduloTenOk = (withoutLastDigit % 11) == 10L && controlDigit == 0;
 
                 if (!moduloTenOk && !moduloElevenOk) {
                     return false
@@ -147,11 +147,11 @@ class ValidationService(private val questionService: QuestionService) {
 
 
     private fun isDateValid(year: Int, month: Int, day: Int): Boolean {
-        try {
+        return try {
             LocalDate.of(year, month, day)
-            return true
+            true
         } catch (ex: Exception) {
-            return false
+            false
         }
     }
 }
