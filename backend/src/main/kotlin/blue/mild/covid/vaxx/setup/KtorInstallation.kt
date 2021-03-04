@@ -171,6 +171,7 @@ private fun Application.installFrameworks() {
             UUID(Random.nextLong(), Random.nextLong()).toString()
         }
     }
+
     // register exception handling
     registerExceptionHandlers()
 }
