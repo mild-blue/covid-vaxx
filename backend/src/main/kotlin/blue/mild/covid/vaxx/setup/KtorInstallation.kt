@@ -15,6 +15,8 @@ import com.auth0.jwt.JWTVerifier
 import com.papsign.ktor.openapigen.OpenAPIGen
 import com.papsign.ktor.openapigen.openAPIGen
 import com.papsign.ktor.openapigen.route.apiRouting
+import com.papsign.ktor.openapigen.schema.namer.DefaultSchemaNamer
+import com.papsign.ktor.openapigen.schema.namer.SchemaNamer
 import io.ktor.application.Application
 import io.ktor.application.call
 import io.ktor.application.install
@@ -42,6 +44,7 @@ import org.slf4j.event.Level
 import java.text.DateFormat
 import java.util.UUID
 import kotlin.random.Random
+import kotlin.reflect.KType
 
 
 private val installationLogger = createLogger("ApplicationSetup")
@@ -164,6 +167,14 @@ private fun Application.installSwagger() {
                 email = "covid-vaxx@mild.blue"
             }
         }
+        // dto naming without package names
+        replaceModule(DefaultSchemaNamer, object : SchemaNamer {
+            val regex = Regex("[A-Za-z0-9_.]+")
+            override fun get(type: KType): String {
+                return type.toString().replace(regex) { it.value.split(".").last() }.replace(Regex(">|<|, "), "_")
+            }
+        })
+
     }
     // install swagger routes
     // TODO maybe conditional once we're in the production
