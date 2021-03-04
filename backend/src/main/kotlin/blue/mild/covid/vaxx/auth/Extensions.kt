@@ -7,7 +7,6 @@ import com.papsign.ktor.openapigen.route.path.normal.NormalOpenAPIRoute
 import io.ktor.application.feature
 import io.ktor.auth.authenticate
 import io.ktor.routing.application
-import io.ktor.util.pipeline.ContextDsl
 import org.kodein.di.instance
 
 /**

@@ -8,10 +8,10 @@ import java.time.LocalDate
 
 class ValidationService(private val questionService: QuestionService) {
     companion object {
-        private const val personalNumberAddingTwentyIssueYear = 4;
-        private const val tenDigitPersonalNumberIssueYear = 54;
-        private const val womanMonthAddition = 50;
-        private const val unprobableMonthAddition = 20;
+        private const val personalNumberAddingTwentyIssueYear = 4
+        private const val tenDigitPersonalNumberIssueYear = 54
+        private const val womanMonthAddition = 50
+        private const val unprobableMonthAddition = 20
     }
 
     suspend fun validatePatientRegistrationAndThrow(patientRegistrationDto: PatientRegistrationDtoIn) {
@@ -91,13 +91,13 @@ class ValidationService(private val questionService: QuestionService) {
         var firstPart = ""
         var secondPart = ""
 
-        val parts = personalNumber.split("/");
+        val parts = personalNumber.split("/")
         if (parts.size == 1) {
-            firstPart = personalNumber.substring(0, 6);
-            secondPart = personalNumber.substring(6);
+            firstPart = personalNumber.substring(0, 6)
+            secondPart = personalNumber.substring(6)
         } else {
-            firstPart = parts[0];
-            secondPart = parts[1];
+            firstPart = parts[0]
+            secondPart = parts[1]
         }
 
         if (firstPart.length != 6 || !firstPart.isNumber() || !secondPart.isNumber()) {
@@ -117,7 +117,7 @@ class ValidationService(private val questionService: QuestionService) {
 
                 val moduloElevenOk = concatenated % 11 == 0L
                 val withoutLastDigit = concatenated / 10
-                val moduloTenOk = (withoutLastDigit % 11) == 10L && controlDigit == 0;
+                val moduloTenOk = (withoutLastDigit % 11) == 10L && controlDigit == 0
 
                 if (!moduloTenOk && !moduloElevenOk) {
                     return false
@@ -131,12 +131,12 @@ class ValidationService(private val questionService: QuestionService) {
             }
         }
         if (month > womanMonthAddition) {
-            month -= womanMonthAddition;
+            month -= womanMonthAddition
         }
 
         if (month > unprobableMonthAddition) {
             if (year >= personalNumberAddingTwentyIssueYear) {
-                month -= unprobableMonthAddition;
+                month -= unprobableMonthAddition
             } else {
                 return false
             }
