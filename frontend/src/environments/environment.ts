@@ -4,7 +4,7 @@
 
 export const environment = {
   production: false,
-  apiUrl: 'https://vaccination.mild.blue/'
+  apiUrl: 'https://covid-vaxx.stg.mild.blue/api'
 };
 
 /*
