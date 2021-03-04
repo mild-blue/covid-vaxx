@@ -1,0 +1,12 @@
+@import "../../../styles/variables";
+
+.container {
+  max-width: $container-max-width;
+  width: 100%;
+
+  margin: auto;
+
+  &--wide {
+    max-width: $container-max-width--wide;
+  }
+}

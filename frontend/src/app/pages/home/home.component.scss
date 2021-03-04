@@ -1,13 +1,5 @@
-.container {
-  max-width: 650px;
-  width: 100%;
-
-  margin: auto;
-
-  &--wide {
-    max-width: 1200px;
-  }
-}
+@import "../../../styles/breakpoints";
+@import "../../../styles/variables";
 
 .form-field {
   width: 100%;
@@ -16,7 +8,7 @@
   justify-content: space-between;
   padding: 10px 0;
 
-  @media (max-width: 600px) {
+  @include media-breakpoint-down(md) {
     flex-direction: column;
     align-items: flex-start;
 
@@ -36,20 +28,6 @@
   }
 }
 
-footer {
-  width: 100%;
-}
-
-:host {
-  flex: 1;
-  display: flex;
-  flex-direction: column;
-}
-
-main {
-  flex: 1;
-}
-
 mat-toolbar {
   span {
     max-width: 100%;
@@ -57,7 +35,7 @@ mat-toolbar {
     text-overflow: ellipsis;
     white-space: normal;
 
-    @media (max-width: 600px) {
+    @include media-breakpoint-down(md) {
       font-size: 14px;
       line-height: 1.4;
     }
@@ -77,13 +55,13 @@ mat-button-toggle {
 
   &.mat-button-toggle-checked {
     &[value="true"] {
-      background-color: rgba(#28a745, 0.2);
-      color: #28a745;
+      background-color: rgba($success, 0.2);
+      color: $success;
     }
 
     &[value="false"] {
-      background-color: rgba(#dc3545, 0.2);
-      color: #dc3545;
+      background-color: rgba($danger, 0.2);
+      color: $danger;
     }
   }
 
@@ -107,7 +85,7 @@ mat-card {
   margin-left: -20px;
   margin-right: -20px;
 
-  @media (max-width: 600px) {
+  @include media-breakpoint-down(md) {
     flex-direction: column;
     align-items: flex-start;
     margin: 0;
@@ -118,7 +96,7 @@ mat-card {
     margin-left: 20px;
     margin-right: 20px;
 
-    @media (max-width: 600px) {
+    @include media-breakpoint-down(md) {
       width: 100%;
       margin: 0;
 
@@ -143,7 +121,7 @@ mat-card {
     white-space: normal;
   }
 
-  @media (max-width: 600px) {
+  @include media-breakpoint-down(md) {
     align-items: flex-start;
   }
 }
@@ -151,26 +129,12 @@ mat-card {
 .unspecified {
   padding: 2px 5px;
   border-radius: 4px;
-  background: rgba(#c17a3c, 0.2);
-  color: #c17a3c;
+  background: rgba($warning, 0.2);
+  color: $warning;
 }
 
-footer {
-  padding: 30px 15px;
-  text-align: center;
-
-  > * {
-    opacity: .5;
-  }
-
-  a {
-    color: black;
-    text-decoration: none;
-    font-weight: bold;
-
-    &:hover {
-      color: #2D4496;
-      opacity: 1;
-    }
-  }
+:host {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
 }

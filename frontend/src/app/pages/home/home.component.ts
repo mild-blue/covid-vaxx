@@ -5,7 +5,7 @@ import { InsuranceCompany } from '@app/model/InsuranceCompany';
 import { MatDialog } from '@angular/material/dialog';
 import { QuestionService } from '@app/services/question/question.service';
 import { PatientService } from '@app/services/patient/patient.service';
-import { validatePersonalNumber, validatePhoneNumber } from '@app/app.validators';
+import { validatePersonalNumber, validatePhoneNumber } from '@app/validators/form.validators';
 import { DialogComponent } from '@app/components/dialog/dialog.component';
 
 @Component({

@@ -20,12 +20,16 @@ import { DialogComponent } from './components/dialog/dialog.component';
 import { MatDialogModule } from '@angular/material/dialog';
 import { HttpClientModule } from '@angular/common/http';
 import { HomeComponent } from './pages/home/home.component';
+import { ContainerComponent } from './components/container/container.component';
+import { FooterComponent } from './components/footer/footer.component';
 
 @NgModule({
   declarations: [
     AppComponent,
     DialogComponent,
-    HomeComponent
+    HomeComponent,
+    ContainerComponent,
+    FooterComponent
   ],
   imports: [
     BrowserModule,

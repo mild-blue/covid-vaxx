@@ -5,7 +5,7 @@
 <main>
   <mat-horizontal-stepper [linear]="true">
     <mat-step *ngIf="basicInfoForm" [completed]="canProceedToStep2" label="Osobní informace">
-      <div class="container">
+      <app-container>
         <mat-card>
           <mat-card-content>
             <form [formGroup]="basicInfoForm">
@@ -54,10 +54,10 @@
             Další krok
           </button>
         </div>
-      </div>
+      </app-container>
     </mat-step>
     <mat-step label="Zdravotní informace" [completed]="canProceedToStep3">
-      <div class="container">
+      <app-container>
         <mat-card class="py-0">
           <mat-card-content>
             <form>
@@ -83,10 +83,10 @@
             Další krok
           </button>
         </div>
-      </div>
+      </app-container>
     </mat-step>
     <mat-step label="Odeslání požadavku">
-      <div class="container container--wide">
+      <app-container [wide]="true">
         <div class="confirmation-step">
           <mat-card *ngIf="basicInfoForm" class="py-0">
             <mat-card-content>
@@ -171,14 +171,10 @@
             Odeslat požadavek
           </button>
         </div>
-      </div>
+      </app-container>
     </mat-step>
   </mat-horizontal-stepper>
 </main>
-
-<footer>
-  <span>Powered by </span><a href="https://mild.blue" target="_blank">mild.blue</a>
-</footer>
 
 <ng-template #unspecified>
   <span class="unspecified">
