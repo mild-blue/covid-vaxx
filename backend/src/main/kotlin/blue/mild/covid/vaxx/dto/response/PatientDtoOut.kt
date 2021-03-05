@@ -1,7 +1,8 @@
-package blue.mild.covid.vaxx.dto
+package blue.mild.covid.vaxx.dto.response
 
 import blue.mild.covid.vaxx.dao.InsuranceCompany
 import java.time.Instant
+import blue.mild.covid.vaxx.dto.AnswerDto
 import java.util.UUID
 
 data class PatientDtoOut(
