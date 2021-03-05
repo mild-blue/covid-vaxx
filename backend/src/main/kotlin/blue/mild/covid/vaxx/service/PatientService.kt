@@ -3,8 +3,8 @@ package blue.mild.covid.vaxx.service
 import blue.mild.covid.vaxx.dao.Answer
 import blue.mild.covid.vaxx.dao.Patient
 import blue.mild.covid.vaxx.dto.AnswerDto
+import blue.mild.covid.vaxx.dto.PatientRegistrationDto
 import blue.mild.covid.vaxx.dto.request.PatientCreatedDtoOut
-import blue.mild.covid.vaxx.dto.request.PatientRegistrationDtoIn
 import blue.mild.covid.vaxx.dto.response.PatientDeletedDtoOut
 import blue.mild.covid.vaxx.dto.response.PatientDtoOut
 import blue.mild.covid.vaxx.error.entityNotFound
@@ -61,19 +61,21 @@ class PatientService(
     suspend fun getPatientsByEmail(email: String): List<PatientDtoOut> =
         newSuspendedTransaction { getAndMapPatients { Patient.email eq email } }
 
-    suspend fun savePatient(patientRegistrationDto: PatientRegistrationDtoIn) = newSuspendedTransaction {
-        validationService.validatePatientRegistrationAndThrow(patientRegistrationDto)
+    suspend fun savePatient(patientRegistrationDto: PatientRegistrationDto) = newSuspendedTransaction {
+        val (registration, registrationRemoteHost) = patientRegistrationDto
+        validationService.validatePatientRegistrationAndThrow(registration)
 
         val (entityId, stringId) = entityIdProvider.generateId()
 
         Patient.insert {
             it[id] = stringId
-            it[firstName] = patientRegistrationDto.firstName
-            it[lastName] = patientRegistrationDto.lastName
-            it[personalNumber] = normalizePersonalNumber(patientRegistrationDto.personalNumber)
-            it[phoneNumber] = patientRegistrationDto.phoneNumber
-            it[email] = patientRegistrationDto.email
-            it[insuranceCompany] = patientRegistrationDto.insuranceCompany
+            it[firstName] = registration.firstName
+            it[lastName] = registration.lastName
+            it[personalNumber] = normalizePersonalNumber(registration.personalNumber)
+            it[phoneNumber] = registration.phoneNumber
+            it[email] = registration.email
+            it[insuranceCompany] = registration.insuranceCompany
+            it[remoteHost] = registrationRemoteHost
         }
 
         val now = instantTimeProvider.now()

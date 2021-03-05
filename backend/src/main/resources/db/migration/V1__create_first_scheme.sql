@@ -41,6 +41,7 @@ CREATE TABLE patients
     phone_number      VARCHAR(13)        NOT NULL,
     email             VARCHAR(256)       NOT NULL,
     insurance_company VARCHAR(4)         NOT NULL,
+    remote_host       VARCHAR(45)        NOT NULL,
     PRIMARY KEY (id)
 );
 

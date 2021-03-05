@@ -3,6 +3,7 @@ package blue.mild.covid.vaxx.routes
 import blue.mild.covid.vaxx.auth.UserPrincipal
 import blue.mild.covid.vaxx.auth.authorizeRoute
 import blue.mild.covid.vaxx.dao.UserRole
+import blue.mild.covid.vaxx.dto.PatientRegistrationDto
 import blue.mild.covid.vaxx.dto.request.PatientCreatedDtoOut
 import blue.mild.covid.vaxx.dto.request.PatientIdDtoIn
 import blue.mild.covid.vaxx.dto.request.PatientQueryDtoIn
@@ -10,6 +11,7 @@ import blue.mild.covid.vaxx.dto.request.PatientRegistrationDtoIn
 import blue.mild.covid.vaxx.dto.response.PatientDeletedDtoOut
 import blue.mild.covid.vaxx.dto.response.PatientDtoOut
 import blue.mild.covid.vaxx.extensions.di
+import blue.mild.covid.vaxx.extensions.request
 import blue.mild.covid.vaxx.service.PatientService
 import com.papsign.ktor.openapigen.route.info
 import com.papsign.ktor.openapigen.route.path.auth.delete
@@ -21,6 +23,7 @@ import com.papsign.ktor.openapigen.route.path.normal.get
 import com.papsign.ktor.openapigen.route.path.normal.post
 import com.papsign.ktor.openapigen.route.response.respond
 import com.papsign.ktor.openapigen.route.route
+import io.ktor.features.origin
 import org.kodein.di.instance
 import pw.forst.tools.katlib.asList
 
@@ -64,7 +67,7 @@ private fun NormalOpenAPIRoute.openRoutes() {
         post<Unit, PatientCreatedDtoOut, PatientRegistrationDtoIn>(
             info("Save patient registration to the database.")
         ) { _, patientRegistration ->
-            respond(patientService.savePatient(patientRegistration))
+            respond(patientService.savePatient(PatientRegistrationDto(patientRegistration, request.origin.remoteHost)))
         }
 
     }
@@ -108,7 +111,7 @@ private fun NormalOpenAPIRoute.authorizedRoutes() {
             post<Unit, PatientCreatedDtoOut, PatientRegistrationDtoIn, UserPrincipal>(
                 info("Save patient registration to the database.")
             ) { _, patientRegistration ->
-                respond(patientService.savePatient(patientRegistration))
+                respond(patientService.savePatient(PatientRegistrationDto(patientRegistration, request.origin.remoteHost)))
             }
         }
     }

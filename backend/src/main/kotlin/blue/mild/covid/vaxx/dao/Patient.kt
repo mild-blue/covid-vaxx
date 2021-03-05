@@ -16,6 +16,7 @@ object Patient : Table("patients") {
     val phoneNumber = varchar("phone_number", 13)
     val email = varchar("email", 256)
     val insuranceCompany = enumerationByName("insurance_company", 4, InsuranceCompany::class)
+    val remoteHost = varchar("remote_host", 45) // for size see https://stackoverflow.com/a/166157/7169288
 
     override val primaryKey = PrimaryKey(id)
 }
