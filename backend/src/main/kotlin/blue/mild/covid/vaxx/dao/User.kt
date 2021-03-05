@@ -1,14 +1,12 @@
 package blue.mild.covid.vaxx.dao
 
-import org.jetbrains.exposed.sql.Column
 import org.jetbrains.exposed.sql.Table
 import org.jetbrains.exposed.sql.`java-time`.timestamp
-import java.time.Instant
 
 object User : Table("users") {
     val id = varchar("id", 36)
-    val created: Column<Instant> = timestamp("created")
-    val updated: Column<Instant> = timestamp("updated")
+    val created = timestamp("created")
+    val updated = timestamp("updated")
 
     val username = varchar("username", 128)
     val passwordHash = varchar("password_hash", 128)
