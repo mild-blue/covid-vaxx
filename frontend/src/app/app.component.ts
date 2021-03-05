@@ -5,7 +5,7 @@ import { InsuranceCompany } from './model/InsuranceCompany';
 import { MatDialog } from '@angular/material/dialog';
 import { DialogComponent } from './components/dialog/dialog.component';
 import { PatientService } from './services/patient/patient.service';
-import { validatePersonalNumber, validatePhoneNumber } from './app.validators';
+import { validatePersonalNumber, validatePhoneNumber, validateEmail } from './app.validators';
 import { QuestionService } from '@app/services/question/question.service';
 
 @Component({
@@ -37,7 +37,7 @@ export class AppComponent implements OnInit {
       personalNumber: ['', [Validators.required, validatePersonalNumber]],
       insuranceCompany: ['', Validators.required],
       phoneNumber: ['', [Validators.required, validatePhoneNumber]],
-      email: ['', [Validators.required, Validators.email]]
+      email: ['', [Validators.required, validateEmail]]
     });
 
     this._initQuestions();
