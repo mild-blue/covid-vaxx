@@ -20,7 +20,10 @@ import org.jetbrains.exposed.sql.transactions.experimental.newSuspendedTransacti
 import pw.forst.tools.katlib.toUuid
 import java.util.UUID
 
-class PatientService(private val validationService: ValidationService) {
+class PatientService(
+    private val validationService: ValidationService,
+    private val instantTimeProvider: InstantTimeProvider
+) {
 
     suspend fun getPatientById(patientId: UUID): PatientDtoOut = newSuspendedTransaction {
         val data = Patient
@@ -79,6 +82,7 @@ class PatientService(private val validationService: ValidationService) {
         }
 
         Answer.batchInsert(patientRegistrationDto.answers) {
+            this[Answer.created] = instantTimeProvider.now()
             this[Answer.patientId] = patientIdString
             this[Answer.questionId] = it.questionId.toString()
             this[Answer.value] = it.value
