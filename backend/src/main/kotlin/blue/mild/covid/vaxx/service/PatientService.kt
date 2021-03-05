@@ -4,7 +4,7 @@ import blue.mild.covid.vaxx.dao.Answer
 import blue.mild.covid.vaxx.dao.Patient
 import blue.mild.covid.vaxx.dto.AnswerDto
 import blue.mild.covid.vaxx.dto.PatientRegistrationDto
-import blue.mild.covid.vaxx.dto.request.PatientCreatedDtoOut
+import blue.mild.covid.vaxx.dto.response.PatientCreatedDtoOut
 import blue.mild.covid.vaxx.dto.response.PatientDeletedDtoOut
 import blue.mild.covid.vaxx.dto.response.PatientDtoOut
 import blue.mild.covid.vaxx.error.entityNotFound

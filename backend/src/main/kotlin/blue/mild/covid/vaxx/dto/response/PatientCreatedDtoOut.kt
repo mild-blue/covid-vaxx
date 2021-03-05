@@ -1,4 +1,4 @@
-package blue.mild.covid.vaxx.dto.request
+package blue.mild.covid.vaxx.dto.response
 
 import java.util.UUID
 

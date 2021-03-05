@@ -4,10 +4,10 @@ import blue.mild.covid.vaxx.auth.UserPrincipal
 import blue.mild.covid.vaxx.auth.authorizeRoute
 import blue.mild.covid.vaxx.dao.UserRole
 import blue.mild.covid.vaxx.dto.PatientRegistrationDto
-import blue.mild.covid.vaxx.dto.request.PatientCreatedDtoOut
 import blue.mild.covid.vaxx.dto.request.PatientIdDtoIn
 import blue.mild.covid.vaxx.dto.request.PatientQueryDtoIn
 import blue.mild.covid.vaxx.dto.request.PatientRegistrationDtoIn
+import blue.mild.covid.vaxx.dto.response.PatientCreatedDtoOut
 import blue.mild.covid.vaxx.dto.response.PatientDeletedDtoOut
 import blue.mild.covid.vaxx.dto.response.PatientDtoOut
 import blue.mild.covid.vaxx.extensions.di

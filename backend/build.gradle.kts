@@ -43,10 +43,8 @@ dependencies {
     implementation("io.ktor", "ktor-client-apache", ktorVersion)
     implementation("io.ktor", "ktor-client-logging-jvm", ktorVersion)
 
+    // swagger
     implementation("com.github.papsign", "Ktor-OpenAPI-Generator", "0.2-beta.14")
-
-    // logging
-    implementation("io.github.microutils", "kotlin-logging", "2.0.4")
 
     // Jackson JSON
     val jacksonVersion = "2.12.1"
@@ -56,8 +54,10 @@ dependencies {
 
     // logging
     implementation("io.github.microutils", "kotlin-logging", "2.0.4")
-    // if-else in logback.xml
     implementation("ch.qos.logback", "logback-classic", "1.2.3")
+
+    // crypto 
+    implementation("com.lambdaworks", "scrypt", "1.4.0")
 
     // DI
     val kodeinVersion = "7.4.0"

@@ -7,12 +7,14 @@ import com.papsign.ktor.openapigen.route.path.normal.NormalOpenAPIRoute
 import io.ktor.application.feature
 import io.ktor.auth.authenticate
 import io.ktor.routing.application
+import io.ktor.util.pipeline.ContextDsl
 import org.kodein.di.instance
 
 /**
  * Require authorization for the given route. If [requireOneOf] is specified the route will require
  * one of the roles to be present in the JWT claims.
  */
+@ContextDsl // just to make it fancy in Idea
 fun NormalOpenAPIRoute.authorizeRoute(
     requireOneOf: Set<UserRole> = emptySet(),
     route: OpenAPIAuthenticatedRoute<UserPrincipal>.() -> Unit
