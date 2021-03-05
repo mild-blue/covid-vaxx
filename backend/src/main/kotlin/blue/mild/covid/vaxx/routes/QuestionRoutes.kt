@@ -17,6 +17,7 @@ fun NormalOpenAPIRoute.questionRoutes() {
     val service by di().instance<QuestionService>()
 
     // TODO consider allowing fetching behind auth
+    // TODO #70 once ready, put behind captcha auth
     route(Routes.question) {
         get<Unit, List<QuestionDtoOut>>(
             info("Returns all questions that patient needs to answer.")
