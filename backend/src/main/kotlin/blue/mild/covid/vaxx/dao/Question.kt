@@ -9,7 +9,6 @@ object Question : Table("questions") {
     val id = varchar("id", 36)
     val created: Column<Instant> = timestamp("created")
     val updated: Column<Instant?> = timestamp("updated").nullable()
-    val deleted: Column<Instant?> = timestamp("deleted").nullable()
 
     val placeholder = varchar("placeholder", 256)
 

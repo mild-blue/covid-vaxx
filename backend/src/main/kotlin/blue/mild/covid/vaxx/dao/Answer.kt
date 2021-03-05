@@ -8,7 +8,6 @@ import java.time.Instant
 object Answer : Table("answers") {
     val created: Column<Instant> = timestamp("created")
     val updated: Column<Instant?> = timestamp("updated").nullable()
-    val deleted: Column<Instant?> = timestamp("deleted").nullable()
 
     val questionId = varchar("question_id", 36) references Question.id
     val patientId = varchar("patient_id", 36) references Patient.id
