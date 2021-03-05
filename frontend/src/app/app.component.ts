@@ -5,7 +5,7 @@ import { InsuranceCompany } from './model/InsuranceCompany';
 import { MatDialog } from '@angular/material/dialog';
 import { DialogComponent } from './components/dialog/dialog.component';
 import { PatientService } from './services/patient/patient.service';
-import { validatePersonalNumber, validatePhoneNumber } from './app.validators';
+import { validatePersonalNumber, validatePhoneNumber, validateEmail } from './app.validators';
 import { QuestionService } from '@app/services/question/question.service';
 
 @Component({
@@ -32,12 +32,12 @@ export class AppComponent implements OnInit {
 
   ngOnInit() {
     this.basicInfoForm = this._formBuilder.group({
-      firstName: ['', Validators.required],
-      lastName: ['', Validators.required],
-      personalNumber: ['', [Validators.required, validatePersonalNumber]],
+      firstName: ['', Validators.required, Validators.maxLength(64)],
+      lastName: ['', Validators.required, Validators.maxLength(64)],
+      personalNumber: ['', [Validators.required, validatePersonalNumber], Validators.maxLength(11)],
       insuranceCompany: ['', Validators.required],
-      phoneNumber: ['', [Validators.required, validatePhoneNumber]],
-      email: ['', [Validators.required, Validators.email]]
+      phoneNumber: ['', [Validators.required, validatePhoneNumber, Validators.maxLength(32)]],
+      email: ['', [Validators.required, validateEmail, Validators.maxLength(128)]]
     });
 
     this._initQuestions();
