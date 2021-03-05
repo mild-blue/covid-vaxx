@@ -32,12 +32,12 @@ export class AppComponent implements OnInit {
 
   ngOnInit() {
     this.basicInfoForm = this._formBuilder.group({
-      firstName: ['', Validators.required],
-      lastName: ['', Validators.required],
-      personalNumber: ['', [Validators.required, validatePersonalNumber]],
+      firstName: ['', Validators.required, Validators.maxLength(64)],
+      lastName: ['', Validators.required, Validators.maxLength(64)],
+      personalNumber: ['', [Validators.required, validatePersonalNumber], Validators.maxLength(11)],
       insuranceCompany: ['', Validators.required],
-      phoneNumber: ['', [Validators.required, validatePhoneNumber]],
-      email: ['', [Validators.required, validateEmail]]
+      phoneNumber: ['', [Validators.required, validatePhoneNumber, Validators.maxLength(32)]],
+      email: ['', [Validators.required, validateEmail, Validators.maxLength(128)]]
     });
 
     this._initQuestions();
