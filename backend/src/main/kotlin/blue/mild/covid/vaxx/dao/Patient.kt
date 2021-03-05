@@ -8,7 +8,7 @@ import java.time.Instant
 object Patient : Table("patients") {
     val id = varchar("id", 36)
     val created: Column<Instant> = timestamp("created")
-    val updated: Column<Instant?> = timestamp("updated").nullable()
+    val updated: Column<Instant> = timestamp("updated")
 
     val firstName = varchar("first_name", 256)
     val lastName = varchar("last_name", 256)

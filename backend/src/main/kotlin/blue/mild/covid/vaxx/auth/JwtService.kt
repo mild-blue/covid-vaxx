@@ -2,7 +2,7 @@ package blue.mild.covid.vaxx.auth
 
 import blue.mild.covid.vaxx.dao.UserRole
 import blue.mild.covid.vaxx.dto.JwtConfigurationDto
-import blue.mild.covid.vaxx.dto.response.JwtResponseDtoOut
+import blue.mild.covid.vaxx.dto.response.BearerTokenDtoOut
 import com.auth0.jwt.JWT
 import com.auth0.jwt.JWTCreator
 import com.auth0.jwt.JWTVerifier
@@ -38,7 +38,7 @@ class JwtService(
     /**
      * Generate and sign JWT for given principal.¬
      */
-    fun generateToken(principal: UserPrincipal): JwtResponseDtoOut {
+    fun generateToken(principal: UserPrincipal): BearerTokenDtoOut {
         val builder = JWT.create()
             .withIssuer(jwtConfiguration.issuer)
             .withAudience(jwtConfiguration.audience)
@@ -49,7 +49,7 @@ class JwtService(
         return when (principal) {
             is PatientPrincipal -> builder.forPatientRegistration()
             is RegisteredUserPrincipal -> builder.forRegisteredUser(principal)
-        }.sign(algorithm).let(::JwtResponseDtoOut)
+        }.sign(algorithm).let(::BearerTokenDtoOut)
     }
 
     private fun JWTCreator.Builder.forPatientRegistration() = withSubject(PUBLIC_SUBJECT)
