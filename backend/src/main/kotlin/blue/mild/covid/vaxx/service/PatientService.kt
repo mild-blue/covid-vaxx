@@ -41,7 +41,9 @@ class PatientService(private val validationService: ValidationService) {
                     phoneNumber = it[Patient.phoneNumber],
                     email = it[Patient.email],
                     insuranceCompany = it[Patient.insuranceCompany],
-                    answers = answers
+                    answers = answers,
+                    created = it[Patient.created],
+                    updated = it[Patient.updated]
                 )
             } ?: throw entityNotFound<Patient>(Patient::id, patientId)
     }
@@ -111,7 +113,9 @@ class PatientService(private val validationService: ValidationService) {
                             phoneNumber = it[Patient.phoneNumber],
                             email = it[Patient.email],
                             insuranceCompany = it[Patient.insuranceCompany],
-                            answers = answers.getValue(it[Patient.id])
+                            answers = answers.getValue(it[Patient.id]),
+                            created = it[Patient.created],
+                            updated = it[Patient.updated]
                         )
                     }
             }
