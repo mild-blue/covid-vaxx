@@ -12,6 +12,7 @@ import blue.mild.covid.vaxx.routes.Routes
 import blue.mild.covid.vaxx.routes.registerRoutes
 import blue.mild.covid.vaxx.utils.createLogger
 import com.auth0.jwt.JWTVerifier
+import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule
 import com.papsign.ktor.openapigen.OpenAPIGen
 import com.papsign.ktor.openapigen.openAPIGen
 import com.papsign.ktor.openapigen.route.apiRouting
@@ -41,7 +42,6 @@ import org.flywaydb.core.Flyway
 import org.kodein.di.instance
 import org.kodein.di.ktor.di
 import org.slf4j.event.Level
-import java.text.DateFormat
 import java.util.UUID
 import kotlin.random.Random
 import kotlin.reflect.KType
@@ -125,7 +125,7 @@ private fun Application.installBasics() {
     // initialize Jackson
     install(ContentNegotiation) {
         jackson {
-            dateFormat = DateFormat.getDateTimeInstance()
+            registerModule(JavaTimeModule())
         }
     }
     // enable CORS
