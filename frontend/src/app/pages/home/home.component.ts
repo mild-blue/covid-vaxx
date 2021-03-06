@@ -6,6 +6,7 @@ import { QuestionService } from '@app/services/question/question.service';
 import { PatientService } from '@app/services/patient/patient.service';
 import { validatePersonalNumber, validatePhoneNumber } from '@app/validators/form.validators';
 import { AlertService } from '@app/services/alert/alert.service';
+import { ActivatedRoute } from '@angular/router';
 
 @Component({
   selector: 'app-home',
@@ -23,17 +24,22 @@ export class HomeComponent implements OnInit {
   public agreementCheckboxValue: boolean = false;
   public confirmationCheckboxValue: boolean = false;
 
-  constructor(private _formBuilder: FormBuilder,
+  constructor(private _route: ActivatedRoute,
+              private _formBuilder: FormBuilder,
               private _questionService: QuestionService,
               private _patientService: PatientService,
               private _alertService: AlertService) {
+    const personalNumber = this._route.snapshot.paramMap.get('personalNumber');
+    if (personalNumber) {
+      this.patientInfo.personalNumber = personalNumber;
+    }
   }
 
   ngOnInit() {
     this.basicInfoForm = this._formBuilder.group({
       firstName: ['', Validators.required],
       lastName: ['', Validators.required],
-      personalNumber: ['', [Validators.required, validatePersonalNumber]],
+      personalNumber: [this.patientInfo.personalNumber ?? '', [Validators.required, validatePersonalNumber]],
       insuranceCompany: ['', Validators.required],
       phoneNumber: ['', [Validators.required, validatePhoneNumber]],
       email: ['', [Validators.required, Validators.email]]

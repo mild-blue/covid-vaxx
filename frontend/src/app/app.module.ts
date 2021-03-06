@@ -16,7 +16,7 @@ import { MatDividerModule } from '@angular/material/divider';
 import { MatCardModule } from '@angular/material/card';
 import { MatSelectModule } from '@angular/material/select';
 import { MatCheckboxModule } from '@angular/material/checkbox';
-import { DialogComponent } from './components/dialog/dialog.component';
+import { PatientRegisteredComponent } from './components/dialogs/patient-registered/patient-registered.component';
 import { MatDialogModule } from '@angular/material/dialog';
 import { HTTP_INTERCEPTORS, HttpClientModule } from '@angular/common/http';
 import { HomeComponent } from './pages/home/home.component';
@@ -31,17 +31,19 @@ import { AuthInterceptor } from '@app/interceptors/auth/auth.interceptor';
 import { MatProgressBarModule } from '@angular/material/progress-bar';
 import { MatBadgeModule } from '@angular/material/badge';
 import { BackButtonComponent } from './components/back-button/back-button.component';
+import { NoPatientFoundComponent } from './components/dialogs/no-patient-found/no-patient-found.component';
 
 @NgModule({
   declarations: [
     AppComponent,
-    DialogComponent,
+    PatientRegisteredComponent,
     HomeComponent,
     ContainerComponent,
     FooterComponent,
     AdminComponent,
     LoginComponent,
-    BackButtonComponent
+    BackButtonComponent,
+    NoPatientFoundComponent
   ],
   imports: [
     BrowserModule,

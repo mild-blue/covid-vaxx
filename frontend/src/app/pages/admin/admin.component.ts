@@ -46,11 +46,17 @@ export class AdminComponent implements OnInit {
     try {
       this.patients = await this._patientService.findPatientByPersonalNumber(personalNumber);
       this._searchHistoryService.saveSearch(personalNumber);
+      if (!this.patients.length) {
+        this._alertService.noPatientFoundDialog(personalNumber);
+      }
     } catch (e) {
       this._alertService.toast(e.message);
     } finally {
       this.loading = false;
       this.submitted = false;
+      this.personalNumber.setValue('');
+      this.personalNumber.clearValidators();
+      this.personalNumber.updateValueAndValidity();
     }
   }
 

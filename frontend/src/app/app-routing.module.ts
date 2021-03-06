@@ -7,8 +7,7 @@ import { AuthGuard } from '@app/guards/auth/auth.guard';
 
 const routes: Routes = [
   {
-    path: '',
-    pathMatch: 'full',
+    path: 'registration',
     component: HomeComponent
   },
   {
@@ -22,6 +21,7 @@ const routes: Routes = [
   },
 
   // Redirect all to HomeComponent
+  { path: '', pathMatch: 'full', redirectTo: 'registration' },
   { path: '**', redirectTo: '' }
 ];
 
