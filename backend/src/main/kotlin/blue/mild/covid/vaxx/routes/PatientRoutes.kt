@@ -19,8 +19,6 @@ import com.papsign.ktor.openapigen.route.path.auth.delete
 import com.papsign.ktor.openapigen.route.path.auth.get
 import com.papsign.ktor.openapigen.route.path.auth.post
 import com.papsign.ktor.openapigen.route.path.normal.NormalOpenAPIRoute
-import com.papsign.ktor.openapigen.route.path.normal.delete
-import com.papsign.ktor.openapigen.route.path.normal.get
 import com.papsign.ktor.openapigen.route.path.normal.post
 import com.papsign.ktor.openapigen.route.response.respond
 import com.papsign.ktor.openapigen.route.route
@@ -41,38 +39,12 @@ fun NormalOpenAPIRoute.patientRoutes() {
 private fun NormalOpenAPIRoute.openRoutes() {
     val patientService by di().instance<PatientService>()
     route(Routes.patient) {
-        get<PatientIdDtoIn, PatientDtoOut>(
-            info("Get user by ID.")
-        ) { (id) ->
-            respond(patientService.getPatientById(id))
-        }
-
-        delete<PatientIdDtoIn, PatientDeletedDtoOut>(
-            info("Delete user by ID.")
-        ) { (id) ->
-            respond(patientService.deletePatientById(id))
-        }
-
-        get<PatientQueryDtoIn, List<PatientDtoOut>>(
-            info("Search endpoint for user, only single parameter is taken in account.")
-        ) { patientQuery ->
-            val response = when {
-                patientQuery.id != null -> patientService.getPatientById(patientQuery.id).asList()
-                patientQuery.personalNumber != null -> patientService.getPatientsByPersonalNumber(patientQuery.personalNumber)
-                patientQuery.email != null -> patientService.getPatientsByEmail(patientQuery.email)
-                else -> patientService.getAllPatients()
-            }
-            respond(response)
-        }
-
         post<Unit, PatientRegisteredDtoOut, PatientRegistrationDtoIn>(
             info("Save patient registration to the database.")
         ) { _, patientRegistration ->
             respond(patientService.savePatient(PatientRegistrationDto(patientRegistration, request.determineRealIp())))
         }
-
     }
-
 }
 
 // TODO #70 delete authorized prefix
@@ -80,7 +52,7 @@ private fun NormalOpenAPIRoute.authorizedRoutes() {
     val patientService by di().instance<PatientService>()
     // routes for registered users only
     authorizeRoute(requireOneOf = setOf(UserRole.ADMIN, UserRole.DOCTOR)) {
-        route("/authorized${Routes.patient}") {
+        route(Routes.patient) {
             get<PatientIdDtoIn, PatientDtoOut, UserPrincipal>(
                 info("Get user by ID.")
             ) { (id) ->
