@@ -9,22 +9,26 @@
 
 <main>
   <app-container>
-    <ng-container *ngIf="!patients.length" [ngTemplateOutlet]="search"></ng-container>
-
-    <h1 *ngIf="patients.length" class="mat-h1">
-      <span [matBadge]="patients.length" [matBadgeOverlap]="false">Nalezení pacienti</span>
-    </h1>
-
-    <div class="scrollable">
-      <mat-card *ngFor="let patient of patients">
-        <mat-card-header>
-          <h2 class="mat-h2">{{ patient.firstName }} {{ patient.lastName }}</h2>
-        </mat-card-header>
-
-      </mat-card>
-    </div>
+    <ng-container *ngIf="patients.length then results else search"></ng-container>
   </app-container>
 </main>
+
+<ng-template #results>
+
+  <app-back-button (click)="searchAgain()">
+    Vyhledat jiného pacienta
+  </app-back-button>
+
+  <h1 class="mat-h1">
+    <span [matBadge]="patients.length" [matBadgeOverlap]="false">Nalezení pacienti</span>
+  </h1>
+
+  <mat-card *ngFor="let patient of patients">
+    <mat-card-header>
+      <h2 class="mat-h2">{{ patient.firstName }} {{ patient.lastName }}</h2>
+    </mat-card-header>
+  </mat-card>
+</ng-template>
 
 <ng-template #search>
   <h1 class="mat-h1">Vyhledávání pacienta</h1>
@@ -45,10 +49,15 @@
     </mat-card-content>
   </mat-card>
 
-  <ng-container *ngIf="searchHistory.length">
+  <ng-container>
     <div class="history__header">
-      <h3 class="mat-h3">Historie vyhledávání</h3>
-      <button (click)="clearHistory()" mat-button color="warn">Vymazat historii</button>
+      <h3 class="mat-h3">
+        <span [matBadge]="searchHistory.length" [matBadgeOverlap]="false">Historie vyhledávání</span>
+      </h3>
+      <button *ngIf="searchHistory.length"
+              (click)="clearHistory()" mat-button color="warn">
+        Vymazat historii
+      </button>
     </div>
 
     <mat-card class="history">

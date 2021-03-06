@@ -4,6 +4,7 @@ import { validatePersonalNumber } from '@app/validators/form.validators';
 import { AlertService } from '@app/services/alert/alert.service';
 import { PatientService } from '@app/services/patient/patient.service';
 import { Patient } from '@app/model/Patient';
+import { SearchHistoryService } from '@app/services/search-history/search-history.service';
 
 @Component({
   selector: 'app-admin',
@@ -19,6 +20,7 @@ export class AdminComponent implements OnInit {
   public submitted: boolean = false;
 
   constructor(private _alertService: AlertService,
+              private _searchHistoryService: SearchHistoryService,
               private _patientService: PatientService) {
   }
 
@@ -26,7 +28,7 @@ export class AdminComponent implements OnInit {
   }
 
   get searchHistory(): string[] {
-    return this._patientService.searchHistory;
+    return this._searchHistoryService.searchHistory;
   }
 
   public async onSubmit(): Promise<void> {
@@ -43,7 +45,7 @@ export class AdminComponent implements OnInit {
 
     try {
       this.patients = await this._patientService.findPatientByPersonalNumber(personalNumber);
-      this._patientService.saveSearch(personalNumber);
+      this._searchHistoryService.saveSearch(personalNumber);
     } catch (e) {
       this._alertService.toast(e.message);
     } finally {
@@ -53,6 +55,10 @@ export class AdminComponent implements OnInit {
   }
 
   public clearHistory(): void {
-    this._patientService.clearHistory();
+    this._searchHistoryService.clearHistory();
+  }
+
+  public searchAgain(): void {
+    this.patients = [];
   }
 }

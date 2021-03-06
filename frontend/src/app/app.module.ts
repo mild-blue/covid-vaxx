@@ -30,6 +30,7 @@ import { ErrorInterceptor } from '@app/interceptors/error/error.interceptor';
 import { AuthInterceptor } from '@app/interceptors/auth/auth.interceptor';
 import { MatProgressBarModule } from '@angular/material/progress-bar';
 import { MatBadgeModule } from '@angular/material/badge';
+import { BackButtonComponent } from './components/back-button/back-button.component';
 
 @NgModule({
   declarations: [
@@ -39,7 +40,8 @@ import { MatBadgeModule } from '@angular/material/badge';
     ContainerComponent,
     FooterComponent,
     AdminComponent,
-    LoginComponent
+    LoginComponent,
+    BackButtonComponent
   ],
   imports: [
     BrowserModule,
