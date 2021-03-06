@@ -14,6 +14,7 @@ object Routes {
 
     val registeredUserLogin = apiName("login")
     val registrationCaptcha = apiName("captcha")
+    val userRegistration = apiName("register")
 
     const val openApiJson = "/openapi.json"
     const val swaggerUi = "/swagger-ui"

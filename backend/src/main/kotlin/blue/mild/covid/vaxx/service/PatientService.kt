@@ -3,10 +3,10 @@ package blue.mild.covid.vaxx.service
 import blue.mild.covid.vaxx.dao.Answer
 import blue.mild.covid.vaxx.dao.Patient
 import blue.mild.covid.vaxx.dto.AnswerDto
-import blue.mild.covid.vaxx.dto.request.PatientCreatedDtoOut
-import blue.mild.covid.vaxx.dto.request.PatientRegistrationDtoIn
+import blue.mild.covid.vaxx.dto.PatientRegistrationDto
 import blue.mild.covid.vaxx.dto.response.PatientDeletedDtoOut
 import blue.mild.covid.vaxx.dto.response.PatientDtoOut
+import blue.mild.covid.vaxx.dto.response.PatientRegisteredDtoOut
 import blue.mild.covid.vaxx.error.entityNotFound
 import org.jetbrains.exposed.sql.Op
 import org.jetbrains.exposed.sql.SqlExpressionBuilder
@@ -61,26 +61,28 @@ class PatientService(
     suspend fun getPatientsByEmail(email: String): List<PatientDtoOut> =
         newSuspendedTransaction { getAndMapPatients { Patient.email eq email } }
 
-    suspend fun savePatient(patientRegistrationDto: PatientRegistrationDtoIn) = newSuspendedTransaction {
-        validationService.validatePatientRegistrationAndThrow(patientRegistrationDto)
+    suspend fun savePatient(patientRegistrationDto: PatientRegistrationDto) = newSuspendedTransaction {
+        val (registration, registrationRemoteHost) = patientRegistrationDto
+        validationService.validatePatientRegistrationAndThrow(registration)
 
         val (entityId, stringId) = entityIdProvider.generateId()
 
         Patient.insert {
             it[id] = stringId
-            it[firstName] = patientRegistrationDto.firstName
-            it[lastName] = patientRegistrationDto.lastName
-            it[personalNumber] = normalizePersonalNumber(patientRegistrationDto.personalNumber)
-            it[phoneNumber] = patientRegistrationDto.phoneNumber
-            it[email] = patientRegistrationDto.email
-            it[insuranceCompany] = patientRegistrationDto.insuranceCompany
+            it[firstName] = registration.firstName
+            it[lastName] = registration.lastName
+            it[personalNumber] = normalizePersonalNumber(registration.personalNumber)
+            it[phoneNumber] = registration.phoneNumber
+            it[email] = registration.email
+            it[insuranceCompany] = registration.insuranceCompany
+            it[remoteHost] = registrationRemoteHost
         }
 
         val now = instantTimeProvider.now()
         // even though this statement prints multiple insert into statements
         // they are in a fact translated to one thanks to reWriteBatchedInserts=true
         // see https://github.com/JetBrains/Exposed/wiki/DSL#batch-insert
-        Answer.batchInsert(patientRegistrationDto.answers, shouldReturnGeneratedValues = false) {
+        Answer.batchInsert(registration.answers, shouldReturnGeneratedValues = false) {
             // we want to specify these values because DB defaults don't support in batch inserts
             // however, the real value will be set by the database once inserted
             this[Answer.created] = now
@@ -91,7 +93,7 @@ class PatientService(
             this[Answer.value] = it.value
         }
 
-        PatientCreatedDtoOut(entityId)
+        PatientRegisteredDtoOut(entityId)
     }
 
     suspend fun deletePatientById(patientId: UUID) = newSuspendedTransaction {

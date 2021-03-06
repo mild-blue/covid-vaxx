@@ -8,6 +8,7 @@ import blue.mild.covid.vaxx.dto.DatabaseConfigurationDto
 import blue.mild.covid.vaxx.dto.JwtConfigurationDto
 import blue.mild.covid.vaxx.error.installExceptionHandling
 import blue.mild.covid.vaxx.monitoring.CALL_ID
+import blue.mild.covid.vaxx.monitoring.REMOTE_HOST
 import blue.mild.covid.vaxx.routes.Routes
 import blue.mild.covid.vaxx.routes.registerRoutes
 import blue.mild.covid.vaxx.utils.createLogger
@@ -28,7 +29,9 @@ import io.ktor.features.CallId
 import io.ktor.features.CallLogging
 import io.ktor.features.ContentNegotiation
 import io.ktor.features.DefaultHeaders
+import io.ktor.features.XForwardedHeaderSupport
 import io.ktor.features.callId
+import io.ktor.features.origin
 import io.ktor.http.content.default
 import io.ktor.http.content.files
 import io.ktor.http.content.static
@@ -135,6 +138,8 @@ private fun Application.installBasics() {
         allowCredentials = true
         allowNonSimpleContentTypes = true
     }
+    // as we're running behind the proxy, we take remote host from X-Forwarded-From
+    install(XForwardedHeaderSupport)
 }
 
 // Install authentication.
@@ -195,6 +200,8 @@ private fun Application.installMonitoring() {
     install(CallLogging) {
         // put call id to the mdc
         mdc(CALL_ID) { it.callId }
+        mdc(REMOTE_HOST) { it.request.origin.remoteHost }
+
         // enable logging for all routes that are not /status
         // this filter does not influence MDC
         filter { it.request.uri != Routes.status }
