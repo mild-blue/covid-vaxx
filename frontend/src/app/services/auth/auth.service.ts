@@ -37,16 +37,16 @@ export class AuthService {
     return token.exp > (Date.now() / 1000);
   }
 
-  public login(email: string, password: string): Observable<User> {
+  public login(username: string, password: string): Observable<User> {
     return this._http.post(
-      `${environment.apiUrl}/user/login`,
-      { email, password }
+      `${environment.apiUrl}/login`,
+      { username, password }
     ).pipe(
       map((r: Object) => {
         const response = r as AuthResponse;
         const token = response.token;
         const decoded = jwt_decode(token) as DecodedToken;
-        const user: User = { email, token, decoded };
+        const user: User = { username, token, decoded };
 
         localStorage.setItem('user', JSON.stringify(user));
         this._currentUserSubject.next(user);

@@ -1,14 +1,23 @@
 export interface User {
-  email: string;
+  username: string;
   token: string;
   decoded: DecodedToken;
 }
 
 export interface DecodedToken {
   user_id: number;
-  // role: UserRole;
   iat: number;
   exp: number;
-  // type: UserTokenType;
+  role: UserRole;
+  type: UserTokenType;
 }
 
+export enum UserRole {
+  ADMIN = 'ADMIN',
+  DOCTOR = 'DOCTOR'
+}
+
+export enum UserTokenType {
+  RUP = 'RegisteredUserPrincipal',
+  UP = 'UserPrincipal'
+}

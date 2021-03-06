@@ -11,15 +11,15 @@
       <mat-card-content>
         <form [formGroup]="loginForm">
           <mat-form-field>
-            <mat-label>E-mail</mat-label>
-            <input matInput formControlName="email" placeholder="Váš e-mail" required>
+            <mat-label>Přihlašovací jméno</mat-label>
+            <input matInput formControlName="username" placeholder="Vaše přihlašovací jméno" required>
           </mat-form-field>
           <mat-form-field>
             <mat-label>Heslo</mat-label>
-            <input matInput formControlName="password" placeholder="Vaše heslo" required>
+            <input matInput formControlName="password" placeholder="Vaše heslo" type="password" required>
           </mat-form-field>
           <button (click)="onSubmit()"
-                  [disabled]="!loginForm.invalid"
+                  [disabled]="loginForm.invalid"
                   color="primary" mat-raised-button>
             Přihlásit
           </button>
