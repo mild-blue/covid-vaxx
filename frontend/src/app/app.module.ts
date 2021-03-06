@@ -28,6 +28,8 @@ import { MAT_SNACK_BAR_DEFAULT_OPTIONS, MatSnackBarModule } from '@angular/mater
 import { MatIconModule } from '@angular/material/icon';
 import { ErrorInterceptor } from '@app/interceptors/error/error.interceptor';
 import { AuthInterceptor } from '@app/interceptors/auth/auth.interceptor';
+import { MatProgressBarModule } from '@angular/material/progress-bar';
+import { MatBadgeModule } from '@angular/material/badge';
 
 @NgModule({
   declarations: [
@@ -59,7 +61,9 @@ import { AuthInterceptor } from '@app/interceptors/auth/auth.interceptor';
     MatCheckboxModule,
     MatDialogModule,
     MatSnackBarModule,
-    MatIconModule
+    MatIconModule,
+    MatProgressBarModule,
+    MatBadgeModule
   ],
   providers: [
     { provide: HTTP_INTERCEPTORS, useClass: AuthInterceptor, multi: true },

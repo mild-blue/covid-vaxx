@@ -1,0 +1,10 @@
+.mat-badge {
+  & > &-content {
+    right: auto !important;
+    padding: 0 7px;
+    width: auto !important;
+    min-width: 22px;
+    border-radius: 22px;
+    text-overflow: unset;
+  }
+}

@@ -2,24 +2,63 @@
   <span>Administrační sekce</span>
 </mat-toolbar>
 
+<div class="progress-bar__holder"
+     [class.visible]="loading">
+  <mat-progress-bar mode="indeterminate"></mat-progress-bar>
+</div>
+
 <main>
   <app-container>
-    <h1 class="mat-h1">Vyhledávání pacienta</h1>
-    <mat-card>
-      <mat-card-content>
-        <form (ngSubmit)="onSubmit()">
-          <mat-form-field class="">
-            <mat-label>Rodné číslo očkovaného</mat-label>
-            <input matInput [formControl]="personalNumber" placeholder="Zadejte rodné číslo" required>
-            <mat-hint>Rodné číslo ve formátu RRMMDD/ČČČ(Č)</mat-hint>
-          </mat-form-field>
-          <button color="primary"
-                  [disabled]="personalNumber.invalid"
-                  mat-raised-button>
-            Vyhledat pacienta
-          </button>
-        </form>
-      </mat-card-content>
-    </mat-card>
+    <ng-container *ngIf="!patients.length" [ngTemplateOutlet]="search"></ng-container>
+
+    <h1 *ngIf="patients.length" class="mat-h1">
+      <span [matBadge]="patients.length" [matBadgeOverlap]="false">Nalezení pacienti</span>
+    </h1>
+
+    <div class="scrollable">
+      <mat-card *ngFor="let patient of patients">
+        <mat-card-header>
+          <h2 class="mat-h2">{{ patient.firstName }} {{ patient.lastName }}</h2>
+        </mat-card-header>
+
+      </mat-card>
+    </div>
   </app-container>
 </main>
+
+<ng-template #search>
+  <h1 class="mat-h1">Vyhledávání pacienta</h1>
+  <mat-card>
+    <mat-card-content>
+      <form (ngSubmit)="onSubmit()">
+        <mat-form-field class="">
+          <mat-label>Rodné číslo očkovaného</mat-label>
+          <input matInput [formControl]="personalNumber" placeholder="Zadejte rodné číslo" required>
+          <mat-hint>Rodné číslo ve formátu RRMMDD/ČČČ(Č)</mat-hint>
+        </mat-form-field>
+        <button color="primary"
+                [disabled]="personalNumber.invalid || submitted"
+                mat-raised-button>
+          Vyhledat pacienta
+        </button>
+      </form>
+    </mat-card-content>
+  </mat-card>
+
+  <ng-container *ngIf="searchHistory.length">
+    <div class="history__header">
+      <h3 class="mat-h3">Historie vyhledávání</h3>
+      <button (click)="clearHistory()" mat-button color="warn">Vymazat historii</button>
+    </div>
+
+    <mat-card class="history">
+      <div *ngFor="let query of searchHistory">
+        <div class="history__item">
+          <span>{{ query }}</span>
+          <button (click)="findPatient(query)" mat-button color="primary">Hledat znovu</button>
+        </div>
+        <mat-divider></mat-divider>
+      </div>
+    </mat-card>
+  </ng-container>
+</ng-template>

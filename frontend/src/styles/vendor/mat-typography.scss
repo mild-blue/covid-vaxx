@@ -3,7 +3,8 @@
 // Define a custom typography config that overrides the font-family as well as the
 // `headlines` and `body-1` levels.
 $custom-typography: mat-typography-config(
-  $headline: mat-typography-level(32px, 48px, 700)
+  $headline: mat-typography-level(32px, 48px, 700),
+  $subheading-2: mat-typography-level(16px, 28px, 700)
 );
 
 
