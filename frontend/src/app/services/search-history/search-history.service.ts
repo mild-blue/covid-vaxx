@@ -22,9 +22,9 @@ export class SearchHistoryService {
       return;
     }
 
-    const searchHistory = JSON.parse(storageValues) as string[];
+    let searchHistory = JSON.parse(storageValues) as string[];
     searchHistory.unshift(search);
-    searchHistory.slice(0, this._searchHistoryLimit);
+    searchHistory = searchHistory.slice(0, this._searchHistoryLimit);
 
     localStorage.setItem(this._searchHistoryKey, JSON.stringify(searchHistory));
   }

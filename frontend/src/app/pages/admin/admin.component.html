@@ -51,9 +51,7 @@
 
   <ng-container>
     <div class="history__header">
-      <h3 class="mat-h3">
-        <span [matBadge]="searchHistory.length" [matBadgeOverlap]="false">Historie vyhledávání</span>
-      </h3>
+      <h3 class="mat-h3">Historie vyhledávání</h3>
       <button *ngIf="searchHistory.length"
               (click)="clearHistory()" mat-button color="warn">
         Vymazat historii

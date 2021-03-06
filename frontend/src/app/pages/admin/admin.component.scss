@@ -15,8 +15,19 @@ mat-card {
 }
 
 .history {
-  padding-top: 0;
-  padding-bottom: 0;
+
+  &:empty {
+    &::after {
+      content: 'Historie vyhledávání je prázdná.';
+      display: block;
+      text-align: center;
+    }
+  }
+
+  &:not(:empty) {
+    padding-top: 0;
+    padding-bottom: 0;
+  }
 
   &__header, &__item {
     display: flex;
