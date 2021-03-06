@@ -54,9 +54,7 @@ export class AdminComponent implements OnInit {
     } finally {
       this.loading = false;
       this.submitted = false;
-      this.personalNumber.setValue('');
-      this.personalNumber.clearValidators();
-      this.personalNumber.updateValueAndValidity();
+      this.personalNumber.reset();
     }
   }
 
@@ -66,5 +64,6 @@ export class AdminComponent implements OnInit {
 
   public searchAgain(): void {
     this.patients = [];
+    this.personalNumber.reset();
   }
 }
