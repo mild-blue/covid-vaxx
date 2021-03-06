@@ -136,7 +136,7 @@ private fun Application.installBasics() {
     install(CORS) {
         // TODO #87 correct urls
         anyHost()
-        host("http://localhost:4200")
+        host("localhost:4200")
         header("Authorization")
         allowCredentials = true
         allowNonSimpleContentTypes = true
