@@ -75,12 +75,12 @@ private fun NormalOpenAPIRoute.openRoutes() {
 
 }
 
-// TODO #70 delete authorized suffix
+// TODO #70 delete authorized prefix
 private fun NormalOpenAPIRoute.authorizedRoutes() {
     val patientService by di().instance<PatientService>()
     // routes for registered users only
     authorizeRoute(requireOneOf = setOf(UserRole.ADMIN, UserRole.DOCTOR)) {
-        route("${Routes.patient}/authorized") {
+        route("/authorized${Routes.patient}") {
             get<PatientIdDtoIn, PatientDtoOut, UserPrincipal>(
                 info("Get user by ID.")
             ) { (id) ->
@@ -108,7 +108,7 @@ private fun NormalOpenAPIRoute.authorizedRoutes() {
     }
     // routes that are authorized for users that passed captchas
     authorizeRoute {
-        route("${Routes.patient}/authorized") {
+        route("/authorized${Routes.patient}") {
             post<Unit, PatientRegisteredDtoOut, PatientRegistrationDtoIn, UserPrincipal>(
                 info("Save patient registration to the database.")
             ) { _, patientRegistration ->
