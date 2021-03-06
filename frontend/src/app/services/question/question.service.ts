@@ -11,15 +11,28 @@ import { YesNoQuestion } from '@app/model/PatientInfo';
 })
 export class QuestionService {
 
+  private _questionKey = 'questions';
+
   constructor(private _http: HttpClient) {
   }
 
-  public async getQuestions(): Promise<YesNoQuestion[]> {
+  get questions(): YesNoQuestion[] {
+    const value = localStorage.getItem(this._questionKey);
+    return value ? JSON.parse(value) : [];
+  }
+
+  public async loadQuestions(): Promise<YesNoQuestion[]> {
+    localStorage.removeItem(this._questionKey);
+
     return this._http.get<Question[]>(
       `${environment.apiUrl}/question`
     ).pipe(
       first(),
-      map(response => response.map(parseQuestion))
+      map(response => {
+        const questions = response.map(parseQuestion);
+        localStorage.setItem(this._questionKey, JSON.stringify(questions));
+        return questions;
+      })
     ).toPromise();
   }
 }

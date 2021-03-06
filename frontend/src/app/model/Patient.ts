@@ -1,20 +1,13 @@
-import { InsuranceCompany } from './InsuranceCompany';
+import { PatientData } from '@app/model/PatientData';
 
-export interface Patient {
+export interface Patient extends PatientData {
   id: string;
-  firstName: string;
-  lastName: string;
-  personalNumber: string;
-  email: string;
-  phoneNumber: string;
-  insuranceCompany?: InsuranceCompany;
-  answers: Answer[];
   created: Date;
   updated: Date;
 }
 
 export interface Answer {
-  questionId: string;
+  label: string;
   value: boolean;
 }
 
@@ -27,7 +20,12 @@ export interface PatientOut {
   email: string;
   phoneNumber: string;
   insuranceCompany: string;
-  answers: Answer[];
+  answers: AnswerOut[];
   created: number;
   updated: number;
+}
+
+export interface AnswerOut {
+  questionId: string;
+  value: boolean;
 }

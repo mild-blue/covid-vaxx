@@ -6,13 +6,15 @@ import { HttpClient, HttpParams } from '@angular/common/http';
 import { PatientResponse } from '@app/services/patient/patient.interface';
 import { Patient, PatientOut } from '@app/model/Patient';
 import { parsePatient } from '@app/parsers/patient.parser';
+import { QuestionService } from '@app/services/question/question.service';
 
 @Injectable({
   providedIn: 'root'
 })
 export class PatientService {
 
-  constructor(private _http: HttpClient) {
+  constructor(private _http: HttpClient,
+              private _questionService: QuestionService) {
   }
 
   public async savePatientInfo(patientInfo: PatientInfo, questions: YesNoQuestion[], agreement: boolean, confirmation: boolean): Promise<PatientResponse> {
@@ -40,7 +42,11 @@ export class PatientService {
       `${environment.apiUrl}/patient`,
       { params }
     ).pipe(
-      map(data => data.map(parsePatient))
+      map(data => {
+        const questions = this._questionService.questions;
+        const patients = data.slice(0, 10);
+        return patients.map(patient => parsePatient(patient, questions));
+      })
     ).toPromise();
   }
 }

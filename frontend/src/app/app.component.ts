@@ -1,9 +1,27 @@
-import { Component } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
+import { QuestionService } from '@app/services/question/question.service';
+import { AlertService } from '@app/services/alert/alert.service';
 
 @Component({
   selector: 'app-root',
   templateUrl: './app.component.html',
   styleUrls: ['./app.component.scss']
 })
-export class AppComponent {
+export class AppComponent implements OnInit {
+
+  constructor(private _questionService: QuestionService,
+              private _alertService: AlertService) {
+  }
+
+  async ngOnInit(): Promise<void> {
+    await this._initQuestions();
+  }
+
+  private async _initQuestions(): Promise<void> {
+    try {
+      await this._questionService.loadQuestions();
+    } catch (e) {
+      this._alertService.toast(e.message);
+    }
+  }
 }

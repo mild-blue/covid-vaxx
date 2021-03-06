@@ -7,6 +7,9 @@ import { PatientService } from '@app/services/patient/patient.service';
 import { validatePersonalNumber, validatePhoneNumber } from '@app/validators/form.validators';
 import { AlertService } from '@app/services/alert/alert.service';
 import { ActivatedRoute } from '@angular/router';
+import { PatientData } from '@app/model/PatientData';
+import { parseAnswerFromQuestion } from '@app/parsers/answer.parser';
+import { parseInsuranceCompany } from '@app/parsers/patient.parser';
 
 @Component({
   selector: 'app-home',
@@ -45,15 +48,7 @@ export class HomeComponent implements OnInit {
       email: ['', [Validators.required, Validators.email]]
     });
 
-    this._initQuestions();
-  }
-
-  private async _initQuestions(): Promise<void> {
-    try {
-      this.questions = await this._questionService.getQuestions();
-    } catch (e) {
-      this._alertService.toast(e.message);
-    }
+    this.questions = this._questionService.questions;
   }
 
   get allQuestionsAnswered(): boolean {
@@ -71,6 +66,24 @@ export class HomeComponent implements OnInit {
 
   get canSubmit(): boolean {
     return !!this.basicInfoForm?.valid && this.allQuestionsAnswered && this.agreementCheckboxValue && this.confirmationCheckboxValue;
+  }
+
+  public getPatientData(): PatientData | undefined {
+    const { firstName, lastName, personalNumber, insuranceCompany, phoneNumber, email } = this.patientInfo;
+
+    if (!firstName || !lastName || !personalNumber || !insuranceCompany || !phoneNumber || !email) {
+      return;
+    }
+
+    return {
+      firstName,
+      lastName,
+      personalNumber,
+      insuranceCompany: parseInsuranceCompany(insuranceCompany),
+      phoneNumber,
+      email,
+      answers: this.questions.map(parseAnswerFromQuestion)
+    };
   }
 
   public async submit(): Promise<void> {

@@ -87,69 +87,7 @@
     </mat-step>
     <mat-step label="Odeslání požadavku">
       <app-container [wide]="true">
-        <div class="confirmation-step">
-          <mat-card *ngIf="basicInfoForm" class="py-0">
-            <mat-card-content>
-              <div class="form-field">
-                <mat-label>Jméno:</mat-label>
-                <mat-label *ngIf="basicInfoForm.controls['firstName']?.valid else unspecified;">
-                  {{ patientInfo.firstName }}
-                </mat-label>
-              </div>
-              <mat-divider></mat-divider>
-              <div class="form-field">
-                <mat-label>Příjmení:</mat-label>
-                <mat-label *ngIf="basicInfoForm.controls['lastName']?.valid else unspecified;">
-                  {{ patientInfo.lastName }}
-                </mat-label>
-              </div>
-              <mat-divider></mat-divider>
-              <div class="form-field">
-                <mat-label>Rodné číslo:</mat-label>
-                <mat-label *ngIf="basicInfoForm.controls['personalNumber']?.valid else unspecified;">
-                  {{ patientInfo.personalNumber }}
-                </mat-label>
-              </div>
-              <mat-divider></mat-divider>
-              <div class="form-field">
-                <mat-label>Pojištovna:</mat-label>
-                <mat-label *ngIf="basicInfoForm.controls['insuranceCompany']?.valid else unspecified;">
-                  {{ patientInfo.insuranceCompany }}
-                </mat-label>
-              </div>
-              <mat-divider></mat-divider>
-              <div class="form-field">
-                <mat-label>Telefonní číslo:</mat-label>
-                <mat-label *ngIf="basicInfoForm.controls['phoneNumber']?.valid else unspecified;">
-                  {{ patientInfo.phoneNumber }}
-                </mat-label>
-              </div>
-              <mat-divider></mat-divider>
-              <div class="form-field">
-                <mat-label>E-mail:</mat-label>
-                <mat-label *ngIf="basicInfoForm.controls['email']?.valid else unspecified;">
-                  {{ patientInfo.email }}
-                </mat-label>
-              </div>
-            </mat-card-content>
-          </mat-card>
-
-          <mat-card class="py-0">
-            <mat-card-content>
-              <ng-container *ngFor="let q of questions; let i = index">
-                <div class="form-field">
-                  <mat-label>{{ q.label }}</mat-label>
-                  <mat-label [ngSwitch]="q.value">
-                    <span *ngSwitchCase="'true'">Ano</span>
-                    <span *ngSwitchCase="'false'">Ne</span>
-                    <ng-container *ngSwitchDefault [ngTemplateOutlet]="unspecified"></ng-container>
-                  </mat-label>
-                </div>
-                <mat-divider *ngIf="i < questions.length - 1"></mat-divider>
-              </ng-container>
-            </mat-card-content>
-          </mat-card>
-        </div>
+        <app-patient-data [patientData]="getPatientData()"></app-patient-data>
 
         <div class="checkboxes">
           <mat-checkbox [(ngModel)]="confirmationCheckboxValue">

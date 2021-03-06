@@ -32,6 +32,7 @@ import { MatProgressBarModule } from '@angular/material/progress-bar';
 import { MatBadgeModule } from '@angular/material/badge';
 import { BackButtonComponent } from './components/back-button/back-button.component';
 import { NoPatientFoundComponent } from './components/dialogs/no-patient-found/no-patient-found.component';
+import { PatientDataComponent } from './components/patient-data/patient-data.component';
 
 @NgModule({
   declarations: [
@@ -43,7 +44,8 @@ import { NoPatientFoundComponent } from './components/dialogs/no-patient-found/n
     AdminComponent,
     LoginComponent,
     BackButtonComponent,
-    NoPatientFoundComponent
+    NoPatientFoundComponent,
+    PatientDataComponent
   ],
   imports: [
     BrowserModule,
