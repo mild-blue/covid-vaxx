@@ -3,7 +3,6 @@ import { AbstractControl, FormBuilder, FormGroup, Validators } from '@angular/fo
 import { Router } from '@angular/router';
 import { AuthService } from '@app/services/auth/auth.service';
 import { finalize, first } from 'rxjs/operators';
-import { User } from '@app/model/User';
 import { AlertService } from '@app/services/alert/alert.service';
 
 @Component({
@@ -44,11 +43,11 @@ export class LoginComponent {
       finalize(() => this.loading = false)
     )
     .subscribe(
-      (user: User) => {
-        this._router.navigate(['/']);
+      () => {
+        this._router.navigate(['/admin']);
       },
       (error: Error) => {
-        this._alertService.show(error.message);
+        this._alertService.toast(error.message);
       });
   }
 
