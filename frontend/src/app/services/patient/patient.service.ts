@@ -1,9 +1,11 @@
 import { Injectable } from '@angular/core';
 import { PatientInfo, YesNoQuestion } from '@app/model/PatientInfo';
 import { environment } from '@environments/environment';
-import { first } from 'rxjs/operators';
-import { HttpClient } from '@angular/common/http';
+import { first, map } from 'rxjs/operators';
+import { HttpClient, HttpParams } from '@angular/common/http';
 import { PatientResponse } from '@app/services/patient/patient.interface';
+import { Patient, PatientOut } from '@app/model/Patient';
+import { parsePatient } from '@app/parsers/patient.parser';
 
 @Injectable({
   providedIn: 'root'
@@ -28,6 +30,18 @@ export class PatientService {
       }
     ).pipe(
       first()
+    ).toPromise();
+  }
+
+  public async findPatientByPersonalNumber(personalNumber: string): Promise<Patient[]> {
+    const params = new HttpParams();
+    params.set('personalNumber', personalNumber);
+
+    return this._http.get<PatientOut[]>(
+      `${environment.apiUrl}/authorized/patient`,
+      { params }
+    ).pipe(
+      map(data => data.map(parsePatient))
     ).toPromise();
   }
 }

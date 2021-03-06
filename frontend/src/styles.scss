@@ -2,7 +2,9 @@
 @import "styles/elements/body";
 @import "styles/elements/main";
 @import "styles/elements/a";
+@import "styles/elements/form";
 
 // Vendor overrides
-@import "styles/vendor/mat-form-field";
 @import "styles/vendor/mat-typography";
+@import "styles/vendor/mat-form-field";
+@import "styles/vendor/mat-toolbar";

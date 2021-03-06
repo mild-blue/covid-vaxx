@@ -1,26 +1,25 @@
 <mat-toolbar color="primary">
-  <span>Administrace rodné číslo</span>
+  <span>Administrační sekce</span>
 </mat-toolbar>
 
 <main>
   <app-container>
-    <mat-card class="mg20">
+    <h1 class="mat-h1">Vyhledávání pacienta</h1>
+    <mat-card>
       <mat-card-content>
-        <form>
+        <form (ngSubmit)="onSubmit()">
           <mat-form-field class="">
-            <mat-label>Zadejte rodné číslo</mat-label>
-            <input matInput placeholder="Rodné číslo očkovaného" required>
+            <mat-label>Rodné číslo očkovaného</mat-label>
+            <input matInput [formControl]="personalNumber" placeholder="Zadejte rodné číslo" required>
             <mat-hint>Rodné číslo ve formátu RRMMDD/ČČČ(Č)</mat-hint>
           </mat-form-field>
-
+          <button color="primary"
+                  [disabled]="personalNumber.invalid"
+                  mat-raised-button>
+            Vyhledat pacienta
+          </button>
         </form>
       </mat-card-content>
     </mat-card>
-
-    <div class="nav-buttons">
-      <button color="primary" mat-raised-button>
-        Zkontrolovat
-      </button>
-    </div>
   </app-container>
 </main>

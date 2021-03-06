@@ -26,7 +26,7 @@ export class LoginComponent {
     });
   }
 
-  public onSubmit() {
+  public onSubmit(): void {
 
     this.submitted = true;
 
