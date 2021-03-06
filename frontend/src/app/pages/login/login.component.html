@@ -1,1 +1,30 @@
-<p>login works!</p>
+<main>
+  <app-container>
+    <button mat-button color="primary"
+            routerLink="/"
+            class="back-button">
+      <mat-icon>keyboard_backspace</mat-icon>
+      Zpět k formuláři pro pacienta
+    </button>
+    <h1 class="mat-h1">Vstup do administrativní sekce</h1>
+    <mat-card>
+      <mat-card-content>
+        <form [formGroup]="loginForm">
+          <mat-form-field>
+            <mat-label>E-mail</mat-label>
+            <input matInput formControlName="email" placeholder="Váš e-mail" required>
+          </mat-form-field>
+          <mat-form-field>
+            <mat-label>Heslo</mat-label>
+            <input matInput formControlName="password" placeholder="Vaše heslo" required>
+          </mat-form-field>
+          <button (click)="onSubmit()"
+                  [disabled]="!loginForm.invalid"
+                  color="primary" mat-raised-button>
+            Přihlásit
+          </button>
+        </form>
+      </mat-card-content>
+    </mat-card>
+  </app-container>
+</main>
