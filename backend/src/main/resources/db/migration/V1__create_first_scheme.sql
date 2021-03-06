@@ -34,7 +34,7 @@ CREATE TABLE patients
 (
     id                VARCHAR(36) UNIQUE NOT NULL,
     created           timestamptz        NOT NULL,
-    updated           timestamptz,
+    updated           timestamptz        NOT NULL,
     first_name        VARCHAR(256)       NOT NULL,
     last_name         VARCHAR(256)       NOT NULL,
     personal_number   VARCHAR(11)        NOT NULL,
@@ -62,7 +62,7 @@ CREATE TABLE questions
 (
     id          VARCHAR(36) UNIQUE  NOT NULL,
     created     timestamptz         NOT NULL,
-    updated     timestamptz,
+    updated     timestamptz         NOT NULL,
     placeholder VARCHAR(256) UNIQUE NOT NULL,
     cs          TEXT                NOT NULL,
     eng         TEXT                NOT NULL,
@@ -85,7 +85,7 @@ EXECUTE PROCEDURE set_updated();
 CREATE TABLE answers
 (
     created     timestamptz NOT NULL,
-    updated     timestamptz,
+    updated     timestamptz NOT NULL,
     question_id VARCHAR(36) NOT NULL REFERENCES questions (id) ON DELETE CASCADE,
     patient_id  VARCHAR(36) NOT NULL REFERENCES patients (id) ON DELETE CASCADE,
     value       bool        NOT NULL,
@@ -109,7 +109,7 @@ CREATE TABLE users
 (
     id            VARCHAR(36) UNIQUE  NOT NULL,
     created       timestamptz         NOT NULL,
-    updated       timestamptz,
+    updated       timestamptz         NOT NULL,
     username      VARCHAR(128) UNIQUE NOT NULL,
     password_hash VARCHAR(128)        NOT NULL,
     role          VARCHAR(16)         NOT NULL,
