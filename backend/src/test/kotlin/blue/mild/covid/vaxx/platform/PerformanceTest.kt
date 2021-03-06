@@ -6,7 +6,7 @@ import kotlinx.coroutines.runBlocking
 
 private val logger = createLogger("PerformanceTest")
 
-private const val TARGET_HOST = "http://localhost:8080"
+private const val TARGET_HOST = "https://covid-vaxx.stg.mild.blue"
 private val CREDENTIALS = LoginDtoIn(
     username = "mildblue",
     password = "bluemild"

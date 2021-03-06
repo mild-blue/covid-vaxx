@@ -76,8 +76,11 @@ abstract class LoadTest(
     }
 
     private suspend fun runPatientRegistrationWithBuilder(registrationBuilder: PatientRegistrationBuilder) {
+        var request = loadClientSource()
+        require(request.status.isSuccess()) { "It was not possible to load client sources ${request.status.description}" }
+
         // login
-        var request = login(credentials)
+        request = login(credentials)
         require(request.status.isSuccess()) { "Login request was not successful. ${request.status.description}" }
         val (bearerToken) = request.receive<BearerTokenDtoOut>()
 
@@ -105,6 +108,9 @@ abstract class LoadTest(
         require(request.status.isSuccess()) { "Patient registration was not successful. ${request.status.description}" }
         request.receive<PatientRegisteredDtoOut>()
     }
+
+    private suspend fun loadClientSource() =
+        meteredClient.get<HttpResponse>(targetHost)
 
     private suspend fun login(loginDto: LoginDtoIn) =
         meteredClient.post<HttpResponse>("${targetHost}${Routes.registeredUserLogin}") {
