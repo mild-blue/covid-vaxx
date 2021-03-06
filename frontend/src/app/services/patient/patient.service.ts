@@ -34,8 +34,7 @@ export class PatientService {
   }
 
   public async findPatientByPersonalNumber(personalNumber: string): Promise<Patient[]> {
-    const params = new HttpParams();
-    params.set('personalNumber', personalNumber);
+    const params = new HttpParams().set('personalNumber', personalNumber);
 
     return this._http.get<PatientOut[]>(
       `${environment.apiUrl}/patient`,
