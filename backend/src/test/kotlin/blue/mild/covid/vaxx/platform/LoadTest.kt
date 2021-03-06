@@ -5,7 +5,7 @@ import blue.mild.covid.vaxx.dto.AnswerDto
 import blue.mild.covid.vaxx.dto.request.ConfirmationDtoIn
 import blue.mild.covid.vaxx.dto.request.LoginDtoIn
 import blue.mild.covid.vaxx.dto.request.PatientRegistrationDtoIn
-import blue.mild.covid.vaxx.dto.response.JwtResponseDtoOut
+import blue.mild.covid.vaxx.dto.response.BearerTokenDtoOut
 import blue.mild.covid.vaxx.dto.response.PatientRegisteredDtoOut
 import blue.mild.covid.vaxx.dto.response.QuestionDtoOut
 import blue.mild.covid.vaxx.routes.Routes
@@ -79,7 +79,7 @@ abstract class LoadTest(
         // login
         var request = login(credentials)
         require(request.status.isSuccess()) { "Login request was not successful. ${request.status.description}" }
-        val (bearerToken) = request.receive<JwtResponseDtoOut>()
+        val (bearerToken) = request.receive<BearerTokenDtoOut>()
 
         // get insurance companies
         request = getInsuranceCompanies(bearerToken)

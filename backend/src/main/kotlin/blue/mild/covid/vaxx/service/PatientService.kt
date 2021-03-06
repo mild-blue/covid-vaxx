@@ -82,7 +82,7 @@ class PatientService(
         // even though this statement prints multiple insert into statements
         // they are in a fact translated to one thanks to reWriteBatchedInserts=true
         // see https://github.com/JetBrains/Exposed/wiki/DSL#batch-insert
-        Answer.batchInsert(patientRegistrationDto.answers, shouldReturnGeneratedValues = false) {
+        Answer.batchInsert(registration.answers, shouldReturnGeneratedValues = false) {
             // we want to specify these values because DB defaults don't support in batch inserts
             // however, the real value will be set by the database once inserted
             this[Answer.created] = now
@@ -93,7 +93,7 @@ class PatientService(
             this[Answer.value] = it.value
         }
 
-        PatientCreatedDtoOut(entityId)
+        PatientRegisteredDtoOut(entityId)
     }
 
     suspend fun deletePatientById(patientId: UUID) = newSuspendedTransaction {

@@ -8,7 +8,6 @@ import blue.mild.covid.vaxx.dao.UserRole
 import blue.mild.covid.vaxx.dto.request.CaptchaVerificationDtoIn
 import blue.mild.covid.vaxx.dto.request.LoginDtoIn
 import blue.mild.covid.vaxx.dto.request.UserRegistrationDtoIn
-import blue.mild.covid.vaxx.dto.response.JwtResponseDtoOut
 import blue.mild.covid.vaxx.dto.response.BearerTokenDtoOut
 import blue.mild.covid.vaxx.extensions.di
 import blue.mild.covid.vaxx.extensions.respond
