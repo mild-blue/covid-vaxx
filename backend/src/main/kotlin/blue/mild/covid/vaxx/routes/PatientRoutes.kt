@@ -7,9 +7,9 @@ import blue.mild.covid.vaxx.dto.PatientRegistrationDto
 import blue.mild.covid.vaxx.dto.request.PatientIdDtoIn
 import blue.mild.covid.vaxx.dto.request.PatientQueryDtoIn
 import blue.mild.covid.vaxx.dto.request.PatientRegistrationDtoIn
-import blue.mild.covid.vaxx.dto.response.PatientCreatedDtoOut
 import blue.mild.covid.vaxx.dto.response.PatientDeletedDtoOut
 import blue.mild.covid.vaxx.dto.response.PatientDtoOut
+import blue.mild.covid.vaxx.dto.response.PatientRegisteredDtoOut
 import blue.mild.covid.vaxx.extensions.di
 import blue.mild.covid.vaxx.extensions.request
 import blue.mild.covid.vaxx.service.PatientService
@@ -64,7 +64,7 @@ private fun NormalOpenAPIRoute.openRoutes() {
             respond(response)
         }
 
-        post<Unit, PatientCreatedDtoOut, PatientRegistrationDtoIn>(
+        post<Unit, PatientRegisteredDtoOut, PatientRegistrationDtoIn>(
             info("Save patient registration to the database.")
         ) { _, patientRegistration ->
             respond(patientService.savePatient(PatientRegistrationDto(patientRegistration, request.origin.remoteHost)))
@@ -108,7 +108,7 @@ private fun NormalOpenAPIRoute.authorizedRoutes() {
     // routes that are authorized for users that passed captchas
     authorizeRoute {
         route("${Routes.patient}/authorized") {
-            post<Unit, PatientCreatedDtoOut, PatientRegistrationDtoIn, UserPrincipal>(
+            post<Unit, PatientRegisteredDtoOut, PatientRegistrationDtoIn, UserPrincipal>(
                 info("Save patient registration to the database.")
             ) { _, patientRegistration ->
                 respond(patientService.savePatient(PatientRegistrationDto(patientRegistration, request.origin.remoteHost)))
