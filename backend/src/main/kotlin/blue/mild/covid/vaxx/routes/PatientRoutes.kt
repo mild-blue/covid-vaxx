@@ -10,6 +10,7 @@ import blue.mild.covid.vaxx.dto.request.PatientRegistrationDtoIn
 import blue.mild.covid.vaxx.dto.response.PatientDeletedDtoOut
 import blue.mild.covid.vaxx.dto.response.PatientDtoOut
 import blue.mild.covid.vaxx.dto.response.PatientRegisteredDtoOut
+import blue.mild.covid.vaxx.extensions.determineRealIp
 import blue.mild.covid.vaxx.extensions.di
 import blue.mild.covid.vaxx.extensions.request
 import blue.mild.covid.vaxx.service.PatientService
@@ -67,7 +68,7 @@ private fun NormalOpenAPIRoute.openRoutes() {
         post<Unit, PatientRegisteredDtoOut, PatientRegistrationDtoIn>(
             info("Save patient registration to the database.")
         ) { _, patientRegistration ->
-            respond(patientService.savePatient(PatientRegistrationDto(patientRegistration, request.origin.remoteHost)))
+            respond(patientService.savePatient(PatientRegistrationDto(patientRegistration, request.determineRealIp())))
         }
 
     }
