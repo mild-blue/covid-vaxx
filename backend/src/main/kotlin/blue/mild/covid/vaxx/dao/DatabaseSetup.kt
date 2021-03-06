@@ -16,12 +16,11 @@ object DatabaseSetup {
      */
     fun connect(dbConfiguration: DatabaseConfigurationDto) =
         Database.connect(
-            url = dbConfiguration.url,
+            url = "${dbConfiguration.url}?reWriteBatchedInserts=true",
             user = dbConfiguration.userName,
             password = dbConfiguration.password,
             driver = "org.postgresql.Driver"
         )
-
     /**
      * Returns true if the app is connected to database.
      */

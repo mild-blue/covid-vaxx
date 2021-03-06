@@ -4,7 +4,7 @@ import blue.mild.covid.vaxx.auth.JwtService
 import blue.mild.covid.vaxx.auth.PatientPrincipal
 import blue.mild.covid.vaxx.dto.request.CaptchaVerificationDtoIn
 import blue.mild.covid.vaxx.dto.request.LoginDtoIn
-import blue.mild.covid.vaxx.dto.response.JwtResponseDtoOut
+import blue.mild.covid.vaxx.dto.response.BearerTokenDtoOut
 import blue.mild.covid.vaxx.extensions.di
 import blue.mild.covid.vaxx.service.UserLoginService
 import com.papsign.ktor.openapigen.route.info
@@ -22,7 +22,7 @@ fun NormalOpenAPIRoute.userRoutes() {
     val jwtService by di().instance<JwtService>()
 
     route(Routes.registeredUserLogin) {
-        post<Unit, JwtResponseDtoOut, LoginDtoIn>(
+        post<Unit, BearerTokenDtoOut, LoginDtoIn>(
             info("Login endpoint for the registered users such as administrators and doctors.")
         ) { _, loginDto ->
             val principal = userLoginService.verifyCredentials(loginDto.username, loginDto.password)
@@ -30,7 +30,7 @@ fun NormalOpenAPIRoute.userRoutes() {
         }
     }
     route(Routes.registrationCaptcha) {
-        post<Unit, JwtResponseDtoOut, CaptchaVerificationDtoIn>(
+        post<Unit, BearerTokenDtoOut, CaptchaVerificationDtoIn>(
             info("Endpoint that issues access to the API for the non-registered users.")
         ) { _, (_) ->
             // TODO somehow verify token with Google

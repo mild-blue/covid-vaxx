@@ -1,14 +1,14 @@
 package blue.mild.covid.vaxx.dto.response
 
 import blue.mild.covid.vaxx.dao.InsuranceCompany
-import java.time.Instant
 import blue.mild.covid.vaxx.dto.AnswerDto
+import java.time.Instant
 import java.util.UUID
 
 data class PatientDtoOut(
     val id: UUID,
     val created: Instant,
-    val updated: Instant?,
+    val updated: Instant,
     val firstName: String,
     val lastName: String,
     val personalNumber: String,
