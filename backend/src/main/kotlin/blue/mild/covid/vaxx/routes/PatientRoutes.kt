@@ -13,6 +13,7 @@ import blue.mild.covid.vaxx.dto.response.PatientRegisteredDtoOut
 import blue.mild.covid.vaxx.extensions.determineRealIp
 import blue.mild.covid.vaxx.extensions.di
 import blue.mild.covid.vaxx.extensions.request
+import blue.mild.covid.vaxx.service.EmailUserAfterRegistrationService
 import blue.mild.covid.vaxx.service.PatientService
 import com.papsign.ktor.openapigen.route.info
 import com.papsign.ktor.openapigen.route.path.auth.delete
@@ -40,6 +41,7 @@ fun NormalOpenAPIRoute.patientRoutes() {
 // TODO #70 delete this
 private fun NormalOpenAPIRoute.openRoutes() {
     val patientService by di().instance<PatientService>()
+    val emailService by di().instance<EmailUserAfterRegistrationService>()
     route(Routes.patient) {
         get<PatientIdDtoIn, PatientDtoOut>(
             info("Get user by ID.")
@@ -68,7 +70,10 @@ private fun NormalOpenAPIRoute.openRoutes() {
         post<Unit, PatientRegisteredDtoOut, PatientRegistrationDtoIn>(
             info("Save patient registration to the database.")
         ) { _, patientRegistration ->
-            respond(patientService.savePatient(PatientRegistrationDto(patientRegistration, request.determineRealIp())))
+            val response =
+                patientService.savePatient(PatientRegistrationDto(patientRegistration, request.determineRealIp()))
+            emailService.sendEmail(patientRegistration)
+            respond(response)
         }
 
     }
@@ -78,6 +83,7 @@ private fun NormalOpenAPIRoute.openRoutes() {
 // TODO #70 delete authorized prefix
 private fun NormalOpenAPIRoute.authorizedRoutes() {
     val patientService by di().instance<PatientService>()
+    val emailService by di().instance<EmailUserAfterRegistrationService>()
     // routes for registered users only
     authorizeRoute(requireOneOf = setOf(UserRole.ADMIN, UserRole.DOCTOR)) {
         route("/authorized${Routes.patient}") {
@@ -112,7 +118,10 @@ private fun NormalOpenAPIRoute.authorizedRoutes() {
             post<Unit, PatientRegisteredDtoOut, PatientRegistrationDtoIn, UserPrincipal>(
                 info("Save patient registration to the database.")
             ) { _, patientRegistration ->
-                respond(patientService.savePatient(PatientRegistrationDto(patientRegistration, request.origin.remoteHost)))
+                val response =
+                    patientService.savePatient(PatientRegistrationDto(patientRegistration, request.origin.remoteHost))
+                emailService.sendEmail(patientRegistration)
+                respond(response)
             }
         }
     }

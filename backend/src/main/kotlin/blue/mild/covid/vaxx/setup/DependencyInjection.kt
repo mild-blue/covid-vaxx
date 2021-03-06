@@ -1,12 +1,7 @@
 package blue.mild.covid.vaxx.setup
 
-import blue.mild.covid.vaxx.service.EntityIdProvider
-import blue.mild.covid.vaxx.service.InstantTimeProvider
-import blue.mild.covid.vaxx.service.PasswordHashProvider
-import blue.mild.covid.vaxx.service.PatientService
-import blue.mild.covid.vaxx.service.QuestionService
-import blue.mild.covid.vaxx.service.UserService
-import blue.mild.covid.vaxx.service.ValidationService
+import blue.mild.covid.vaxx.service.*
+import blue.mild.covid.vaxx.service.EmailUserAfterRegistrationService
 import org.kodein.di.DI
 import org.kodein.di.bind
 import org.kodein.di.instance
@@ -20,4 +15,5 @@ fun DI.MainBuilder.registerClasses() {
     bind<ValidationService>() with singleton { ValidationService(instance()) }
     bind<PatientService>() with singleton { PatientService(instance(), instance(), instance()) }
     bind<UserService>() with singleton { UserService(instance()) }
+    bind<EmailUserAfterRegistrationService>() with singleton { EmailUserAfterRegistrationService(instance()) }
 }

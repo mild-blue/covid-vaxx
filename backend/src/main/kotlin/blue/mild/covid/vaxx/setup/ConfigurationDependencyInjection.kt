@@ -2,6 +2,7 @@ package blue.mild.covid.vaxx.setup
 
 import blue.mild.covid.vaxx.dto.DatabaseConfigurationDto
 import blue.mild.covid.vaxx.dto.JwtConfigurationDto
+import blue.mild.covid.vaxx.dto.MailJetConfigurationDto
 import blue.mild.covid.vaxx.dto.response.VersionDtoOut
 import blue.mild.covid.vaxx.utils.createLogger
 import org.kodein.di.DI
@@ -11,6 +12,7 @@ import pw.forst.tools.katlib.getEnv
 import pw.forst.tools.katlib.whenNull
 import java.io.File
 import java.util.UUID
+import kotlin.system.exitProcess
 
 private val logger = createLogger("EnvironmentLoaderLogger")
 
@@ -31,6 +33,16 @@ private fun loadVersion(defaultVersion: String = "development"): String = runCat
 // TODO load all config from the file and then allow the replacement with env variables
 fun DI.MainBuilder.bindConfiguration() {
 
+    val apiKey = getEnv("MAIL_JET_API_KEY")
+    val apiSecret = getEnv("MAIL_JET_API_SECRET")
+    apiKey.whenNull {
+        logger.error("MAIL_JET_API_KEY env variable was not provided. Exiting")
+        exitProcess(1) }
+    apiSecret.whenNull {
+        logger.error("MAIL_JET_API_SECRET env variable was not provided. Exiting")
+        exitProcess(1)
+    }
+
     // The default values used in this configuration are for the local development.
     bind<DatabaseConfigurationDto>() with singleton {
         val db = getEnvOrLogDefault("POSTGRES_DB", "covid-vaxx")
@@ -40,6 +52,14 @@ fun DI.MainBuilder.bindConfiguration() {
             userName = getEnvOrLogDefault("POSTGRES_USER", "mildblue"),
             password = getEnvOrLogDefault("POSTGRES_PASSWORD", "mildblue-password"),
             url = "jdbc:postgresql://${dbHost}/${db}"
+        )
+    }
+
+    bind<MailJetConfigurationDto>() with singleton {
+        MailJetConfigurationDto(
+            apiKey = apiKey?: "",
+            apiSecret = apiSecret?: "",
+            emailFrom = getEnvOrLogDefault("MAIL_ADDRESS_FROM", "services@mild.blue")
         )
     }
 

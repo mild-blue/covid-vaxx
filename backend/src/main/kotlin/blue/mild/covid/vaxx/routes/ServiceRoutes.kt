@@ -1,9 +1,14 @@
 package blue.mild.covid.vaxx.routes
 
 import blue.mild.covid.vaxx.dao.DatabaseSetup
+import blue.mild.covid.vaxx.dao.InsuranceCompany
+import blue.mild.covid.vaxx.dto.AnswerDto
+import blue.mild.covid.vaxx.dto.request.ConfirmationDtoIn
+import blue.mild.covid.vaxx.dto.request.PatientRegistrationDtoIn
 import blue.mild.covid.vaxx.dto.response.ServiceHealthDtoOut
 import blue.mild.covid.vaxx.dto.response.VersionDtoOut
 import blue.mild.covid.vaxx.extensions.di
+import blue.mild.covid.vaxx.service.EmailUserAfterRegistrationService
 import com.papsign.ktor.openapigen.route.info
 import com.papsign.ktor.openapigen.route.path.normal.NormalOpenAPIRoute
 import com.papsign.ktor.openapigen.route.path.normal.get
