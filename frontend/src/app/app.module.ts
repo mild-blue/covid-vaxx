@@ -33,6 +33,7 @@ import { MatBadgeModule } from '@angular/material/badge';
 import { BackButtonComponent } from './components/back-button/back-button.component';
 import { NoPatientFoundComponent } from './components/dialogs/no-patient-found/no-patient-found.component';
 import { PatientDataComponent } from './components/patient-data/patient-data.component';
+import { FormFieldComponent } from './components/form-field/form-field.component';
 
 @NgModule({
   declarations: [
@@ -45,7 +46,8 @@ import { PatientDataComponent } from './components/patient-data/patient-data.com
     LoginComponent,
     BackButtonComponent,
     NoPatientFoundComponent,
-    PatientDataComponent
+    PatientDataComponent,
+    FormFieldComponent
   ],
   imports: [
     BrowserModule,

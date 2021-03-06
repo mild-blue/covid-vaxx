@@ -62,13 +62,13 @@
           <mat-card-content>
             <form>
               <ng-container *ngFor="let q of questions; let i = index">
-                <div class="form-field">
+                <app-form-field>
                   <mat-label>{{ q.label }}</mat-label>
                   <mat-button-toggle-group [(ngModel)]="q.value" [name]="q.name">
                     <mat-button-toggle value="true">Ano</mat-button-toggle>
                     <mat-button-toggle value="false">Ne</mat-button-toggle>
                   </mat-button-toggle-group>
-                </div>
+                </app-form-field>
                 <mat-divider *ngIf="i < questions.length - 1"></mat-divider>
               </ng-container>
             </form>
@@ -113,10 +113,4 @@
     </mat-step>
   </mat-horizontal-stepper>
 </main>
-
-<ng-template #unspecified>
-  <span class="unspecified">
-    Neuvedeno
-  </span>
-</ng-template>
 

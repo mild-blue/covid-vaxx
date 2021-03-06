@@ -2,6 +2,15 @@ main {
   margin-top: 30px;
 }
 
+form {
+  padding: 20px;
+
+  button {
+    margin: 20px auto 0;
+    display: block;
+  }
+}
+
 .progress-bar__holder {
   opacity: 0;
 

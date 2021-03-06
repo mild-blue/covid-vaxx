@@ -13,27 +13,6 @@
     margin: 0;
   }
 
-  .form-field {
-    width: 100%;
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    padding: 10px 0;
-
-    @include media-breakpoint-down(md) {
-      flex-direction: column;
-      align-items: flex-start;
-
-      > *:last-child {
-        margin-top: 10px;
-      }
-    }
-
-    mat-label {
-      padding-right: 10px;
-    }
-  }
-
   mat-card {
     flex: 1;
     margin-left: 20px;

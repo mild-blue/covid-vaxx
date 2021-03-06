@@ -1,27 +1,6 @@
 @import "../../../styles/breakpoints";
 @import "../../../styles/variables";
 
-.form-field {
-  width: 100%;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  padding: 10px 0;
-
-  @include media-breakpoint-down(md) {
-    flex-direction: column;
-    align-items: flex-start;
-
-    > *:last-child {
-      margin-top: 10px;
-    }
-  }
-
-  mat-label {
-    padding-right: 10px;
-  }
-}
-
 .nav-buttons {
   display: flex;
   justify-content: space-between;
@@ -32,8 +11,9 @@
   }
 }
 
-mat-card {
+mat-card, app-patient-data {
   margin: 30px 0;
+  display: block;
 }
 
 mat-horizontal-stepper {
@@ -65,34 +45,6 @@ mat-button-toggle {
   padding-bottom: 0;
 }
 
-.confirmation-step {
-  display: flex;
-
-  margin-left: -20px;
-  margin-right: -20px;
-
-  @include media-breakpoint-down(md) {
-    flex-direction: column;
-    align-items: flex-start;
-    margin: 0;
-  }
-
-  mat-card {
-    flex: 1;
-    margin-left: 20px;
-    margin-right: 20px;
-
-    @include media-breakpoint-down(md) {
-      width: 100%;
-      margin: 0;
-
-      &:last-child {
-        margin-top: 20px;
-      }
-    }
-  }
-}
-
 .checkboxes {
   display: flex;
   flex-direction: column;
@@ -110,13 +62,6 @@ mat-button-toggle {
   @include media-breakpoint-down(md) {
     align-items: flex-start;
   }
-}
-
-.unspecified {
-  padding: 2px 5px;
-  border-radius: 4px;
-  background: rgba($warning, 0.2);
-  color: $warning;
 }
 
 :host {
