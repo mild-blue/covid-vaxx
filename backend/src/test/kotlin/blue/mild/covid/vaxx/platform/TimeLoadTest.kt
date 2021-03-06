@@ -1,7 +1,6 @@
 package blue.mild.covid.vaxx.platform
 
 import blue.mild.covid.vaxx.dto.request.LoginDtoIn
-import blue.mild.covid.vaxx.dto.request.PatientRegistrationDtoIn
 import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.launch
 import mu.KLogging
@@ -30,24 +29,13 @@ class TimeLoadTest(
             repeat(coroutineWorkers) {
                 launch {
                     while (isTimeLeft(endTime)) {
-                        runPatientRegistrationWithBuilder(
-                            { answers, insuranceCompany, confirmation ->
-                                PatientRegistrationDtoIn(
-                                    firstName = "John",
-                                    lastName = "Doe",
-                                    personalNumber = "7401040020",
-                                    phoneNumber = "+420123456789",
-                                    email = "john@doe.com",
-                                    insuranceCompany, answers, confirmation
-                                )
-                            },
-                            { logger.info { "Done: $it - time left ${(endTime.epochSecond - now.epochSecond)}s" } }
-                        )
+                        runPatientRegistrationWithBuilder(defaultPatientRegistrationBuilder()) {
+                            logger.info { "Done: $it - time left ${(endTime.epochSecond - now.epochSecond)}s" }
+                        }
                     }
                 }
             }
         }
-
         return callsCollection.toList()
     }
 

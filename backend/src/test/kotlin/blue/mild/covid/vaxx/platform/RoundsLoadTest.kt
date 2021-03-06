@@ -1,7 +1,6 @@
 package blue.mild.covid.vaxx.platform
 
 import blue.mild.covid.vaxx.dto.request.LoginDtoIn
-import blue.mild.covid.vaxx.dto.request.PatientRegistrationDtoIn
 import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.launch
 import mu.KLogging
@@ -23,19 +22,9 @@ class RoundsLoadTest(
             repeat(coroutineWorkers) {
                 launch {
                     repeat(singleWorkerRounds) {
-                        runPatientRegistrationWithBuilder(
-                            { answers, insuranceCompany, confirmation ->
-                                PatientRegistrationDtoIn(
-                                    firstName = "John",
-                                    lastName = "Doe",
-                                    personalNumber = "7401040020",
-                                    phoneNumber = "+420123456789",
-                                    email = "john@doe.com",
-                                    insuranceCompany, answers, confirmation
-                                )
-                            },
-                            { logger.info { "Done: $it/$rounds" } }
-                        )
+                        runPatientRegistrationWithBuilder(defaultPatientRegistrationBuilder()) {
+                            logger.info { "Done: $it/$rounds" }
+                        }
                     }
                 }
             }

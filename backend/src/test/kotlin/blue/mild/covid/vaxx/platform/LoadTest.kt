@@ -64,8 +64,7 @@ abstract class LoadTest(
     abstract suspend fun execute(): List<RequestMetric>
 
     protected suspend fun runPatientRegistrationWithBuilder(
-        registrationBuilder: (answers: List<AnswerDto>, insuranceCompany: InsuranceCompany, confirmation: ConfirmationDtoIn) ->
-        PatientRegistrationDtoIn,
+        registrationBuilder: PatientRegistrationBuilder,
         onDone: (requestNumber: Int) -> Unit
     ) {
         runCatching {
@@ -76,10 +75,7 @@ abstract class LoadTest(
         onDone(counter.incrementAndGet())
     }
 
-    private suspend fun runPatientRegistrationWithBuilder(
-        registrationBuilder: (answers: List<AnswerDto>, insuranceCompany: InsuranceCompany, confirmation: ConfirmationDtoIn) ->
-        PatientRegistrationDtoIn
-    ) {
+    private suspend fun runPatientRegistrationWithBuilder(registrationBuilder: PatientRegistrationBuilder) {
         // login
         var request = login(credentials)
         require(request.status.isSuccess()) { "Login request was not successful. ${request.status.description}" }

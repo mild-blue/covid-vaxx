@@ -6,32 +6,38 @@ import kotlinx.coroutines.runBlocking
 
 private val logger = createLogger("PerformanceTest")
 
+private const val TARGET_HOST = "http://localhost:8080"
+private val CREDENTIALS = LoginDtoIn(
+    username = "mildblue",
+    password = "bluemild"
+)
+
+/**
+ * Execute load tests
+ */
 fun main() {
-//    val test = timeTest()
-    val test = requestsCountTest()
-    runBlocking { test.execute() }.also(::logResults)
+    listOf(
+        timeTest(),
+        requestsCountTest()
+    ).map {
+        runBlocking { it.execute() }.also(::logResults)
+    }
 }
 
 private fun timeTest() = TimeLoadTest(
-    targetHost = "http://localhost:8080",
-    credentials = LoginDtoIn(
-        username = "mildblue",
-        password = "bluemild"
-    ),
+    targetHost = TARGET_HOST,
+    credentials = CREDENTIALS,
     requestTimeoutsSeconds = 60,
     coroutineWorkers = 1,
     runningTimeInSeconds = 60
 )
 
 private fun requestsCountTest() = RoundsLoadTest(
-    targetHost = "http://localhost:8080",
-    credentials = LoginDtoIn(
-        username = "mildblue",
-        password = "bluemild"
-    ),
+    targetHost = TARGET_HOST,
+    credentials = CREDENTIALS,
     requestTimeoutsSeconds = 60,
-    coroutineWorkers = 3,
-    rounds = 200
+    coroutineWorkers = 5,
+    rounds = 400
 )
 
 private fun logResults(results: List<RequestMetric>) {
