@@ -5,7 +5,7 @@ import { AdminComponent } from '@app/pages/admin/admin.component';
 
 const routes: Routes = [
   { path: '', pathMatch: 'full', component: HomeComponent }, // fully match an empty route
-  { path: 'admin', pathMatch: 'full', component: AdminComponent }, 
+  { path: 'admin', component: AdminComponent },
 
   // Redirect all to HomeComponent
   { path: '**', redirectTo: '' }
