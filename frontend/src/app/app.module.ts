@@ -23,6 +23,8 @@ import { HomeComponent } from './pages/home/home.component';
 import { ContainerComponent } from './components/container/container.component';
 import { FooterComponent } from './components/footer/footer.component';
 import { AdminComponent } from './pages/admin/admin.component';
+import { LoginComponent } from './pages/login/login.component';
+import { MatSnackBarModule } from '@angular/material/snack-bar';
 
 @NgModule({
   declarations: [
@@ -31,7 +33,8 @@ import { AdminComponent } from './pages/admin/admin.component';
     HomeComponent,
     ContainerComponent,
     FooterComponent,
-    AdminComponent
+    AdminComponent,
+    LoginComponent
   ],
   imports: [
     BrowserModule,
@@ -51,7 +54,8 @@ import { AdminComponent } from './pages/admin/admin.component';
     MatCardModule,
     MatSelectModule,
     MatCheckboxModule,
-    MatDialogModule
+    MatDialogModule,
+    MatSnackBarModule
   ],
   providers: [
   ],
