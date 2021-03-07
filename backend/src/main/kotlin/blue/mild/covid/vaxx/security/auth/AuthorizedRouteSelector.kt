@@ -1,4 +1,4 @@
-package blue.mild.covid.vaxx.auth
+package blue.mild.covid.vaxx.security.auth
 
 import io.ktor.routing.RouteSelector
 import io.ktor.routing.RouteSelectorEvaluation

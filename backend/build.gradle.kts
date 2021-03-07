@@ -20,6 +20,7 @@ application {
 repositories {
     jcenter()
     maven {
+        // for swagger and rate limiting
         url = URI.create("https://jitpack.io")
     }
 }
@@ -34,17 +35,16 @@ dependencies {
     implementation("io.ktor", "ktor-server-netty", ktorVersion)
     implementation("io.ktor", "ktor-jackson", ktorVersion)
     implementation("io.ktor", "ktor-websockets", ktorVersion)
-    implementation("io.ktor","ktor-auth", ktorVersion)
-    implementation("io.ktor","ktor-auth-jwt", ktorVersion)
+    implementation("io.ktor", "ktor-auth", ktorVersion)
+    implementation("io.ktor", "ktor-auth-jwt", ktorVersion)
+    // ktor swagger
+    implementation("com.github.papsign", "Ktor-OpenAPI-Generator", "0.2-beta.14")
 
     // Ktor client dependencies
     implementation("io.ktor", "ktor-client-json", ktorVersion)
     implementation("io.ktor", "ktor-client-jackson", ktorVersion)
     implementation("io.ktor", "ktor-client-apache", ktorVersion)
     implementation("io.ktor", "ktor-client-logging-jvm", ktorVersion)
-
-    // swagger
-    implementation("com.github.papsign", "Ktor-OpenAPI-Generator", "0.2-beta.14")
 
     // Jackson JSON
     val jacksonVersion = "2.12.1"
@@ -56,7 +56,7 @@ dependencies {
     implementation("io.github.microutils", "kotlin-logging", "2.0.4")
     implementation("ch.qos.logback", "logback-classic", "1.2.3")
 
-    // crypto 
+    // crypto
     implementation("com.lambdaworks", "scrypt", "1.4.0")
 
     // DI

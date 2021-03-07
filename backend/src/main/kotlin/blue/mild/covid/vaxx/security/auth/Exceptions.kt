@@ -1,4 +1,4 @@
-package blue.mild.covid.vaxx.auth
+package blue.mild.covid.vaxx.security.auth
 
 sealed class AuthorizationException(override val message: String) : Exception(message)
 

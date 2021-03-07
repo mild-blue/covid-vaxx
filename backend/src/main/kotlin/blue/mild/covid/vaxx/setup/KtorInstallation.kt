@@ -1,8 +1,5 @@
 package blue.mild.covid.vaxx.setup
 
-import blue.mild.covid.vaxx.auth.JwtService
-import blue.mild.covid.vaxx.auth.RoleBasedAuthorization
-import blue.mild.covid.vaxx.auth.registerJwtAuth
 import blue.mild.covid.vaxx.dao.DatabaseSetup
 import blue.mild.covid.vaxx.dto.DatabaseConfigurationDto
 import blue.mild.covid.vaxx.dto.JwtConfigurationDto
@@ -12,6 +9,10 @@ import blue.mild.covid.vaxx.monitoring.CALL_ID
 import blue.mild.covid.vaxx.monitoring.REMOTE_HOST
 import blue.mild.covid.vaxx.routes.Routes
 import blue.mild.covid.vaxx.routes.registerRoutes
+import blue.mild.covid.vaxx.security.auth.JwtService
+import blue.mild.covid.vaxx.security.auth.RoleBasedAuthorization
+import blue.mild.covid.vaxx.security.auth.registerJwtAuth
+import blue.mild.covid.vaxx.security.ratelimiting.RateLimiting
 import blue.mild.covid.vaxx.utils.createLogger
 import com.auth0.jwt.JWTVerifier
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule
@@ -33,10 +34,12 @@ import io.ktor.features.DefaultHeaders
 import io.ktor.features.ForwardedHeaderSupport
 import io.ktor.features.XForwardedHeaderSupport
 import io.ktor.features.callId
+import io.ktor.http.HttpMethod
 import io.ktor.http.content.default
 import io.ktor.http.content.files
 import io.ktor.http.content.static
 import io.ktor.jackson.jackson
+import io.ktor.request.httpMethod
 import io.ktor.request.uri
 import io.ktor.response.respond
 import io.ktor.response.respondRedirect
@@ -46,6 +49,7 @@ import org.flywaydb.core.Flyway
 import org.kodein.di.instance
 import org.kodein.di.ktor.di
 import org.slf4j.event.Level
+import java.time.Duration
 import java.util.UUID
 import kotlin.random.Random
 import kotlin.reflect.KType
@@ -120,6 +124,7 @@ private fun Application.installFrameworks() {
     installMonitoring()
     installSwagger()
     installExceptionHandling()
+    installRateLimiting()
 }
 
 // Install basic extensions and necessary features to the Ktor.
@@ -222,5 +227,19 @@ private fun Application.installMonitoring() {
             // but it's way faster, see https://stackoverflow.com/a/14534126/7169288
             UUID(Random.nextLong(), Random.nextLong()).toString()
         }
+    }
+}
+
+// Install rate limiting to prevent DDoS.
+private fun Application.installRateLimiting() {
+    // TODO determine these values once in the procution
+    install(RateLimiting) {
+        limit = 100
+        resetTime = Duration.ofHours(1L)
+        keyExtraction = { call.request.determineRealIp() }
+        requestExclusion = {
+            it.httpMethod == HttpMethod.Options || it.uri.endsWith(Routes.status)
+        }
+
     }
 }
