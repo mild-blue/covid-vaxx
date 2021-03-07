@@ -1,4 +1,4 @@
-package blue.mild.covid.vaxx.auth
+package blue.mild.covid.vaxx.security.auth
 
 import blue.mild.covid.vaxx.dto.JwtConfigurationDto
 import com.auth0.jwt.JWTVerifier

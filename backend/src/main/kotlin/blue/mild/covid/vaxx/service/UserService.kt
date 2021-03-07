@@ -1,10 +1,10 @@
 package blue.mild.covid.vaxx.service
 
-import blue.mild.covid.vaxx.auth.CredentialsMismatchException
-import blue.mild.covid.vaxx.auth.RegisteredUserPrincipal
 import blue.mild.covid.vaxx.dao.User
 import blue.mild.covid.vaxx.dto.request.LoginDtoIn
 import blue.mild.covid.vaxx.dto.request.UserRegistrationDtoIn
+import blue.mild.covid.vaxx.security.auth.CredentialsMismatchException
+import blue.mild.covid.vaxx.security.auth.RegisteredUserPrincipal
 import org.jetbrains.exposed.sql.insert
 import org.jetbrains.exposed.sql.select
 import org.jetbrains.exposed.sql.transactions.experimental.newSuspendedTransaction

@@ -1,7 +1,5 @@
 package blue.mild.covid.vaxx.routes
 
-import blue.mild.covid.vaxx.auth.UserPrincipal
-import blue.mild.covid.vaxx.auth.authorizeRoute
 import blue.mild.covid.vaxx.dao.UserRole
 import blue.mild.covid.vaxx.dto.PatientEmailRequestDto
 import blue.mild.covid.vaxx.dto.PatientRegistrationDto
@@ -14,6 +12,8 @@ import blue.mild.covid.vaxx.dto.response.PatientRegisteredDtoOut
 import blue.mild.covid.vaxx.extensions.determineRealIp
 import blue.mild.covid.vaxx.extensions.di
 import blue.mild.covid.vaxx.extensions.request
+import blue.mild.covid.vaxx.security.auth.UserPrincipal
+import blue.mild.covid.vaxx.security.auth.authorizeRoute
 import blue.mild.covid.vaxx.service.MailService
 import blue.mild.covid.vaxx.service.PatientService
 import com.papsign.ktor.openapigen.route.info

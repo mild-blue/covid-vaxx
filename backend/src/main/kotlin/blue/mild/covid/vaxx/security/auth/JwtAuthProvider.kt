@@ -1,4 +1,4 @@
-package blue.mild.covid.vaxx.auth
+package blue.mild.covid.vaxx.security.auth
 
 import com.papsign.ktor.openapigen.model.Described
 import com.papsign.ktor.openapigen.model.security.HttpSecurityScheme

@@ -1,4 +1,4 @@
-package blue.mild.covid.vaxx.auth
+package blue.mild.covid.vaxx.security.auth
 
 import blue.mild.covid.vaxx.dao.UserRole
 import blue.mild.covid.vaxx.extensions.di
