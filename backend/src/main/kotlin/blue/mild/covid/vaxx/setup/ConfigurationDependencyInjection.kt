@@ -12,7 +12,6 @@ import pw.forst.tools.katlib.getEnv
 import pw.forst.tools.katlib.whenNull
 import java.io.File
 import java.util.UUID
-import kotlin.system.exitProcess
 
 private val logger = createLogger("EnvironmentLoaderLogger")
 
@@ -32,16 +31,6 @@ private fun loadVersion(defaultVersion: String = "development"): String = runCat
  */
 // TODO load all config from the file and then allow the replacement with env variables
 fun DI.MainBuilder.bindConfiguration() {
-
-    val apiKey =
-        requireNotNull(
-            getEnv("MAIL_JET_API_KEY")
-        ) { "MAIL_JET_API_KEY env variable was not provided. Exiting" }
-    val apiSecret =
-        requireNotNull(
-            getEnv("MAIL_JET_API_SECRET")
-        ) { "MAIL_JET_API_SECRET env variable was not provided. Exiting" }
-
     // The default values used in this configuration are for the local development.
     bind<DatabaseConfigurationDto>() with singleton {
         val db = getEnvOrLogDefault("POSTGRES_DB", "covid-vaxx")
@@ -56,8 +45,8 @@ fun DI.MainBuilder.bindConfiguration() {
 
     bind<MailJetConfigurationDto>() with singleton {
         MailJetConfigurationDto(
-            apiKey = apiKey,
-            apiSecret = apiSecret,
+            apiKey = requireNotNull(getEnv("MAIL_JET_API_SECRET")) { "MAIL_JET_API_SECRET env variable was not provided. Exiting" },
+            apiSecret = requireNotNull(getEnv("MAIL_JET_API_SECRET")) { "MAIL_JET_API_SECRET env variable was not provided. Exiting" },
             emailFrom = getEnvOrLogDefault("MAIL_ADDRESS_FROM", "services@mild.blue"),
             nameFrom = getEnvOrLogDefault("NAME_FROM", "Registrace Očkování")
         )
