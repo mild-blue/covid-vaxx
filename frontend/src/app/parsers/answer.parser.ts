@@ -1,7 +1,7 @@
-import { YesNoQuestion } from '../model/PatientInfo';
-import { Answer } from '../model/Patient';
+import { Answer } from '@app/model/Answer';
+import { Question } from '@app/model/Question';
 
-export const parseAnswerFromQuestion = (question: YesNoQuestion): Answer => {
+export const parseAnswerFromQuestion = (question: Question): Answer => {
   return {
     label: question.label,
     value: question.value ?? false

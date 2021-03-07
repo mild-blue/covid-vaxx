@@ -11,23 +11,23 @@
             <form [formGroup]="basicInfoForm">
               <mat-form-field>
                 <mat-label>Jméno</mat-label>
-                <input [(ngModel)]="patientInfo.firstName" formControlName="firstName" matInput placeholder="Vaše jméno" required>
+                <input [(ngModel)]="patient.firstName" formControlName="firstName" matInput placeholder="Vaše jméno" required>
               </mat-form-field>
 
               <mat-form-field>
                 <mat-label>Příjmení</mat-label>
-                <input [(ngModel)]="patientInfo.lastName" formControlName="lastName" matInput placeholder="Vaše příjmení" required>
+                <input [(ngModel)]="patient.lastName" formControlName="lastName" matInput placeholder="Vaše příjmení" required>
               </mat-form-field>
 
               <mat-form-field>
                 <mat-label>Rodné číslo</mat-label>
-                <input [(ngModel)]="patientInfo.personalNumber" formControlName="personalNumber" matInput placeholder="Vaše rodné číslo" required>
+                <input [(ngModel)]="patient.personalNumber" formControlName="personalNumber" matInput placeholder="Vaše rodné číslo" required>
                 <mat-hint>Rodné číslo ve formátu RRMMDD/ČČČ(Č)</mat-hint>
               </mat-form-field>
 
               <mat-form-field>
                 <mat-label>Zdravotní pojišťovna</mat-label>
-                <mat-select formControlName="insuranceCompany" [(ngModel)]="patientInfo.insuranceCompany">
+                <mat-select formControlName="insuranceCompany" [(ngModel)]="patient.insuranceCompany">
                   <mat-option *ngFor="let insuranceCompany of allInsuranceCompanies" [value]="insuranceCompany">
                     {{insuranceCompany}}
                   </mat-option>
@@ -36,12 +36,12 @@
 
               <mat-form-field>
                 <mat-label>Telefonní číslo</mat-label>
-                <input [(ngModel)]="patientInfo.phoneNumber" formControlName="phoneNumber" matInput placeholder="Vaše telefonní číslo" required>
+                <input [(ngModel)]="patient.phoneNumber" formControlName="phoneNumber" matInput placeholder="Vaše telefonní číslo" required>
                 <mat-hint>Telefonní číslo ve formátu +420XXXXXXXXX</mat-hint>
               </mat-form-field>
               <mat-form-field>
                 <mat-label>E-mail</mat-label>
-                <input [(ngModel)]="patientInfo.email" formControlName="email" matInput placeholder="Váš e-mail" required>
+                <input [(ngModel)]="patient.email" formControlName="email" matInput placeholder="Váš e-mail" required>
               </mat-form-field>
             </form>
           </mat-card-content>

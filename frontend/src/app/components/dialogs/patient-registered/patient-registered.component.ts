@@ -1,5 +1,5 @@
 import { Component, Inject, OnInit } from '@angular/core';
-import { PatientInfo } from '@app/model/PatientInfo';
+import { PatientEditable } from '@app/model/PatientEditable';
 import { MAT_DIALOG_DATA } from '@angular/material/dialog';
 
 @Component({
@@ -9,7 +9,7 @@ import { MAT_DIALOG_DATA } from '@angular/material/dialog';
 })
 export class PatientRegisteredComponent implements OnInit {
 
-  constructor(@Inject(MAT_DIALOG_DATA) public data: PatientInfo) {
+  constructor(@Inject(MAT_DIALOG_DATA) public data: PatientEditable) {
   }
 
   ngOnInit(): void {

@@ -1,6 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
-import { PatientInfo, YesNoQuestion } from '@app/model/PatientInfo';
+import { PatientEditable } from '@app/model/PatientEditable';
 import { InsuranceCompany } from '@app/model/InsuranceCompany';
 import { QuestionService } from '@app/services/question/question.service';
 import { PatientService } from '@app/services/patient/patient.service';
@@ -10,6 +10,7 @@ import { ActivatedRoute } from '@angular/router';
 import { PatientData } from '@app/model/PatientData';
 import { parseAnswerFromQuestion } from '@app/parsers/answer.parser';
 import { parseInsuranceCompany } from '@app/parsers/patient.parser';
+import { Question } from '@app/model/Question';
 
 @Component({
   selector: 'app-home',
@@ -20,8 +21,7 @@ export class HomeComponent implements OnInit {
 
   public basicInfoForm?: FormGroup;
 
-  public patientInfo: PatientInfo = new PatientInfo();
-  public questions: YesNoQuestion[] = [];
+  public patient: PatientEditable = new PatientEditable();
   public allInsuranceCompanies: string[] = Object.values(InsuranceCompany);
 
   public agreementCheckboxValue: boolean = false;
@@ -34,7 +34,7 @@ export class HomeComponent implements OnInit {
               private _alertService: AlertService) {
     const personalNumber = this._route.snapshot.paramMap.get('personalNumber');
     if (personalNumber) {
-      this.patientInfo.personalNumber = personalNumber;
+      this.patient.personalNumber = personalNumber;
     }
   }
 
@@ -42,13 +42,15 @@ export class HomeComponent implements OnInit {
     this.basicInfoForm = this._formBuilder.group({
       firstName: ['', Validators.required],
       lastName: ['', Validators.required],
-      personalNumber: [this.patientInfo.personalNumber ?? '', [Validators.required, validatePersonalNumber]],
+      personalNumber: [this.patient.personalNumber ?? '', [Validators.required, validatePersonalNumber]],
       insuranceCompany: ['', Validators.required],
       phoneNumber: ['', [Validators.required, validatePhoneNumber]],
       email: ['', [Validators.required, Validators.email]]
     });
+  }
 
-    this.questions = this._questionService.questions;
+  get questions(): Question[] {
+    return this._questionService.questions;
   }
 
   get allQuestionsAnswered(): boolean {
@@ -69,7 +71,7 @@ export class HomeComponent implements OnInit {
   }
 
   public getPatientData(): PatientData | undefined {
-    const { firstName, lastName, personalNumber, insuranceCompany, phoneNumber, email } = this.patientInfo;
+    const { firstName, lastName, personalNumber, insuranceCompany, phoneNumber, email } = this.patient;
 
     if (!firstName || !lastName || !personalNumber || !insuranceCompany || !phoneNumber || !email) {
       return;
@@ -92,7 +94,7 @@ export class HomeComponent implements OnInit {
     }
 
     try {
-      const result = await this._patientService.savePatientInfo(this.patientInfo, this.questions, this.agreementCheckboxValue, this.confirmationCheckboxValue);
+      const result = await this._patientService.savePatientInfo(this.patient, this.questions, this.agreementCheckboxValue, this.confirmationCheckboxValue);
       if (result.patientId) {
         this._alertService.patientRegisteredDialog();
       }

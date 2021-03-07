@@ -1,12 +1,13 @@
 import { Injectable } from '@angular/core';
-import { PatientInfo, YesNoQuestion } from '@app/model/PatientInfo';
+import { PatientEditable } from '@app/model/PatientEditable';
 import { environment } from '@environments/environment';
 import { first, map } from 'rxjs/operators';
 import { HttpClient, HttpParams } from '@angular/common/http';
-import { PatientResponse } from '@app/services/patient/patient.interface';
-import { Patient, PatientOut } from '@app/model/Patient';
+import { Patient } from '@app/model/Patient';
 import { parsePatient } from '@app/parsers/patient.parser';
 import { QuestionService } from '@app/services/question/question.service';
+import { PatientDtoOut, PatientRegisteredDtoOut } from '@app/generated';
+import { Question } from '@app/model/Question';
 
 @Injectable({
   providedIn: 'root'
@@ -17,8 +18,8 @@ export class PatientService {
               private _questionService: QuestionService) {
   }
 
-  public async savePatientInfo(patientInfo: PatientInfo, questions: YesNoQuestion[], agreement: boolean, confirmation: boolean): Promise<PatientResponse> {
-    return this._http.post<PatientResponse>(
+  public async savePatientInfo(patientInfo: PatientEditable, questions: Question[], agreement: boolean, confirmation: boolean): Promise<PatientRegisteredDtoOut> {
+    return this._http.post<PatientRegisteredDtoOut>(
       `${environment.apiUrl}/patient`,
       {
         answers: questions.map(q => {
@@ -38,7 +39,7 @@ export class PatientService {
   public async findPatientByPersonalNumber(personalNumber: string): Promise<Patient[]> {
     const params = new HttpParams().set('personalNumber', personalNumber);
 
-    return this._http.get<PatientOut[]>(
+    return this._http.get<PatientDtoOut[]>(
       `${environment.apiUrl}/patient`,
       { params }
     ).pipe(

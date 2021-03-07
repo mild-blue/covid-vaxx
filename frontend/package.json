@@ -8,6 +8,8 @@
     "build-prod": "ng build --prod",
     "test": "ng test",
     "lint": "eslint -c .eslintrc.js --ext .ts src",
+    "generate-stubs-prod": "./generate-stubs.sh https://vaccination.mild.blue/openapi.json",
+    "generate-stubs-stg": "./generate-stubs.sh https://covid-vaxx.stg.mild.blue/openapi.json",
     "e2e": "ng e2e"
   },
   "private": true,

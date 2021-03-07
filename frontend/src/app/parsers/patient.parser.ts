@@ -1,8 +1,10 @@
-import { Answer, AnswerOut, Patient, PatientOut } from '../model/Patient';
+import { Patient } from '../model/Patient';
 import { InsuranceCompany } from '../model/InsuranceCompany';
-import { YesNoQuestion } from '@app/model/PatientInfo';
+import { AnswerDto, PatientDtoOut } from '@app/generated';
+import { Answer } from '@app/model/Answer';
+import { Question } from '@app/model/Question';
 
-export const parsePatient = (data: PatientOut, questions: YesNoQuestion[]): Patient => {
+export const parsePatient = (data: PatientDtoOut, questions: Question[]): Patient => {
   const answers = data.answers.map(a => parseAnswer(a, questions));
 
   return {
@@ -18,7 +20,7 @@ export const parseInsuranceCompany = (data: string): InsuranceCompany | undefine
   return InsuranceCompany[data as InsuranceCompany];
 };
 
-export const parseAnswer = (data: AnswerOut, questions: YesNoQuestion[]): Answer | undefined => {
+export const parseAnswer = (data: AnswerDto, questions: Question[]): Answer | undefined => {
   const question = questions.find(q => q.id === data.questionId);
   if (!question) {
     return undefined;

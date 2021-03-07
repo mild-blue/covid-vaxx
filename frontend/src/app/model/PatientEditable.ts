@@ -1,4 +1,4 @@
-export class PatientInfo {
+export class PatientEditable {
   firstName?: string;
   lastName?: string;
   personalNumber?: string;
@@ -7,9 +7,3 @@ export class PatientInfo {
   email?: string;
 }
 
-export interface YesNoQuestion {
-  id: string;
-  label: string;
-  name: string;
-  value?: boolean;
-}

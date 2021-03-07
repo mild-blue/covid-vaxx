@@ -1,5 +1,5 @@
 import { InsuranceCompany } from '@app/model/InsuranceCompany';
-import { Answer } from '@app/model/Patient';
+import { Answer } from '@app/model/Answer';
 
 export interface PatientData {
   firstName: string;
