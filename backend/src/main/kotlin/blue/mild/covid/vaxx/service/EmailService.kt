@@ -23,6 +23,11 @@ class EmailService(
 
     private companion object : KLogging()
 
+    init {
+        // eager initialize during the construction
+        initialize()
+    }
+
     suspend fun sendEmail(patientRegistrationDto: PatientEmailRequestDto) {
         insertToChannel(patientRegistrationDto)
     }
@@ -32,6 +37,8 @@ class EmailService(
     }
 
     private fun sendMailBlocking(emailRequest: PatientEmailRequestDto) {
+        logger.debug { "Sending an email to ${emailRequest.email}" }
+
         val client = MailjetClient(
             mailJetConfig.apiKey,
             mailJetConfig.apiSecret,
@@ -46,6 +53,7 @@ class EmailService(
         } else {
             logger.debug { "Email to ${emailRequest.email} sent successfully" }
             // save information about email sent to the database
+            // we want to keep this transaction on this thread, so we don't suspend it
             transaction {
                 Patient.update({ Patient.id eq emailRequest.patientId.toString() }) {
                     it[emailSentDate] = nowProvider.now()
@@ -75,8 +83,7 @@ class EmailService(
                             )
                             .put(Emailv31.Message.SUBJECT, "Testing Subject")
                             .put(
-                                Emailv31.Message.TEXTPART, "Dear ${emailRequest.lastName}" +
-                                        "You have been registered!"
+                                Emailv31.Message.TEXTPART, "Dear ${emailRequest.lastName}\n\nYou have been registered!"
                             )
                     )
             )
