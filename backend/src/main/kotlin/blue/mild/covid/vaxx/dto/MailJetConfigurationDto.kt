@@ -12,10 +12,12 @@ data class MailJetConfigurationDto(
      * Secret for API access.
      */
     val apiSecret: String,
-
     /**
      * Email address to send the emails from Must be verified!
      */
-    val emailFrom: String
-
+    val emailFrom: String,
+    /**
+     * Name to give to the email address to send the emails from.
+     */
+    val nameFrom: String
 )

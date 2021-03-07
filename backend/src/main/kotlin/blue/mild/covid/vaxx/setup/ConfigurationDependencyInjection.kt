@@ -33,15 +33,14 @@ private fun loadVersion(defaultVersion: String = "development"): String = runCat
 // TODO load all config from the file and then allow the replacement with env variables
 fun DI.MainBuilder.bindConfiguration() {
 
-    val apiKey = getEnv("MAIL_JET_API_KEY")
-    val apiSecret = getEnv("MAIL_JET_API_SECRET")
-    apiKey.whenNull {
-        logger.error("MAIL_JET_API_KEY env variable was not provided. Exiting")
-        exitProcess(1) }
-    apiSecret.whenNull {
-        logger.error("MAIL_JET_API_SECRET env variable was not provided. Exiting")
-        exitProcess(1)
-    }
+    val apiKey =
+        requireNotNull(
+            getEnv("MAIL_JET_API_KEY")
+        ) { "MAIL_JET_API_KEY env variable was not provided. Exiting" }
+    val apiSecret =
+        requireNotNull(
+            getEnv("MAIL_JET_API_SECRET")
+        ) { "MAIL_JET_API_SECRET env variable was not provided. Exiting" }
 
     // The default values used in this configuration are for the local development.
     bind<DatabaseConfigurationDto>() with singleton {
@@ -57,9 +56,10 @@ fun DI.MainBuilder.bindConfiguration() {
 
     bind<MailJetConfigurationDto>() with singleton {
         MailJetConfigurationDto(
-            apiKey = apiKey?: "",
-            apiSecret = apiSecret?: "",
-            emailFrom = getEnvOrLogDefault("MAIL_ADDRESS_FROM", "services@mild.blue")
+            apiKey = apiKey,
+            apiSecret = apiSecret,
+            emailFrom = getEnvOrLogDefault("MAIL_ADDRESS_FROM", "services@mild.blue"),
+            nameFrom = getEnvOrLogDefault("NAME_FROM", "Registrace Očkování")
         )
     }
 
