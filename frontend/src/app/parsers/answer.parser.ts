@@ -4,6 +4,6 @@ import { Question } from '@app/model/Question';
 export const parseAnswerFromQuestion = (question: Question): Answer => {
   return {
     label: question.label,
-    value: question.value ?? false
+    value: question.value === 'true' || question.value === true
   };
 };

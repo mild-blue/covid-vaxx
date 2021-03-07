@@ -4,11 +4,11 @@
 
 <main>
   <mat-horizontal-stepper [linear]="true">
-    <mat-step *ngIf="basicInfoForm" [completed]="canProceedToStep2" label="Osobní informace">
+    <mat-step *ngIf="patientForm" [completed]="canProceedToStep2" label="Osobní informace">
       <app-container>
         <mat-card>
           <mat-card-content>
-            <form [formGroup]="basicInfoForm">
+            <form [formGroup]="patientForm">
               <mat-form-field>
                 <mat-label>Jméno</mat-label>
                 <input [(ngModel)]="patient.firstName" formControlName="firstName" matInput placeholder="Vaše jméno" required>
@@ -87,7 +87,7 @@
     </mat-step>
     <mat-step label="Odeslání požadavku">
       <app-container [wide]="true">
-        <app-patient-data [patientData]="getPatientData()"></app-patient-data>
+        <app-patient-data *ngIf="canProceedToStep3" [patientData]="getPatientData()"></app-patient-data>
 
         <div class="checkboxes">
           <mat-checkbox [(ngModel)]="confirmationCheckboxValue">

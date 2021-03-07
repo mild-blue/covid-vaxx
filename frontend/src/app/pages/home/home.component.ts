@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnDestroy, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { PatientEditable } from '@app/model/PatientEditable';
 import { InsuranceCompany } from '@app/model/InsuranceCompany';
@@ -11,17 +11,21 @@ import { PatientData } from '@app/model/PatientData';
 import { parseAnswerFromQuestion } from '@app/parsers/answer.parser';
 import { parseInsuranceCompany } from '@app/parsers/patient.parser';
 import { Question } from '@app/model/Question';
+import { Subscription } from 'rxjs';
 
 @Component({
   selector: 'app-home',
   templateUrl: './home.component.html',
   styleUrls: ['./home.component.scss']
 })
-export class HomeComponent implements OnInit {
+export class HomeComponent implements OnInit, OnDestroy {
 
-  public basicInfoForm?: FormGroup;
+  private _questionsSubscription?: Subscription;
+
+  public patientForm?: FormGroup;
 
   public patient: PatientEditable = new PatientEditable();
+  public questions: Question[] = [];
   public allInsuranceCompanies: string[] = Object.values(InsuranceCompany);
 
   public agreementCheckboxValue: boolean = false;
@@ -36,10 +40,13 @@ export class HomeComponent implements OnInit {
     if (personalNumber) {
       this.patient.personalNumber = personalNumber;
     }
+
+    this._questionsSubscription = this._questionService.questionsObservable
+    .subscribe(questions => this.questions = questions);
   }
 
   ngOnInit() {
-    this.basicInfoForm = this._formBuilder.group({
+    this.patientForm = this._formBuilder.group({
       firstName: ['', Validators.required],
       lastName: ['', Validators.required],
       personalNumber: [this.patient.personalNumber ?? '', [Validators.required, validatePersonalNumber]],
@@ -49,8 +56,8 @@ export class HomeComponent implements OnInit {
     });
   }
 
-  get questions(): Question[] {
-    return this._questionService.questions;
+  ngOnDestroy() {
+    this._questionsSubscription?.unsubscribe();
   }
 
   get allQuestionsAnswered(): boolean {
@@ -59,31 +66,25 @@ export class HomeComponent implements OnInit {
   }
 
   get canProceedToStep2(): boolean {
-    return !!this.basicInfoForm?.valid;
+    return !!this.patientForm?.valid;
   }
 
   get canProceedToStep3(): boolean {
-    return !!this.basicInfoForm?.valid && this.allQuestionsAnswered;
+    return !!this.patientForm?.valid && this.allQuestionsAnswered;
   }
 
   get canSubmit(): boolean {
-    return !!this.basicInfoForm?.valid && this.allQuestionsAnswered && this.agreementCheckboxValue && this.confirmationCheckboxValue;
+    return !!this.patientForm?.valid && this.allQuestionsAnswered && this.agreementCheckboxValue && this.confirmationCheckboxValue;
   }
 
-  public getPatientData(): PatientData | undefined {
-    const { firstName, lastName, personalNumber, insuranceCompany, phoneNumber, email } = this.patient;
-
-    if (!firstName || !lastName || !personalNumber || !insuranceCompany || !phoneNumber || !email) {
-      return;
-    }
-
+  public getPatientData(): PatientData {
     return {
-      firstName,
-      lastName,
-      personalNumber,
-      insuranceCompany: parseInsuranceCompany(insuranceCompany),
-      phoneNumber,
-      email,
+      firstName: this.patient.firstName ?? '',
+      lastName: this.patient.lastName ?? '',
+      personalNumber: this.patient.personalNumber ?? '',
+      insuranceCompany: this.patient.insuranceCompany ? parseInsuranceCompany(this.patient.insuranceCompany) : undefined,
+      phoneNumber: this.patient.phoneNumber ?? '',
+      email: this.patient.email ?? '',
       answers: this.questions.map(parseAnswerFromQuestion)
     };
   }
