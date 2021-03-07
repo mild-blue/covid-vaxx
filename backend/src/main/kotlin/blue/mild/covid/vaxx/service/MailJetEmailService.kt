@@ -3,10 +3,10 @@ package blue.mild.covid.vaxx.service
 import blue.mild.covid.vaxx.dao.Patient
 import blue.mild.covid.vaxx.dto.MailJetConfigurationDto
 import blue.mild.covid.vaxx.dto.PatientEmailRequestDto
-import com.mailjet.client.ClientOptions
 import com.mailjet.client.MailjetClient
 import com.mailjet.client.MailjetRequest
 import com.mailjet.client.resource.Emailv31
+import io.ktor.http.HttpStatusCode
 import mu.KLogging
 import org.jetbrains.exposed.sql.transactions.transaction
 import org.jetbrains.exposed.sql.update
@@ -15,20 +15,23 @@ import org.json.JSONObject
 import pw.forst.tools.katlib.TimeProvider
 import java.time.Instant
 
-class EmailService(
+class MailJetEmailService(
     private val mailJetConfig: MailJetConfigurationDto,
+    private val client: MailjetClient,
     private val nowProvider: TimeProvider<Instant>
-) : DispatchService<PatientEmailRequestDto>(1) {
+) : MailService, DispatchService<PatientEmailRequestDto>(1) {
     // TODO consider populating channel with unsent emails during the init
 
-    private companion object : KLogging()
+    private companion object : KLogging() {
+        val SUCCESS = HttpStatusCode.OK.value
+    }
 
     init {
         // eager initialize during the construction
         initialize()
     }
 
-    suspend fun sendEmail(patientRegistrationDto: PatientEmailRequestDto) {
+    override suspend fun sendEmail(patientRegistrationDto: PatientEmailRequestDto) {
         insertToChannel(patientRegistrationDto)
     }
 
@@ -37,21 +40,15 @@ class EmailService(
     }
 
     private fun sendMailBlocking(emailRequest: PatientEmailRequestDto) {
-        logger.debug { "Sending an email to ${emailRequest.email}" }
-
-        val client = MailjetClient(
-            mailJetConfig.apiKey,
-            mailJetConfig.apiSecret,
-            ClientOptions("v3.1")
-        )
+        logger.debug { "Sending an email to ${emailRequest.email}." }
 
         val response = client.post(buildEmailRequest(emailRequest))
 
-        if (response.status != 200) {
+        if (response.status != SUCCESS) {
             // TODO consider putting it back to the channel for retry
-            logger.error { "Sending email to ${emailRequest.email} was not successful details: ${response.data}" }
+            logger.error { "Sending email to ${emailRequest.email} was not successful details: ${response.data}." }
         } else {
-            logger.debug { "Email to ${emailRequest.email} sent successfully" }
+            logger.debug { "Email to ${emailRequest.email} sent successfully." }
             // save information about email sent to the database
             // we want to keep this transaction on this thread, so we don't suspend it
             transaction {

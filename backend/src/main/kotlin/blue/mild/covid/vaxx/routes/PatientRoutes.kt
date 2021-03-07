@@ -14,7 +14,7 @@ import blue.mild.covid.vaxx.dto.response.PatientRegisteredDtoOut
 import blue.mild.covid.vaxx.extensions.determineRealIp
 import blue.mild.covid.vaxx.extensions.di
 import blue.mild.covid.vaxx.extensions.request
-import blue.mild.covid.vaxx.service.EmailService
+import blue.mild.covid.vaxx.service.MailService
 import blue.mild.covid.vaxx.service.PatientService
 import com.papsign.ktor.openapigen.route.info
 import com.papsign.ktor.openapigen.route.path.auth.delete
@@ -41,7 +41,7 @@ fun NormalOpenAPIRoute.patientRoutes() {
 // TODO #70 delete this
 private fun NormalOpenAPIRoute.openRoutes() {
     val patientService by di().instance<PatientService>()
-    val emailService by di().instance<EmailService>()
+    val emailService by di().instance<MailService>()
     route(Routes.patient) {
         get<PatientIdDtoIn, PatientDtoOut>(
             info("Get user by ID.")
@@ -89,7 +89,7 @@ private fun NormalOpenAPIRoute.openRoutes() {
 // TODO #70 delete authorized prefix
 private fun NormalOpenAPIRoute.authorizedRoutes() {
     val patientService by di().instance<PatientService>()
-    val emailService by di().instance<EmailService>()
+    val emailService by di().instance<MailService>()
     // routes for registered users only
     authorizeRoute(requireOneOf = setOf(UserRole.ADMIN, UserRole.DOCTOR)) {
         route("/authorized${Routes.patient}") {
