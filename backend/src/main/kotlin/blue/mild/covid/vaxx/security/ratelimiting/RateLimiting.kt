@@ -57,7 +57,7 @@ class RateLimiting private constructor(
                 } else {
                     // at this point we want to deny attacker the request
                     // but we also do not want to spend any more resources on processing this request
-                    // for that reason we don't throw exception, but rather finish the request here
+                    // for that reason we don't throw exception, nor return jsons, but rather finish the request here
                     call.response.header("Retry-After", retryAfter)
                     call.respond(HttpStatusCode.TooManyRequests)
                     rateLimitingLogger.warn { "Rate limit hit for host $remoteHost - retry after ${retryAfter}s." }

@@ -2,7 +2,6 @@ package blue.mild.covid.vaxx.error
 
 import blue.mild.covid.vaxx.security.auth.AuthorizationException
 import blue.mild.covid.vaxx.security.auth.InsufficientRightsException
-import blue.mild.covid.vaxx.security.ratelimiting.RateLimitingException
 import blue.mild.covid.vaxx.utils.createLogger
 import io.ktor.application.Application
 import io.ktor.application.ApplicationCall
@@ -10,7 +9,6 @@ import io.ktor.application.call
 import io.ktor.application.install
 import io.ktor.features.StatusPages
 import io.ktor.http.HttpStatusCode
-import io.ktor.response.header
 import io.ktor.response.respond
 
 private val logger = createLogger("ExceptionHandler")
@@ -20,12 +18,6 @@ private val logger = createLogger("ExceptionHandler")
  */
 fun Application.installExceptionHandling() {
     install(StatusPages) {
-        exception<RateLimitingException> { cause ->
-            logger.warn { cause.message }
-            call.response.header("Retry-After", cause.retryAfterSeconds)
-            call.errorResponse(HttpStatusCode.TooManyRequests, "Hold your horses! Retry after ${cause.retryAfterSeconds} seconds.")
-        }
-
         exception<InsufficientRightsException> {
             call.respond(HttpStatusCode.Forbidden)
         }
