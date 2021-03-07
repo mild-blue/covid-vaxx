@@ -3,6 +3,7 @@ package blue.mild.covid.vaxx.routes
 import blue.mild.covid.vaxx.auth.UserPrincipal
 import blue.mild.covid.vaxx.auth.authorizeRoute
 import blue.mild.covid.vaxx.dao.UserRole
+import blue.mild.covid.vaxx.dto.PatientEmailRequestDto
 import blue.mild.covid.vaxx.dto.PatientRegistrationDto
 import blue.mild.covid.vaxx.dto.request.PatientIdDtoIn
 import blue.mild.covid.vaxx.dto.request.PatientQueryDtoIn
@@ -13,6 +14,7 @@ import blue.mild.covid.vaxx.dto.response.PatientRegisteredDtoOut
 import blue.mild.covid.vaxx.extensions.determineRealIp
 import blue.mild.covid.vaxx.extensions.di
 import blue.mild.covid.vaxx.extensions.request
+import blue.mild.covid.vaxx.service.MailService
 import blue.mild.covid.vaxx.service.PatientService
 import com.papsign.ktor.openapigen.route.info
 import com.papsign.ktor.openapigen.route.path.auth.delete
@@ -22,7 +24,6 @@ import com.papsign.ktor.openapigen.route.path.normal.NormalOpenAPIRoute
 import com.papsign.ktor.openapigen.route.path.normal.post
 import com.papsign.ktor.openapigen.route.response.respond
 import com.papsign.ktor.openapigen.route.route
-import io.ktor.features.origin
 import org.kodein.di.instance
 import pw.forst.tools.katlib.asList
 
@@ -38,11 +39,21 @@ fun NormalOpenAPIRoute.patientRoutes() {
 // TODO #70 delete this
 private fun NormalOpenAPIRoute.openRoutes() {
     val patientService by di().instance<PatientService>()
+    val emailService by di().instance<MailService>()
     route(Routes.patient) {
         post<Unit, PatientRegisteredDtoOut, PatientRegistrationDtoIn>(
             info("Save patient registration to the database.")
         ) { _, patientRegistration ->
-            respond(patientService.savePatient(PatientRegistrationDto(patientRegistration, request.determineRealIp())))
+            val patient = patientService.savePatient(PatientRegistrationDto(patientRegistration, request.determineRealIp()))
+            emailService.sendEmail(
+                PatientEmailRequestDto(
+                    firstName = patientRegistration.firstName,
+                    lastName = patientRegistration.lastName,
+                    email = patientRegistration.email,
+                    patientId = patient.patientId
+                )
+            )
+            respond(patient)
         }
     }
 }
@@ -50,6 +61,7 @@ private fun NormalOpenAPIRoute.openRoutes() {
 // TODO #70 delete authorized prefix
 private fun NormalOpenAPIRoute.authorizedRoutes() {
     val patientService by di().instance<PatientService>()
+    val emailService by di().instance<MailService>()
     // routes for registered users only
     authorizeRoute(requireOneOf = setOf(UserRole.ADMIN, UserRole.DOCTOR)) {
         route(Routes.patient) {
@@ -84,7 +96,16 @@ private fun NormalOpenAPIRoute.authorizedRoutes() {
             post<Unit, PatientRegisteredDtoOut, PatientRegistrationDtoIn, UserPrincipal>(
                 info("Save patient registration to the database.")
             ) { _, patientRegistration ->
-                respond(patientService.savePatient(PatientRegistrationDto(patientRegistration, request.origin.remoteHost)))
+                val patient = patientService.savePatient(PatientRegistrationDto(patientRegistration, request.determineRealIp()))
+                emailService.sendEmail(
+                    PatientEmailRequestDto(
+                        firstName = patientRegistration.firstName,
+                        lastName = patientRegistration.lastName,
+                        email = patientRegistration.email,
+                        patientId = patient.patientId
+                    )
+                )
+                respond(patient)
             }
         }
     }

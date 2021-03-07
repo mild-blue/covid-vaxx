@@ -1,16 +1,24 @@
 package blue.mild.covid.vaxx.setup
 
+import blue.mild.covid.vaxx.dto.MailJetConfigurationDto
+import blue.mild.covid.vaxx.service.DummyMailService
 import blue.mild.covid.vaxx.service.EntityIdProvider
 import blue.mild.covid.vaxx.service.InstantTimeProvider
+import blue.mild.covid.vaxx.service.MailJetEmailService
+import blue.mild.covid.vaxx.service.MailService
 import blue.mild.covid.vaxx.service.PasswordHashProvider
 import blue.mild.covid.vaxx.service.PatientService
 import blue.mild.covid.vaxx.service.QuestionService
 import blue.mild.covid.vaxx.service.UserService
 import blue.mild.covid.vaxx.service.ValidationService
+import com.mailjet.client.ClientOptions
+import com.mailjet.client.MailjetClient
 import org.kodein.di.DI
 import org.kodein.di.bind
 import org.kodein.di.instance
 import org.kodein.di.singleton
+import pw.forst.tools.katlib.TimeProvider
+import java.time.Instant
 
 fun DI.MainBuilder.registerClasses() {
     bind<EntityIdProvider>() with singleton { EntityIdProvider() }
@@ -20,4 +28,20 @@ fun DI.MainBuilder.registerClasses() {
     bind<ValidationService>() with singleton { ValidationService(instance()) }
     bind<PatientService>() with singleton { PatientService(instance(), instance(), instance()) }
     bind<UserService>() with singleton { UserService(instance()) }
+    bind<MailJetEmailService>() with singleton { MailJetEmailService(instance(), instance(), instance()) }
+    bind<TimeProvider<Instant>>() with singleton { pw.forst.tools.katlib.InstantTimeProvider }
+
+    bind<MailjetClient>() with singleton {
+        val mailJetConfig = instance<MailJetConfigurationDto>()
+        MailjetClient(
+            mailJetConfig.apiKey,
+            mailJetConfig.apiSecret,
+            ClientOptions("v3.1")
+        )
+    }
+    bind<DummyMailService>() with singleton { DummyMailService() }
+
+    // TODO make this conditional, when in prod use mailjet
+    bind<MailService>() with singleton { instance<DummyMailService>() }
+
 }

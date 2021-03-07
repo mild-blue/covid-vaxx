@@ -76,6 +76,9 @@ dependencies {
     // database migrations from the code
     implementation("org.flywaydb", "flyway-core", "7.5.4")
 
+    // sending emails
+    implementation("com.mailjet", "mailjet-client", "4.2.0")
+
     // tests
     testImplementation("io.mockk", "mockk", "1.10.6")
     testImplementation(kotlin("test"))
