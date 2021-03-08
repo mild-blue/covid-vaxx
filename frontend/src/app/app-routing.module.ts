@@ -3,6 +3,7 @@ import { RouterModule, Routes } from '@angular/router';
 import { HomeComponent } from '@app/pages/home/home.component';
 import { AdminComponent } from '@app/pages/admin/admin.component';
 import { LoginComponent } from '@app/pages/login/login.component';
+import { InfoComponent } from '@app/pages/info/info.component';
 import { AuthGuard } from '@app/guards/auth/auth.guard';
 
 const routes: Routes = [
@@ -19,7 +20,10 @@ const routes: Routes = [
     path: 'login',
     component: LoginComponent
   },
-
+  {
+    path: 'info',
+    component: InfoComponent
+  },
   // Redirect all to HomeComponent
   { path: '', pathMatch: 'full', redirectTo: 'registration' },
   { path: '**', redirectTo: '' }
