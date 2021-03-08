@@ -1,0 +1,73 @@
+main {
+  margin-top: 30px;
+}
+
+form {
+  padding: 20px;
+
+  button {
+    margin: 20px auto 0;
+    display: block;
+  }
+}
+
+.progress-bar__holder {
+  opacity: 0;
+
+  &.visible {
+    opacity: 1;
+  }
+}
+
+mat-card {
+  margin-bottom: 30px;
+}
+
+.patient {
+  margin-bottom: 20px;
+
+  mat-divider {
+    margin-top: 20px;
+  }
+}
+
+.history {
+
+  &:empty {
+    &::after {
+      content: 'Historie vyhledávání je prázdná.';
+      display: block;
+      text-align: center;
+    }
+  }
+
+  &:not(:empty) {
+    padding-top: 0;
+    padding-bottom: 0;
+  }
+
+  &__header, &__item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+
+  &__header {
+    margin-bottom: 10px;
+    min-height: 36px;
+
+    h3 {
+      margin-bottom: 0;
+    }
+  }
+
+  &__item {
+    padding: 5px 0;
+  }
+}
+
+:host {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+}

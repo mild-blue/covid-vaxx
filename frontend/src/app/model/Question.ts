@@ -1,6 +1,6 @@
 export interface Question {
-  cs: string;
-  eng: string;
   id: string;
-  placeholder: string; // todo: rename to name
+  label: string;
+  name: string;
+  value?: boolean | string;
 }

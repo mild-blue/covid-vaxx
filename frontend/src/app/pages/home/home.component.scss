@@ -1,0 +1,71 @@
+@import "../../../styles/breakpoints";
+@import "../../../styles/variables";
+
+.nav-buttons {
+  display: flex;
+  justify-content: space-between;
+  margin-top: 30px;
+
+  button:not(:first-child) {
+    margin-left: 20px;
+  }
+}
+
+mat-card, app-patient-data {
+  margin: 30px 0;
+  display: block;
+}
+
+mat-horizontal-stepper {
+  background-color: transparent;
+}
+
+mat-button-toggle {
+  width: 50%;
+
+  &.mat-button-toggle-checked {
+    &[value="true"] {
+      background-color: rgba($success, 0.2);
+      color: $success;
+    }
+
+    &[value="false"] {
+      background-color: rgba($danger, 0.2);
+      color: $danger;
+    }
+  }
+
+  ::ng-deep .mat-button-toggle-label-content {
+    line-height: 36px;
+  }
+}
+
+.py-0 {
+  padding-top: 0;
+  padding-bottom: 0;
+}
+
+.checkboxes {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin-top: 30px;
+
+  mat-checkbox + mat-checkbox {
+    margin-top: 10px;
+  }
+
+  ::ng-deep .mat-checkbox-layout {
+    white-space: normal;
+  }
+
+  @include media-breakpoint-down(md) {
+    align-items: flex-start;
+  }
+}
+
+:host {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+}

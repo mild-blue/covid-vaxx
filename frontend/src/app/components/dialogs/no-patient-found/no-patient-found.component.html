@@ -1,0 +1,9 @@
+<div mat-dialog-content class="centered">
+  <p>Pacient s rodným číslem {{ data.personalNumber }} neexistuje.</p>
+</div>
+<mat-dialog-actions>
+  <button mat-button mat-dialog-close>Zavřít</button>
+  <button mat-raised-button color="primary" mat-dialog-close
+          [routerLink]="['/registration', { personalNumber: data.personalNumber } ]">Přidat pacienta
+  </button>
+</mat-dialog-actions>
