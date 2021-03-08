@@ -10,6 +10,7 @@ import blue.mild.covid.vaxx.dto.config.SwaggerConfigurationDto
 import blue.mild.covid.vaxx.error.installExceptionHandling
 import blue.mild.covid.vaxx.extensions.determineRealIp
 import blue.mild.covid.vaxx.monitoring.CALL_ID
+import blue.mild.covid.vaxx.monitoring.PATH
 import blue.mild.covid.vaxx.monitoring.REMOTE_HOST
 import blue.mild.covid.vaxx.routes.Routes
 import blue.mild.covid.vaxx.routes.registerRoutes
@@ -220,11 +221,10 @@ private fun Application.installSwagger() {
 private fun Application.installMonitoring() {
     // requests logging in debug mode + MDC tracing
     install(CallLogging) {
-        // put call id to the mdc
+        // put useful information to log context
         mdc(CALL_ID) { it.callId }
-        mdc(REMOTE_HOST) {
-            it.request.determineRealIp()
-        }
+        mdc(REMOTE_HOST) { it.request.determineRealIp() }
+        mdc(PATH) { "${it.request.httpMethod.value} ${it.request.path()}" }
 
         // enable logging for all routes that are not /status
         // this filter does not influence MDC

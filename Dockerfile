@@ -49,6 +49,8 @@ ARG release_version=development
 ENV RELEASE_FILE_PATH=$APP_ROOT/run/release.txt
 RUN echo $release_version > $RELEASE_FILE_PATH
 
+# setup env
+ENV JSON_LOGGING=true
 ENV PORT=8080
 
 EXPOSE $PORT

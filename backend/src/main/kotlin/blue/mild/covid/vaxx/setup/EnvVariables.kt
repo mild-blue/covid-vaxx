@@ -27,5 +27,9 @@ enum class EnvVariables {
     CORS_ALLOWED_HOSTS,
     ENABLE_CORS,
 
-    PORT
+    PORT,
+
+    JSON_LOGGING,
+    GLOBAL_LOG_LEVEL,
+    LOG_LEVEL
 }

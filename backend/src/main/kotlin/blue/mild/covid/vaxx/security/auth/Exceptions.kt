@@ -10,3 +10,4 @@ class InvalidJwtException(message: String = "") : AuthorizationException(message
 
 class CredentialsMismatchException(message: String = "") : AuthorizationException(message)
 
+class CaptchaFailedException(message: String = "") : AuthorizationException(message)

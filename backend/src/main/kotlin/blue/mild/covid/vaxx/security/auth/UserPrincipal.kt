@@ -12,7 +12,9 @@ sealed class UserPrincipal : Principal
 /**
  * Represents user that passed Captcha but is not registered.
  */
-object PatientPrincipal : UserPrincipal()
+object PatientPrincipal : UserPrincipal() {
+    override fun toString() = "PatientPrincipal"
+}
 
 /**
  * Registered user.
@@ -20,4 +22,6 @@ object PatientPrincipal : UserPrincipal()
 data class RegisteredUserPrincipal(
     val userId: UUID,
     val userRole: UserRole
-) : UserPrincipal()
+) : UserPrincipal() {
+    override fun toString() = "RegisteredUserPrincipal - userId: $userId"
+}

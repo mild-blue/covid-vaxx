@@ -1,15 +1,19 @@
 package blue.mild.covid.vaxx.error
 
 import blue.mild.covid.vaxx.security.auth.AuthorizationException
+import blue.mild.covid.vaxx.security.auth.CaptchaFailedException
 import blue.mild.covid.vaxx.security.auth.InsufficientRightsException
+import blue.mild.covid.vaxx.security.auth.UserPrincipal
 import blue.mild.covid.vaxx.utils.createLogger
 import io.ktor.application.Application
 import io.ktor.application.ApplicationCall
 import io.ktor.application.call
 import io.ktor.application.install
+import io.ktor.auth.principal
 import io.ktor.features.StatusPages
 import io.ktor.features.callId
 import io.ktor.http.HttpStatusCode
+import io.ktor.request.path
 import io.ktor.response.respond
 import org.postgresql.util.PSQLException
 
@@ -21,7 +25,17 @@ private val logger = createLogger("ExceptionHandler")
 fun Application.installExceptionHandling() {
     install(StatusPages) {
         exception<InsufficientRightsException> {
+            logger.debug {
+                call.principal<UserPrincipal>()
+                    ?.let { "$it tried to access resource \"${call.request.path()}\" that is not allowed." }
+                    ?: "User without principals tried to access the resource ${call.request.path()}"
+            }
             call.respond(HttpStatusCode.Forbidden)
+        }
+
+        exception<CaptchaFailedException> {
+            logger.debug { "Captcha verification failed." }
+            call.errorResponse(HttpStatusCode.UnprocessableEntity, "Captcha verification failed.")
         }
 
         exception<AuthorizationException> {
