@@ -29,8 +29,14 @@ enum class EnvVariables {
 
     PORT,
 
-    JSON_LOGGING,
+    PRODUCTION_LOGGING,
     GLOBAL_LOG_LEVEL,
     LOG_LEVEL,
-    LOG_PATH
+
+    /**
+     * Example: "/var/logs/mildblue"
+     */
+    FILE_FOLDER_LOG_PATH,
+
+    ENABLE_FILE_LOG
 }

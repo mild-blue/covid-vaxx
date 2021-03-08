@@ -30,6 +30,12 @@ FROM adoptopenjdk/openjdk11:alpine-jre
 LABEL description="Mild Blue Covid Vaxx"
 LABEL project="mild-blue:covid-vaxx"
 
+# prepare logging
+ENV FILE_LOG_PATH=/var/logs/mildblue
+RUN mkdir -p $FILE_LOG_PATH
+ENV PRODUCTION_LOGGING=true
+ENV ENABLE_FILE_LOG=true
+
 ENV APP_ROOT /app
 WORKDIR $APP_ROOT
 
@@ -50,7 +56,6 @@ ENV RELEASE_FILE_PATH=$APP_ROOT/run/release.txt
 RUN echo $release_version > $RELEASE_FILE_PATH
 
 # setup env
-ENV JSON_LOGGING=true
 ENV PORT=8080
 
 EXPOSE $PORT

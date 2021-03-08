@@ -66,7 +66,7 @@ fun Application.installExceptionHandling() {
             logger.error(cause) { "Exception occurred in the application: ${cause.message}" }
             call.errorResponse(
                 HttpStatusCode.InternalServerError,
-                "Server was unable to fulfill the request, please contact administrator with request ID: ${call.callId}"
+                "Server was unable to fulfill the request, please contact administrator with request ID: ${call.callId}."
             )
         }
     }

@@ -94,17 +94,14 @@ fun Application.init() {
 
 // Connect bot to the database.
 private fun Application.connectDatabase() {
-    installationLogger.info { "Connecting to the DB" }
     val dbConfig by di().instance<DatabaseConfigurationDto>()
+
+    installationLogger.info { "Connecting to the DB" }
     DatabaseSetup.connect(dbConfig)
 
-    if (DatabaseSetup.isConnected()) {
-        installationLogger.info { "DB connected." }
-        migrateDatabase(dbConfig)
-    } else {
-        // TODO verify handling, maybe exit the App?
-        installationLogger.error { "It was not possible to connect to db database! The application will start but it won't work." }
-    }
+    require(DatabaseSetup.isConnected()) { "It was not possible to connect to db database!" }
+    installationLogger.info { "DB connected." }
+    migrateDatabase(dbConfig)
 }
 
 // Migrate database using flyway.

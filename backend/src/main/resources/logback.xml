@@ -11,26 +11,29 @@
     </appender>
 
     <appender name="fileJson" class="ch.qos.logback.core.rolling.RollingFileAppender">
-        <file>${LOG_PATH:-./}app.log.json</file>
+        <file>${FILE_LOG_PATH:-.}/app.log.json</file>
         <rollingPolicy class="ch.qos.logback.core.rolling.SizeAndTimeBasedRollingPolicy">
-            <fileNamePattern>mylog-%d{yyyy-MM-dd}.%i.log.json</fileNamePattern>
+            <fileNamePattern>app-%d{yyyy-MM-dd}.%i.log.json</fileNamePattern>
             <maxFileSize>100MB</maxFileSize>
             <maxHistory>30</maxHistory>
             <totalSizeCap>5GB</totalSizeCap>
         </rollingPolicy>
-
-        <immediateFlush>true</immediateFlush>
+        <immediateFlush>false</immediateFlush>
         <encoder class="ch.qos.logback.core.encoder.LayoutWrappingEncoder">
             <layout class="blue.mild.covid.vaxx.monitoring.JsonLoggingLayout"/>
         </encoder>
     </appender>
 
     <!--  if this is production json layout, store the logs in files as well  -->
-    <if condition='"${JSON_LOGGING:-false}".equalsIgnoreCase("true")'>
+    <if condition='"${PRODUCTION_LOGGING:-false}".equalsIgnoreCase("true")'>
         <then>
             <root level="${GLOBAL_LOG_LEVEL:-INFO}">
                 <appender-ref ref="json"/>
-                <appender-ref ref="fileJson"/>
+                <if condition='"${ENABLE_FILE_LOG:-false}".equalsIgnoreCase("true")'>
+                    <then>
+                        <appender-ref ref="fileJson"/>
+                    </then>
+                </if>
             </root>
 
             <logger name="blue.mild" level="${LOG_LEVEL:-TRACE}"/>
