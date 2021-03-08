@@ -15,7 +15,6 @@ import org.kodein.di.singleton
 import pw.forst.tools.katlib.getEnv
 import pw.forst.tools.katlib.whenNull
 import java.io.File
-import java.net.URI
 import java.time.Duration
 import java.util.UUID
 
@@ -82,13 +81,8 @@ fun DI.MainBuilder.bindConfiguration() {
     bind<CorsConfigurationDto>() with singleton {
         val hosts = getEnvOrLogDefault(EnvVariables.CORS_ALLOWED_HOSTS, "http://localhost:4200")
             .split(",")
-            .map { URI.create(it.trim()) }
-            .map {
-                CorsConfigurationDto.Host(
-                    scheme = it.scheme,
-                    domain = "${it.host}${if (it.port == -1) "" else (":" + it.port)}"
-                )
-            }
+            .map { it.trim() }
+
         val enableCors = getEnvOrLogDefault(EnvVariables.ENABLE_CORS, "${hosts.isNotEmpty()}").toBoolean()
         CorsConfigurationDto(enableCors, hosts)
     }

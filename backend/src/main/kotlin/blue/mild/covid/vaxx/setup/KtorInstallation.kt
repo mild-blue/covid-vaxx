@@ -147,12 +147,12 @@ private fun Application.installBasics() {
     val corsHosts by di().instance<CorsConfigurationDto>()
     if (corsHosts.enableCors) {
         install(CORS) {
-            corsHosts.allowedHosts.forEach {
-                host(it.domain, listOf(it.scheme))
-            }
+            anyHost() // todo this might need correction in the future
             header("Authorization")
+            exposeHeader("Authorization")
             allowCredentials = true
             allowNonSimpleContentTypes = true
+            hosts.addAll(corsHosts.allowedHosts)
         }
     }
 

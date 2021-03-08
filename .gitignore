@@ -1,4 +1,4 @@
-
+*.log.json
 # Created by https://www.toptal.com/developers/gitignore/api/intellij+all,java,kotlin,gradle
 # Edit at https://www.toptal.com/developers/gitignore?templates=intellij+all,java,kotlin,gradle
 

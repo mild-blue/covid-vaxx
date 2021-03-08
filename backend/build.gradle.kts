@@ -87,8 +87,6 @@ dependencies {
     testImplementation(kotlin("test-junit5"))
     val junitVersion = "5.7.1"
     testRuntimeOnly("org.junit.jupiter", "junit-jupiter-engine", junitVersion)
-
-
 }
 
 tasks {

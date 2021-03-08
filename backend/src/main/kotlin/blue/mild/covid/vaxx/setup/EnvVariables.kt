@@ -31,5 +31,6 @@ enum class EnvVariables {
 
     JSON_LOGGING,
     GLOBAL_LOG_LEVEL,
-    LOG_LEVEL
+    LOG_LEVEL,
+    LOG_PATH
 }

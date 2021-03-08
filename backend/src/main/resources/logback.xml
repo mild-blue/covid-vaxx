@@ -4,17 +4,35 @@
             <pattern>%date{ISO8601} %5level %logger{0} - %msg%n</pattern>
         </encoder>
     </appender>
-    <appender name="jsonLogging" class="ch.qos.logback.core.ConsoleAppender">
+    <appender name="json" class="ch.qos.logback.core.ConsoleAppender">
         <encoder class="ch.qos.logback.core.encoder.LayoutWrappingEncoder">
             <layout class="blue.mild.covid.vaxx.monitoring.JsonLoggingLayout"/>
         </encoder>
     </appender>
 
+    <appender name="fileJson" class="ch.qos.logback.core.rolling.RollingFileAppender">
+        <file>${LOG_PATH:-./}app.log.json</file>
+        <rollingPolicy class="ch.qos.logback.core.rolling.SizeAndTimeBasedRollingPolicy">
+            <fileNamePattern>mylog-%d{yyyy-MM-dd}.%i.log.json</fileNamePattern>
+            <maxFileSize>100MB</maxFileSize>
+            <maxHistory>30</maxHistory>
+            <totalSizeCap>5GB</totalSizeCap>
+        </rollingPolicy>
+
+        <immediateFlush>true</immediateFlush>
+        <encoder class="ch.qos.logback.core.encoder.LayoutWrappingEncoder">
+            <layout class="blue.mild.covid.vaxx.monitoring.JsonLoggingLayout"/>
+        </encoder>
+    </appender>
+
+    <!--  if this is production json layout, store the logs in files as well  -->
     <if condition='"${JSON_LOGGING:-false}".equalsIgnoreCase("true")'>
         <then>
             <root level="${GLOBAL_LOG_LEVEL:-INFO}">
-                <appender-ref ref="jsonLogging"/>
+                <appender-ref ref="json"/>
+                <appender-ref ref="fileJson"/>
             </root>
+
             <logger name="blue.mild" level="${LOG_LEVEL:-TRACE}"/>
         </then>
         <else>
