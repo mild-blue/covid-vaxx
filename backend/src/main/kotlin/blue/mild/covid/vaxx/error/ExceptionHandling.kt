@@ -73,5 +73,5 @@ fun Application.installExceptionHandling() {
 }
 
 suspend inline fun ApplicationCall.errorResponse(statusCode: HttpStatusCode, message: String?) {
-    respond(status = statusCode, ErrorResponseDto(message ?: "No details specified", callId))
+    respond(status = statusCode, ErrorResponseDto(message ?: "No details specified.", callId))
 }
