@@ -24,8 +24,8 @@ const routes: Routes = [
     path: 'info',
     component: InfoComponent
   },
-  // Redirect all to HomeComponent
-  { path: '', pathMatch: 'full', redirectTo: 'registration' },
+  // Redirect all to InfoComponent
+  { path: '', pathMatch: 'full', redirectTo: 'info' },
   { path: '**', redirectTo: '' }
 ];
 

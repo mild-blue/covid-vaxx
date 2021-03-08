@@ -1,3 +1,13 @@
 .mt-30 {
-margin-top: 30px;
+    margin-top: 30px;
+}
+
+button {
+    margin-left: auto;
+    margin-right: auto;
+    display: block;
+}
+
+:host {
+  flex: 1;
 }
