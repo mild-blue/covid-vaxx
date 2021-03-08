@@ -1,6 +1,6 @@
 package blue.mild.covid.vaxx.security.auth
 
-import blue.mild.covid.vaxx.dto.JwtConfigurationDto
+import blue.mild.covid.vaxx.dto.config.JwtConfigurationDto
 import com.auth0.jwt.JWTVerifier
 import com.auth0.jwt.algorithms.Algorithm
 import org.kodein.di.DI
@@ -20,4 +20,6 @@ fun DI.MainBuilder.registerJwtAuth() {
     bind<JwtService>() with singleton { JwtService(instance(), instance()) }
 
     bind<JWTVerifier>() with singleton { instance<JwtService>().makeJwtVerifier() }
+
+    bind<CaptchaAuthenticationService>() with singleton { CaptchaAuthenticationService() }
 }

@@ -1,4 +1,4 @@
-package blue.mild.covid.vaxx.dto
+package blue.mild.covid.vaxx.dto.config
 
 data class JwtConfigurationDto(
     val realm: String,

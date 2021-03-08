@@ -1,6 +1,6 @@
 package blue.mild.covid.vaxx.setup
 
-import blue.mild.covid.vaxx.dto.MailJetConfigurationDto
+import blue.mild.covid.vaxx.dto.config.MailJetConfigurationDto
 import blue.mild.covid.vaxx.service.DummyMailService
 import blue.mild.covid.vaxx.service.EntityIdProvider
 import blue.mild.covid.vaxx.service.InstantTimeProvider

@@ -101,7 +101,8 @@ abstract class LoadTest(
             bearerToken, registrationBuilder(
                 answers, InsuranceCompany.values().random(), ConfirmationDtoIn(
                     healthStateDisclosureConfirmation = true,
-                    covid19VaccinationAgreement = true
+                    covid19VaccinationAgreement = true,
+                    gdprAgreement = true
                 )
             )
         )

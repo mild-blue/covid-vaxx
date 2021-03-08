@@ -28,6 +28,10 @@ class ValidationService(private val questionService: QuestionService) {
             "healthStateDisclosureConfirmation",
             patientRegistrationDto.confirmation.healthStateDisclosureConfirmation
         )
+        validateTrueAndThrow(
+            "gdprAgreement",
+            patientRegistrationDto.confirmation.gdprAgreement
+        )
 
         val answersByQuestion = patientRegistrationDto.answers.mapToSet { it.questionId }
         val allQuestions = questionService.getAllQuestions().mapToSet { it.id }

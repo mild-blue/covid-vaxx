@@ -7,8 +7,8 @@ import blue.mild.covid.vaxx.dto.request.UserRegistrationDtoIn
 import blue.mild.covid.vaxx.dto.response.BearerTokenDtoOut
 import blue.mild.covid.vaxx.extensions.di
 import blue.mild.covid.vaxx.extensions.respond
+import blue.mild.covid.vaxx.security.auth.CaptchaAuthenticationService
 import blue.mild.covid.vaxx.security.auth.JwtService
-import blue.mild.covid.vaxx.security.auth.PatientPrincipal
 import blue.mild.covid.vaxx.security.auth.UserPrincipal
 import blue.mild.covid.vaxx.security.auth.authorizeRoute
 import blue.mild.covid.vaxx.service.UserService
@@ -27,6 +27,7 @@ import org.kodein.di.instance
 fun NormalOpenAPIRoute.userRoutes() {
     val userService by di().instance<UserService>()
     val jwtService by di().instance<JwtService>()
+    val captchaAuthenticationService by di().instance<CaptchaAuthenticationService>()
 
     route(Routes.registeredUserLogin) {
         post<Unit, BearerTokenDtoOut, LoginDtoIn>(
@@ -40,9 +41,9 @@ fun NormalOpenAPIRoute.userRoutes() {
     route(Routes.registrationCaptcha) {
         post<Unit, BearerTokenDtoOut, CaptchaVerificationDtoIn>(
             info("Endpoint that issues access to the API for the non-registered users.")
-        ) { _, (_) ->
-            // TODO somehow verify token with Google
-            respond(jwtService.generateToken(PatientPrincipal))
+        ) { _, (token) ->
+            val principal = captchaAuthenticationService.authenticate(token)
+            respond(jwtService.generateToken(principal))
         }
     }
 
