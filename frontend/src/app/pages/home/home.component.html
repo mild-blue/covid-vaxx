@@ -97,6 +97,12 @@
           <mat-checkbox [(ngModel)]="agreementCheckboxValue">
             Souhlasím s aplikací očkovací látky proti onemocnění COVID-19.
           </mat-checkbox>
+
+          <mat-checkbox [(ngModel)]="gdprCheckboxValue">
+            Souhlasím se
+            <button mat-button color="primary" (click)="openGdprInfo()">zpracováním osobních údajů</button>
+            .
+          </mat-checkbox>
         </div>
 
         <div class="nav-buttons">

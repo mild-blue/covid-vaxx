@@ -3,6 +3,7 @@ import { MatSnackBar } from '@angular/material/snack-bar';
 import { PatientRegisteredComponent } from '@app/components/dialogs/patient-registered/patient-registered.component';
 import { MatDialog } from '@angular/material/dialog';
 import { NoPatientFoundComponent } from '@app/components/dialogs/no-patient-found/no-patient-found.component';
+import { GdprComponent } from '@app/components/dialogs/gdpr/gdpr.component';
 
 @Injectable({
   providedIn: 'root'
@@ -27,5 +28,9 @@ export class AlertService {
     this._dialog.open(NoPatientFoundComponent, {
       data: { personalNumber }
     });
+  }
+
+  public gdprDialog(): void {
+    this._dialog.open(GdprComponent);
   }
 }

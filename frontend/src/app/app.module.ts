@@ -34,6 +34,7 @@ import { BackButtonComponent } from './components/back-button/back-button.compon
 import { NoPatientFoundComponent } from './components/dialogs/no-patient-found/no-patient-found.component';
 import { PatientDataComponent } from './components/patient-data/patient-data.component';
 import { FormFieldComponent } from './components/form-field/form-field.component';
+import { GdprComponent } from './components/dialogs/gdpr/gdpr.component';
 
 @NgModule({
   declarations: [
@@ -47,7 +48,8 @@ import { FormFieldComponent } from './components/form-field/form-field.component
     BackButtonComponent,
     NoPatientFoundComponent,
     PatientDataComponent,
-    FormFieldComponent
+    FormFieldComponent,
+    GdprComponent
   ],
   imports: [
     BrowserModule,

@@ -75,7 +75,11 @@ export class HomeComponent implements OnInit, OnDestroy {
   }
 
   get canSubmit(): boolean {
-    return !!this.patientForm?.valid && this.allQuestionsAnswered && this.agreementCheckboxValue && this.confirmationCheckboxValue;
+    return !!this.patientForm?.valid && this.allQuestionsAnswered && this.agreementCheckboxValue && this.confirmationCheckboxValue && this.gdprCheckboxValue;
+  }
+
+  public openGdprInfo(): void {
+    this._alertService.gdprDialog();
   }
 
   public getPatientData(): PatientData {
