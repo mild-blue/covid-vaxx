@@ -1,13 +1,15 @@
 import { Injectable } from '@angular/core';
-import { PatientEditable } from '@app/model/PatientEditable';
 import { environment } from '@environments/environment';
 import { first, map } from 'rxjs/operators';
 import { HttpClient, HttpParams } from '@angular/common/http';
 import { Patient } from '@app/model/Patient';
 import { parsePatient } from '@app/parsers/patient.parser';
 import { QuestionService } from '@app/services/question/question.service';
-import { PatientDtoOut, PatientRegisteredDtoOut } from '@app/generated';
+import { PatientDtoOut, PatientRegisteredDtoOut, PatientRegistrationDtoIn } from '@app/generated';
 import { Question } from '@app/model/Question';
+import { fromQuestionToAnswerGenerated } from '@app/parsers/to-generated/answer.parser';
+import { PatientData } from '@app/model/PatientData';
+import { fromInsuranceToInsuranceGenerated } from '@app/parsers/to-generated/insurance.parse';
 
 @Injectable({
   providedIn: 'root'
@@ -18,19 +20,21 @@ export class PatientService {
               private _questionService: QuestionService) {
   }
 
-  public async savePatientInfo(patientInfo: PatientEditable, questions: Question[], agreement: boolean, confirmation: boolean): Promise<PatientRegisteredDtoOut> {
+  public async savePatientInfo(patientInfo: PatientData, questions: Question[], agreement: boolean, confirmation: boolean, gdpr: boolean): Promise<PatientRegisteredDtoOut> {
+    const registration: PatientRegistrationDtoIn = {
+      ...patientInfo,
+      insuranceCompany: fromInsuranceToInsuranceGenerated(patientInfo.insuranceCompany),
+      answers: questions.map(fromQuestionToAnswerGenerated),
+      confirmation: {
+        covid19VaccinationAgreement: agreement,
+        healthStateDisclosureConfirmation: confirmation,
+        gdprAgreement: gdpr
+      }
+    };
+
     return this._http.post<PatientRegisteredDtoOut>(
       `${environment.apiUrl}/patient`,
-      {
-        answers: questions.map(q => {
-          return { questionId: q.id, value: q.value };
-        }),
-        confirmation: {
-          covid19VaccinationAgreement: agreement,
-          healthStateDisclosureConfirmation: confirmation
-        },
-        ...patientInfo
-      }
+      registration
     ).pipe(
       first()
     ).toPromise();

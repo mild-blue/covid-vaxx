@@ -1,7 +1,7 @@
 package blue.mild.covid.vaxx.security.auth
 
 import blue.mild.covid.vaxx.dao.UserRole
-import blue.mild.covid.vaxx.dto.JwtConfigurationDto
+import blue.mild.covid.vaxx.dto.config.JwtConfigurationDto
 import blue.mild.covid.vaxx.dto.response.BearerTokenDtoOut
 import com.auth0.jwt.JWT
 import com.auth0.jwt.JWTCreator

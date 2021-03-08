@@ -1,11 +1,16 @@
 package blue.mild.covid.vaxx.setup
 
 import blue.mild.covid.vaxx.dao.DatabaseSetup
-import blue.mild.covid.vaxx.dto.DatabaseConfigurationDto
-import blue.mild.covid.vaxx.dto.JwtConfigurationDto
+import blue.mild.covid.vaxx.dto.config.CorsConfigurationDto
+import blue.mild.covid.vaxx.dto.config.DatabaseConfigurationDto
+import blue.mild.covid.vaxx.dto.config.JwtConfigurationDto
+import blue.mild.covid.vaxx.dto.config.RateLimitConfigurationDto
+import blue.mild.covid.vaxx.dto.config.StaticContentConfigurationDto
+import blue.mild.covid.vaxx.dto.config.SwaggerConfigurationDto
 import blue.mild.covid.vaxx.error.installExceptionHandling
 import blue.mild.covid.vaxx.extensions.determineRealIp
 import blue.mild.covid.vaxx.monitoring.CALL_ID
+import blue.mild.covid.vaxx.monitoring.PATH
 import blue.mild.covid.vaxx.monitoring.REMOTE_HOST
 import blue.mild.covid.vaxx.routes.Routes
 import blue.mild.covid.vaxx.routes.registerRoutes
@@ -40,6 +45,7 @@ import io.ktor.http.content.files
 import io.ktor.http.content.static
 import io.ktor.jackson.jackson
 import io.ktor.request.httpMethod
+import io.ktor.request.path
 import io.ktor.request.uri
 import io.ktor.response.respond
 import io.ktor.response.respondRedirect
@@ -49,7 +55,6 @@ import org.flywaydb.core.Flyway
 import org.kodein.di.instance
 import org.kodein.di.ktor.di
 import org.slf4j.event.Level
-import java.time.Duration
 import java.util.UUID
 import kotlin.random.Random
 import kotlin.reflect.KType
@@ -74,11 +79,11 @@ fun Application.init() {
     // configure Ktor
     installFrameworks()
     // configure static routes to serve frontend
-    val frontendBasePath by di().instance<String>("frontend")
+    val staticContent by di().instance<StaticContentConfigurationDto>()
     routing {
         static {
-            files(frontendBasePath)
-            default("$frontendBasePath/index.html")
+            files(staticContent.path)
+            default("${staticContent.path}/index.html")
         }
     }
     // register routing with swagger
@@ -137,15 +142,20 @@ private fun Application.installBasics() {
             registerModule(JavaTimeModule())
         }
     }
-    // enable CORS
-    install(CORS) {
-        // TODO #87 correct urls
-        anyHost()
-        host("localhost:4200")
-        header("Authorization")
-        allowCredentials = true
-        allowNonSimpleContentTypes = true
+
+    // enable CORS if necessary
+    val corsHosts by di().instance<CorsConfigurationDto>()
+    if (corsHosts.enableCors) {
+        install(CORS) {
+            corsHosts.allowedHosts.forEach {
+                host(it.domain, listOf(it.scheme))
+            }
+            header("Authorization")
+            allowCredentials = true
+            allowNonSimpleContentTypes = true
+        }
     }
+
     // as we're running behind the proxy, we take remote host from X-Forwarded-From
     install(XForwardedHeaderSupport)
     install(ForwardedHeaderSupport)
@@ -170,12 +180,15 @@ private fun Application.installAuthentication() {
 
 // Install swagger features.
 private fun Application.installSwagger() {
+    val config by di().instance<SwaggerConfigurationDto>()
+
     // install swagger
     install(OpenAPIGen) {
         info {
             version = "0.0.1"
             title = "Mild Blue - Covid Vaxx"
             description = "Covid Vaxx API"
+            serveSwaggerUi = config.enableSwagger
             contact {
                 name = "Mild Blue s.r.o."
                 email = "covid-vaxx@mild.blue"
@@ -191,14 +204,15 @@ private fun Application.installSwagger() {
 
     }
     // install swagger routes
-    // TODO maybe conditional once we're in the production
-    routing {
-        // register swagger routes
-        get(Routes.openApiJson) {
-            call.respond(openAPIGen.api.serialize())
-        }
-        get(Routes.swaggerUi) {
-            call.respondRedirect("/swagger-ui/index.html?url=${Routes.openApiJson}", true)
+    if (config.enableSwagger) {
+        routing {
+            // register swagger routes
+            get(Routes.openApiJson) {
+                call.respond(openAPIGen.api.serialize())
+            }
+            get(Routes.swaggerUi) {
+                call.respondRedirect("/swagger-ui/index.html?url=${Routes.openApiJson}", true)
+            }
         }
     }
 }
@@ -207,17 +221,20 @@ private fun Application.installSwagger() {
 private fun Application.installMonitoring() {
     // requests logging in debug mode + MDC tracing
     install(CallLogging) {
-        // put call id to the mdc
+        // put useful information to log context
         mdc(CALL_ID) { it.callId }
-        mdc(REMOTE_HOST) {
-            it.request.determineRealIp()
-        }
+        mdc(REMOTE_HOST) { it.request.determineRealIp() }
+        mdc(PATH) { "${it.request.httpMethod.value} ${it.request.path()}" }
 
         // enable logging for all routes that are not /status
         // this filter does not influence MDC
-        filter { it.request.uri != Routes.status }
-        level = Level.DEBUG
+        filter { !it.request.uri.endsWith(Routes.status) }
+        level = Level.TRACE
         logger = createLogger("HttpCallLogger")
+        format {
+            "${it.request.determineRealIp()}: ${it.request.httpMethod.value} ${it.request.path()} -> " +
+                    "${it.response.status()?.value} ${it.response.status()?.description}"
+        }
     }
     // MDC call id setup
     install(CallId) {
@@ -232,10 +249,10 @@ private fun Application.installMonitoring() {
 
 // Install rate limiting to prevent DDoS.
 private fun Application.installRateLimiting() {
-    // TODO determine these values once in the procution
+    val configuration by di().instance<RateLimitConfigurationDto>()
     install(RateLimiting) {
-        limit = 100
-        resetTime = Duration.ofHours(1L)
+        limit = configuration.rateLimit
+        resetTime = configuration.rateLimitDuration
         keyExtraction = { call.request.determineRealIp() }
         requestExclusion = {
             it.httpMethod == HttpMethod.Options || it.uri.endsWith(Routes.status)

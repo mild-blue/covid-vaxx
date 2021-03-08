@@ -9,9 +9,9 @@ import { AlertService } from '@app/services/alert/alert.service';
 import { ActivatedRoute } from '@angular/router';
 import { PatientData } from '@app/model/PatientData';
 import { parseAnswerFromQuestion } from '@app/parsers/answer.parser';
-import { parseInsuranceCompany } from '@app/parsers/patient.parser';
 import { Question } from '@app/model/Question';
 import { Subscription } from 'rxjs';
+import { parseInsuranceCompanyFromString } from '@app/parsers/insurance.parser';
 
 @Component({
   selector: 'app-home',
@@ -30,6 +30,7 @@ export class HomeComponent implements OnInit, OnDestroy {
 
   public agreementCheckboxValue: boolean = false;
   public confirmationCheckboxValue: boolean = false;
+  public gdprCheckboxValue: boolean = false;
 
   constructor(private _route: ActivatedRoute,
               private _formBuilder: FormBuilder,
@@ -74,7 +75,11 @@ export class HomeComponent implements OnInit, OnDestroy {
   }
 
   get canSubmit(): boolean {
-    return !!this.patientForm?.valid && this.allQuestionsAnswered && this.agreementCheckboxValue && this.confirmationCheckboxValue;
+    return !!this.patientForm?.valid && this.allQuestionsAnswered && this.agreementCheckboxValue && this.confirmationCheckboxValue && this.gdprCheckboxValue;
+  }
+
+  public openGdprInfo(): void {
+    this._alertService.gdprDialog();
   }
 
   public getPatientData(): PatientData {
@@ -82,7 +87,7 @@ export class HomeComponent implements OnInit, OnDestroy {
       firstName: this.patient.firstName ?? '',
       lastName: this.patient.lastName ?? '',
       personalNumber: this.patient.personalNumber ?? '',
-      insuranceCompany: this.patient.insuranceCompany ? parseInsuranceCompany(this.patient.insuranceCompany) : undefined,
+      insuranceCompany: this.patient.insuranceCompany ? parseInsuranceCompanyFromString(this.patient.insuranceCompany) : undefined,
       phoneNumber: this.patient.phoneNumber ?? '',
       email: this.patient.email ?? '',
       answers: this.questions.map(parseAnswerFromQuestion)
@@ -95,7 +100,13 @@ export class HomeComponent implements OnInit, OnDestroy {
     }
 
     try {
-      const result = await this._patientService.savePatientInfo(this.patient, this.questions, this.agreementCheckboxValue, this.confirmationCheckboxValue);
+      const result = await this._patientService.savePatientInfo(
+        this.getPatientData(),
+        this.questions,
+        this.agreementCheckboxValue,
+        this.confirmationCheckboxValue,
+        this.gdprCheckboxValue
+      );
       if (result.patientId) {
         this._alertService.patientRegisteredDialog();
       }

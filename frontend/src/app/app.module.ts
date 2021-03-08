@@ -35,6 +35,7 @@ import { NoPatientFoundComponent } from './components/dialogs/no-patient-found/n
 import { PatientDataComponent } from './components/patient-data/patient-data.component';
 import { FormFieldComponent } from './components/form-field/form-field.component';
 import { InfoComponent } from './pages/info/info.component';
+import { GdprComponent } from './components/dialogs/gdpr/gdpr.component';
 
 @NgModule({
   declarations: [
@@ -49,7 +50,8 @@ import { InfoComponent } from './pages/info/info.component';
     NoPatientFoundComponent,
     PatientDataComponent,
     FormFieldComponent,
-    InfoComponent
+    InfoComponent,
+    GdprComponent
   ],
   imports: [
     BrowserModule,

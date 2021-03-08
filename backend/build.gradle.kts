@@ -55,6 +55,8 @@ dependencies {
     // logging
     implementation("io.github.microutils", "kotlin-logging", "2.0.4")
     implementation("ch.qos.logback", "logback-classic", "1.2.3")
+    // if-else in logback.xml
+    implementation("org.codehaus.janino", "janino", "3.1.2")
 
     // crypto
     implementation("com.lambdaworks", "scrypt", "1.4.0")

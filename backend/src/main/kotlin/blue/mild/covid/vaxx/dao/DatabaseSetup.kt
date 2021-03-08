@@ -1,6 +1,6 @@
 package blue.mild.covid.vaxx.dao
 
-import blue.mild.covid.vaxx.dto.DatabaseConfigurationDto
+import blue.mild.covid.vaxx.dto.config.DatabaseConfigurationDto
 import org.jetbrains.exposed.sql.Database
 import org.jetbrains.exposed.sql.transactions.transaction
 

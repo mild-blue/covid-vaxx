@@ -55,6 +55,11 @@ mat-button-toggle {
     margin-top: 10px;
   }
 
+  button {
+    padding: 0;
+    line-height: normal;
+  }
+
   ::ng-deep .mat-checkbox-layout {
     white-space: normal;
   }

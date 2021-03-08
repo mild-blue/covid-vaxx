@@ -49,5 +49,9 @@ ARG release_version=development
 ENV RELEASE_FILE_PATH=$APP_ROOT/run/release.txt
 RUN echo $release_version > $RELEASE_FILE_PATH
 
-EXPOSE 8080
+# setup env
+ENV JSON_LOGGING=true
+ENV PORT=8080
+
+EXPOSE $PORT
 ENTRYPOINT ["/bin/sh", "-c", "/app/run/bin/covid-vaxx"]

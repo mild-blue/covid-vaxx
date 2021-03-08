@@ -1,11 +1,14 @@
 package blue.mild.covid.vaxx
 
+import blue.mild.covid.vaxx.setup.EnvVariables
 import blue.mild.covid.vaxx.setup.init
 import io.ktor.application.Application
 import io.ktor.server.engine.embeddedServer
 import io.ktor.server.netty.Netty
+import pw.forst.tools.katlib.getEnv
 
 
 fun main() {
-    embeddedServer(Netty, 8080, module = Application::init).start(wait = true)
+    val port = (getEnv(EnvVariables.PORT.name) ?: "8080").toInt()
+    embeddedServer(Netty, port, module = Application::init).start(wait = true)
 }

@@ -9,6 +9,7 @@ import blue.mild.covid.vaxx.dto.response.PatientDtoOut
 import blue.mild.covid.vaxx.dto.response.PatientRegisteredDtoOut
 import blue.mild.covid.vaxx.error.entityNotFound
 import org.jetbrains.exposed.sql.Op
+import org.jetbrains.exposed.sql.ResultRow
 import org.jetbrains.exposed.sql.SqlExpressionBuilder
 import org.jetbrains.exposed.sql.batchInsert
 import org.jetbrains.exposed.sql.deleteWhere
@@ -17,12 +18,14 @@ import org.jetbrains.exposed.sql.leftJoin
 import org.jetbrains.exposed.sql.select
 import org.jetbrains.exposed.sql.selectAll
 import org.jetbrains.exposed.sql.transactions.experimental.newSuspendedTransaction
+import pw.forst.tools.katlib.TimeProvider
 import pw.forst.tools.katlib.toUuid
+import java.time.Instant
 import java.util.UUID
 
 class PatientService(
     private val validationService: ValidationService,
-    private val instantTimeProvider: InstantTimeProvider,
+    private val instantTimeProvider: TimeProvider<Instant>,
     private val entityIdProvider: EntityIdProvider
 ) {
 
@@ -32,22 +35,11 @@ class PatientService(
             .select { Patient.id eq patientId.toString() }
             .toList() // eager fetch all data from the database
 
-        val answers = data.map { AnswerDto(it[Answer.questionId].toUuid(), it[Answer.value]) }
+        val answers = data.map(::mapAnswer)
 
-        data.firstOrNull()?.let {
-            PatientDtoOut(
-                id = it[Patient.id].toUuid(),
-                firstName = it[Patient.firstName],
-                lastName = it[Patient.lastName],
-                personalNumber = it[Patient.personalNumber],
-                phoneNumber = it[Patient.phoneNumber],
-                email = it[Patient.email],
-                insuranceCompany = it[Patient.insuranceCompany],
-                answers = answers,
-                created = it[Patient.created],
-                updated = it[Patient.updated]
-            )
-        } ?: throw entityNotFound<Patient>(Patient::id, patientId)
+        data.firstOrNull()
+            ?.let { mapPatient(it, answers) }
+            ?: throw entityNotFound<Patient>(Patient::id, patientId)
     }
 
     suspend fun getAllPatients(): List<PatientDtoOut> =
@@ -69,11 +61,11 @@ class PatientService(
 
         Patient.insert {
             it[id] = stringId
-            it[firstName] = registration.firstName
-            it[lastName] = registration.lastName
+            it[firstName] = registration.firstName.trim()
+            it[lastName] = registration.lastName.trim()
             it[personalNumber] = normalizePersonalNumber(registration.personalNumber)
-            it[phoneNumber] = registration.phoneNumber
-            it[email] = registration.email
+            it[phoneNumber] = registration.phoneNumber.trim()
+            it[email] = registration.email.trim()
             it[insuranceCompany] = registration.insuranceCompany
             it[remoteHost] = registrationRemoteHost
         }
@@ -102,7 +94,8 @@ class PatientService(
         else throw entityNotFound<Patient>(Patient::id, patientId)
     }
 
-    private fun normalizePersonalNumber(personalNumber: String): String = personalNumber.replace("/", "")
+    private fun normalizePersonalNumber(personalNumber: String): String =
+        personalNumber.replace("/", "").trim()
 
     private fun getAndMapPatients(where: (SqlExpressionBuilder.() -> Op<Boolean>)? = null) =
         Patient
@@ -110,24 +103,27 @@ class PatientService(
             .let { if (where != null) it.select(where) else it.selectAll() }
             .toList() // eager fetch all data from the database
             .let { data ->
-                val answers = data.groupBy(
-                    { it[Patient.id] },
-                    { AnswerDto(it[Answer.questionId].toUuid(), it[Answer.value]) }
-                )
+                val answers = data.groupBy({ it[Patient.id] }, ::mapAnswer)
                 data.distinctBy { it[Patient.id] }
-                    .map {
-                        PatientDtoOut(
-                            id = it[Patient.id].toUuid(),
-                            firstName = it[Patient.firstName],
-                            lastName = it[Patient.lastName],
-                            personalNumber = it[Patient.personalNumber],
-                            phoneNumber = it[Patient.phoneNumber],
-                            email = it[Patient.email],
-                            insuranceCompany = it[Patient.insuranceCompany],
-                            answers = answers.getValue(it[Patient.id]),
-                            created = it[Patient.created],
-                            updated = it[Patient.updated]
-                        )
-                    }
+                    .map { mapPatient(it, answers.getValue(it[Patient.id])) }
             }
+
+    private fun mapPatient(row: ResultRow, answers: List<AnswerDto>) = PatientDtoOut(
+        id = row[Patient.id].toUuid(),
+        firstName = row[Patient.firstName],
+        lastName = row[Patient.lastName],
+        personalNumber = row[Patient.personalNumber],
+        phoneNumber = row[Patient.phoneNumber],
+        email = row[Patient.email],
+        registrationEmailSent = row[Patient.emailSentDate],
+        insuranceCompany = row[Patient.insuranceCompany],
+        answers = answers,
+        created = row[Patient.created],
+        updated = row[Patient.updated]
+    )
+
+    private fun mapAnswer(row: ResultRow) = AnswerDto(
+        questionId = row[Answer.questionId].toUuid(),
+        value = row[Answer.value]
+    )
 }

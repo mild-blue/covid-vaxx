@@ -1,17 +1,29 @@
 <configuration>
     <appender name="local" class="ch.qos.logback.core.ConsoleAppender">
         <encoder>
-            <pattern>%date{ISO8601}[%.-1level][remoteHost:%X{remote-host}][callId:%X{call-id}] %logger{0} - %msg%n</pattern>
+            <pattern>%date{ISO8601} %5level %logger{0} - %msg%n</pattern>
+        </encoder>
+    </appender>
+    <appender name="jsonLogging" class="ch.qos.logback.core.ConsoleAppender">
+        <encoder class="ch.qos.logback.core.encoder.LayoutWrappingEncoder">
+            <layout class="blue.mild.covid.vaxx.monitoring.JsonLoggingLayout"/>
         </encoder>
     </appender>
 
-    <root level="DEBUG">
-        <appender-ref ref="local"/>
-    </root>
+    <if condition='"${JSON_LOGGING:-false}".equalsIgnoreCase("true")'>
+        <then>
+            <root level="${GLOBAL_LOG_LEVEL:-INFO}">
+                <appender-ref ref="jsonLogging"/>
+            </root>
+            <logger name="blue.mild" level="${LOG_LEVEL:-TRACE}"/>
+        </then>
+        <else>
+            <root level="DEBUG">
+                <appender-ref ref="local"/>
+            </root>
+            <logger name="io.netty" level="INFO"/>
 
-    <logger name="org.eclipse.jetty" level="INFO"/>
-    <logger name="io.netty" level="INFO"/>
-
-    <logger name="blue.mild" level="TRACE"/>
-
+            <logger name="blue.mild" level="TRACE"/>
+        </else>
+    </if>
 </configuration>

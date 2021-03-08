@@ -12,8 +12,8 @@
 
 
 export interface InsuranceCompanyDetailsDtoOut {
-  code: number;
-  csFullName: string;
-  name: string;
+    code: number;
+    csFullName: string;
+    name: string;
 }
 

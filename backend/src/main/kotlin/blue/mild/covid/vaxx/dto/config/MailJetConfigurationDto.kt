@@ -1,4 +1,4 @@
-package blue.mild.covid.vaxx.dto
+package blue.mild.covid.vaxx.dto.config
 
 /**
  * Simple configuration for the mail jet API.

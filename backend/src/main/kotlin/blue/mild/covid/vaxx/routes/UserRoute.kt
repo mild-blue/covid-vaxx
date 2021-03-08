@@ -5,10 +5,10 @@ import blue.mild.covid.vaxx.dto.request.CaptchaVerificationDtoIn
 import blue.mild.covid.vaxx.dto.request.LoginDtoIn
 import blue.mild.covid.vaxx.dto.request.UserRegistrationDtoIn
 import blue.mild.covid.vaxx.dto.response.BearerTokenDtoOut
+import blue.mild.covid.vaxx.dto.response.UserRegisteredDtoOut
 import blue.mild.covid.vaxx.extensions.di
-import blue.mild.covid.vaxx.extensions.respond
+import blue.mild.covid.vaxx.security.auth.CaptchaAuthenticationService
 import blue.mild.covid.vaxx.security.auth.JwtService
-import blue.mild.covid.vaxx.security.auth.PatientPrincipal
 import blue.mild.covid.vaxx.security.auth.UserPrincipal
 import blue.mild.covid.vaxx.security.auth.authorizeRoute
 import blue.mild.covid.vaxx.service.UserService
@@ -18,7 +18,6 @@ import com.papsign.ktor.openapigen.route.path.normal.NormalOpenAPIRoute
 import com.papsign.ktor.openapigen.route.path.normal.post
 import com.papsign.ktor.openapigen.route.response.respond
 import com.papsign.ktor.openapigen.route.route
-import io.ktor.http.HttpStatusCode
 import org.kodein.di.instance
 
 /**
@@ -27,6 +26,7 @@ import org.kodein.di.instance
 fun NormalOpenAPIRoute.userRoutes() {
     val userService by di().instance<UserService>()
     val jwtService by di().instance<JwtService>()
+    val captchaAuthenticationService by di().instance<CaptchaAuthenticationService>()
 
     route(Routes.registeredUserLogin) {
         post<Unit, BearerTokenDtoOut, LoginDtoIn>(
@@ -40,19 +40,18 @@ fun NormalOpenAPIRoute.userRoutes() {
     route(Routes.registrationCaptcha) {
         post<Unit, BearerTokenDtoOut, CaptchaVerificationDtoIn>(
             info("Endpoint that issues access to the API for the non-registered users.")
-        ) { _, (_) ->
-            // TODO somehow verify token with Google
-            respond(jwtService.generateToken(PatientPrincipal))
+        ) { _, (token) ->
+            val principal = captchaAuthenticationService.authenticate(token)
+            respond(jwtService.generateToken(principal))
         }
     }
 
     authorizeRoute(requireOneOf = setOf(UserRole.ADMIN)) {
         route(Routes.userRegistration) {
-            post<Unit, Unit, UserRegistrationDtoIn, UserPrincipal>(
+            post<Unit, UserRegisteredDtoOut, UserRegistrationDtoIn, UserPrincipal>(
                 info("Register new user of the system.")
             ) { _, registration ->
-                userService.registerUser(registration)
-                respond(HttpStatusCode.OK)
+                respond(userService.registerUser(registration))
             }
         }
     }
