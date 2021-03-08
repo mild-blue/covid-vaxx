@@ -20,6 +20,7 @@ application {
 repositories {
     jcenter()
     maven {
+        // for swagger and rate limiting
         url = URI.create("https://jitpack.io")
     }
 }
@@ -34,6 +35,10 @@ dependencies {
     implementation("io.ktor", "ktor-server-netty", ktorVersion)
     implementation("io.ktor", "ktor-jackson", ktorVersion)
     implementation("io.ktor", "ktor-websockets", ktorVersion)
+    implementation("io.ktor", "ktor-auth", ktorVersion)
+    implementation("io.ktor", "ktor-auth-jwt", ktorVersion)
+    // ktor swagger
+    implementation("com.github.papsign", "Ktor-OpenAPI-Generator", "0.2-beta.14")
 
     // Ktor client dependencies
     implementation("io.ktor", "ktor-client-json", ktorVersion)
@@ -41,20 +46,18 @@ dependencies {
     implementation("io.ktor", "ktor-client-apache", ktorVersion)
     implementation("io.ktor", "ktor-client-logging-jvm", ktorVersion)
 
-    implementation("com.github.papsign", "Ktor-OpenAPI-Generator", "0.2-beta.14")
-
-    // logging
-    implementation("io.github.microutils", "kotlin-logging", "2.0.4")
-
     // Jackson JSON
     val jacksonVersion = "2.12.1"
     implementation("com.fasterxml.jackson.core", "jackson-databind", jacksonVersion)
     implementation("com.fasterxml.jackson.module", "jackson-module-kotlin", jacksonVersion)
+    implementation("com.fasterxml.jackson.datatype", "jackson-datatype-jsr310", jacksonVersion)
 
     // logging
     implementation("io.github.microutils", "kotlin-logging", "2.0.4")
-    // if-else in logback.xml
     implementation("ch.qos.logback", "logback-classic", "1.2.3")
+
+    // crypto
+    implementation("com.lambdaworks", "scrypt", "1.4.0")
 
     // DI
     val kodeinVersion = "7.4.0"
@@ -72,6 +75,9 @@ dependencies {
 
     // database migrations from the code
     implementation("org.flywaydb", "flyway-core", "7.5.4")
+
+    // sending emails
+    implementation("com.mailjet", "mailjet-client", "4.2.0")
 
     // tests
     testImplementation("io.mockk", "mockk", "1.10.6")

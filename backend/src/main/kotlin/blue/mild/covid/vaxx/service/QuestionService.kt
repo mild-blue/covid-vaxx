@@ -1,7 +1,7 @@
 package blue.mild.covid.vaxx.service
 
 import blue.mild.covid.vaxx.dao.Question
-import blue.mild.covid.vaxx.dto.QuestionDtoOut
+import blue.mild.covid.vaxx.dto.response.QuestionDtoOut
 import org.jetbrains.exposed.sql.selectAll
 import org.jetbrains.exposed.sql.transactions.experimental.newSuspendedTransaction
 import pw.forst.tools.katlib.toUuid
