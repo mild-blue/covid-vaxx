@@ -5,8 +5,8 @@ import blue.mild.covid.vaxx.dto.request.CaptchaVerificationDtoIn
 import blue.mild.covid.vaxx.dto.request.LoginDtoIn
 import blue.mild.covid.vaxx.dto.request.UserRegistrationDtoIn
 import blue.mild.covid.vaxx.dto.response.BearerTokenDtoOut
+import blue.mild.covid.vaxx.dto.response.UserRegisteredDtoOut
 import blue.mild.covid.vaxx.extensions.di
-import blue.mild.covid.vaxx.extensions.respond
 import blue.mild.covid.vaxx.security.auth.CaptchaAuthenticationService
 import blue.mild.covid.vaxx.security.auth.JwtService
 import blue.mild.covid.vaxx.security.auth.UserPrincipal
@@ -18,7 +18,6 @@ import com.papsign.ktor.openapigen.route.path.normal.NormalOpenAPIRoute
 import com.papsign.ktor.openapigen.route.path.normal.post
 import com.papsign.ktor.openapigen.route.response.respond
 import com.papsign.ktor.openapigen.route.route
-import io.ktor.http.HttpStatusCode
 import org.kodein.di.instance
 
 /**
@@ -49,11 +48,10 @@ fun NormalOpenAPIRoute.userRoutes() {
 
     authorizeRoute(requireOneOf = setOf(UserRole.ADMIN)) {
         route(Routes.userRegistration) {
-            post<Unit, Unit, UserRegistrationDtoIn, UserPrincipal>(
+            post<Unit, UserRegisteredDtoOut, UserRegistrationDtoIn, UserPrincipal>(
                 info("Register new user of the system.")
             ) { _, registration ->
-                userService.registerUser(registration)
-                respond(HttpStatusCode.OK)
+                respond(userService.registerUser(registration))
             }
         }
     }

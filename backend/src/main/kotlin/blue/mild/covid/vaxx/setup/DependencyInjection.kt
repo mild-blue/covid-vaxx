@@ -26,7 +26,7 @@ fun DI.MainBuilder.registerClasses() {
     bind<QuestionService>() with singleton { QuestionService() }
     bind<ValidationService>() with singleton { ValidationService(instance()) }
     bind<PatientService>() with singleton { PatientService(instance(), instance(), instance()) }
-    bind<UserService>() with singleton { UserService(instance()) }
+    bind<UserService>() with singleton { UserService(instance(), instance()) }
     bind<MailJetEmailService>() with singleton { MailJetEmailService(instance(), instance(), instance()) }
     bind<TimeProvider<Instant>>() with singleton { InstantTimeProvider }
 
