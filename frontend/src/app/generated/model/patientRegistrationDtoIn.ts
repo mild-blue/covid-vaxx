@@ -14,24 +14,24 @@ import { ConfirmationDtoIn } from './confirmationDtoIn';
 
 
 export interface PatientRegistrationDtoIn {
-  answers: Array<AnswerDto>;
-  confirmation: ConfirmationDtoIn;
-  email: string;
-  firstName: string;
-  insuranceCompany: PatientRegistrationDtoInInsuranceCompanyEnum;
-  lastName: string;
-  personalNumber: string;
-  phoneNumber: string;
+    answers: Array<AnswerDto>;
+    confirmation: ConfirmationDtoIn;
+    email: string;
+    firstName: string;
+    insuranceCompany: PatientRegistrationDtoInInsuranceCompanyEnum;
+    lastName: string;
+    personalNumber: string;
+    phoneNumber: string;
 }
 
 export enum PatientRegistrationDtoInInsuranceCompanyEnum {
-  Czpz = 'CZPZ',
-  Ozp = 'OZP',
-  Rbp = 'RBP',
-  Vzp = 'VZP',
-  Vozp = 'VOZP',
-  Zps = 'ZPS',
-  Zpmv = 'ZPMV'
+    Czpz = 'CZPZ',
+    Ozp = 'OZP',
+    Rbp = 'RBP',
+    Vzp = 'VZP',
+    Vozp = 'VOZP',
+    Zps = 'ZPS',
+    Zpmv = 'ZPMV'
 };
 
 

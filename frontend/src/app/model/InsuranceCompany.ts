@@ -1,9 +1,9 @@
 export enum InsuranceCompany {
-  CZPZ = 'CZPZ',
-  OZP = 'OZP',
-  RBP = 'RBP',
-  VZP = 'VZP',
-  VOZP = 'VOZP',
-  ZPS = 'ZPS',
-  ZPMV = 'ZPMV',
+  Czpz = 'CZPZ',
+  Ozp = 'OZP',
+  Rbp = 'RBP',
+  Vzp = 'VZP',
+  Vozp = 'VOZP',
+  Zps = 'ZPS',
+  Zpmv = 'ZPMV'
 }

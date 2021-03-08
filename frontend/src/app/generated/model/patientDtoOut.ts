@@ -13,26 +13,27 @@ import { AnswerDto } from './answerDto';
 
 
 export interface PatientDtoOut {
-  answers: Array<AnswerDto>;
-  created: string;
-  email: string;
-  firstName: string;
-  id: string;
-  insuranceCompany: PatientDtoOutInsuranceCompanyEnum;
-  lastName: string;
-  personalNumber: string;
-  phoneNumber: string;
-  updated: string;
+    answers: Array<AnswerDto>;
+    created: string;
+    email: string;
+    firstName: string;
+    id: string;
+    insuranceCompany: PatientDtoOutInsuranceCompanyEnum;
+    lastName: string;
+    personalNumber: string;
+    phoneNumber: string;
+    registrationEmailSent?: string | null;
+    updated: string;
 }
 
 export enum PatientDtoOutInsuranceCompanyEnum {
-  Czpz = 'CZPZ',
-  Ozp = 'OZP',
-  Rbp = 'RBP',
-  Vzp = 'VZP',
-  Vozp = 'VOZP',
-  Zps = 'ZPS',
-  Zpmv = 'ZPMV'
+    Czpz = 'CZPZ',
+    Ozp = 'OZP',
+    Rbp = 'RBP',
+    Vzp = 'VZP',
+    Vozp = 'VOZP',
+    Zps = 'ZPS',
+    Zpmv = 'ZPMV'
 };
 
 
