@@ -18,12 +18,14 @@ import org.jetbrains.exposed.sql.leftJoin
 import org.jetbrains.exposed.sql.select
 import org.jetbrains.exposed.sql.selectAll
 import org.jetbrains.exposed.sql.transactions.experimental.newSuspendedTransaction
+import pw.forst.tools.katlib.TimeProvider
 import pw.forst.tools.katlib.toUuid
+import java.time.Instant
 import java.util.UUID
 
 class PatientService(
     private val validationService: ValidationService,
-    private val instantTimeProvider: InstantTimeProvider,
+    private val instantTimeProvider: TimeProvider<Instant>,
     private val entityIdProvider: EntityIdProvider
 ) {
 

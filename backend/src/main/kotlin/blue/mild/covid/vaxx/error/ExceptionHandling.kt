@@ -1,6 +1,5 @@
 package blue.mild.covid.vaxx.error
 
-import blue.mild.covid.vaxx.monitoring.CALL_ID
 import blue.mild.covid.vaxx.security.auth.AuthorizationException
 import blue.mild.covid.vaxx.security.auth.InsufficientRightsException
 import blue.mild.covid.vaxx.utils.createLogger
@@ -9,9 +8,10 @@ import io.ktor.application.ApplicationCall
 import io.ktor.application.call
 import io.ktor.application.install
 import io.ktor.features.StatusPages
+import io.ktor.features.callId
 import io.ktor.http.HttpStatusCode
 import io.ktor.response.respond
-import org.slf4j.MDC
+import org.postgresql.util.PSQLException
 
 private val logger = createLogger("ExceptionHandler")
 
@@ -43,16 +43,21 @@ fun Application.installExceptionHandling() {
             call.errorResponse(HttpStatusCode.BadRequest, "Bad request. ${cause.message}")
         }
 
+        exception<PSQLException> { cause ->
+            logger.error { cause.message }
+            call.errorResponse(HttpStatusCode.BadRequest, "Bad request.")
+        }
+
         exception<Exception> { cause ->
             logger.error(cause) { "Exception occurred in the application: ${cause.message}" }
             call.errorResponse(
                 HttpStatusCode.InternalServerError,
-                "Server was unable to fulfill the request, please contact administrator with request ID: ${MDC.get(CALL_ID)}"
+                "Server was unable to fulfill the request, please contact administrator with request ID: ${call.callId}"
             )
         }
     }
 }
 
 suspend inline fun ApplicationCall.errorResponse(statusCode: HttpStatusCode, message: String?) {
-    respond(status = statusCode, message = mapOf("message" to (message ?: "No details specified")))
+    respond(status = statusCode, ErrorResponseDto(message ?: "No details specified", callId))
 }
