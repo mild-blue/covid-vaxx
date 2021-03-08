@@ -1,0 +1,45 @@
+@import "../variables";
+
+body {
+  display: flex;
+  flex-direction: column;
+  background: $light;
+  height: 100%;
+  margin: 0;
+  font-family: Roboto, "Helvetica Neue", sans-serif;
+
+  * {
+    box-sizing: border-box;
+  }
+
+  &, * {
+    box-sizing: border-box;
+  }
+
+  &::after {
+    content: '';
+    background: $black;
+    width: 100vw;
+    position: absolute;
+    top: 0;
+    left: 0;
+    z-index: 1;
+
+    height: 0;
+    opacity: 0;
+    overflow: hidden;
+
+    transition: opacity 0.5s ease;
+  }
+
+  &.popup-opened {
+    max-height: 100vh;
+    overflow: hidden;
+    position: relative;
+
+    &::after {
+      height: 100vh;
+      opacity: 0.5;
+    }
+  }
+}

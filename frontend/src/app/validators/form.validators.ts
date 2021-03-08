@@ -1,4 +1,4 @@
-import {AbstractControl, ValidationErrors} from '@angular/forms';
+import { AbstractControl, ValidationErrors } from '@angular/forms';
 
 
 const personalNumberAddingTwentyIssueYear = 4;

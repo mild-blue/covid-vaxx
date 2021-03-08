@@ -1,0 +1,116 @@
+<mat-toolbar color="primary">
+  <span>Dotazník před očkováním proti nemoci COVID-19</span>
+</mat-toolbar>
+
+<main>
+  <mat-horizontal-stepper [linear]="true">
+    <mat-step *ngIf="patientForm" [completed]="canProceedToStep2" label="Osobní informace">
+      <app-container>
+        <mat-card>
+          <mat-card-content>
+            <form [formGroup]="patientForm">
+              <mat-form-field>
+                <mat-label>Jméno</mat-label>
+                <input [(ngModel)]="patient.firstName" formControlName="firstName" matInput placeholder="Vaše jméno" required>
+              </mat-form-field>
+
+              <mat-form-field>
+                <mat-label>Příjmení</mat-label>
+                <input [(ngModel)]="patient.lastName" formControlName="lastName" matInput placeholder="Vaše příjmení" required>
+              </mat-form-field>
+
+              <mat-form-field>
+                <mat-label>Rodné číslo</mat-label>
+                <input [(ngModel)]="patient.personalNumber" formControlName="personalNumber" matInput placeholder="Vaše rodné číslo" required>
+                <mat-hint>Rodné číslo ve formátu RRMMDD/ČČČ(Č)</mat-hint>
+              </mat-form-field>
+
+              <mat-form-field>
+                <mat-label>Zdravotní pojišťovna</mat-label>
+                <mat-select formControlName="insuranceCompany" [(ngModel)]="patient.insuranceCompany">
+                  <mat-option *ngFor="let insuranceCompany of allInsuranceCompanies" [value]="insuranceCompany">
+                    {{insuranceCompany}}
+                  </mat-option>
+                </mat-select>
+              </mat-form-field>
+
+              <mat-form-field>
+                <mat-label>Telefonní číslo</mat-label>
+                <input [(ngModel)]="patient.phoneNumber" formControlName="phoneNumber" matInput placeholder="Vaše telefonní číslo" required>
+                <mat-hint>Telefonní číslo ve formátu +420XXXXXXXXX</mat-hint>
+              </mat-form-field>
+              <mat-form-field>
+                <mat-label>E-mail</mat-label>
+                <input [(ngModel)]="patient.email" formControlName="email" matInput placeholder="Váš e-mail" required>
+              </mat-form-field>
+            </form>
+          </mat-card-content>
+        </mat-card>
+
+        <div class="nav-buttons">
+          <div></div>
+          <button [disabled]="!canProceedToStep2"
+                  color="primary" mat-raised-button matStepperNext>
+            Další krok
+          </button>
+        </div>
+      </app-container>
+    </mat-step>
+    <mat-step label="Zdravotní informace" [completed]="canProceedToStep3">
+      <app-container>
+        <mat-card class="py-0">
+          <mat-card-content>
+            <form>
+              <ng-container *ngFor="let q of questions; let i = index">
+                <app-form-field>
+                  <mat-label>{{ q.label }}</mat-label>
+                  <mat-button-toggle-group [(ngModel)]="q.value" [name]="q.name">
+                    <mat-button-toggle value="true">Ano</mat-button-toggle>
+                    <mat-button-toggle value="false">Ne</mat-button-toggle>
+                  </mat-button-toggle-group>
+                </app-form-field>
+                <mat-divider *ngIf="i < questions.length - 1"></mat-divider>
+              </ng-container>
+            </form>
+          </mat-card-content>
+        </mat-card>
+        <div class="nav-buttons">
+          <button color="secondary" mat-raised-button matStepperPrevious>
+            Předchozí krok
+          </button>
+          <button [disabled]="!canProceedToStep3"
+                  color="primary" mat-raised-button matStepperNext>
+            Další krok
+          </button>
+        </div>
+      </app-container>
+    </mat-step>
+    <mat-step label="Odeslání požadavku">
+      <app-container [wide]="true">
+        <app-patient-data *ngIf="canProceedToStep3" [patientData]="getPatientData()"></app-patient-data>
+
+        <div class="checkboxes">
+          <mat-checkbox [(ngModel)]="confirmationCheckboxValue">
+            Potvrzuji, že jsem nezamlčel/a žádné informace o svém zdravotním stavu.
+          </mat-checkbox>
+
+          <mat-checkbox [(ngModel)]="agreementCheckboxValue">
+            Souhlasím s aplikací očkovací látky proti onemocnění COVID-19.
+          </mat-checkbox>
+        </div>
+
+        <div class="nav-buttons">
+          <button color="secondary" mat-raised-button matStepperPrevious>
+            Předchozí krok
+          </button>
+          <button (click)="submit()"
+                  [disabled]="!canSubmit"
+                  color="primary" mat-raised-button matStepperNext>
+            Odeslat požadavek
+          </button>
+        </div>
+      </app-container>
+    </mat-step>
+  </mat-horizontal-stepper>
+</main>
+

@@ -1,0 +1,15 @@
+@import "../../styles/breakpoints";
+
+mat-toolbar {
+  span {
+    max-width: 100%;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: normal;
+
+    @include media-breakpoint-down(md) {
+      font-size: 14px;
+      line-height: 1.4;
+    }
+  }
+}
