@@ -3,9 +3,11 @@ package blue.mild.covid.vaxx.service
 import blue.mild.covid.vaxx.dto.config.ReCaptchaVerificationConfigurationDto
 import blue.mild.covid.vaxx.security.auth.CaptchaFailedException
 import blue.mild.covid.vaxx.security.auth.PatientPrincipal
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties
+import com.fasterxml.jackson.annotation.JsonProperty
 import io.ktor.client.HttpClient
+import io.ktor.client.request.get
 import io.ktor.client.request.parameter
-import io.ktor.client.request.post
 import mu.KLogging
 import java.time.Instant
 
@@ -22,7 +24,7 @@ class CaptchaVerificationService(
      */
     suspend fun verify(token: String, host: String? = null) {
         val captchaResponse = runCatching {
-            client.post<CaptchaResponseDto>("https://www.google.com/recaptcha/api/siteverify") {
+            client.get<CaptchaResponseDto>(configurationDto.googleUrl) {
                 parameter("secret", configurationDto.secretKey)
                 parameter("response", token)
                 parameter("remoteip", host)
@@ -35,13 +37,17 @@ class CaptchaVerificationService(
             logger.warn { "Google returned: $captchaResponse" }
             throw CaptchaFailedException()
         }
+        // TODO maybe add more verifications with regards to timestamp and hostname
     }
+
+    @JsonIgnoreProperties(ignoreUnknown = true)
+    data class CaptchaResponseDto(
+        val success: Boolean,
+        @JsonProperty("challenge_ts")
+        val challengeTimestamp: Instant?,
+        val hostname: String?,
+        val score: Double?,
+        @JsonProperty("error-codes")
+        val errorCodes: List<String>?
+    )
 }
-
-
-data class CaptchaResponseDto(
-    val success: Boolean,
-    val challengeTs: Instant,
-    val hostName: String,
-    val errorCodes: List<String> = emptyList()
-)
