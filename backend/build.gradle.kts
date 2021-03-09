@@ -80,6 +80,7 @@ dependencies {
 
     // sending emails
     implementation("com.mailjet", "mailjet-client", "4.2.0")
+    implementation("org.freemarker", "freemarker", "2.3.14")
 
     // tests
     testImplementation("io.mockk", "mockk", "1.10.6")
