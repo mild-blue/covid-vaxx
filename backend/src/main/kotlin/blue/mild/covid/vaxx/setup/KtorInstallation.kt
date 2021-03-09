@@ -6,7 +6,6 @@ import blue.mild.covid.vaxx.dto.config.DatabaseConfigurationDto
 import blue.mild.covid.vaxx.dto.config.JwtConfigurationDto
 import blue.mild.covid.vaxx.dto.config.RateLimitConfigurationDto
 import blue.mild.covid.vaxx.dto.config.StaticContentConfigurationDto
-import blue.mild.covid.vaxx.dto.config.SwaggerConfigurationDto
 import blue.mild.covid.vaxx.error.installExceptionHandling
 import blue.mild.covid.vaxx.extensions.determineRealIp
 import blue.mild.covid.vaxx.monitoring.CALL_ID
@@ -177,7 +176,7 @@ private fun Application.installAuthentication() {
 
 // Install swagger features.
 private fun Application.installSwagger() {
-    val config by di().instance<SwaggerConfigurationDto>()
+    val enableSwagger by di().instance<Boolean>(EnvVariables.ENABLE_SWAGGER)
 
     // install swagger
     install(OpenAPIGen) {
@@ -185,7 +184,7 @@ private fun Application.installSwagger() {
             version = "0.0.1"
             title = "Mild Blue - Covid Vaxx"
             description = "Covid Vaxx API"
-            serveSwaggerUi = config.enableSwagger
+            serveSwaggerUi = enableSwagger
             contact {
                 name = "Mild Blue s.r.o."
                 email = "covid-vaxx@mild.blue"
@@ -201,7 +200,7 @@ private fun Application.installSwagger() {
 
     }
     // install swagger routes
-    if (config.enableSwagger) {
+    if (enableSwagger) {
         routing {
             // register swagger routes
             get(Routes.openApiJson) {

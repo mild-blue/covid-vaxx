@@ -20,6 +20,4 @@ fun DI.MainBuilder.registerJwtAuth() {
     bind<JwtService>() with singleton { JwtService(instance(), instance()) }
 
     bind<JWTVerifier>() with singleton { instance<JwtService>().makeJwtVerifier() }
-
-    bind<CaptchaAuthenticationService>() with singleton { CaptchaAuthenticationService() }
 }
