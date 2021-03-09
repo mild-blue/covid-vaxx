@@ -5,6 +5,7 @@ import { AlertService } from '@app/services/alert/alert.service';
 import { PatientService } from '@app/services/patient/patient.service';
 import { Patient } from '@app/model/Patient';
 import { SearchHistoryService } from '@app/services/search-history/search-history.service';
+import { AuthService } from '@app/services/auth/auth.service';
 
 @Component({
   selector: 'app-admin',
@@ -20,6 +21,7 @@ export class AdminComponent implements OnInit {
   public submitted: boolean = false;
 
   constructor(private _alertService: AlertService,
+              private _authService: AuthService,
               private _searchHistoryService: SearchHistoryService,
               private _patientService: PatientService) {
   }
@@ -65,5 +67,9 @@ export class AdminComponent implements OnInit {
   public searchAgain(): void {
     this.patients = [];
     this.personalNumber.reset();
+  }
+
+  public logOut(): void {
+    this._authService.logout();
   }
 }
