@@ -2,6 +2,7 @@ package blue.mild.covid.vaxx.setup
 
 import blue.mild.covid.vaxx.dto.config.CorsConfigurationDto
 import blue.mild.covid.vaxx.dto.config.DatabaseConfigurationDto
+import blue.mild.covid.vaxx.dto.config.EnableMailServiceDto
 import blue.mild.covid.vaxx.dto.config.JwtConfigurationDto
 import blue.mild.covid.vaxx.dto.config.MailJetConfigurationDto
 import blue.mild.covid.vaxx.dto.config.RateLimitConfigurationDto
@@ -33,6 +34,10 @@ fun DI.MainBuilder.bindConfiguration() {
             password = getEnvOrLogDefault(EnvVariables.POSTGRES_PASSWORD, "mildblue-password"),
             url = "jdbc:postgresql://${dbHost}/${db}"
         )
+    }
+
+    bind<EnableMailServiceDto>() with singleton {
+        EnableMailServiceDto(getEnvOrLogDefault(EnvVariables.ENABLE_MAIL_SERVICE, "false").toBoolean())
     }
 
     bind<MailJetConfigurationDto>() with singleton {

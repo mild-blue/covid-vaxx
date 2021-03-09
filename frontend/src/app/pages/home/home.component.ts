@@ -4,14 +4,14 @@ import { PatientEditable } from '@app/model/PatientEditable';
 import { InsuranceCompany } from '@app/model/InsuranceCompany';
 import { QuestionService } from '@app/services/question/question.service';
 import { PatientService } from '@app/services/patient/patient.service';
-import { validatePersonalNumber, validatePhoneNumber } from '@app/validators/form.validators';
+import { validateEmail, validatePersonalNumber, validatePhoneNumber } from '@app/validators/form.validators';
 import { AlertService } from '@app/services/alert/alert.service';
 import { ActivatedRoute } from '@angular/router';
 import { PatientData } from '@app/model/PatientData';
 import { parseAnswerFromQuestion } from '@app/parsers/answer.parser';
 import { Question } from '@app/model/Question';
 import { Subscription } from 'rxjs';
-import { parseInsuranceCompanyFromString } from '@app/parsers/insurance.parser';
+import { parseInsuranceCompany } from '@app/parsers/insurance.parser';
 import { ReCaptchaV3Service } from 'ng-recaptcha';
 
 @Component({
@@ -55,7 +55,7 @@ export class HomeComponent implements OnInit, OnDestroy {
       personalNumber: [this.patient.personalNumber ?? '', [Validators.required, validatePersonalNumber]],
       insuranceCompany: ['', Validators.required],
       phoneNumber: ['', [Validators.required, validatePhoneNumber]],
-      email: ['', [Validators.required, Validators.email]]
+      email: ['', [Validators.required, validateEmail]]
     });
   }
 
@@ -69,12 +69,10 @@ export class HomeComponent implements OnInit, OnDestroy {
   }
 
   get canProceedToStep2(): boolean {
-    return true;
     return !!this.patientForm?.valid;
   }
 
   get canProceedToStep3(): boolean {
-    return true;
     return !!this.patientForm?.valid && this.allQuestionsAnswered;
   }
 
@@ -91,7 +89,7 @@ export class HomeComponent implements OnInit, OnDestroy {
       firstName: this.patient.firstName ?? '',
       lastName: this.patient.lastName ?? '',
       personalNumber: this.patient.personalNumber ?? '',
-      insuranceCompany: this.patient.insuranceCompany ? parseInsuranceCompanyFromString(this.patient.insuranceCompany) : undefined,
+      insuranceCompany: this.patient.insuranceCompany ? parseInsuranceCompany(this.patient.insuranceCompany) : undefined,
       phoneNumber: this.patient.phoneNumber ?? '',
       email: this.patient.email ?? '',
       answers: this.questions.map(parseAnswerFromQuestion)

@@ -1,5 +1,6 @@
 package blue.mild.covid.vaxx.setup
 
+import blue.mild.covid.vaxx.dto.config.EnableMailServiceDto
 import blue.mild.covid.vaxx.dto.config.MailJetConfigurationDto
 import blue.mild.covid.vaxx.service.DummyMailService
 import blue.mild.covid.vaxx.service.EntityIdProvider
@@ -12,6 +13,7 @@ import blue.mild.covid.vaxx.service.UserService
 import blue.mild.covid.vaxx.service.ValidationService
 import com.mailjet.client.ClientOptions
 import com.mailjet.client.MailjetClient
+import freemarker.template.Configuration
 import org.kodein.di.DI
 import org.kodein.di.bind
 import org.kodein.di.instance
@@ -27,7 +29,7 @@ fun DI.MainBuilder.registerClasses() {
     bind<ValidationService>() with singleton { ValidationService(instance()) }
     bind<PatientService>() with singleton { PatientService(instance(), instance(), instance()) }
     bind<UserService>() with singleton { UserService(instance(), instance()) }
-    bind<MailJetEmailService>() with singleton { MailJetEmailService(instance(), instance(), instance()) }
+    bind<MailJetEmailService>() with singleton { MailJetEmailService(instance(), instance(), instance(), instance()) }
     bind<TimeProvider<Instant>>() with singleton { InstantTimeProvider }
 
     bind<MailjetClient>() with singleton {
@@ -40,7 +42,18 @@ fun DI.MainBuilder.registerClasses() {
     }
     bind<DummyMailService>() with singleton { DummyMailService() }
 
-    // TODO make this conditional, when in prod use mailjet
-    bind<MailService>() with singleton { instance<DummyMailService>() }
+    bind<Configuration>() with singleton {
+        Configuration().apply {
+            setClassForTemplateLoading(MailJetEmailService::class.java, "/templates")
+        }
+    }
+
+    bind<MailService>() with singleton {
+        if (instance<EnableMailServiceDto>().enable) {
+            instance<MailJetEmailService>()
+        } else {
+            instance<DummyMailService>()
+        }
+    }
 
 }
