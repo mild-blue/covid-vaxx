@@ -11,7 +11,7 @@ import { PatientData } from '@app/model/PatientData';
 import { parseAnswerFromQuestion } from '@app/parsers/answer.parser';
 import { Question } from '@app/model/Question';
 import { Subscription } from 'rxjs';
-import { parseInsuranceCompanyFromString } from '@app/parsers/insurance.parser';
+import { parseInsuranceCompany } from '@app/parsers/insurance.parser';
 
 @Component({
   selector: 'app-home',
@@ -87,7 +87,7 @@ export class HomeComponent implements OnInit, OnDestroy {
       firstName: this.patient.firstName ?? '',
       lastName: this.patient.lastName ?? '',
       personalNumber: this.patient.personalNumber ?? '',
-      insuranceCompany: this.patient.insuranceCompany ? parseInsuranceCompanyFromString(this.patient.insuranceCompany) : undefined,
+      insuranceCompany: this.patient.insuranceCompany ? parseInsuranceCompany(this.patient.insuranceCompany) : undefined,
       phoneNumber: this.patient.phoneNumber ?? '',
       email: this.patient.email ?? '',
       answers: this.questions.map(parseAnswerFromQuestion)
