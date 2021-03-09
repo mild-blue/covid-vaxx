@@ -36,6 +36,8 @@ import { PatientDataComponent } from './components/patient-data/patient-data.com
 import { FormFieldComponent } from './components/form-field/form-field.component';
 import { InfoComponent } from './pages/info/info.component';
 import { GdprComponent } from './components/dialogs/gdpr/gdpr.component';
+import { RECAPTCHA_V3_SITE_KEY, RecaptchaV3Module } from 'ng-recaptcha';
+import { environment } from '@environments/environment';
 
 @NgModule({
   declarations: [
@@ -75,11 +77,13 @@ import { GdprComponent } from './components/dialogs/gdpr/gdpr.component';
     MatSnackBarModule,
     MatIconModule,
     MatProgressBarModule,
-    MatBadgeModule
+    MatBadgeModule,
+    RecaptchaV3Module
   ],
   providers: [
     { provide: HTTP_INTERCEPTORS, useClass: AuthInterceptor, multi: true },
     { provide: HTTP_INTERCEPTORS, useClass: ErrorInterceptor, multi: true },
+    { provide: RECAPTCHA_V3_SITE_KEY, useValue: environment.recaptchaSiteKey },
     { provide: MAT_SNACK_BAR_DEFAULT_OPTIONS, useValue: { duration: 2500, horizontalPosition: 'start' } }
   ],
   bootstrap: [AppComponent]

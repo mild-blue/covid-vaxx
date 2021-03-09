@@ -20,7 +20,8 @@ export class PatientService {
               private _questionService: QuestionService) {
   }
 
-  public async savePatientInfo(patientInfo: PatientData, questions: Question[], agreement: boolean, confirmation: boolean, gdpr: boolean): Promise<PatientRegisteredDtoOut> {
+  public async savePatientInfo(token: string, patientInfo: PatientData, questions: Question[], agreement: boolean, confirmation: boolean, gdpr: boolean): Promise<PatientRegisteredDtoOut> {
+    const params = new HttpParams().set('recaptchaToken', token);
     const registration: PatientRegistrationDtoIn = {
       ...patientInfo,
       insuranceCompany: fromInsuranceToInsuranceGenerated(patientInfo.insuranceCompany),
@@ -34,7 +35,8 @@ export class PatientService {
 
     return this._http.post<PatientRegisteredDtoOut>(
       `${environment.apiUrl}/patient`,
-      registration
+      registration,
+      { params }
     ).pipe(
       first()
     ).toPromise();
