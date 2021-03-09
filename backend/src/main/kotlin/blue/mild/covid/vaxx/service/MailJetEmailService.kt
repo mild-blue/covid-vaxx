@@ -19,6 +19,7 @@ import java.time.Instant
 
 
 class MailJetEmailService(
+    private val freemarkerConfiguration: Configuration,
     private val mailJetConfig: MailJetConfigurationDto,
     private val client: MailjetClient,
     private val nowProvider: TimeProvider<Instant>
@@ -63,14 +64,11 @@ class MailJetEmailService(
     }
 
     private fun buildEmailRequest(emailRequest: PatientEmailRequestDto): MailjetRequest? {
-        val freemarkerConfiguration = Configuration()
-
-        freemarkerConfiguration.setClassForTemplateLoading(this::class.java, "/templates")
-
-        val template = freemarkerConfiguration.getTemplate("RegistrationConfirmation.ftl")
         val stringWriter = StringWriter()
-        template.process(mapOf("emailRequestDto" to emailRequest), stringWriter)
-        val emailHtmlPart =  stringWriter.toString()
+        freemarkerConfiguration.getTemplate("RegistrationConfirmation.ftl")
+            .apply { process(mapOf("emailRequestDto" to emailRequest), stringWriter) }
+
+        val emailHtmlPart = stringWriter.toString()
 
         return MailjetRequest(Emailv31.resource)
             .property(
