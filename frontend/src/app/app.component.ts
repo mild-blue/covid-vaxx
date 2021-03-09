@@ -1,6 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { QuestionService } from '@app/services/question/question.service';
 import { AlertService } from '@app/services/alert/alert.service';
+import { RecaptchaService } from '@app/services/recaptcha/recaptcha.service';
 
 @Component({
   selector: 'app-root',
@@ -10,10 +11,12 @@ import { AlertService } from '@app/services/alert/alert.service';
 export class AppComponent implements OnInit {
 
   constructor(private _questionService: QuestionService,
+              private _recaptchaService: RecaptchaService,
               private _alertService: AlertService) {
   }
 
   async ngOnInit(): Promise<void> {
+    this._recaptchaService.verifyUserWithRecaptcha();
     await this._initQuestions();
   }
 
