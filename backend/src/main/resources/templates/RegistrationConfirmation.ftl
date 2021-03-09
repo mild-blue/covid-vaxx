@@ -236,7 +236,6 @@
             padding: 2em;
         }
         .text-author img{
-            border-radius: 50%;
             padding-bottom: 20px;
         }
         .text-author h3{
@@ -316,7 +315,7 @@
                         <tr>
                             <td style="text-align: center;">
                                 <div class="text-author">
-                                    <img src="images/person_2.jpg" alt="" style="width: 100px; max-width: 600px; height: auto; margin: auto; display: block;">
+                                    <img src="https://github.com/mild-blue/about/raw/master/images/icons/calendar.png" alt="" style="width: 100px; max-width: 600px; height: auto; margin: auto; display: block;">
                                     <p>
                                         Děkujeme za registraci k očkování. Dostavte se do Vaší volební místnosti ve stanovený čas. Den před očkování nepijte alkohol. Níže naleznete Vámi zadané údaje.
                                         V případě jakýchkoliv dotazů či připomínek se na nás neváhejte obrátit na <a href = "mailto: info@mild.blue">info@mild.blue</a>.
@@ -376,8 +375,11 @@
                 <td valign="middle" class="bg_dark footer email-section">
                     <table>
                         <tr>
-                            <td valign="top" width="100%" style="padding-top: 10px;">
-                                Powered by <a href="https://mild.blue" style="color: #fff;" target="_blank"><b>mild.blue</b></a>
+                            <td valign="top" width="100%" style="text-align: center;">
+                                Powered by 
+                                <a href="https://mild.blue" style="color: #fff;" target="_blank">
+                                    <img src="https://raw.githubusercontent.com/mild-blue/about/master/images/logo/mild-blue-white.svg" alt="" style="width: 100px; max-width: 600px; height: auto; margin: auto; display: block;">
+								</a>
                             </td>
                         </tr>
                     </table>
