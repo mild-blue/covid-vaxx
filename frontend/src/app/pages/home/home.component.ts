@@ -4,7 +4,7 @@ import { PatientEditable } from '@app/model/PatientEditable';
 import { InsuranceCompany } from '@app/model/InsuranceCompany';
 import { QuestionService } from '@app/services/question/question.service';
 import { PatientService } from '@app/services/patient/patient.service';
-import { validatePersonalNumber, validatePhoneNumber } from '@app/validators/form.validators';
+import { validateEmail, validatePersonalNumber, validatePhoneNumber } from '@app/validators/form.validators';
 import { AlertService } from '@app/services/alert/alert.service';
 import { ActivatedRoute } from '@angular/router';
 import { PatientData } from '@app/model/PatientData';
@@ -53,7 +53,7 @@ export class HomeComponent implements OnInit, OnDestroy {
       personalNumber: [this.patient.personalNumber ?? '', [Validators.required, validatePersonalNumber]],
       insuranceCompany: ['', Validators.required],
       phoneNumber: ['', [Validators.required, validatePhoneNumber]],
-      email: ['', [Validators.required, Validators.email]]
+      email: ['', [Validators.required, validateEmail]]
     });
   }
 
