@@ -3,6 +3,7 @@ package blue.mild.covid.vaxx.routes
 import blue.mild.covid.vaxx.dao.UserRole
 import blue.mild.covid.vaxx.dto.PatientEmailRequestDto
 import blue.mild.covid.vaxx.dto.PatientRegistrationDto
+import blue.mild.covid.vaxx.dto.request.CaptchaVerificationDtoIn
 import blue.mild.covid.vaxx.dto.request.PatientIdDtoIn
 import blue.mild.covid.vaxx.dto.request.PatientQueryDtoIn
 import blue.mild.covid.vaxx.dto.request.PatientRegistrationDtoIn
@@ -14,12 +15,13 @@ import blue.mild.covid.vaxx.extensions.di
 import blue.mild.covid.vaxx.extensions.request
 import blue.mild.covid.vaxx.security.auth.UserPrincipal
 import blue.mild.covid.vaxx.security.auth.authorizeRoute
+import blue.mild.covid.vaxx.service.CaptchaVerificationService
 import blue.mild.covid.vaxx.service.MailService
 import blue.mild.covid.vaxx.service.PatientService
+import blue.mild.covid.vaxx.setup.EnvVariables
 import com.papsign.ktor.openapigen.route.info
 import com.papsign.ktor.openapigen.route.path.auth.delete
 import com.papsign.ktor.openapigen.route.path.auth.get
-import com.papsign.ktor.openapigen.route.path.auth.post
 import com.papsign.ktor.openapigen.route.path.normal.NormalOpenAPIRoute
 import com.papsign.ktor.openapigen.route.path.normal.post
 import com.papsign.ktor.openapigen.route.response.respond
@@ -31,20 +33,22 @@ import pw.forst.tools.katlib.asList
  * Routes related to patient entity.
  */
 fun NormalOpenAPIRoute.patientRoutes() {
-    // TODO #70 delete this, use just authorized routes
-    openRoutes()
-    authorizedRoutes()
-}
-
-// TODO #70 delete this
-private fun NormalOpenAPIRoute.openRoutes() {
     val patientService by di().instance<PatientService>()
     val emailService by di().instance<MailService>()
+
+    val captchaService by di().instance<CaptchaVerificationService>()
+    val enableCaptchaVerification by di().instance<Boolean>(EnvVariables.ENABLE_SWAGGER)
+
     route(Routes.patient) {
-        post<Unit, PatientRegisteredDtoOut, PatientRegistrationDtoIn>(
+        post<CaptchaVerificationDtoIn, PatientRegisteredDtoOut, PatientRegistrationDtoIn>(
             info("Save patient registration to the database.")
-        ) { _, patientRegistration ->
-            val patient = patientService.savePatient(PatientRegistrationDto(patientRegistration, request.determineRealIp()))
+        ) { (recaptchaToken), patientRegistration ->
+            val host = request.determineRealIp()
+            if (enableCaptchaVerification) {
+                captchaService.verify(recaptchaToken, host)
+            }
+
+            val patient = patientService.savePatient(PatientRegistrationDto(patientRegistration, host))
             emailService.sendEmail(
                 PatientEmailRequestDto(
                     firstName = patientRegistration.firstName,
@@ -56,13 +60,7 @@ private fun NormalOpenAPIRoute.openRoutes() {
             respond(patient)
         }
     }
-}
-
-// TODO #70 delete authorized prefix
-private fun NormalOpenAPIRoute.authorizedRoutes() {
-    val patientService by di().instance<PatientService>()
-    val emailService by di().instance<MailService>()
-    // routes for registered users only
+    // admin routes for registered users only
     authorizeRoute(requireOneOf = setOf(UserRole.ADMIN, UserRole.DOCTOR)) {
         route(Routes.patient) {
             get<PatientIdDtoIn, PatientDtoOut, UserPrincipal>(
@@ -90,24 +88,4 @@ private fun NormalOpenAPIRoute.authorizedRoutes() {
             }
         }
     }
-    // routes that are authorized for users that passed captchas
-    authorizeRoute {
-        route("/authorized${Routes.patient}") {
-            post<Unit, PatientRegisteredDtoOut, PatientRegistrationDtoIn, UserPrincipal>(
-                info("Save patient registration to the database.")
-            ) { _, patientRegistration ->
-                val patient = patientService.savePatient(PatientRegistrationDto(patientRegistration, request.determineRealIp()))
-                emailService.sendEmail(
-                    PatientEmailRequestDto(
-                        firstName = patientRegistration.firstName,
-                        lastName = patientRegistration.lastName,
-                        email = patientRegistration.email,
-                        patientId = patient.patientId
-                    )
-                )
-                respond(patient)
-            }
-        }
-    }
-
 }

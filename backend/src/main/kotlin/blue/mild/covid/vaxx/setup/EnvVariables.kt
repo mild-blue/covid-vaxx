@@ -38,6 +38,8 @@ enum class EnvVariables {
      * Example: "/var/logs/mildblue"
      */
     FILE_FOLDER_LOG_PATH,
+    ENABLE_FILE_LOG,
 
-    ENABLE_FILE_LOG
+    ENABLE_RECAPTCHA_VERIFICATION,
+    RECAPTCHA_SECRET_KEY
 }

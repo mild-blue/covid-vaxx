@@ -1,13 +1,11 @@
 package blue.mild.covid.vaxx.routes
 
 import blue.mild.covid.vaxx.dao.UserRole
-import blue.mild.covid.vaxx.dto.request.CaptchaVerificationDtoIn
 import blue.mild.covid.vaxx.dto.request.LoginDtoIn
 import blue.mild.covid.vaxx.dto.request.UserRegistrationDtoIn
 import blue.mild.covid.vaxx.dto.response.BearerTokenDtoOut
 import blue.mild.covid.vaxx.dto.response.UserRegisteredDtoOut
 import blue.mild.covid.vaxx.extensions.di
-import blue.mild.covid.vaxx.security.auth.CaptchaAuthenticationService
 import blue.mild.covid.vaxx.security.auth.JwtService
 import blue.mild.covid.vaxx.security.auth.UserPrincipal
 import blue.mild.covid.vaxx.security.auth.authorizeRoute
@@ -26,22 +24,11 @@ import org.kodein.di.instance
 fun NormalOpenAPIRoute.userRoutes() {
     val userService by di().instance<UserService>()
     val jwtService by di().instance<JwtService>()
-    val captchaAuthenticationService by di().instance<CaptchaAuthenticationService>()
-
     route(Routes.registeredUserLogin) {
         post<Unit, BearerTokenDtoOut, LoginDtoIn>(
             info("Login endpoint for the registered users such as administrators and doctors.")
         ) { _, loginDto ->
             val principal = userService.verifyCredentials(loginDto)
-            respond(jwtService.generateToken(principal))
-        }
-    }
-
-    route(Routes.registrationCaptcha) {
-        post<Unit, BearerTokenDtoOut, CaptchaVerificationDtoIn>(
-            info("Endpoint that issues access to the API for the non-registered users.")
-        ) { _, (token) ->
-            val principal = captchaAuthenticationService.authenticate(token)
             respond(jwtService.generateToken(principal))
         }
     }

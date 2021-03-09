@@ -2,6 +2,7 @@ package blue.mild.covid.vaxx.setup
 
 import blue.mild.covid.vaxx.dto.config.EnableMailServiceDto
 import blue.mild.covid.vaxx.dto.config.MailJetConfigurationDto
+import blue.mild.covid.vaxx.service.CaptchaVerificationService
 import blue.mild.covid.vaxx.service.DummyMailService
 import blue.mild.covid.vaxx.service.EntityIdProvider
 import blue.mild.covid.vaxx.service.MailJetEmailService
@@ -14,6 +15,7 @@ import blue.mild.covid.vaxx.service.ValidationService
 import com.mailjet.client.ClientOptions
 import com.mailjet.client.MailjetClient
 import freemarker.template.Configuration
+import io.ktor.client.HttpClient
 import org.kodein.di.DI
 import org.kodein.di.bind
 import org.kodein.di.instance
@@ -56,4 +58,11 @@ fun DI.MainBuilder.registerClasses() {
         }
     }
 
+    bind<HttpClient>() with singleton {
+        createHttpClient()
+    }
+
+    bind<CaptchaVerificationService>() with singleton { CaptchaVerificationService(instance(), instance()) }
+
 }
+

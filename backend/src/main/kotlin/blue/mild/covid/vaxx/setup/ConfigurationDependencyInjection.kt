@@ -6,8 +6,8 @@ import blue.mild.covid.vaxx.dto.config.EnableMailServiceDto
 import blue.mild.covid.vaxx.dto.config.JwtConfigurationDto
 import blue.mild.covid.vaxx.dto.config.MailJetConfigurationDto
 import blue.mild.covid.vaxx.dto.config.RateLimitConfigurationDto
+import blue.mild.covid.vaxx.dto.config.ReCaptchaVerificationConfigurationDto
 import blue.mild.covid.vaxx.dto.config.StaticContentConfigurationDto
-import blue.mild.covid.vaxx.dto.config.SwaggerConfigurationDto
 import blue.mild.covid.vaxx.dto.response.VersionDtoOut
 import blue.mild.covid.vaxx.utils.createLogger
 import org.kodein.di.DI
@@ -79,8 +79,8 @@ fun DI.MainBuilder.bindConfiguration() {
         )
     }
 
-    bind<SwaggerConfigurationDto>() with singleton {
-        SwaggerConfigurationDto(getEnvOrLogDefault(EnvVariables.ENABLE_SWAGGER, "true").toBoolean())
+    bind<Boolean>(EnvVariables.ENABLE_SWAGGER) with singleton {
+        getEnvOrLogDefault(EnvVariables.ENABLE_SWAGGER, "true").toBoolean()
     }
 
     bind<CorsConfigurationDto>() with singleton {
@@ -90,6 +90,14 @@ fun DI.MainBuilder.bindConfiguration() {
 
         val enableCors = getEnvOrLogDefault(EnvVariables.ENABLE_CORS, "${hosts.isNotEmpty()}").toBoolean()
         CorsConfigurationDto(enableCors, hosts)
+    }
+
+    bind<Boolean>(EnvVariables.ENABLE_RECAPTCHA_VERIFICATION) with singleton {
+        getEnvOrLogDefault(EnvVariables.ENABLE_RECAPTCHA_VERIFICATION, "false").toBoolean()
+    }
+
+    bind<ReCaptchaVerificationConfigurationDto>() with singleton {
+        ReCaptchaVerificationConfigurationDto(requireEnv(EnvVariables.RECAPTCHA_SECRET_KEY))
     }
 }
 
