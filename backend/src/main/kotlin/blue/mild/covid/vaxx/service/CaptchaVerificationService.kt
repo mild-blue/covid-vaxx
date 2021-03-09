@@ -22,7 +22,7 @@ class CaptchaVerificationService(
      */
     suspend fun verify(token: String, host: String? = null) {
         val captchaResponse = runCatching {
-            client.post<CaptchaResponseDto>(host = "https://www.google.com/recaptcha/api/siteverify") {
+            client.post<CaptchaResponseDto>("https://www.google.com/recaptcha/api/siteverify") {
                 parameter("secret", configurationDto.secretKey)
                 parameter("response", token)
                 parameter("remoteip", host)
