@@ -6,6 +6,7 @@ import blue.mild.covid.vaxx.dto.config.MailJetConfigurationDto
 import com.mailjet.client.MailjetClient
 import com.mailjet.client.MailjetRequest
 import com.mailjet.client.resource.Emailv31
+import freemarker.template.Configuration
 import io.ktor.http.HttpStatusCode
 import mu.KLogging
 import org.jetbrains.exposed.sql.transactions.transaction
@@ -13,7 +14,9 @@ import org.jetbrains.exposed.sql.update
 import org.json.JSONArray
 import org.json.JSONObject
 import pw.forst.tools.katlib.TimeProvider
+import java.io.StringWriter
 import java.time.Instant
+
 
 class MailJetEmailService(
     private val mailJetConfig: MailJetConfigurationDto,
@@ -59,8 +62,17 @@ class MailJetEmailService(
         }
     }
 
-    private fun buildEmailRequest(emailRequest: PatientEmailRequestDto) =
-        MailjetRequest(Emailv31.resource)
+    private fun buildEmailRequest(emailRequest: PatientEmailRequestDto): MailjetRequest? {
+        val freemarkerConfiguration = Configuration()
+
+        freemarkerConfiguration.setClassForTemplateLoading(this::class.java, "/templates")
+
+        val template = freemarkerConfiguration.getTemplate("RegistrationConfirmation.ftl")
+        val stringWriter = StringWriter()
+        template.process(mapOf("emailRequestDto" to emailRequest), stringWriter)
+        val emailHtmlPart =  stringWriter.toString()
+
+        return MailjetRequest(Emailv31.resource)
             .property(
                 Emailv31.MESSAGES, JSONArray()
                     .put(
@@ -80,8 +92,9 @@ class MailJetEmailService(
                             )
                             .put(Emailv31.Message.SUBJECT, "Testing Subject")
                             .put(
-                                Emailv31.Message.TEXTPART, "Dear ${emailRequest.lastName}\n\nYou have been registered!"
+                                Emailv31.Message.HTMLPART, emailHtmlPart
                             )
                     )
             )
+    }
 }
