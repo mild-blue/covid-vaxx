@@ -1,4 +1,4 @@
-package blue.mild.covid.vaxx.security.ratelimiting
+package blue.mild.covid.vaxx.security.ddos
 
 import io.mockk.every
 import io.mockk.mockk

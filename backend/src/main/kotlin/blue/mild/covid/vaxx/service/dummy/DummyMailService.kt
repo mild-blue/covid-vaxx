@@ -1,6 +1,7 @@
-package blue.mild.covid.vaxx.service
+package blue.mild.covid.vaxx.service.dummy
 
 import blue.mild.covid.vaxx.dto.PatientEmailRequestDto
+import blue.mild.covid.vaxx.service.MailService
 import mu.KLogging
 
 class DummyMailService : MailService {

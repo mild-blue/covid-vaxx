@@ -15,7 +15,7 @@ import blue.mild.covid.vaxx.routes.registerRoutes
 import blue.mild.covid.vaxx.security.auth.JwtService
 import blue.mild.covid.vaxx.security.auth.RoleBasedAuthorization
 import blue.mild.covid.vaxx.security.auth.registerJwtAuth
-import blue.mild.covid.vaxx.security.ratelimiting.RateLimiting
+import blue.mild.covid.vaxx.security.ddos.RateLimiting
 import blue.mild.covid.vaxx.utils.createLogger
 import com.auth0.jwt.JWTVerifier
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule

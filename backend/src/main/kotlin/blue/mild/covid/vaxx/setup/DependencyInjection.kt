@@ -3,16 +3,22 @@ package blue.mild.covid.vaxx.setup
 import blue.mild.covid.vaxx.dao.repository.PatientRepository
 import blue.mild.covid.vaxx.dao.repository.UserRepository
 import blue.mild.covid.vaxx.dto.config.MailJetConfigurationDto
-import blue.mild.covid.vaxx.service.CaptchaVerificationService
-import blue.mild.covid.vaxx.service.DummyMailService
+import blue.mild.covid.vaxx.security.ddos.CaptchaVerificationService
+import blue.mild.covid.vaxx.security.ddos.RequestVerificationService
 import blue.mild.covid.vaxx.service.EntityIdProvider
+import blue.mild.covid.vaxx.service.IsinRegistrationService
 import blue.mild.covid.vaxx.service.MailJetEmailService
 import blue.mild.covid.vaxx.service.MailService
+import blue.mild.covid.vaxx.service.MedicalRegistrationService
 import blue.mild.covid.vaxx.service.PasswordHashProvider
 import blue.mild.covid.vaxx.service.PatientService
 import blue.mild.covid.vaxx.service.QuestionService
 import blue.mild.covid.vaxx.service.UserService
 import blue.mild.covid.vaxx.service.ValidationService
+import blue.mild.covid.vaxx.service.dummy.DummyMailService
+import blue.mild.covid.vaxx.service.dummy.DummyMedicalRegistrationService
+import blue.mild.covid.vaxx.service.dummy.DummyRequestVerificationService
+import blue.mild.covid.vaxx.utils.createLogger
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule
 import com.mailjet.client.ClientOptions
 import com.mailjet.client.MailjetClient
@@ -58,14 +64,6 @@ fun DI.MainBuilder.registerClasses() {
         }
     }
 
-    bind<MailService>() with singleton {
-        if (instance(EnvVariables.ENABLE_MAIL_SERVICE)) {
-            instance<MailJetEmailService>()
-        } else {
-            instance<DummyMailService>()
-        }
-    }
-
     bind<HttpClient>() with singleton {
         HttpClient(Apache) {
             install(JsonFeature) {
@@ -75,6 +73,34 @@ fun DI.MainBuilder.registerClasses() {
     }
 
     bind<CaptchaVerificationService>() with singleton { CaptchaVerificationService(instance(), instance()) }
+    bind<DummyRequestVerificationService>() with singleton { DummyRequestVerificationService() }
 
+    bind<IsinRegistrationService>() with singleton { IsinRegistrationService(instance(), instance(), instance()) }
+    bind<DummyMedicalRegistrationService>() with singleton { DummyMedicalRegistrationService() }
+
+    // select implementations based on the feature flags
+    registerProductionOrDummy<MedicalRegistrationService, IsinRegistrationService, DummyMedicalRegistrationService>(
+        EnvVariables.ENABLE_ISIN_REGISTRATION
+    )
+    registerProductionOrDummy<RequestVerificationService, CaptchaVerificationService, DummyRequestVerificationService>(
+        EnvVariables.ENABLE_RECAPTCHA_VERIFICATION
+    )
+    registerProductionOrDummy<MailService, MailJetEmailService, DummyMailService>(
+        EnvVariables.ENABLE_MAIL_SERVICE
+    )
+}
+
+internal val diLogger = createLogger("DependencyInjection")
+
+private inline fun <reified TInterface : Any, reified TProd : TInterface, reified TDummy : TInterface>
+        DI.MainBuilder.registerProductionOrDummy(enableProdEnv: EnvVariables) {
+    bind<TInterface>() with singleton {
+        if (instance(enableProdEnv)) {
+            instance<TProd>()
+        } else {
+            diLogger.warn { "Using ${TDummy::class.simpleName}! This should not be in production!" }
+            instance<TDummy>()
+        }
+    }
 }
 

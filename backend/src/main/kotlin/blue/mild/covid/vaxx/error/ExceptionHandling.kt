@@ -15,6 +15,7 @@ import io.ktor.features.callId
 import io.ktor.http.HttpStatusCode
 import io.ktor.request.path
 import io.ktor.response.respond
+import org.jetbrains.exposed.exceptions.ExposedSQLException
 import org.postgresql.util.PSQLException
 
 private val logger = createLogger("ExceptionHandler")
@@ -59,6 +60,11 @@ fun Application.installExceptionHandling() {
 
         exception<PSQLException> { cause ->
             logger.error { cause.message }
+            call.errorResponse(HttpStatusCode.BadRequest, "Bad request.")
+        }
+
+        exception<ExposedSQLException> { cause ->
+            logger.warn { "Attempt to store invalid data to the database: ${cause.message}" }
             call.errorResponse(HttpStatusCode.BadRequest, "Bad request.")
         }
 
