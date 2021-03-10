@@ -5,6 +5,7 @@ import blue.mild.covid.vaxx.security.auth.CaptchaFailedException
 import blue.mild.covid.vaxx.security.auth.InsufficientRightsException
 import blue.mild.covid.vaxx.security.auth.UserPrincipal
 import blue.mild.covid.vaxx.utils.createLogger
+import com.papsign.ktor.openapigen.exceptions.OpenAPIRequiredFieldException
 import io.ktor.application.Application
 import io.ktor.application.ApplicationCall
 import io.ktor.application.call
@@ -25,6 +26,8 @@ private val logger = createLogger("ExceptionHandler")
  */
 fun Application.installExceptionHandling() {
     install(StatusPages) {
+        // TODO define correct logging level policy
+
         exception<InsufficientRightsException> {
             logger.debug {
                 call.principal<UserPrincipal>()
@@ -56,6 +59,11 @@ fun Application.installExceptionHandling() {
         exception<EmptyStringException> { cause ->
             logger.warn { cause.message }
             call.errorResponse(HttpStatusCode.BadRequest, "Bad request. ${cause.message}")
+        }
+
+        exception<OpenAPIRequiredFieldException> { cause ->
+            logger.warn { "Missing data in request: ${cause.message}" }
+            call.errorResponse(HttpStatusCode.BadRequest, "Missing data in request: ${cause.message}")
         }
 
         exception<PSQLException> { cause ->
