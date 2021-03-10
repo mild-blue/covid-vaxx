@@ -4,7 +4,7 @@
 
 export const environment = {
   production: false,
-  apiUrl: 'https://covid-vaxx.stg.mild.blue/api',
+  apiUrl: 'http://localhost:8080/api',
   recaptchaSiteKey: '6LfyXXgaAAAAADNZwLK3hTMDb49Ol7yO5V-SuxVZ'
 };
 

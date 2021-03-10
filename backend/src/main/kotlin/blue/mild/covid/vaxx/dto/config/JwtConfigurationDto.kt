@@ -4,7 +4,6 @@ data class JwtConfigurationDto(
     val realm: String,
     val issuer: String,
     val audience: String,
-    val registeredUserJwtExpirationInMinutes: Int,
-    val patientUserJwtExpirationInMinutes: Int,
+    val jwtExpirationInMinutes: Long,
     val signingSecret: String
 )

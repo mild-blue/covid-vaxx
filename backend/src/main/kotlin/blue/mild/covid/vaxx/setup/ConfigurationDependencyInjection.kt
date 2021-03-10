@@ -2,13 +2,11 @@ package blue.mild.covid.vaxx.setup
 
 import blue.mild.covid.vaxx.dto.config.CorsConfigurationDto
 import blue.mild.covid.vaxx.dto.config.DatabaseConfigurationDto
-import blue.mild.covid.vaxx.dto.config.EnableMailServiceDto
 import blue.mild.covid.vaxx.dto.config.JwtConfigurationDto
 import blue.mild.covid.vaxx.dto.config.MailJetConfigurationDto
 import blue.mild.covid.vaxx.dto.config.RateLimitConfigurationDto
 import blue.mild.covid.vaxx.dto.config.ReCaptchaVerificationConfigurationDto
-import blue.mild.covid.vaxx.dto.config.StaticContentConfigurationDto
-import blue.mild.covid.vaxx.dto.response.VersionDtoOut
+import blue.mild.covid.vaxx.dto.response.ApplicationInformationDto
 import blue.mild.covid.vaxx.utils.createLogger
 import org.kodein.di.DI
 import org.kodein.di.bind
@@ -36,8 +34,8 @@ fun DI.MainBuilder.bindConfiguration() {
         )
     }
 
-    bind<EnableMailServiceDto>() with singleton {
-        EnableMailServiceDto(getEnvOrLogDefault(EnvVariables.ENABLE_MAIL_SERVICE, "false").toBoolean())
+    bind<Boolean>(EnvVariables.ENABLE_MAIL_SERVICE) with singleton {
+        getEnvOrLogDefault(EnvVariables.ENABLE_MAIL_SERVICE, "false").toBoolean()
     }
 
     bind<MailJetConfigurationDto>() with singleton {
@@ -49,10 +47,10 @@ fun DI.MainBuilder.bindConfiguration() {
         )
     }
 
-    bind<VersionDtoOut>() with singleton { VersionDtoOut(loadVersion()) }
+    bind<ApplicationInformationDto>() with singleton { ApplicationInformationDto(loadVersion()) }
 
-    bind<StaticContentConfigurationDto>() with singleton {
-        StaticContentConfigurationDto(getEnvOrLogDefault(EnvVariables.FRONTEND_PATH, "../frontend/dist/frontend"))
+    bind<String>(EnvVariables.FRONTEND_PATH) with singleton {
+        getEnvOrLogDefault(EnvVariables.FRONTEND_PATH, "../frontend/dist/frontend")
     }
 
     bind<JwtConfigurationDto>() with singleton {
@@ -60,10 +58,9 @@ fun DI.MainBuilder.bindConfiguration() {
             realm = "Mild Blue Covid Vaxx",
             issuer = "vaccination.mild.blue",
             audience = "default",
-            registeredUserJwtExpirationInMinutes =
-            getEnvOrLogDefault(EnvVariables.JWT_EXPIRATION_REGISTERED_USER_MINUTES, "${60 * 24 * 5}").toInt(),
-            patientUserJwtExpirationInMinutes =
-            getEnvOrLogDefault(EnvVariables.JWT_EXPIRATION_PATIENT_MINUTES, "30").toInt(),
+            jwtExpirationInMinutes =
+            // 5 days by default
+            getEnvOrLogDefault(EnvVariables.JWT_EXPIRATION_IN_MINUTES, "${60 * 24 * 5}").toLong(),
             signingSecret =
             getEnvOrLogDefault(EnvVariables.JWT_SIGNING_SECRET, UUID.randomUUID().toString())
         )

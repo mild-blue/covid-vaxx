@@ -2,7 +2,7 @@ package blue.mild.covid.vaxx.service
 
 import blue.mild.covid.vaxx.dto.config.ReCaptchaVerificationConfigurationDto
 import blue.mild.covid.vaxx.security.auth.CaptchaFailedException
-import blue.mild.covid.vaxx.security.auth.PatientPrincipal
+import blue.mild.covid.vaxx.security.auth.UserPrincipal
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties
 import com.fasterxml.jackson.annotation.JsonProperty
 import io.ktor.client.HttpClient
@@ -19,7 +19,7 @@ class CaptchaVerificationService(
     private companion object : KLogging()
 
     /**
-     * Verify [token] from Google captcha, if the token is valid, returns [PatientPrincipal].
+     * Verify [token] from Google captcha, if the token is valid, returns [UserPrincipal].
      * Otherwise throws Ca
      */
     suspend fun verify(token: String, host: String? = null) {

@@ -5,7 +5,6 @@ import blue.mild.covid.vaxx.dto.config.CorsConfigurationDto
 import blue.mild.covid.vaxx.dto.config.DatabaseConfigurationDto
 import blue.mild.covid.vaxx.dto.config.JwtConfigurationDto
 import blue.mild.covid.vaxx.dto.config.RateLimitConfigurationDto
-import blue.mild.covid.vaxx.dto.config.StaticContentConfigurationDto
 import blue.mild.covid.vaxx.error.installExceptionHandling
 import blue.mild.covid.vaxx.extensions.determineRealIp
 import blue.mild.covid.vaxx.monitoring.CALL_ID
@@ -78,11 +77,11 @@ fun Application.init() {
     // configure Ktor
     installFrameworks()
     // configure static routes to serve frontend
-    val staticContent by di().instance<StaticContentConfigurationDto>()
+    val staticContentPath by di().instance<String>(EnvVariables.FRONTEND_PATH)
     routing {
         static {
-            files(staticContent.path)
-            default("${staticContent.path}/index.html")
+            files(staticContentPath)
+            default("${staticContentPath}/index.html")
         }
     }
     // register routing with swagger

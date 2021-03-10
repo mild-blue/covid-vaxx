@@ -1,6 +1,5 @@
 package blue.mild.covid.vaxx.setup
 
-import blue.mild.covid.vaxx.dto.config.EnableMailServiceDto
 import blue.mild.covid.vaxx.dto.config.MailJetConfigurationDto
 import blue.mild.covid.vaxx.service.CaptchaVerificationService
 import blue.mild.covid.vaxx.service.DummyMailService
@@ -14,7 +13,6 @@ import blue.mild.covid.vaxx.service.UserService
 import blue.mild.covid.vaxx.service.ValidationService
 import com.mailjet.client.ClientOptions
 import com.mailjet.client.MailjetClient
-import freemarker.template.Configuration
 import io.ktor.client.HttpClient
 import org.kodein.di.DI
 import org.kodein.di.bind
@@ -23,6 +21,7 @@ import org.kodein.di.singleton
 import pw.forst.tools.katlib.InstantTimeProvider
 import pw.forst.tools.katlib.TimeProvider
 import java.time.Instant
+import freemarker.template.Configuration as FreemakerConfiguration
 
 fun DI.MainBuilder.registerClasses() {
     bind<EntityIdProvider>() with singleton { EntityIdProvider() }
@@ -44,14 +43,14 @@ fun DI.MainBuilder.registerClasses() {
     }
     bind<DummyMailService>() with singleton { DummyMailService() }
 
-    bind<Configuration>() with singleton {
-        Configuration().apply {
+    bind<FreemakerConfiguration>() with singleton {
+        FreemakerConfiguration().apply {
             setClassForTemplateLoading(MailJetEmailService::class.java, "/templates")
         }
     }
 
     bind<MailService>() with singleton {
-        if (instance<EnableMailServiceDto>().enable) {
+        if (instance(EnvVariables.ENABLE_MAIL_SERVICE)) {
             instance<MailJetEmailService>()
         } else {
             instance<DummyMailService>()
