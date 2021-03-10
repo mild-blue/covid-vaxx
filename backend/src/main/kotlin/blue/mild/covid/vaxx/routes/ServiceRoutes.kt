@@ -4,11 +4,14 @@ import blue.mild.covid.vaxx.dao.DatabaseSetup
 import blue.mild.covid.vaxx.dto.response.ApplicationInformationDto
 import blue.mild.covid.vaxx.dto.response.ServiceHealthDtoOut
 import blue.mild.covid.vaxx.extensions.di
+import blue.mild.covid.vaxx.extensions.request
 import com.papsign.ktor.openapigen.route.info
 import com.papsign.ktor.openapigen.route.path.normal.NormalOpenAPIRoute
 import com.papsign.ktor.openapigen.route.path.normal.get
 import com.papsign.ktor.openapigen.route.response.respond
 import com.papsign.ktor.openapigen.route.route
+import io.ktor.http.HttpStatusCode
+import io.ktor.response.respond
 import org.kodein.di.instance
 
 /**
@@ -30,9 +33,7 @@ fun NormalOpenAPIRoute.serviceRoutes() {
         if (DatabaseSetup.isConnected()) {
             respond(ServiceHealthDtoOut("healthy"))
         } else {
-            // TODO solve how to use different response code
-            // https://github.com/papsign/Ktor-OpenAPI-Generator/wiki/A-few-examples
-            respond(ServiceHealthDtoOut("DB connection is not working"))
+            request.call.respond(HttpStatusCode.ServiceUnavailable, ServiceHealthDtoOut("DB connection is not working"))
         }
     }
 }
