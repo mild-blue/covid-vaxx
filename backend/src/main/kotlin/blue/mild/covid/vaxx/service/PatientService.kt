@@ -97,6 +97,7 @@ class PatientService(
             personalNumber = changeSet.personalNumber?.let { normalizePersonalNumber(it) },
             email = changeSet.email?.trim(),
             insuranceCompany = changeSet.insuranceCompany,
+            vaccinatedOn = changeSet.vaccinatedOn,
             answers = changeSet.answers?.associate { it.questionId to it.value }
         )
 
