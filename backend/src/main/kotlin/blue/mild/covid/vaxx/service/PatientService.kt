@@ -13,6 +13,7 @@ import org.jetbrains.exposed.sql.Op
 import org.jetbrains.exposed.sql.and
 import org.jetbrains.exposed.sql.transactions.experimental.newSuspendedTransaction
 import pw.forst.tools.katlib.applyIf
+import pw.forst.tools.katlib.whenFalse
 import java.util.UUID
 
 class PatientService(
@@ -99,7 +100,7 @@ class PatientService(
             insuranceCompany = changeSet.insuranceCompany,
             vaccinatedOn = changeSet.vaccinatedOn,
             answers = changeSet.answers?.associate { it.questionId to it.value }
-        )
+        ).whenFalse { throw entityNotFound<Patient>(Patient::id, patientId) }
 
     /**
      * Saves patient to the database.
