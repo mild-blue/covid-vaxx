@@ -12,8 +12,6 @@ import com.papsign.ktor.openapigen.route.route
  * Routes related to insurance company entity.
  */
 fun NormalOpenAPIRoute.insuranceCompanyRoutes() {
-    // TODO consider putting this behind auth
-    // TODO #70 once ready, put behind captcha auth
     route(Routes.insuranceCompany) {
         get<Unit, List<InsuranceCompanyDetailsDtoOut>>(
             info("Returns list of all available insurance companies.")

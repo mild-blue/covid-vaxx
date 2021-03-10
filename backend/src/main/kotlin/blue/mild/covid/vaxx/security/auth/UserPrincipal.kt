@@ -5,23 +5,9 @@ import io.ktor.auth.Principal
 import java.util.UUID
 
 /**
- * Principal for the user.
- */
-sealed class UserPrincipal : Principal
-
-/**
- * Represents user that passed Captcha but is not registered.
- */
-object PatientPrincipal : UserPrincipal() {
-    override fun toString() = "PatientPrincipal"
-}
-
-/**
  * Registered user.
  */
-data class RegisteredUserPrincipal(
+data class UserPrincipal(
     val userId: UUID,
     val userRole: UserRole
-) : UserPrincipal() {
-    override fun toString() = "RegisteredUserPrincipal - userId: $userId"
-}
+) : Principal

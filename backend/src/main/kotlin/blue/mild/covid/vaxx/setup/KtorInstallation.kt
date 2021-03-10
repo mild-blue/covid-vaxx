@@ -5,8 +5,6 @@ import blue.mild.covid.vaxx.dto.config.CorsConfigurationDto
 import blue.mild.covid.vaxx.dto.config.DatabaseConfigurationDto
 import blue.mild.covid.vaxx.dto.config.JwtConfigurationDto
 import blue.mild.covid.vaxx.dto.config.RateLimitConfigurationDto
-import blue.mild.covid.vaxx.dto.config.StaticContentConfigurationDto
-import blue.mild.covid.vaxx.dto.config.SwaggerConfigurationDto
 import blue.mild.covid.vaxx.error.installExceptionHandling
 import blue.mild.covid.vaxx.extensions.determineRealIp
 import blue.mild.covid.vaxx.monitoring.CALL_ID
@@ -56,7 +54,6 @@ import org.kodein.di.instance
 import org.kodein.di.ktor.di
 import org.slf4j.event.Level
 import java.util.UUID
-import kotlin.random.Random
 import kotlin.reflect.KType
 
 
@@ -79,11 +76,11 @@ fun Application.init() {
     // configure Ktor
     installFrameworks()
     // configure static routes to serve frontend
-    val staticContent by di().instance<StaticContentConfigurationDto>()
+    val staticContentPath by di().instance<String>(EnvVariables.FRONTEND_PATH)
     routing {
         static {
-            files(staticContent.path)
-            default("${staticContent.path}/index.html")
+            files(staticContentPath)
+            default("${staticContentPath}/index.html")
         }
     }
     // register routing with swagger
@@ -177,7 +174,7 @@ private fun Application.installAuthentication() {
 
 // Install swagger features.
 private fun Application.installSwagger() {
-    val config by di().instance<SwaggerConfigurationDto>()
+    val enableSwagger by di().instance<Boolean>(EnvVariables.ENABLE_SWAGGER)
 
     // install swagger
     install(OpenAPIGen) {
@@ -185,7 +182,7 @@ private fun Application.installSwagger() {
             version = "0.0.1"
             title = "Mild Blue - Covid Vaxx"
             description = "Covid Vaxx API"
-            serveSwaggerUi = config.enableSwagger
+            serveSwaggerUi = enableSwagger
             contact {
                 name = "Mild Blue s.r.o."
                 email = "covid-vaxx@mild.blue"
@@ -201,7 +198,7 @@ private fun Application.installSwagger() {
 
     }
     // install swagger routes
-    if (config.enableSwagger) {
+    if (enableSwagger) {
         routing {
             // register swagger routes
             get(Routes.openApiJson) {
@@ -236,24 +233,21 @@ private fun Application.installMonitoring() {
     // MDC call id setup
     install(CallId) {
         retrieveFromHeader("X-Request-Id")
-        generate {
-            // this is not "secure" as Random does not have necessary entropy (we don't need that here)
-            // but it's way faster, see https://stackoverflow.com/a/14534126/7169288
-            UUID(Random.nextLong(), Random.nextLong()).toString()
-        }
+        generate { UUID.randomUUID().toString() }
     }
 }
 
 // Install rate limiting to prevent DDoS.
 private fun Application.installRateLimiting() {
     val configuration by di().instance<RateLimitConfigurationDto>()
-    install(RateLimiting) {
-        limit = configuration.rateLimit
-        resetTime = configuration.rateLimitDuration
-        keyExtraction = { call.request.determineRealIp() }
-        requestExclusion = {
-            it.httpMethod == HttpMethod.Options || it.uri.endsWith(Routes.status)
+    if (configuration.enableRateLimiting) {
+        install(RateLimiting) {
+            limit = configuration.rateLimit
+            resetTime = configuration.rateLimitDuration
+            keyExtraction = { call.request.determineRealIp() }
+            requestExclusion = {
+                it.httpMethod == HttpMethod.Options || it.uri.endsWith(Routes.status)
+            }
         }
-
     }
 }

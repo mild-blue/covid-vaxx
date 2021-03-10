@@ -20,10 +20,9 @@ class RoleBasedAuthorization {
     /**
      * Request call pipeline interception that injects role based authorization.
      * If [anyOf] is not empty, the intercept requires for at least one of the roles
-     * to be present in the [RegisteredUserPrincipal].
+     * to be present in the [UserPrincipal].
      *
      * However, if [anyOf] is empty, the interceptor still requires at least any principals to be present.
-     * Thus, all instances of [UserPrincipal] are allowed.
      */
     fun interceptPipeline(
         pipeline: ApplicationCallPipeline,
@@ -33,18 +32,11 @@ class RoleBasedAuthorization {
         insertPhaseAfter(ApplicationCallPipeline.Features, Authentication.ChallengePhase)
         insertPhaseAfter(Authentication.ChallengePhase, interceptPhase)
         intercept(interceptPhase) {
-            when (val principal = call.authentication.principal<UserPrincipal>()) {
-                is PatientPrincipal -> {
-                    if (anyOf.isNotEmpty()) {
-                        throw InsufficientRightsException("You must be registered user to perform this action.")
-                    }
-                }
-                is RegisteredUserPrincipal -> {
-                    if (anyOf.isNotEmpty() && principal.userRole !in anyOf) {
-                        throw InsufficientRightsException("This action requires to be one of ${anyOf.joinToString(", ")}.")
-                    }
-                }
-                null -> throw GenericAuthException("Missing principal!")
+            val principal = call.authentication.principal<UserPrincipal>()
+                ?: throw GenericAuthException("Missing principal!")
+
+            if (anyOf.isNotEmpty() && principal.userRole !in anyOf) {
+                throw InsufficientRightsException("This action requires to be one of ${anyOf.joinToString(", ")}.")
             }
         }
     }

@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import { environment } from '@environments/environment';
 import { first, map } from 'rxjs/operators';
-import { HttpClient, HttpParams } from '@angular/common/http';
+import { HttpClient, HttpHeaders, HttpParams } from '@angular/common/http';
 import { Patient } from '@app/model/Patient';
 import { parsePatient } from '@app/parsers/patient.parser';
 import { QuestionService } from '@app/services/question/question.service';
@@ -20,7 +20,10 @@ export class PatientService {
               private _questionService: QuestionService) {
   }
 
-  public async savePatientInfo(patientInfo: PatientData, questions: Question[], agreement: boolean, confirmation: boolean, gdpr: boolean): Promise<PatientRegisteredDtoOut> {
+  public async savePatientInfo(token: string, patientInfo: PatientData, questions: Question[], agreement: boolean, confirmation: boolean, gdpr: boolean): Promise<PatientRegisteredDtoOut> {
+    const headers = new HttpHeaders({
+      recaptchaToken: token
+    });
     const registration: PatientRegistrationDtoIn = {
       ...patientInfo,
       insuranceCompany: fromInsuranceToInsuranceGenerated(patientInfo.insuranceCompany),
@@ -34,7 +37,8 @@ export class PatientService {
 
     return this._http.post<PatientRegisteredDtoOut>(
       `${environment.apiUrl}/patient`,
-      registration
+      registration,
+      { headers }
     ).pipe(
       first()
     ).toPromise();

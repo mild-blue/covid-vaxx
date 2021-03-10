@@ -12,6 +12,7 @@ import { parseAnswerFromQuestion } from '@app/parsers/answer.parser';
 import { Question } from '@app/model/Question';
 import { Subscription } from 'rxjs';
 import { parseInsuranceCompany } from '@app/parsers/insurance.parser';
+import { ReCaptchaV3Service } from 'ng-recaptcha';
 
 @Component({
   selector: 'app-home',
@@ -36,6 +37,7 @@ export class HomeComponent implements OnInit, OnDestroy {
               private _formBuilder: FormBuilder,
               private _questionService: QuestionService,
               private _patientService: PatientService,
+              private _recaptchaV3Service: ReCaptchaV3Service,
               private _alertService: AlertService) {
     const personalNumber = this._route.snapshot.paramMap.get('personalNumber');
     if (personalNumber) {
@@ -100,7 +102,9 @@ export class HomeComponent implements OnInit, OnDestroy {
     }
 
     try {
+      const token = await this._recaptchaV3Service.execute('patientRegistration').toPromise();
       const result = await this._patientService.savePatientInfo(
+        token,
         this.getPatientData(),
         this.questions,
         this.agreementCheckboxValue,

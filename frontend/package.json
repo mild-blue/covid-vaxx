@@ -26,6 +26,7 @@
     "@angular/router": "~11.2.3",
     "@types/jwt-decode": "^2.2.1",
     "jwt-decode": "^2.2.0",
+    "ng-recaptcha": "^7.0.1",
     "rxjs": "~6.6.6",
     "tslib": "^2.1.0",
     "zone.js": "~0.11.4"

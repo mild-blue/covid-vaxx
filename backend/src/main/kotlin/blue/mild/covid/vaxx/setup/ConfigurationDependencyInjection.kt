@@ -2,13 +2,11 @@ package blue.mild.covid.vaxx.setup
 
 import blue.mild.covid.vaxx.dto.config.CorsConfigurationDto
 import blue.mild.covid.vaxx.dto.config.DatabaseConfigurationDto
-import blue.mild.covid.vaxx.dto.config.EnableMailServiceDto
 import blue.mild.covid.vaxx.dto.config.JwtConfigurationDto
 import blue.mild.covid.vaxx.dto.config.MailJetConfigurationDto
 import blue.mild.covid.vaxx.dto.config.RateLimitConfigurationDto
-import blue.mild.covid.vaxx.dto.config.StaticContentConfigurationDto
-import blue.mild.covid.vaxx.dto.config.SwaggerConfigurationDto
-import blue.mild.covid.vaxx.dto.response.VersionDtoOut
+import blue.mild.covid.vaxx.dto.config.ReCaptchaVerificationConfigurationDto
+import blue.mild.covid.vaxx.dto.response.ApplicationInformationDto
 import blue.mild.covid.vaxx.utils.createLogger
 import org.kodein.di.DI
 import org.kodein.di.bind
@@ -36,8 +34,8 @@ fun DI.MainBuilder.bindConfiguration() {
         )
     }
 
-    bind<EnableMailServiceDto>() with singleton {
-        EnableMailServiceDto(getEnvOrLogDefault(EnvVariables.ENABLE_MAIL_SERVICE, "false").toBoolean())
+    bind<Boolean>(EnvVariables.ENABLE_MAIL_SERVICE) with singleton {
+        getEnvOrLogDefault(EnvVariables.ENABLE_MAIL_SERVICE, "false").toBoolean()
     }
 
     bind<MailJetConfigurationDto>() with singleton {
@@ -49,10 +47,10 @@ fun DI.MainBuilder.bindConfiguration() {
         )
     }
 
-    bind<VersionDtoOut>() with singleton { VersionDtoOut(loadVersion()) }
+    bind<ApplicationInformationDto>() with singleton { ApplicationInformationDto(loadVersion()) }
 
-    bind<StaticContentConfigurationDto>() with singleton {
-        StaticContentConfigurationDto(getEnvOrLogDefault(EnvVariables.FRONTEND_PATH, "../frontend/dist/frontend"))
+    bind<String>(EnvVariables.FRONTEND_PATH) with singleton {
+        getEnvOrLogDefault(EnvVariables.FRONTEND_PATH, "../frontend/dist/frontend")
     }
 
     bind<JwtConfigurationDto>() with singleton {
@@ -60,10 +58,9 @@ fun DI.MainBuilder.bindConfiguration() {
             realm = "Mild Blue Covid Vaxx",
             issuer = "vaccination.mild.blue",
             audience = "default",
-            registeredUserJwtExpirationInMinutes =
-            getEnvOrLogDefault(EnvVariables.JWT_EXPIRATION_REGISTERED_USER_MINUTES, "${60 * 24 * 5}").toInt(),
-            patientUserJwtExpirationInMinutes =
-            getEnvOrLogDefault(EnvVariables.JWT_EXPIRATION_PATIENT_MINUTES, "30").toInt(),
+            jwtExpirationInMinutes =
+            // 5 days by default
+            getEnvOrLogDefault(EnvVariables.JWT_EXPIRATION_IN_MINUTES, "${60 * 24 * 5}").toLong(),
             signingSecret =
             getEnvOrLogDefault(EnvVariables.JWT_SIGNING_SECRET, UUID.randomUUID().toString())
         )
@@ -71,16 +68,15 @@ fun DI.MainBuilder.bindConfiguration() {
 
     bind<RateLimitConfigurationDto>() with singleton {
         RateLimitConfigurationDto(
-            rateLimit =
-            getEnvOrLogDefault(EnvVariables.RATE_LIMIT, "100").toLong(),
-            rateLimitDuration =
-            getEnvOrLogDefault(EnvVariables.RATE_LIMIT_DURATION_MINUTES, "60")
+            enableRateLimiting = getEnvOrLogDefault(EnvVariables.ENABLE_RATE_LIMITING, "true").toBoolean(),
+            rateLimit = getEnvOrLogDefault(EnvVariables.RATE_LIMIT, "100").toLong(),
+            rateLimitDuration = getEnvOrLogDefault(EnvVariables.RATE_LIMIT_DURATION_MINUTES, "60")
                 .let { Duration.ofMinutes(it.toLong()) }
         )
     }
 
-    bind<SwaggerConfigurationDto>() with singleton {
-        SwaggerConfigurationDto(getEnvOrLogDefault(EnvVariables.ENABLE_SWAGGER, "true").toBoolean())
+    bind<Boolean>(EnvVariables.ENABLE_SWAGGER) with singleton {
+        getEnvOrLogDefault(EnvVariables.ENABLE_SWAGGER, "true").toBoolean()
     }
 
     bind<CorsConfigurationDto>() with singleton {
@@ -90,6 +86,17 @@ fun DI.MainBuilder.bindConfiguration() {
 
         val enableCors = getEnvOrLogDefault(EnvVariables.ENABLE_CORS, "${hosts.isNotEmpty()}").toBoolean()
         CorsConfigurationDto(enableCors, hosts)
+    }
+
+    bind<Boolean>(EnvVariables.ENABLE_RECAPTCHA_VERIFICATION) with singleton {
+        getEnvOrLogDefault(EnvVariables.ENABLE_RECAPTCHA_VERIFICATION, "false").toBoolean()
+    }
+
+    bind<ReCaptchaVerificationConfigurationDto>() with singleton {
+        ReCaptchaVerificationConfigurationDto(
+            secretKey = requireEnv(EnvVariables.RECAPTCHA_SECRET_KEY),
+            googleUrl = "https://www.google.com/recaptcha/api/siteverify"
+        )
     }
 }
 

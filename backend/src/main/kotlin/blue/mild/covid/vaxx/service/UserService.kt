@@ -5,7 +5,7 @@ import blue.mild.covid.vaxx.dto.request.LoginDtoIn
 import blue.mild.covid.vaxx.dto.request.UserRegistrationDtoIn
 import blue.mild.covid.vaxx.dto.response.UserRegisteredDtoOut
 import blue.mild.covid.vaxx.security.auth.CredentialsMismatchException
-import blue.mild.covid.vaxx.security.auth.RegisteredUserPrincipal
+import blue.mild.covid.vaxx.security.auth.UserPrincipal
 import org.jetbrains.exposed.sql.insert
 import org.jetbrains.exposed.sql.select
 import org.jetbrains.exposed.sql.transactions.experimental.newSuspendedTransaction
@@ -22,9 +22,12 @@ class UserService(
             .select { User.username eq login.username }
             .singleOrNull() ?: throw CredentialsMismatchException()
 
-        val authorized = passwordHashProvider.verifyPassword(password = login.password, passwordHash = userRow[User.passwordHash])
+        val authorized = passwordHashProvider.verifyPassword(
+            password = login.password,
+            passwordHash = userRow[User.passwordHash]
+        )
         if (authorized) {
-            RegisteredUserPrincipal(
+            UserPrincipal(
                 userId = userRow[User.id].toUuid(),
                 userRole = userRow[User.role]
             )

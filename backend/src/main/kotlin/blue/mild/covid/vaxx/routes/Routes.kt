@@ -13,8 +13,8 @@ object Routes {
     val statusHealth = apiName("status/health")
 
     val registeredUserLogin = apiName("login")
-    val registrationCaptcha = apiName("captcha")
     val userRegistration = apiName("register")
+    val userLoginVerification = apiName("user/self")
 
     const val openApiJson = "/openapi.json"
     const val swaggerUi = "/swagger-ui"
