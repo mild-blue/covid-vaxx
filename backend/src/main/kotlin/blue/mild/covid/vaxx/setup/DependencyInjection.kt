@@ -1,5 +1,7 @@
 package blue.mild.covid.vaxx.setup
 
+import blue.mild.covid.vaxx.dao.repository.PatientRepository
+import blue.mild.covid.vaxx.dao.repository.UserRepository
 import blue.mild.covid.vaxx.dto.config.MailJetConfigurationDto
 import blue.mild.covid.vaxx.service.CaptchaVerificationService
 import blue.mild.covid.vaxx.service.DummyMailService
@@ -11,9 +13,13 @@ import blue.mild.covid.vaxx.service.PatientService
 import blue.mild.covid.vaxx.service.QuestionService
 import blue.mild.covid.vaxx.service.UserService
 import blue.mild.covid.vaxx.service.ValidationService
+import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule
 import com.mailjet.client.ClientOptions
 import com.mailjet.client.MailjetClient
 import io.ktor.client.HttpClient
+import io.ktor.client.engine.apache.Apache
+import io.ktor.client.features.json.JacksonSerializer
+import io.ktor.client.features.json.JsonFeature
 import org.kodein.di.DI
 import org.kodein.di.bind
 import org.kodein.di.instance
@@ -24,12 +30,15 @@ import java.time.Instant
 import freemarker.template.Configuration as FreemakerConfiguration
 
 fun DI.MainBuilder.registerClasses() {
+    bind<PatientRepository>() with singleton { PatientRepository(instance()) }
+    bind<UserRepository>() with singleton { UserRepository() }
+
     bind<EntityIdProvider>() with singleton { EntityIdProvider() }
     bind<PasswordHashProvider>() with singleton { PasswordHashProvider() }
     bind<QuestionService>() with singleton { QuestionService() }
     bind<ValidationService>() with singleton { ValidationService(instance()) }
     bind<PatientService>() with singleton { PatientService(instance(), instance(), instance()) }
-    bind<UserService>() with singleton { UserService(instance(), instance()) }
+    bind<UserService>() with singleton { UserService(instance(), instance(), instance()) }
     bind<MailJetEmailService>() with singleton { MailJetEmailService(instance(), instance(), instance(), instance()) }
     bind<TimeProvider<Instant>>() with singleton { InstantTimeProvider }
 
@@ -58,7 +67,11 @@ fun DI.MainBuilder.registerClasses() {
     }
 
     bind<HttpClient>() with singleton {
-        createHttpClient()
+        HttpClient(Apache) {
+            install(JsonFeature) {
+                serializer = JacksonSerializer { registerModule(JavaTimeModule()) }
+            }
+        }
     }
 
     bind<CaptchaVerificationService>() with singleton { CaptchaVerificationService(instance(), instance()) }

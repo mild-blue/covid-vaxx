@@ -1,6 +1,6 @@
 package blue.mild.covid.vaxx.routes
 
-import blue.mild.covid.vaxx.dao.InsuranceCompany
+import blue.mild.covid.vaxx.dao.model.InsuranceCompany
 import blue.mild.covid.vaxx.dto.response.InsuranceCompanyDetailsDtoOut
 import com.papsign.ktor.openapigen.route.info
 import com.papsign.ktor.openapigen.route.path.normal.NormalOpenAPIRoute

@@ -1,6 +1,6 @@
 package blue.mild.covid.vaxx.dto.response
 
-import blue.mild.covid.vaxx.dao.InsuranceCompany
+import blue.mild.covid.vaxx.dao.model.InsuranceCompany
 import com.fasterxml.jackson.annotation.JsonIgnore
 
 data class InsuranceCompanyDetailsDtoOut(

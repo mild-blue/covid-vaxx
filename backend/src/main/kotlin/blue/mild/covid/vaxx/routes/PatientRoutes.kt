@@ -1,18 +1,20 @@
 package blue.mild.covid.vaxx.routes
 
-import blue.mild.covid.vaxx.dao.UserRole
+import blue.mild.covid.vaxx.dao.model.InsuranceCompany
+import blue.mild.covid.vaxx.dao.model.UserRole
 import blue.mild.covid.vaxx.dto.PatientEmailRequestDto
 import blue.mild.covid.vaxx.dto.PatientRegistrationDto
 import blue.mild.covid.vaxx.dto.request.CaptchaVerificationDtoIn
+import blue.mild.covid.vaxx.dto.request.MultiplePatientsQueryDtoOut
+import blue.mild.covid.vaxx.dto.request.PatientByPersonalNumberQueryDtoIn
 import blue.mild.covid.vaxx.dto.request.PatientIdDtoIn
-import blue.mild.covid.vaxx.dto.request.PatientQueryDtoIn
 import blue.mild.covid.vaxx.dto.request.PatientRegistrationDtoIn
-import blue.mild.covid.vaxx.dto.response.PatientDeletedDtoOut
+import blue.mild.covid.vaxx.dto.request.PatientUpdateDtoIn
 import blue.mild.covid.vaxx.dto.response.PatientDtoOut
-import blue.mild.covid.vaxx.dto.response.PatientRegisteredDtoOut
 import blue.mild.covid.vaxx.extensions.determineRealIp
 import blue.mild.covid.vaxx.extensions.di
 import blue.mild.covid.vaxx.extensions.request
+import blue.mild.covid.vaxx.extensions.respondWithStatus
 import blue.mild.covid.vaxx.security.auth.UserPrincipal
 import blue.mild.covid.vaxx.security.auth.authorizeRoute
 import blue.mild.covid.vaxx.service.CaptchaVerificationService
@@ -22,12 +24,13 @@ import blue.mild.covid.vaxx.setup.EnvVariables
 import com.papsign.ktor.openapigen.route.info
 import com.papsign.ktor.openapigen.route.path.auth.delete
 import com.papsign.ktor.openapigen.route.path.auth.get
+import com.papsign.ktor.openapigen.route.path.auth.put
 import com.papsign.ktor.openapigen.route.path.normal.NormalOpenAPIRoute
 import com.papsign.ktor.openapigen.route.path.normal.post
 import com.papsign.ktor.openapigen.route.response.respond
 import com.papsign.ktor.openapigen.route.route
+import io.ktor.http.HttpStatusCode
 import org.kodein.di.instance
-import pw.forst.tools.katlib.asList
 
 /**
  * Routes related to patient entity.
@@ -40,7 +43,7 @@ fun NormalOpenAPIRoute.patientRoutes() {
     val enableCaptchaVerification by di().instance<Boolean>(EnvVariables.ENABLE_RECAPTCHA_VERIFICATION)
 
     route(Routes.patient) {
-        post<CaptchaVerificationDtoIn, PatientRegisteredDtoOut, PatientRegistrationDtoIn>(
+        post<CaptchaVerificationDtoIn, Unit, PatientRegistrationDtoIn>(
             info("Save patient registration to the database.")
         ) { (recaptchaToken), patientRegistration ->
             val host = request.determineRealIp()
@@ -57,34 +60,56 @@ fun NormalOpenAPIRoute.patientRoutes() {
                     patientId = patient.patientId
                 )
             )
-            respond(patient)
+            respondWithStatus(HttpStatusCode.OK)
         }
     }
     // admin routes for registered users only
     authorizeRoute(requireOneOf = setOf(UserRole.ADMIN, UserRole.DOCTOR)) {
         route(Routes.patient) {
-            get<PatientIdDtoIn, PatientDtoOut, UserPrincipal>(
-                info("Get user by ID.")
-            ) { (id) ->
-                respond(patientService.getPatientById(id))
-            }
-
-            delete<PatientIdDtoIn, PatientDeletedDtoOut, UserPrincipal>(
-                info("Delete user by ID.")
-            ) { (id) ->
-                respond(patientService.deletePatientById(id))
-            }
-
-            get<PatientQueryDtoIn, List<PatientDtoOut>, UserPrincipal>(
-                info("Search endpoint for user, only single parameter is taken in account.")
-            ) { patientQuery ->
-                val response = when {
-                    patientQuery.id != null -> patientService.getPatientById(patientQuery.id).asList()
-                    patientQuery.personalNumber != null -> patientService.getPatientsByPersonalNumber(patientQuery.personalNumber)
-                    patientQuery.email != null -> patientService.getPatientsByEmail(patientQuery.email)
-                    else -> patientService.getAllPatients()
+            route("single") {
+                get<PatientByPersonalNumberQueryDtoIn, PatientDtoOut, UserPrincipal>(
+                    info("Get patient by personal number.")
+                ) { patientQuery ->
+                    respond(patientService.getPatientsByPersonalNumber(patientQuery.personalNumber))
                 }
-                respond(response)
+
+                get<PatientIdDtoIn, PatientDtoOut, UserPrincipal>(
+                    info("Get user by ID.")
+                ) { (patientId) ->
+                    respond(patientService.getPatientById(patientId))
+                }
+
+                delete<PatientIdDtoIn, Unit, UserPrincipal>(
+                    info("Delete user by ID.")
+                ) { (patientId) ->
+                    patientService.deletePatientById(patientId)
+                    respondWithStatus(HttpStatusCode.OK)
+                }
+
+                put<PatientIdDtoIn, Unit, PatientUpdateDtoIn, UserPrincipal>(
+                    info(
+                        "Updates patient with given change set " +
+                                "- note you should send just the values that changed and not whole entity."
+                    ),
+                    exampleRequest = PatientUpdateDtoIn(email = "john@doe.com", insuranceCompany = InsuranceCompany.ZPMV)
+                ) { (patientId), updateDto ->
+                    patientService.updatePatientWithChangeSet(patientId, updateDto)
+                    respondWithStatus(HttpStatusCode.OK)
+                }
+            }
+
+            route("filter") {
+                get<MultiplePatientsQueryDtoOut, List<PatientDtoOut>, UserPrincipal>(
+                    info("Get patient the parameters. Filters by and clause. Empty parameters return all patients.")
+                ) { patientQuery ->
+                    respond(
+                        patientService.getPatientsByConjunctionOf(
+                            email = patientQuery.email,
+                            phoneNumber = patientQuery.phoneNumber,
+                            vaccinated = patientQuery.vaccinated
+                        )
+                    )
+                }
             }
         }
     }

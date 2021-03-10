@@ -1,13 +1,12 @@
 package blue.mild.covid.vaxx.platform
 
-import blue.mild.covid.vaxx.dao.InsuranceCompany
+import blue.mild.covid.vaxx.dao.model.InsuranceCompany
 import blue.mild.covid.vaxx.dto.AnswerDto
 import blue.mild.covid.vaxx.dto.request.ConfirmationDtoIn
 import blue.mild.covid.vaxx.dto.request.LoginDtoIn
 import blue.mild.covid.vaxx.dto.request.PatientRegistrationDtoIn
-import blue.mild.covid.vaxx.dto.response.BearerTokenDtoOut
-import blue.mild.covid.vaxx.dto.response.PatientRegisteredDtoOut
 import blue.mild.covid.vaxx.dto.response.QuestionDtoOut
+import blue.mild.covid.vaxx.dto.response.UserLoginResponseDtoOut
 import blue.mild.covid.vaxx.routes.Routes
 import com.fasterxml.jackson.databind.JsonNode
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule
@@ -82,7 +81,7 @@ abstract class LoadTest(
         // login
         request = login(credentials)
         require(request.status.isSuccess()) { "Login request was not successful. ${request.status.description}" }
-        val (bearerToken) = request.receive<BearerTokenDtoOut>()
+        val bearerToken = request.receive<UserLoginResponseDtoOut>().token
 
         // get insurance companies
         request = getInsuranceCompanies(bearerToken)
@@ -107,7 +106,6 @@ abstract class LoadTest(
             )
         )
         require(request.status.isSuccess()) { "Patient registration was not successful. ${request.status.description}" }
-        request.receive<PatientRegisteredDtoOut>()
     }
 
     private suspend fun loadClientSource() =

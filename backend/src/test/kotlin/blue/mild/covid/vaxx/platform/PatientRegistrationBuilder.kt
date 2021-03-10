@@ -1,6 +1,6 @@
 package blue.mild.covid.vaxx.platform
 
-import blue.mild.covid.vaxx.dao.InsuranceCompany
+import blue.mild.covid.vaxx.dao.model.InsuranceCompany
 import blue.mild.covid.vaxx.dto.AnswerDto
 import blue.mild.covid.vaxx.dto.request.ConfirmationDtoIn
 import blue.mild.covid.vaxx.dto.request.PatientRegistrationDtoIn

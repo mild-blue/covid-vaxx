@@ -1,6 +1,6 @@
 package blue.mild.covid.vaxx.setup
 
-import blue.mild.covid.vaxx.dao.DatabaseSetup
+import blue.mild.covid.vaxx.dao.model.DatabaseSetup
 import blue.mild.covid.vaxx.dto.config.CorsConfigurationDto
 import blue.mild.covid.vaxx.dto.config.DatabaseConfigurationDto
 import blue.mild.covid.vaxx.dto.config.JwtConfigurationDto

@@ -1,12 +1,11 @@
 package blue.mild.covid.vaxx.service
 
-import blue.mild.covid.vaxx.dao.Patient
+import blue.mild.covid.vaxx.dao.model.Patient
 import blue.mild.covid.vaxx.dto.PatientEmailRequestDto
 import blue.mild.covid.vaxx.dto.config.MailJetConfigurationDto
 import com.mailjet.client.MailjetClient
 import com.mailjet.client.MailjetRequest
 import com.mailjet.client.resource.Emailv31
-import freemarker.template.Configuration
 import io.ktor.http.HttpStatusCode
 import mu.KLogging
 import org.jetbrains.exposed.sql.transactions.transaction
@@ -16,25 +15,29 @@ import org.json.JSONObject
 import pw.forst.tools.katlib.TimeProvider
 import java.io.StringWriter
 import java.time.Instant
+import freemarker.template.Configuration as FreemarkerConfiguration
 
 
 class MailJetEmailService(
-    private val freemarkerConfiguration: Configuration,
+    private val freemarkerConfiguration: FreemarkerConfiguration,
     private val mailJetConfig: MailJetConfigurationDto,
     private val client: MailjetClient,
     private val nowProvider: TimeProvider<Instant>
 ) : MailService, DispatchService<PatientEmailRequestDto>(1) {
-    // TODO consider populating channel with unsent emails during the init
 
     private companion object : KLogging() {
         val SUCCESS = HttpStatusCode.OK.value
     }
 
     init {
+        // TODO consider populating channel with unsent emails during the init
         // eager initialize during the construction
         initialize()
     }
 
+    /**
+     * Send email using MailJet service.
+     */
     override suspend fun sendEmail(patientRegistrationDto: PatientEmailRequestDto) {
         insertToChannel(patientRegistrationDto)
     }
@@ -57,7 +60,7 @@ class MailJetEmailService(
             // we want to keep this transaction on this thread, so we don't suspend it
             transaction {
                 Patient.update({ Patient.id eq emailRequest.patientId.toString() }) {
-                    it[emailSentDate] = nowProvider.now()
+                    it[registrationEmailSent] = nowProvider.now()
                 }
             }
         }

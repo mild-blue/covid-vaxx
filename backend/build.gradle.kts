@@ -20,7 +20,7 @@ application {
 repositories {
     jcenter()
     maven {
-        // for swagger and rate limiting
+        // for swagger
         url = URI.create("https://jitpack.io")
     }
 }

@@ -1,6 +1,6 @@
 package blue.mild.covid.vaxx.routes
 
-import blue.mild.covid.vaxx.dao.DatabaseSetup
+import blue.mild.covid.vaxx.dao.model.DatabaseSetup
 import blue.mild.covid.vaxx.dto.response.ApplicationInformationDto
 import blue.mild.covid.vaxx.dto.response.ServiceHealthDtoOut
 import blue.mild.covid.vaxx.extensions.di

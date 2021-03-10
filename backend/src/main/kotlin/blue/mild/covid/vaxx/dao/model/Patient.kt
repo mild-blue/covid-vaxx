@@ -1,4 +1,4 @@
-package blue.mild.covid.vaxx.dao
+package blue.mild.covid.vaxx.dao.model
 
 import org.jetbrains.exposed.sql.Table
 import org.jetbrains.exposed.sql.`java-time`.timestamp
@@ -15,7 +15,8 @@ object Patient : Table("patients") {
     val email = varchar("email", 256)
     val insuranceCompany = enumerationByName("insurance_company", 4, InsuranceCompany::class)
     val remoteHost = varchar("remote_host", 45) // for size see https://stackoverflow.com/a/166157/7169288
-    val emailSentDate = timestamp("email_sent_date").nullable()
+    val registrationEmailSent = timestamp("email_sent_date").nullable()
+    val vaccinatedOn = timestamp("vaccinated_on_date").nullable()
 
     override val primaryKey = PrimaryKey(id)
 }

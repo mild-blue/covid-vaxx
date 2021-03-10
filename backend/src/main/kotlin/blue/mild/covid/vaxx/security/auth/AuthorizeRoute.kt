@@ -1,6 +1,6 @@
 package blue.mild.covid.vaxx.security.auth
 
-import blue.mild.covid.vaxx.dao.UserRole
+import blue.mild.covid.vaxx.dao.model.UserRole
 import blue.mild.covid.vaxx.extensions.di
 import com.papsign.ktor.openapigen.route.path.auth.OpenAPIAuthenticatedRoute
 import com.papsign.ktor.openapigen.route.path.normal.NormalOpenAPIRoute
