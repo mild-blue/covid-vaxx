@@ -2,7 +2,7 @@ package blue.mild.covid.vaxx.security.auth
 
 import blue.mild.covid.vaxx.dao.UserRole
 import blue.mild.covid.vaxx.dto.config.JwtConfigurationDto
-import blue.mild.covid.vaxx.dto.response.BearerTokenDtoOut
+import blue.mild.covid.vaxx.dto.response.UserLoginResponseDtoOut
 import com.auth0.jwt.JWT
 import com.auth0.jwt.JWTVerifier
 import com.auth0.jwt.algorithms.Algorithm
@@ -35,7 +35,7 @@ class JwtService(
     /**
      * Generate and sign JWT for given principal.¬
      */
-    fun generateToken(principal: UserPrincipal): BearerTokenDtoOut =
+    fun generateToken(principal: UserPrincipal): UserLoginResponseDtoOut =
         JWT.create()
             .withIssuer(jwtConfiguration.issuer)
             .withAudience(jwtConfiguration.audience)
@@ -43,7 +43,9 @@ class JwtService(
             .withIssuedAt(Date())
             .withSubject(principal.userId.toString())
             .withClaim(ROLE, principal.userRole.name)
-            .sign(algorithm).let(::BearerTokenDtoOut)
+            .sign(algorithm).let {
+                UserLoginResponseDtoOut(it, principal.userRole)
+            }
 
     /**
      * Create principal from the JWT.

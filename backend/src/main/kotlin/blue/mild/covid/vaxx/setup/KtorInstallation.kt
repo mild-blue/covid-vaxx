@@ -54,7 +54,6 @@ import org.kodein.di.instance
 import org.kodein.di.ktor.di
 import org.slf4j.event.Level
 import java.util.UUID
-import kotlin.random.Random
 import kotlin.reflect.KType
 
 
@@ -234,11 +233,7 @@ private fun Application.installMonitoring() {
     // MDC call id setup
     install(CallId) {
         retrieveFromHeader("X-Request-Id")
-        generate {
-            // this is not "secure" as Random does not have necessary entropy (we don't need that here)
-            // but it's way faster, see https://stackoverflow.com/a/14534126/7169288
-            UUID(Random.nextLong(), Random.nextLong()).toString()
-        }
+        generate { UUID.randomUUID().toString() }
     }
 }
 
