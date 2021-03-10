@@ -68,10 +68,9 @@ fun DI.MainBuilder.bindConfiguration() {
 
     bind<RateLimitConfigurationDto>() with singleton {
         RateLimitConfigurationDto(
-            rateLimit =
-            getEnvOrLogDefault(EnvVariables.RATE_LIMIT, "100").toLong(),
-            rateLimitDuration =
-            getEnvOrLogDefault(EnvVariables.RATE_LIMIT_DURATION_MINUTES, "60")
+            enableRateLimiting = getEnvOrLogDefault(EnvVariables.ENABLE_RATE_LIMITING, "true").toBoolean(),
+            rateLimit = getEnvOrLogDefault(EnvVariables.RATE_LIMIT, "100").toLong(),
+            rateLimitDuration = getEnvOrLogDefault(EnvVariables.RATE_LIMIT_DURATION_MINUTES, "60")
                 .let { Duration.ofMinutes(it.toLong()) }
         )
     }
@@ -94,7 +93,10 @@ fun DI.MainBuilder.bindConfiguration() {
     }
 
     bind<ReCaptchaVerificationConfigurationDto>() with singleton {
-        ReCaptchaVerificationConfigurationDto(requireEnv(EnvVariables.RECAPTCHA_SECRET_KEY))
+        ReCaptchaVerificationConfigurationDto(
+            secretKey = requireEnv(EnvVariables.RECAPTCHA_SECRET_KEY),
+            googleUrl = "https://www.google.com/recaptcha/api/siteverify"
+        )
     }
 }
 

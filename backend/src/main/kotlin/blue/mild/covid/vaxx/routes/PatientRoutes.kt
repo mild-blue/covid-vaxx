@@ -37,7 +37,7 @@ fun NormalOpenAPIRoute.patientRoutes() {
     val emailService by di().instance<MailService>()
 
     val captchaService by di().instance<CaptchaVerificationService>()
-    val enableCaptchaVerification by di().instance<Boolean>(EnvVariables.ENABLE_SWAGGER)
+    val enableCaptchaVerification by di().instance<Boolean>(EnvVariables.ENABLE_RECAPTCHA_VERIFICATION)
 
     route(Routes.patient) {
         post<CaptchaVerificationDtoIn, PatientRegisteredDtoOut, PatientRegistrationDtoIn>(

@@ -245,13 +245,14 @@ private fun Application.installMonitoring() {
 // Install rate limiting to prevent DDoS.
 private fun Application.installRateLimiting() {
     val configuration by di().instance<RateLimitConfigurationDto>()
-    install(RateLimiting) {
-        limit = configuration.rateLimit
-        resetTime = configuration.rateLimitDuration
-        keyExtraction = { call.request.determineRealIp() }
-        requestExclusion = {
-            it.httpMethod == HttpMethod.Options || it.uri.endsWith(Routes.status)
+    if (configuration.enableRateLimiting) {
+        install(RateLimiting) {
+            limit = configuration.rateLimit
+            resetTime = configuration.rateLimitDuration
+            keyExtraction = { call.request.determineRealIp() }
+            requestExclusion = {
+                it.httpMethod == HttpMethod.Options || it.uri.endsWith(Routes.status)
+            }
         }
-
     }
 }
