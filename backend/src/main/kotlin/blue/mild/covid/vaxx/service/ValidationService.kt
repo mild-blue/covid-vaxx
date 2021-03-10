@@ -34,7 +34,7 @@ class ValidationService(private val questionService: QuestionService) {
         )
 
         val answersByQuestion = patientRegistrationDto.answers.mapToSet { it.questionId }
-        val allQuestions = questionService.getAllQuestions().mapToSet { it.id }
+        val allQuestions = questionService.getCachedQuestions().mapToSet { it.id }
         val diff = allQuestions.subtract(answersByQuestion)
         if (diff.isNotEmpty()) {
             throw ValidationException(

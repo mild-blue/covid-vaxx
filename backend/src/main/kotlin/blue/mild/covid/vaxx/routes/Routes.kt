@@ -6,6 +6,7 @@ package blue.mild.covid.vaxx.routes
 object Routes {
     val patient = apiName("patient")
     val question = apiName("question")
+    val questionsCacheRefresh = apiName("question/refresh")
     val insuranceCompany = apiName("insurance-company")
 
     val version = apiName("version")
