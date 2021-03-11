@@ -38,7 +38,7 @@ dependencies {
     implementation("io.ktor", "ktor-auth", ktorVersion)
     implementation("io.ktor", "ktor-auth-jwt", ktorVersion)
     // ktor swagger
-    implementation("com.github.papsign", "Ktor-OpenAPI-Generator", "0.2-beta.14")
+    implementation("com.github.papsign", "Ktor-OpenAPI-Generator", "0.2-beta.15")
 
     // Ktor client dependencies
     implementation("io.ktor", "ktor-client-json", ktorVersion)
