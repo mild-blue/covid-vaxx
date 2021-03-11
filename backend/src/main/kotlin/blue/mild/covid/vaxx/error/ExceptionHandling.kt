@@ -46,10 +46,7 @@ fun Application.installExceptionHandling() {
 
         exception<EntityNotFoundException> { cause ->
             logger.debug { cause.message }
-            call.errorResponse(
-                HttpStatusCode.NotFound,
-                cause.message
-            )
+            call.errorResponse(HttpStatusCode.NotFound, cause.message)
         }
 
         exception<ValidationException> { cause ->
