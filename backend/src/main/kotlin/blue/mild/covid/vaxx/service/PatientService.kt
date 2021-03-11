@@ -105,17 +105,17 @@ class PatientService(
      * Saves patient to the database.
      */
     suspend fun savePatient(patientRegistrationDto: PatientRegistrationDto): PatientRegisteredDtoOut {
-        logger.debug { "Registering patient ${patientRegistrationDto.registration.email}" }
+        logger.debug { "Registering patient ${patientRegistrationDto.registration.email}." }
 
         val (registration, registrationRemoteHost) = patientRegistrationDto
 
         return PatientRegisteredDtoOut(newSuspendedTransaction {
-            logger.debug { "Registration validation for patient ${registration.email}" }
+            logger.debug { "Registration validation for patient ${registration.email}." }
             validationService.validatePatientRegistrationAndThrow(registration)
 
             val entityId = entityIdProvider.generateId()
 
-            logger.debug { "Saving registration for patient ${registration.email}" }
+            logger.debug { "Saving registration for patient ${registration.email}." }
             patientRepository.savePatient(
                 id = entityId,
                 firstName = registration.firstName.trim(),
@@ -128,11 +128,7 @@ class PatientService(
                 answers = registration.answers.associate { it.questionId to it.value }
             )
         }).also { (patientId) ->
-            if (logger.isDebugEnabled) {
-                logger.debug { "Patient ${registration.email} saved under id $patientId" }
-            } else {
-                logger.info { "Patient $patientId registered." }
-            }
+            logger.debug { "Patient ${registration.email} saved under id $patientId." }
         }
     }
 

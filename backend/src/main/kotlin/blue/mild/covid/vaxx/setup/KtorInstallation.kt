@@ -198,13 +198,13 @@ private fun Application.installSwagger() {
     // install swagger
     install(OpenAPIGen) {
         info {
-            version = "0.0.1"
+            version = "0.1.0"
             title = "Mild Blue - Covid Vaxx"
             description = "Covid Vaxx API"
             serveSwaggerUi = enableSwagger
             contact {
                 name = "Mild Blue s.r.o."
-                email = "covid-vaxx@mild.blue"
+                email = "support@mild.blue"
             }
         }
         // dto naming without package names
@@ -242,7 +242,7 @@ private fun Application.installMonitoring() {
         // enable logging for all routes that are not /status
         // this filter does not influence MDC
         filter { !it.request.uri.endsWith(Routes.status) }
-        level = Level.TRACE
+        level = Level.DEBUG
         logger = createLogger("HttpCallLogger")
         format {
             "${it.request.determineRealIp()}: ${it.request.httpMethod.value} ${it.request.path()} -> " +

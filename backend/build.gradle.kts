@@ -56,7 +56,7 @@ dependencies {
     implementation("io.github.microutils", "kotlin-logging", "2.0.4")
     implementation("ch.qos.logback", "logback-classic", "1.2.3")
     // if-else in logback.xml
-    implementation("org.codehaus.janino", "janino", "3.1.2")
+    implementation("org.codehaus.janino", "janino", "3.1.3")
 
     // crypto
     implementation("com.lambdaworks", "scrypt", "1.4.0")
@@ -67,7 +67,7 @@ dependencies {
     implementation("org.kodein.di", "kodein-di-framework-ktor-server-jvm", kodeinVersion)
 
     // database
-    implementation("org.postgresql", "postgresql", "42.2.2")
+    implementation("org.postgresql", "postgresql", "42.2.19")
 
     val exposedVersion = "0.29.1"
     implementation("org.jetbrains.exposed", "exposed-core", exposedVersion)
@@ -76,11 +76,11 @@ dependencies {
     implementation("org.jetbrains.exposed", "exposed-java-time", exposedVersion)
 
     // database migrations from the code
-    implementation("org.flywaydb", "flyway-core", "7.5.4")
+    implementation("org.flywaydb", "flyway-core", "7.6.0")
 
     // sending emails
-    implementation("com.mailjet", "mailjet-client", "4.2.0")
-    implementation("org.freemarker", "freemarker", "2.3.14")
+    implementation("com.mailjet", "mailjet-client", "5.1.1")
+    implementation("org.freemarker", "freemarker", "2.3.31")
 
     // tests
     testImplementation("io.mockk", "mockk", "1.10.6")

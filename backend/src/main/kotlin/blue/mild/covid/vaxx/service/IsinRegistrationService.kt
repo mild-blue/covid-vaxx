@@ -11,14 +11,20 @@ import java.util.UUID
 class IsinRegistrationService(
     private val configuration: IsinConfigurationDto,
     private val httpClient: HttpClient,
-    private val patientService: PatientService
-) : MedicalRegistrationService {
+    private val patientService: PatientService,
+    nThreads: Int = 1
+) : MedicalRegistrationService, DispatchService<UUID>(nThreads) {
+
     private companion object : KLogging()
 
     /**
-     * Registers patient's vaccination ISIN.
+     * Asynchronously registers patient's vaccination ISIN.
      */
     override suspend fun registerPatientsVaccination(patientId: UUID) {
+        insertToChannel(patientId)
+    }
+
+    override suspend fun dispatch(work: UUID) {
         TODO("Not yet implemented")
     }
 }

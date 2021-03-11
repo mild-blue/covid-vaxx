@@ -5,6 +5,7 @@ import blue.mild.covid.vaxx.dto.response.ApplicationInformationDto
 import blue.mild.covid.vaxx.dto.response.ServiceHealthDtoOut
 import blue.mild.covid.vaxx.extensions.di
 import blue.mild.covid.vaxx.extensions.request
+import blue.mild.covid.vaxx.extensions.respondWithStatus
 import com.papsign.ktor.openapigen.route.info
 import com.papsign.ktor.openapigen.route.path.normal.NormalOpenAPIRoute
 import com.papsign.ktor.openapigen.route.path.normal.get
@@ -27,7 +28,7 @@ fun NormalOpenAPIRoute.serviceRoutes() {
         info("Returns version of the application.")
     ) { respond(version) }
 
-    route(Routes.status).get<Unit, Unit> { respond(Unit) }
+    route(Routes.status).get<Unit, Unit> { respondWithStatus(HttpStatusCode.OK) }
 
     route(Routes.statusHealth).get<Unit, ServiceHealthDtoOut> {
         if (DatabaseSetup.isConnected()) {

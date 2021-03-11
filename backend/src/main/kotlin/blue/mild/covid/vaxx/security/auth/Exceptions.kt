@@ -1,5 +1,8 @@
 package blue.mild.covid.vaxx.security.auth
 
+/**
+ * Multiple authorization exceptions that can occur during auth phase of the application.
+ */
 sealed class AuthorizationException(override val message: String) : Exception(message)
 
 class GenericAuthException(message: String) : AuthorizationException(message)

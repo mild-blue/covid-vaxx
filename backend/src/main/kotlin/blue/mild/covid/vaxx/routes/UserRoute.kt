@@ -5,15 +5,18 @@ import blue.mild.covid.vaxx.dto.request.LoginDtoIn
 import blue.mild.covid.vaxx.dto.request.UserRegistrationDtoIn
 import blue.mild.covid.vaxx.dto.response.UserLoginResponseDtoOut
 import blue.mild.covid.vaxx.dto.response.UserRegisteredDtoOut
+import blue.mild.covid.vaxx.extensions.determineRealIp
 import blue.mild.covid.vaxx.extensions.di
 import blue.mild.covid.vaxx.extensions.request
 import blue.mild.covid.vaxx.security.auth.JwtService
 import blue.mild.covid.vaxx.security.auth.UserPrincipal
 import blue.mild.covid.vaxx.security.auth.authorizeRoute
 import blue.mild.covid.vaxx.service.UserService
+import blue.mild.covid.vaxx.utils.createLogger
 import com.papsign.ktor.openapigen.route.info
 import com.papsign.ktor.openapigen.route.path.auth.get
 import com.papsign.ktor.openapigen.route.path.auth.post
+import com.papsign.ktor.openapigen.route.path.auth.principal
 import com.papsign.ktor.openapigen.route.path.normal.NormalOpenAPIRoute
 import com.papsign.ktor.openapigen.route.path.normal.post
 import com.papsign.ktor.openapigen.route.response.respond
@@ -28,11 +31,14 @@ import org.kodein.di.instance
 fun NormalOpenAPIRoute.userRoutes() {
     val userService by di().instance<UserService>()
     val jwtService by di().instance<JwtService>()
+    val logger = createLogger("UserRoute")
 
     route(Routes.registeredUserLogin) {
         post<Unit, UserLoginResponseDtoOut, LoginDtoIn>(
             info("Login endpoint for the registered users such as administrators and doctors.")
         ) { _, loginDto ->
+            logger.info { "Login request for ${loginDto.username} from host ${request.determineRealIp()}." }
+
             val principal = userService.verifyCredentials(loginDto)
             respond(jwtService.generateToken(principal))
         }
@@ -43,6 +49,10 @@ fun NormalOpenAPIRoute.userRoutes() {
             post<Unit, UserRegisteredDtoOut, UserRegistrationDtoIn, UserPrincipal>(
                 info("Register new user of the system.")
             ) { _, registration ->
+                val principal = principal()
+                logger.info {
+                    "User registration for ${registration.username} registered by ${principal.userId} from host ${request.determineRealIp()}."
+                }
                 respond(userService.registerUser(registration))
             }
         }

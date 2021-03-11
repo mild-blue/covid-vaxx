@@ -63,6 +63,7 @@ class MailJetEmailService(
                     it[registrationEmailSent] = nowProvider.now()
                 }
             }
+            logger.info { "Registration mail sent for patient ${emailRequest.patientId}." }
         }
     }
 

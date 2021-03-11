@@ -20,9 +20,11 @@ import blue.mild.covid.vaxx.security.ddos.RequestVerificationService
 import blue.mild.covid.vaxx.service.MailService
 import blue.mild.covid.vaxx.service.MedicalRegistrationService
 import blue.mild.covid.vaxx.service.PatientService
+import blue.mild.covid.vaxx.utils.createLogger
 import com.papsign.ktor.openapigen.route.info
 import com.papsign.ktor.openapigen.route.path.auth.delete
 import com.papsign.ktor.openapigen.route.path.auth.get
+import com.papsign.ktor.openapigen.route.path.auth.principal
 import com.papsign.ktor.openapigen.route.path.auth.put
 import com.papsign.ktor.openapigen.route.path.normal.NormalOpenAPIRoute
 import com.papsign.ktor.openapigen.route.path.normal.post
@@ -36,6 +38,8 @@ import java.time.Instant
  * Routes related to patient entity.
  */
 fun NormalOpenAPIRoute.patientRoutes() {
+    val logger = createLogger("PatientRoutes")
+
     val captchaService by di().instance<RequestVerificationService>()
 
     val patientService by di().instance<PatientService>()
@@ -47,9 +51,13 @@ fun NormalOpenAPIRoute.patientRoutes() {
             info("Save patient registration to the database.")
         ) { (recaptchaToken), patientRegistration ->
             val host = request.determineRealIp()
+            logger.debug { "Patient registration request. Executing captcha verification." }
             captchaService.verify(recaptchaToken, host)
+            logger.debug { "Captcha token verified. Saving registration." }
 
             val patient = patientService.savePatient(PatientRegistrationDto(patientRegistration, host))
+            logger.info { "Registration created for patient ${patient.patientId}." }
+            logger.debug { "Adding email to the queue." }
             emailService.sendEmail(
                 PatientEmailRequestDto(
                     firstName = patientRegistration.firstName,
@@ -58,6 +66,7 @@ fun NormalOpenAPIRoute.patientRoutes() {
                     patientId = patient.patientId
                 )
             )
+            logger.debug { "Email request registered. Registration successful." }
             respondWithStatus(HttpStatusCode.OK)
         }
     }
@@ -67,19 +76,33 @@ fun NormalOpenAPIRoute.patientRoutes() {
             route("single") {
                 get<PatientByPersonalNumberQueryDtoIn, PatientDtoOut, UserPrincipal>(
                     info("Get patient by personal number.")
-                ) { patientQuery ->
-                    respond(patientService.getPatientsByPersonalNumber(patientQuery.personalNumber))
+                ) { (personalNumber) ->
+                    val principal = principal()
+                    if (logger.isDebugEnabled) {
+                        logger.debug { "User ${principal.userId} search by personalNumber=${personalNumber}." }
+                    } else {
+                        logger.info { "User ${principal.userId} search by personal number." }
+                    }
+
+                    val patient = patientService.getPatientsByPersonalNumber(personalNumber)
+                    logger.info { "Patient found under id ${patient.id}." }
+                    respond(patient)
                 }
 
                 get<PatientIdDtoIn, PatientDtoOut, UserPrincipal>(
                     info("Get user by ID.")
                 ) { (patientId) ->
-                    respond(patientService.getPatientById(patientId))
+                    val principal = principal()
+                    logger.info { "User ${principal.userId} search by patientId=${patientId}." }
+                    val patient = patientService.getPatientById(patientId)
+                    respond(patient)
                 }
 
                 delete<PatientIdDtoIn, Unit, UserPrincipal>(
                     info("Delete user by ID.")
                 ) { (patientId) ->
+                    val principal = principal()
+                    logger.info { "User ${principal.userId} deleted patient ${patientId}." }
                     patientService.deletePatientById(patientId)
                     respondWithStatus(HttpStatusCode.OK)
                 }
@@ -91,9 +114,16 @@ fun NormalOpenAPIRoute.patientRoutes() {
                     ),
                     exampleRequest = PatientUpdateDtoIn(email = "john@doe.com", vaccinatedOn = Instant.now())
                 ) { (patientId), updateDto ->
+                    val principal = principal()
+                    logger.info { "User ${principal.userId} requests update of patient ${patientId}: $updateDto." }
+
                     patientService.updatePatientWithChangeSet(patientId, updateDto)
+                    logger.info { "Patient $patientId updated." }
+
                     if (updateDto.vaccinatedOn != null) { // register patient if the change set indicates that the patient was vaccinated
+                        logger.info { "Patient $patientId was vaccinated, registering in ISIN." }
                         medicalRegistrationService.registerPatientsVaccination(patientId)
+                        logger.info { "Patient $patientId registered in ISIN." }
                     }
                     respondWithStatus(HttpStatusCode.OK)
                 }
@@ -103,13 +133,19 @@ fun NormalOpenAPIRoute.patientRoutes() {
                 get<MultiplePatientsQueryDtoOut, List<PatientDtoOut>, UserPrincipal>(
                     info("Get patient the parameters. Filters by and clause. Empty parameters return all patients.")
                 ) { patientQuery ->
-                    respond(
-                        patientService.getPatientsByConjunctionOf(
-                            email = patientQuery.email,
-                            phoneNumber = patientQuery.phoneNumber,
-                            vaccinated = patientQuery.vaccinated
-                        )
+                    val principal = principal()
+                    logger.info { "User ${principal.userId} search query: $patientQuery." }
+
+                    val patients = patientService.getPatientsByConjunctionOf(
+                        email = patientQuery.email,
+                        phoneNumber = patientQuery.phoneNumber,
+                        vaccinated = patientQuery.vaccinated
                     )
+
+                    logger.info { "Found ${patients.size} records." }
+                    logger.debug { "Returning patients: ${patients.joinToString(", ") { it.id.toString() }}." }
+
+                    respond(patients)
                 }
             }
         }
