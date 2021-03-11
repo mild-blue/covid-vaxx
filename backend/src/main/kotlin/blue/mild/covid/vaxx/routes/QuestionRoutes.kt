@@ -20,7 +20,7 @@ import org.kodein.di.instance
 fun NormalOpenAPIRoute.questionRoutes() {
     val service by di().instance<QuestionService>()
 
-    route(Routes.question) {
+    route(Routes.questions) {
         get<Unit, List<QuestionDtoOut>>(
             info("Returns all questions that patient needs to answer.")
         ) {
@@ -29,7 +29,7 @@ fun NormalOpenAPIRoute.questionRoutes() {
     }
 
     authorizeRoute(requireOneOf = setOf(UserRole.ADMIN)) {
-        route(Routes.questionsCacheRefresh) {
+        route(Routes.cacheRefresh) {
             get<Unit, List<QuestionDtoOut>, UserPrincipal>(
                 info("Returns all questions and refreshes in-memory cache.")
             ) {

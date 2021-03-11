@@ -12,7 +12,7 @@ import com.papsign.ktor.openapigen.route.route
  * Routes related to insurance company entity.
  */
 fun NormalOpenAPIRoute.insuranceCompanyRoutes() {
-    route(Routes.insuranceCompany) {
+    route(Routes.insuranceCompanies) {
         get<Unit, List<InsuranceCompanyDetailsDtoOut>>(
             info("Returns list of all available insurance companies.")
         ) {

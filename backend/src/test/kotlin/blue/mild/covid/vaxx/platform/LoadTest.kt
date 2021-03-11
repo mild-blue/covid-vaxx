@@ -118,12 +118,12 @@ abstract class LoadTest(
         }
 
     private suspend fun getInsuranceCompanies(bearer: String) =
-        meteredClient.get<HttpResponse>("${targetHost}${Routes.insuranceCompany}") {
+        meteredClient.get<HttpResponse>("${targetHost}${Routes.insuranceCompanies}") {
             authorize(bearer)
         }
 
     private suspend fun getQuestions(bearer: String) =
-        meteredClient.get<HttpResponse>("${targetHost}${Routes.question}") {
+        meteredClient.get<HttpResponse>("${targetHost}${Routes.questions}") {
             authorize(bearer)
         }
 
