@@ -131,7 +131,9 @@ private fun Application.installFrameworks() {
 // Install basic extensions and necessary features to the Ktor.
 private fun Application.installBasics() {
     // default headers
-    install(DefaultHeaders)
+    install(DefaultHeaders) {
+        header(HttpHeaders.Server, "mild-blue")
+    }
     // initialize Jackson
     install(ContentNegotiation) {
         jackson {
