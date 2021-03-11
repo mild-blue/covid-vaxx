@@ -5,6 +5,7 @@ import blue.mild.covid.vaxx.security.auth.CaptchaFailedException
 import blue.mild.covid.vaxx.security.auth.InsufficientRightsException
 import blue.mild.covid.vaxx.security.auth.UserPrincipal
 import blue.mild.covid.vaxx.utils.createLogger
+import com.fasterxml.jackson.module.kotlin.MissingKotlinParameterException
 import com.papsign.ktor.openapigen.exceptions.OpenAPIRequiredFieldException
 import io.ktor.application.Application
 import io.ktor.application.ApplicationCall
@@ -59,8 +60,13 @@ fun Application.installExceptionHandling() {
             call.errorResponse(HttpStatusCode.BadRequest, "Bad request: ${cause.message}.")
         }
 
+        exception<MissingKotlinParameterException> { cause ->
+            logger.debug { "Missing parameter in the request: ${cause.message}" }
+            call.errorResponse(HttpStatusCode.BadRequest, "Missing parameter: ${cause.parameter}.")
+        }
+
         exception<OpenAPIRequiredFieldException> { cause ->
-            logger.warn { "Missing data in request: ${cause.message}" }
+            logger.debug { "Missing data in request: ${cause.message}" }
             call.errorResponse(HttpStatusCode.BadRequest, "Missing data in request: ${cause.message}.")
         }
 
