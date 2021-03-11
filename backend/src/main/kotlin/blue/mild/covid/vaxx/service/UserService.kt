@@ -31,10 +31,6 @@ class UserService(
             throw CredentialsMismatchException()
         }
 
-        require(passwordHashProvider.verifyPassword(login.password, passwordHash = passwordHash)) {
-            "Password verification failed for user ${login.username}."
-        }
-
         return UserPrincipal(
             userId = id,
             userRole = role
