@@ -2,11 +2,10 @@ package blue.mild.covid.vaxx.platform
 
 import blue.mild.covid.vaxx.dao.model.InsuranceCompany
 import blue.mild.covid.vaxx.dto.AnswerDto
+import blue.mild.covid.vaxx.dto.request.CaptchaVerificationDtoIn
 import blue.mild.covid.vaxx.dto.request.ConfirmationDtoIn
-import blue.mild.covid.vaxx.dto.request.LoginDtoIn
 import blue.mild.covid.vaxx.dto.request.PatientRegistrationDtoIn
 import blue.mild.covid.vaxx.dto.response.QuestionDtoOut
-import blue.mild.covid.vaxx.dto.response.UserLoginResponseDtoOut
 import blue.mild.covid.vaxx.routes.Routes
 import com.fasterxml.jackson.databind.JsonNode
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule
@@ -16,7 +15,6 @@ import io.ktor.client.engine.apache.Apache
 import io.ktor.client.features.HttpTimeout
 import io.ktor.client.features.json.JacksonSerializer
 import io.ktor.client.features.json.Json
-import io.ktor.client.request.HttpRequestBuilder
 import io.ktor.client.request.get
 import io.ktor.client.request.header
 import io.ktor.client.request.post
@@ -31,7 +29,6 @@ import kotlin.random.Random
 
 abstract class LoadTest(
     private val targetHost: String,
-    private val credentials: LoginDtoIn,
     private val requestTimeoutsSeconds: Int
 ) {
     private companion object : KLogging()
@@ -78,26 +75,21 @@ abstract class LoadTest(
         var request = loadClientSource()
         require(request.status.isSuccess()) { "It was not possible to load client sources ${request.status.description}" }
 
-        // login
-        request = login(credentials)
-        require(request.status.isSuccess()) { "Login request was not successful. ${request.status.description}" }
-        val bearerToken = request.receive<UserLoginResponseDtoOut>().token
-
         // get insurance companies
-        request = getInsuranceCompanies(bearerToken)
+        request = getInsuranceCompanies()
         require(request.status.isSuccess()) { "Insurance companies request was not successful. ${request.status.description}" }
         // we don't really have correct dto that can be deserialized
         request.receive<JsonNode>()
 
         // get questions
-        request = getQuestions(bearerToken)
+        request = getQuestions()
         require(request.status.isSuccess()) { "Questions request was not successful. ${request.status.description}" }
         val questions = request.receive<List<QuestionDtoOut>>()
         val answers = questions.map { AnswerDto(it.id, Random.nextBoolean()) }
 
         // register patient
         request = registerPatient(
-            bearerToken, registrationBuilder(
+            registrationBuilder(
                 answers, InsuranceCompany.values().random(), ConfirmationDtoIn(
                     healthStateDisclosureConfirmation = true,
                     covid19VaccinationAgreement = true,
@@ -111,29 +103,16 @@ abstract class LoadTest(
     private suspend fun loadClientSource() =
         meteredClient.get<HttpResponse>(targetHost)
 
-    private suspend fun login(loginDto: LoginDtoIn) =
-        meteredClient.post<HttpResponse>("${targetHost}${Routes.registeredUserLogin}") {
-            contentType(ContentType.Application.Json)
-            body = loginDto
-        }
+    private suspend fun getInsuranceCompanies() =
+        meteredClient.get<HttpResponse>("${targetHost}${Routes.insuranceCompanies}")
 
-    private suspend fun getInsuranceCompanies(bearer: String) =
-        meteredClient.get<HttpResponse>("${targetHost}${Routes.insuranceCompanies}") {
-            authorize(bearer)
-        }
+    private suspend fun getQuestions() =
+        meteredClient.get<HttpResponse>("${targetHost}${Routes.questions}")
 
-    private suspend fun getQuestions(bearer: String) =
-        meteredClient.get<HttpResponse>("${targetHost}${Routes.questions}") {
-            authorize(bearer)
-        }
-
-    private suspend fun registerPatient(bearer: String, patient: PatientRegistrationDtoIn) =
+    private suspend fun registerPatient(patient: PatientRegistrationDtoIn) =
         meteredClient.post<HttpResponse>("${targetHost}${Routes.patient}") {
-            authorize(bearer)
+            header(CaptchaVerificationDtoIn.NAME, "1234") // should be disabled
             contentType(ContentType.Application.Json)
             body = patient
         }
-
-    private fun HttpRequestBuilder.authorize(bearer: String) = header("Authorization", "Bearer $bearer")
-
 }

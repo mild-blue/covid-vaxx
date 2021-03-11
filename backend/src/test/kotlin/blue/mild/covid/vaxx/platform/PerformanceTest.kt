@@ -1,16 +1,11 @@
 package blue.mild.covid.vaxx.platform
 
-import blue.mild.covid.vaxx.dto.request.LoginDtoIn
 import blue.mild.covid.vaxx.utils.createLogger
 import kotlinx.coroutines.runBlocking
 
 private val logger = createLogger("PerformanceTest")
 
 private const val TARGET_HOST = "https://covid-vaxx.stg.mild.blue"
-private val CREDENTIALS = LoginDtoIn(
-    username = "mildblue",
-    password = "bluemild"
-)
 
 /**
  * Execute load tests
@@ -26,15 +21,13 @@ fun main() {
 
 private fun timeTest() = TimeLoadTest(
     targetHost = TARGET_HOST,
-    credentials = CREDENTIALS,
-    requestTimeoutsSeconds = 60,
+    requestTimeoutsSeconds = 10,
     coroutineWorkers = 1,
     runningTimeInSeconds = 60
 )
 
 private fun requestsCountTest() = RoundsLoadTest(
     targetHost = TARGET_HOST,
-    credentials = CREDENTIALS,
     requestTimeoutsSeconds = 60,
     coroutineWorkers = 5,
     rounds = 400

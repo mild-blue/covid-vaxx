@@ -1,6 +1,5 @@
 package blue.mild.covid.vaxx.platform
 
-import blue.mild.covid.vaxx.dto.request.LoginDtoIn
 import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.launch
 import mu.KLogging
@@ -9,11 +8,10 @@ import java.time.Instant
 
 class TimeLoadTest(
     targetHost: String,
-    credentials: LoginDtoIn,
     requestTimeoutsSeconds: Int = 60,
     private val coroutineWorkers: Int = 2,
     private val runningTimeInSeconds: Long
-) : LoadTest(targetHost, credentials, requestTimeoutsSeconds) {
+) : LoadTest(targetHost, requestTimeoutsSeconds) {
 
     private companion object : KLogging()
 
