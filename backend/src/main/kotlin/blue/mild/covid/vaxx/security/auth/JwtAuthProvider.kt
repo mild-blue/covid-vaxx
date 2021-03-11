@@ -34,10 +34,16 @@ class JwtAuthProvider : AuthProvider<UserPrincipal> {
             )
         )
 
+    /**
+     * Obtain principal from pipeline.
+     */
     override suspend fun getAuth(pipeline: PipelineContext<Unit, ApplicationCall>): UserPrincipal =
         pipeline.context.authentication.principal()
             ?: throw GenericAuthException("No JWTPrincipal!")
 
+    /**
+     * Build route with authentication.
+     */
     override fun apply(route: NormalOpenAPIRoute): OpenAPIAuthenticatedRoute<UserPrincipal> {
         val authenticatedKtorRoute = route.ktorRoute.authenticate {}
         return OpenAPIAuthenticatedRoute(authenticatedKtorRoute, route.provider.child(), this)

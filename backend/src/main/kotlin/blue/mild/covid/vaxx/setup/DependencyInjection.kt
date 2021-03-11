@@ -22,6 +22,8 @@ import blue.mild.covid.vaxx.utils.createLogger
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule
 import com.mailjet.client.ClientOptions
 import com.mailjet.client.MailjetClient
+import freemarker.template.Configuration
+import freemarker.template.Version
 import io.ktor.client.HttpClient
 import io.ktor.client.engine.apache.Apache
 import io.ktor.client.features.json.JacksonSerializer
@@ -33,8 +35,10 @@ import org.kodein.di.singleton
 import pw.forst.tools.katlib.InstantTimeProvider
 import pw.forst.tools.katlib.TimeProvider
 import java.time.Instant
-import freemarker.template.Configuration as FreemakerConfiguration
 
+/**
+ * Register instances that are created only when needed.
+ */
 fun DI.MainBuilder.registerClasses() {
     bind<PatientRepository>() with singleton { PatientRepository(instance()) }
     bind<UserRepository>() with singleton { UserRepository() }
@@ -51,15 +55,16 @@ fun DI.MainBuilder.registerClasses() {
     bind<MailjetClient>() with singleton {
         val mailJetConfig = instance<MailJetConfigurationDto>()
         MailjetClient(
-            mailJetConfig.apiKey,
-            mailJetConfig.apiSecret,
-            ClientOptions("v3.1")
+            ClientOptions.builder()
+                .apiKey(mailJetConfig.apiKey)
+                .apiSecretKey(mailJetConfig.apiSecret)
+                .build(),
         )
     }
     bind<DummyMailService>() with singleton { DummyMailService() }
 
-    bind<FreemakerConfiguration>() with singleton {
-        FreemakerConfiguration().apply {
+    bind<Configuration>() with singleton {
+        Configuration(Version(2, 3, 31)).apply {
             setClassForTemplateLoading(MailJetEmailService::class.java, "/templates")
         }
     }
@@ -92,6 +97,10 @@ fun DI.MainBuilder.registerClasses() {
 
 internal val diLogger = createLogger("DependencyInjection")
 
+/**
+ * Determines what implementation should be used - either the production one [TProd]
+ * or the dummy [TDummy] implementation based on the environmental variable [enableProdEnv].
+ */
 private inline fun <reified TInterface : Any, reified TProd : TInterface, reified TDummy : TInterface>
         DI.MainBuilder.registerProductionOrDummy(enableProdEnv: EnvVariables) {
     bind<TInterface>() with singleton {

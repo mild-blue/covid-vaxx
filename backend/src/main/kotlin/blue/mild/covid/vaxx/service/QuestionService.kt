@@ -7,6 +7,10 @@ import org.jetbrains.exposed.sql.selectAll
 import org.jetbrains.exposed.sql.transactions.experimental.newSuspendedTransaction
 import pw.forst.tools.katlib.toUuid
 
+/**
+ * Service with access to [Question], internally it uses
+ * [MemoryCacheService] as the questions are not changed very often.
+ */
 class QuestionService {
 
     private val cache by lazy {
@@ -21,7 +25,7 @@ class QuestionService {
     suspend fun getCachedQuestions(): List<QuestionDtoOut> = cache.value()
 
     /**
-     * Enforces cache refresh.
+     * Enforces cache refresh and returns new data.
      */
     suspend fun refreshCache() = cache.refresh()
 

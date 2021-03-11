@@ -13,4 +13,16 @@ data class PatientUpdateDtoIn(
     val insuranceCompany: InsuranceCompany? = null,
     val vaccinatedOn: Instant? = null,
     val answers: List<AnswerDto>? = null,
-)
+) {
+    override fun toString(): String =
+        listOfNotNull(
+            firstName?.let { "firstName=$it" },
+            lastName?.let { "lastName=$it" },
+            phoneNumber?.let { "phoneNumber=$it" },
+            personalNumber?.let { "personalNumber=$it" },
+            email?.let { "email=$it" },
+            insuranceCompany?.let { "insuranceCompany=$it" },
+            vaccinatedOn?.let { "vaccinatedOn=$it" },
+            answers?.let { answers -> "answers=[${answers.joinToString(",") { "${it.questionId}: ${it.value}" }}]" },
+        ).joinToString(", ", prefix = "update(", postfix = ")")
+}

@@ -6,8 +6,10 @@ import blue.mild.covid.vaxx.extensions.di
 import blue.mild.covid.vaxx.security.auth.UserPrincipal
 import blue.mild.covid.vaxx.security.auth.authorizeRoute
 import blue.mild.covid.vaxx.service.QuestionService
+import blue.mild.covid.vaxx.utils.createLogger
 import com.papsign.ktor.openapigen.route.info
 import com.papsign.ktor.openapigen.route.path.auth.get
+import com.papsign.ktor.openapigen.route.path.auth.principal
 import com.papsign.ktor.openapigen.route.path.normal.NormalOpenAPIRoute
 import com.papsign.ktor.openapigen.route.path.normal.get
 import com.papsign.ktor.openapigen.route.response.respond
@@ -18,6 +20,8 @@ import org.kodein.di.instance
  * Routes related to the Question entity.
  */
 fun NormalOpenAPIRoute.questionRoutes() {
+    val logger = createLogger("QuestionRoutes")
+
     val service by di().instance<QuestionService>()
 
     route(Routes.questions) {
@@ -33,6 +37,8 @@ fun NormalOpenAPIRoute.questionRoutes() {
             get<Unit, List<QuestionDtoOut>, UserPrincipal>(
                 info("Returns all questions and refreshes in-memory cache.")
             ) {
+                val principal = principal()
+                logger.info { "Cache refresh request administrated by ${principal.userId}." }
                 respond(service.refreshCache())
             }
         }

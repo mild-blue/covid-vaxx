@@ -7,6 +7,7 @@ import blue.mild.covid.vaxx.dto.request.ConfirmationDtoIn
 import blue.mild.covid.vaxx.dto.request.PatientRegistrationDtoIn
 import blue.mild.covid.vaxx.dto.response.QuestionDtoOut
 import blue.mild.covid.vaxx.routes.Routes
+import blue.mild.covid.vaxx.utils.createLogger
 import com.fasterxml.jackson.databind.JsonNode
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule
 import io.ktor.client.HttpClient
@@ -15,6 +16,10 @@ import io.ktor.client.engine.apache.Apache
 import io.ktor.client.features.HttpTimeout
 import io.ktor.client.features.json.JacksonSerializer
 import io.ktor.client.features.json.Json
+import io.ktor.client.features.logging.LogLevel
+import io.ktor.client.features.logging.Logger
+import io.ktor.client.features.logging.Logging
+import io.ktor.client.request.accept
 import io.ktor.client.request.get
 import io.ktor.client.request.parameter
 import io.ktor.client.request.post
@@ -37,6 +42,16 @@ abstract class LoadTest(
 
     private val counter = AtomicInteger(0)
 
+    /**
+     * Debug logger for HTTP Requests.
+     */
+    private val Logger.Companion.debug: Logger
+        get() = object : Logger, org.slf4j.Logger by createLogger("DebugHttpClient") {
+            override fun log(message: String) {
+                debug(message)
+            }
+        }
+
     private val meteredClient by lazy {
         HttpClient(Apache) {
             Json {
@@ -49,6 +64,11 @@ abstract class LoadTest(
                 onResponse {
                     callsCollection.add(it)
                 }
+            }
+
+            install(Logging) {
+                logger = Logger.debug
+                level = LogLevel.ALL
             }
 
             install(HttpTimeout) {
@@ -113,6 +133,7 @@ abstract class LoadTest(
         meteredClient.post<HttpResponse>("${targetHost}${Routes.patient}") {
             parameter(CaptchaVerificationDtoIn.NAME, "1234") // should be disabled
             contentType(ContentType.Application.Json)
+            accept(ContentType.Companion.Any)
             body = patient
         }
 }

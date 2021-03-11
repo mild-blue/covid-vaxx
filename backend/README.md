@@ -1,8 +1,30 @@
 # Covid Vaxx Backend
 
-## Env Configuration
+This project includes backend for the Mild Blue's system for vaccination registration support.
 
-See `EnvVariables` enum.
+## Technology Stack
+
+* HTTP web server - [Ktor](https://ktor.io/)
+* Swagger UI - [Ktor OpenAPI Generator](https://github.com/papsign/Ktor-OpenAPI-Generator)
+* SQL Framework - [Exposed](https://github.com/JetBrains/Exposed)
+
+## Security
+
+* We use standard implementation of authorization from Ktor.
+* We use JWTs for request authentication, and we sign them with HMAC256.
+* We use Role Based Authorization when we need to distinguish between roles -
+  see [RoleBasedAuthorization](src/main/kotlin/blue/mild/covid/vaxx/security/auth/RoleBasedAuthorization.kt). based
+  on [this article](https://www.ximedes.com/2020-09-17/role-based-authorization-in-ktor/) with modifications for OpenAPI Generator.
+* We use [reCaptcha](https://developers.google.com/recaptcha/docs/v3) to verify the patients registrations.
+* We have simple rate limiting built to the Ktor - [Limiter](src/main/kotlin/blue/mild/covid/vaxx/security/ddos/LinearRateLimiter.kt)
+  and the [Ktor Feature](src/main/kotlin/blue/mild/covid/vaxx/security/ddos/RateLimiting.kt). Other DDoS protection is implemented in our
+  reverse proxy setup in the production environment.
+* We're hashing passwords using [Scrypt](https://en.wikipedia.org/wiki/Scrypt) with the [following](https://github.com/wg/scrypt)
+  implementation.
+
+## Application Configuration
+
+See [EnvVariables](src/main/kotlin/blue/mild/covid/vaxx/setup/EnvVariables.kt) where all necessary variables are described.
 
 ## Test data
 

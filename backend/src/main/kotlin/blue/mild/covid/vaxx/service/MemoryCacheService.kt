@@ -3,6 +3,9 @@ package blue.mild.covid.vaxx.service
 import kotlinx.coroutines.sync.Mutex
 import kotlinx.coroutines.sync.withLock
 
+/**
+ * Simple in-memory cache.
+ */
 class MemoryCacheService<T : Any>(
     private val dataInit: suspend () -> Collection<T>,
     private val dataRefresh: suspend () -> Collection<T> = dataInit

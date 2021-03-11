@@ -18,20 +18,19 @@ import io.ktor.request.path
 import io.ktor.response.respond
 import org.jetbrains.exposed.exceptions.ExposedSQLException
 
-private val logger = createLogger("ExceptionHandler")
-
 /**
  * Registers exception handling.
  */
 fun Application.installExceptionHandling() {
     install(StatusPages) {
         // TODO define correct logging level policy
+        val logger = createLogger("ExceptionHandler")
 
         exception<InsufficientRightsException> {
-            logger.debug {
+            logger.warn {
                 call.principal<UserPrincipal>()
                     ?.let { "$it tried to access resource \"${call.request.path()}\" that is not allowed." }
-                    ?: "User without principals tried to access the resource ${call.request.path()}"
+                    ?: "User without principals tried to access the resource ${call.request.path()}."
             }
             call.respond(HttpStatusCode.Forbidden)
         }
@@ -46,27 +45,27 @@ fun Application.installExceptionHandling() {
         }
 
         exception<EntityNotFoundException> { cause ->
-            logger.warn { cause.message }
-            call.errorResponse(HttpStatusCode.NotFound, "Not found.")
+            logger.debug { cause.message }
+            call.errorResponse(HttpStatusCode.NotFound, cause.message)
         }
 
         exception<ValidationException> { cause ->
-            logger.warn { cause.message }
-            call.errorResponse(HttpStatusCode.BadRequest, "Bad request. ${cause.message}")
+            logger.debug { cause.message }
+            call.errorResponse(HttpStatusCode.BadRequest, "Bad request: ${cause.message}.")
         }
 
         exception<EmptyStringException> { cause ->
-            logger.warn { cause.message }
-            call.errorResponse(HttpStatusCode.BadRequest, "Bad request. ${cause.message}")
+            logger.debug { cause.message }
+            call.errorResponse(HttpStatusCode.BadRequest, "Bad request: ${cause.message}.")
         }
 
         exception<OpenAPIRequiredFieldException> { cause ->
             logger.warn { "Missing data in request: ${cause.message}" }
-            call.errorResponse(HttpStatusCode.BadRequest, "Missing data in request: ${cause.message}")
+            call.errorResponse(HttpStatusCode.BadRequest, "Missing data in request: ${cause.message}.")
         }
 
         exception<ExposedSQLException> { cause ->
-            logger.warn { "Attempt to store invalid data to the database: ${cause.message}" }
+            logger.warn { "Attempt to store invalid data to the database: ${cause.message}." }
             if (cause.message?.contains("already exists") == true) {
                 call.errorResponse(HttpStatusCode.Conflict, "Entity already exists!.")
             } else {
@@ -75,7 +74,7 @@ fun Application.installExceptionHandling() {
         }
 
         exception<Exception> { cause ->
-            logger.error(cause) { "Exception occurred in the application: ${cause.message}" }
+            logger.error(cause) { "Exception occurred in the application: ${cause.message}." }
             call.errorResponse(
                 HttpStatusCode.InternalServerError,
                 "Server was unable to fulfill the request, please contact administrator with request ID: ${call.callId}."
@@ -84,6 +83,6 @@ fun Application.installExceptionHandling() {
     }
 }
 
-suspend inline fun ApplicationCall.errorResponse(statusCode: HttpStatusCode, message: String?) {
+private suspend inline fun ApplicationCall.errorResponse(statusCode: HttpStatusCode, message: String?) {
     respond(status = statusCode, ErrorResponseDto(message ?: "No details specified.", callId))
 }
