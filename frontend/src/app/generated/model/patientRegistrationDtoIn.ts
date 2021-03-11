@@ -25,7 +25,7 @@ export interface PatientRegistrationDtoIn {
 }
 
 export enum PatientRegistrationDtoInInsuranceCompanyEnum {
-    Czpz = 'CZPZ',
+    Cpzp = 'CPZP',
     Ozp = 'OZP',
     Rbp = 'RBP',
     Vzp = 'VZP',
