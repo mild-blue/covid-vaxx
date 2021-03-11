@@ -1,6 +1,6 @@
 package blue.mild.covid.vaxx.dto.request
 
-import blue.mild.covid.vaxx.dao.UserRole
+import blue.mild.covid.vaxx.dao.model.UserRole
 
 data class UserRegistrationDtoIn(
     val username: String,

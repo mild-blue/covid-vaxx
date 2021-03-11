@@ -32,16 +32,18 @@ $BODY$
 -- Create table patients
 CREATE TABLE patients
 (
-    id                VARCHAR(36) UNIQUE NOT NULL,
-    created           timestamptz        NOT NULL,
-    updated           timestamptz        NOT NULL,
-    first_name        VARCHAR(256)       NOT NULL,
-    last_name         VARCHAR(256)       NOT NULL,
-    personal_number   VARCHAR(11)        NOT NULL,
-    phone_number      VARCHAR(13)        NOT NULL,
-    email             VARCHAR(256)       NOT NULL,
-    insurance_company VARCHAR(4)         NOT NULL,
-    remote_host       VARCHAR(45)        NOT NULL,
+    id                 VARCHAR(36) UNIQUE NOT NULL,
+    created            timestamptz        NOT NULL,
+    updated            timestamptz        NOT NULL,
+    first_name         VARCHAR(256)       NOT NULL,
+    last_name          VARCHAR(256)       NOT NULL,
+    personal_number    VARCHAR(11) UNIQUE NOT NULL,
+    phone_number       VARCHAR(13)        NOT NULL,
+    email              citext             NOT NULL,
+    insurance_company  VARCHAR(4)         NOT NULL,
+    remote_host        VARCHAR(45)        NOT NULL,
+    email_sent_date    timestamptz,
+    vaccinated_on_date timestamptz,
     PRIMARY KEY (id)
 );
 

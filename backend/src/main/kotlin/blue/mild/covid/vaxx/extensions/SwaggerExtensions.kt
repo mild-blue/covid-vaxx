@@ -18,4 +18,4 @@ val OpenAPIPipelineResponseContext<*>.context
 val OpenAPIPipelineResponseContext<*>.request
     get() = context.request
 
-suspend fun OpenAPIPipelineResponseContext<*>.respond(status: HttpStatusCode) = request.call.respond(status)
+suspend fun OpenAPIPipelineResponseContext<*>.respondWithStatus(status: HttpStatusCode) = request.call.respond(status)

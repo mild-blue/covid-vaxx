@@ -1,4 +1,4 @@
-package blue.mild.covid.vaxx.security.ratelimiting
+package blue.mild.covid.vaxx.security.ddos
 
 import kotlinx.coroutines.sync.Mutex
 import pw.forst.tools.katlib.InstantTimeProvider

@@ -1,6 +1,6 @@
 package blue.mild.covid.vaxx.security.auth
 
-import blue.mild.covid.vaxx.dao.UserRole
+import blue.mild.covid.vaxx.dao.model.UserRole
 import io.ktor.auth.Principal
 import java.util.UUID
 

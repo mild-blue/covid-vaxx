@@ -1,4 +1,4 @@
-package blue.mild.covid.vaxx.dao
+package blue.mild.covid.vaxx.dao.model
 
 import org.jetbrains.exposed.sql.Column
 import org.jetbrains.exposed.sql.Table

@@ -1,4 +1,4 @@
-package blue.mild.covid.vaxx.security.ratelimiting
+package blue.mild.covid.vaxx.security.ddos
 
 import blue.mild.covid.vaxx.utils.createLogger
 import io.ktor.application.ApplicationCall

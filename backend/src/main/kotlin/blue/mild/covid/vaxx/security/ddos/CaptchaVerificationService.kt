@@ -1,4 +1,4 @@
-package blue.mild.covid.vaxx.service
+package blue.mild.covid.vaxx.security.ddos
 
 import blue.mild.covid.vaxx.dto.config.ReCaptchaVerificationConfigurationDto
 import blue.mild.covid.vaxx.security.auth.CaptchaFailedException
@@ -14,7 +14,7 @@ import java.time.Instant
 class CaptchaVerificationService(
     private val client: HttpClient,
     private val configurationDto: ReCaptchaVerificationConfigurationDto
-) {
+) : RequestVerificationService {
 
     private companion object : KLogging()
 
@@ -22,7 +22,7 @@ class CaptchaVerificationService(
      * Verify [token] from Google captcha, if the token is valid, returns [UserPrincipal].
      * Otherwise throws Ca
      */
-    suspend fun verify(token: String, host: String? = null) {
+    override suspend fun verify(token: String, host: String?) {
         val captchaResponse = runCatching {
             client.get<CaptchaResponseDto>(configurationDto.googleUrl) {
                 parameter("secret", configurationDto.secretKey)

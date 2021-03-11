@@ -2,5 +2,5 @@ package blue.mild.covid.vaxx.error
 
 data class ErrorResponseDto(
     val message: String,
-    val callId: String?
+    val requestId: String?
 )

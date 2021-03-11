@@ -1,4 +1,4 @@
-package blue.mild.covid.vaxx.dao
+package blue.mild.covid.vaxx.dao.model
 
 import blue.mild.covid.vaxx.dto.config.DatabaseConfigurationDto
 import org.jetbrains.exposed.sql.Database

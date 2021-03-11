@@ -1,6 +1,6 @@
 package blue.mild.covid.vaxx.security.auth
 
-import blue.mild.covid.vaxx.dao.UserRole
+import blue.mild.covid.vaxx.dao.model.UserRole
 import io.ktor.application.ApplicationCallPipeline
 import io.ktor.application.ApplicationFeature
 import io.ktor.application.call

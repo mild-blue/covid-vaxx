@@ -1,6 +1,6 @@
 package blue.mild.covid.vaxx.setup
 
-import blue.mild.covid.vaxx.dao.DatabaseSetup
+import blue.mild.covid.vaxx.dao.model.DatabaseSetup
 import blue.mild.covid.vaxx.dto.config.CorsConfigurationDto
 import blue.mild.covid.vaxx.dto.config.DatabaseConfigurationDto
 import blue.mild.covid.vaxx.dto.config.JwtConfigurationDto
@@ -15,7 +15,7 @@ import blue.mild.covid.vaxx.routes.registerRoutes
 import blue.mild.covid.vaxx.security.auth.JwtService
 import blue.mild.covid.vaxx.security.auth.RoleBasedAuthorization
 import blue.mild.covid.vaxx.security.auth.registerJwtAuth
-import blue.mild.covid.vaxx.security.ratelimiting.RateLimiting
+import blue.mild.covid.vaxx.security.ddos.RateLimiting
 import blue.mild.covid.vaxx.utils.createLogger
 import com.auth0.jwt.JWTVerifier
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule
@@ -37,6 +37,7 @@ import io.ktor.features.DefaultHeaders
 import io.ktor.features.ForwardedHeaderSupport
 import io.ktor.features.XForwardedHeaderSupport
 import io.ktor.features.callId
+import io.ktor.http.HttpHeaders
 import io.ktor.http.HttpMethod
 import io.ktor.http.content.default
 import io.ktor.http.content.files
@@ -119,6 +120,7 @@ private fun migrateDatabase(dbConfig: DatabaseConfigurationDto) {
 // Configure Ktor and install necessary extensions.
 private fun Application.installFrameworks() {
     installBasics()
+    setupCors()
     installAuthentication()
     installMonitoring()
     installSwagger()
@@ -137,22 +139,40 @@ private fun Application.installBasics() {
         }
     }
 
+    // as we're running behind the proxy, we take remote host from X-Forwarded-From
+    install(XForwardedHeaderSupport)
+    install(ForwardedHeaderSupport)
+}
+
+// Allow CORS.
+private fun Application.setupCors() {
     // enable CORS if necessary
     val corsHosts by di().instance<CorsConfigurationDto>()
+    val allowAndExpose: CORS.Configuration.(String) -> Unit = { headerName ->
+        header(headerName)
+        exposeHeader(headerName)
+    }
     if (corsHosts.enableCors) {
         install(CORS) {
-            anyHost() // todo this might need correction in the future
-            header("Authorization")
-            exposeHeader("Authorization")
             allowCredentials = true
             allowNonSimpleContentTypes = true
+
+            method(HttpMethod.Options)
+            method(HttpMethod.Get)
+            method(HttpMethod.Post)
+            method(HttpMethod.Put)
+            method(HttpMethod.Delete)
+
+            allowAndExpose(HttpHeaders.AccessControlAllowHeaders)
+            allowAndExpose(HttpHeaders.AccessControlAllowOrigin)
+            allowAndExpose(HttpHeaders.ContentType)
+            allowAndExpose(HttpHeaders.Authorization)
+            allowAndExpose("recaptchaToken")
+
             hosts.addAll(corsHosts.allowedHosts)
         }
     }
 
-    // as we're running behind the proxy, we take remote host from X-Forwarded-From
-    install(XForwardedHeaderSupport)
-    install(ForwardedHeaderSupport)
 }
 
 // Install authentication.

@@ -1,49 +1,50 @@
 package blue.mild.covid.vaxx.service
 
-import blue.mild.covid.vaxx.dao.User
+import blue.mild.covid.vaxx.dao.repository.UserRepository
 import blue.mild.covid.vaxx.dto.request.LoginDtoIn
 import blue.mild.covid.vaxx.dto.request.UserRegistrationDtoIn
 import blue.mild.covid.vaxx.dto.response.UserRegisteredDtoOut
 import blue.mild.covid.vaxx.security.auth.CredentialsMismatchException
 import blue.mild.covid.vaxx.security.auth.UserPrincipal
-import org.jetbrains.exposed.sql.insert
-import org.jetbrains.exposed.sql.select
-import org.jetbrains.exposed.sql.transactions.experimental.newSuspendedTransaction
+import mu.KLogging
 import pw.forst.tools.katlib.toUuid
 
 class UserService(
+    private val userRepository: UserRepository,
     private val idProvider: EntityIdProvider,
     private val passwordHashProvider: PasswordHashProvider
 ) {
 
-    suspend fun verifyCredentials(login: LoginDtoIn) = newSuspendedTransaction {
-        val userRow = User
-            .slice(User.id, User.passwordHash, User.role)
-            .select { User.username eq login.username }
-            .singleOrNull() ?: throw CredentialsMismatchException()
+    private companion object : KLogging()
 
-        val authorized = passwordHashProvider.verifyPassword(
-            password = login.password,
-            passwordHash = userRow[User.passwordHash]
-        )
-        if (authorized) {
-            UserPrincipal(
-                userId = userRow[User.id].toUuid(),
-                userRole = userRow[User.role]
-            )
-        } else {
+    /**
+     * Verifies credentials and creates principal. If user does not exist
+     * or supplied wrong password, throws [CredentialsMismatchException].
+     */
+    suspend fun verifyCredentials(login: LoginDtoIn): UserPrincipal {
+        val (id, passwordHash, role) = userRepository.viewByUsername(login.username) {
+            Triple(it[id].toUuid(), it[passwordHash], it[role])
+        } ?: throw CredentialsMismatchException()
+
+        val passwordsMatch = passwordHashProvider.verifyPassword(login.password, passwordHash = passwordHash)
+        if (!passwordsMatch) {
             throw CredentialsMismatchException()
         }
+
+        return UserPrincipal(
+            userId = id,
+            userRole = role
+        )
     }
 
-    suspend fun registerUser(registration: UserRegistrationDtoIn) = newSuspendedTransaction {
-        val (entityId, stringId) = idProvider.generateId()
-        User.insert {
-            it[id] = stringId
-            it[username] = registration.username.trim()
-            it[passwordHash] = passwordHashProvider.hashPassword(registration.password)
-            it[role] = registration.role
-        }
-        UserRegisteredDtoOut(entityId)
-    }
+    /**
+     * Creates new user registration.
+     */
+    suspend fun registerUser(registration: UserRegistrationDtoIn): UserRegisteredDtoOut =
+        userRepository.saveUser(
+            id = idProvider.generateId(),
+            username = registration.username.trim(),
+            passwordHash = passwordHashProvider.hashPassword(registration.password),
+            role = registration.role
+        ).let(::UserRegisteredDtoOut)
 }

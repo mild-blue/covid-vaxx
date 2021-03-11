@@ -1,6 +1,6 @@
 package blue.mild.covid.vaxx.routes
 
-import blue.mild.covid.vaxx.dao.UserRole
+import blue.mild.covid.vaxx.dao.model.UserRole
 import blue.mild.covid.vaxx.dto.request.LoginDtoIn
 import blue.mild.covid.vaxx.dto.request.UserRegistrationDtoIn
 import blue.mild.covid.vaxx.dto.response.UserLoginResponseDtoOut
@@ -28,6 +28,7 @@ import org.kodein.di.instance
 fun NormalOpenAPIRoute.userRoutes() {
     val userService by di().instance<UserService>()
     val jwtService by di().instance<JwtService>()
+
     route(Routes.registeredUserLogin) {
         post<Unit, UserLoginResponseDtoOut, LoginDtoIn>(
             info("Login endpoint for the registered users such as administrators and doctors.")

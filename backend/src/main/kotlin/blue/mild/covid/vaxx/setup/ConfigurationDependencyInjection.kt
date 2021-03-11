@@ -2,6 +2,7 @@ package blue.mild.covid.vaxx.setup
 
 import blue.mild.covid.vaxx.dto.config.CorsConfigurationDto
 import blue.mild.covid.vaxx.dto.config.DatabaseConfigurationDto
+import blue.mild.covid.vaxx.dto.config.IsinConfigurationDto
 import blue.mild.covid.vaxx.dto.config.JwtConfigurationDto
 import blue.mild.covid.vaxx.dto.config.MailJetConfigurationDto
 import blue.mild.covid.vaxx.dto.config.RateLimitConfigurationDto
@@ -97,6 +98,14 @@ fun DI.MainBuilder.bindConfiguration() {
             secretKey = requireEnv(EnvVariables.RECAPTCHA_SECRET_KEY),
             googleUrl = "https://www.google.com/recaptcha/api/siteverify"
         )
+    }
+
+    bind<Boolean>(EnvVariables.ENABLE_ISIN_REGISTRATION) with singleton {
+        getEnvOrLogDefault(EnvVariables.ENABLE_ISIN_REGISTRATION, "false").toBoolean()
+    }
+
+    bind<IsinConfigurationDto>() with singleton {
+        TODO("Not implemented yet.")
     }
 }
 
