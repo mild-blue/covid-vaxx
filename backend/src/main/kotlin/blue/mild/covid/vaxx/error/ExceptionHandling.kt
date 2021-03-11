@@ -30,7 +30,7 @@ fun Application.installExceptionHandling() {
             logger.warn {
                 call.principal<UserPrincipal>()
                     ?.let { "$it tried to access resource \"${call.request.path()}\" that is not allowed." }
-                    ?: "User without principals tried to access the resource ${call.request.path()}"
+                    ?: "User without principals tried to access the resource ${call.request.path()}."
             }
             call.respond(HttpStatusCode.Forbidden)
         }
@@ -54,17 +54,17 @@ fun Application.installExceptionHandling() {
 
         exception<ValidationException> { cause ->
             logger.debug { cause.message }
-            call.errorResponse(HttpStatusCode.BadRequest, "Bad request: ${cause.message}")
+            call.errorResponse(HttpStatusCode.BadRequest, "Bad request: ${cause.message}.")
         }
 
         exception<EmptyStringException> { cause ->
             logger.debug { cause.message }
-            call.errorResponse(HttpStatusCode.BadRequest, "Bad request: ${cause.message}")
+            call.errorResponse(HttpStatusCode.BadRequest, "Bad request: ${cause.message}.")
         }
 
         exception<OpenAPIRequiredFieldException> { cause ->
             logger.warn { "Missing data in request: ${cause.message}" }
-            call.errorResponse(HttpStatusCode.BadRequest, "Missing data in request: ${cause.message}")
+            call.errorResponse(HttpStatusCode.BadRequest, "Missing data in request: ${cause.message}.")
         }
 
         exception<ExposedSQLException> { cause ->
