@@ -1,10 +1,10 @@
 package blue.mild.covid.vaxx.dto.request
 
 import com.papsign.ktor.openapigen.annotations.mapping.OpenAPIName
-import com.papsign.ktor.openapigen.annotations.parameters.HeaderParam
+import com.papsign.ktor.openapigen.annotations.parameters.QueryParam
 
 data class CaptchaVerificationDtoIn(
-    @HeaderParam("Token from the Google Captcha.")
+    @QueryParam("Token from the Google Captcha.")
     @OpenAPIName(NAME)
     val capthaToken: String
 ) {

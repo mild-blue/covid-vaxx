@@ -16,7 +16,7 @@ import io.ktor.client.features.HttpTimeout
 import io.ktor.client.features.json.JacksonSerializer
 import io.ktor.client.features.json.Json
 import io.ktor.client.request.get
-import io.ktor.client.request.header
+import io.ktor.client.request.parameter
 import io.ktor.client.request.post
 import io.ktor.client.statement.HttpResponse
 import io.ktor.http.ContentType
@@ -111,7 +111,7 @@ abstract class LoadTest(
 
     private suspend fun registerPatient(patient: PatientRegistrationDtoIn) =
         meteredClient.post<HttpResponse>("${targetHost}${Routes.patient}") {
-            header(CaptchaVerificationDtoIn.NAME, "1234") // should be disabled
+            parameter(CaptchaVerificationDtoIn.NAME, "1234") // should be disabled
             contentType(ContentType.Application.Json)
             body = patient
         }
