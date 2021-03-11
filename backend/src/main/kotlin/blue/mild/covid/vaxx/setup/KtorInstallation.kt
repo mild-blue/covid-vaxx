@@ -5,6 +5,7 @@ import blue.mild.covid.vaxx.dto.config.CorsConfigurationDto
 import blue.mild.covid.vaxx.dto.config.DatabaseConfigurationDto
 import blue.mild.covid.vaxx.dto.config.JwtConfigurationDto
 import blue.mild.covid.vaxx.dto.config.RateLimitConfigurationDto
+import blue.mild.covid.vaxx.dto.request.CaptchaVerificationDtoIn
 import blue.mild.covid.vaxx.error.installExceptionHandling
 import blue.mild.covid.vaxx.extensions.determineRealIp
 import blue.mild.covid.vaxx.monitoring.CALL_ID
@@ -167,7 +168,7 @@ private fun Application.setupCors() {
             allowAndExpose(HttpHeaders.AccessControlAllowOrigin)
             allowAndExpose(HttpHeaders.ContentType)
             allowAndExpose(HttpHeaders.Authorization)
-            allowAndExpose("recaptchaToken")
+            allowAndExpose(CaptchaVerificationDtoIn.NAME)
 
             hosts.addAll(corsHosts.allowedHosts)
         }

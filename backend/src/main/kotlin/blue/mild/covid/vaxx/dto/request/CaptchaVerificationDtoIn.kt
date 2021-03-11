@@ -5,6 +5,10 @@ import com.papsign.ktor.openapigen.annotations.parameters.HeaderParam
 
 data class CaptchaVerificationDtoIn(
     @HeaderParam("Token from the Google Captcha.")
-    @OpenAPIName("captcha")
+    @OpenAPIName(NAME)
     val capthaToken: String
-)
+) {
+    companion object {
+        const val NAME = "captcha"
+    }
+}
