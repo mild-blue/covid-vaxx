@@ -15,7 +15,7 @@ fun defaultPatientRegistrationBuilder(): PatientRegistrationBuilder =
             firstName = "[PerformanceTest] - ${UUID.randomUUID()}",
             lastName = "[PerformanceTest] - ${UUID.randomUUID()}",
             personalNumber = "7401040020",
-            phoneNumber = "+420${(0..9).map { Random.nextInt(10) }}",
+            phoneNumber = "+420${(1..9).joinToString("") { Random.nextInt(10).toString() }}",
             email = "${UUID.randomUUID()}@test.com",
             insuranceCompany, answers, confirmation
         )
