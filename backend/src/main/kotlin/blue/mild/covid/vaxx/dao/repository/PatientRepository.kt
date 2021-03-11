@@ -85,7 +85,7 @@ class PatientRepository(
     ): List<PatientDtoOut> = newSuspendedTransaction { getAndMapPatients(where) }
 
     /**
-     * Saves the given data to the database3 as a new patient registration record.
+     * Saves the given data to the database as a new patient registration record.
      *
      * Returns patient [id].
      */

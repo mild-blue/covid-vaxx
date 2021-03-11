@@ -12,7 +12,6 @@ import org.jetbrains.exposed.sql.Column
 import org.jetbrains.exposed.sql.Op
 import org.jetbrains.exposed.sql.and
 import org.jetbrains.exposed.sql.transactions.experimental.newSuspendedTransaction
-import pw.forst.tools.katlib.applyIf
 import pw.forst.tools.katlib.whenFalse
 import java.util.UUID
 
@@ -49,7 +48,7 @@ class PatientService(
     ): List<PatientDtoOut> =
         patientRepository.getAndMapPatientsBy {
             Op.TRUE
-                .andWithIfNotEmpty(email?.trim(), Patient.email)
+                .andWithIfNotEmpty(email?.trim()?.toLowerCase(), Patient.email)
                 .andWithIfNotEmpty(phoneNumber?.trim(), Patient.phoneNumber)
                 .let { query ->
                     vaccinated?.let {
@@ -68,20 +67,20 @@ class PatientService(
         getPatientsByConjunctionOf()
 
     /**
-     * Returns all patients with given email.
+     * Returns all patients with given [email].
      */
     suspend fun getPatientsByEmail(email: String) =
         getPatientsByConjunctionOf(email = email)
 
     /**
-     * Returns all patients with given email.
+     * Returns all patients with given [phoneNumber].
      */
     suspend fun getPatientsByPhoneNumber(phoneNumber: String) =
         getPatientsByConjunctionOf(phoneNumber = phoneNumber)
 
 
     /**
-     * Returns all patients with given email.
+     * Returns all patients that were vaccinated or not vaccinated.
      */
     suspend fun getPatientsByVaccinated(vaccinated: Boolean) =
         getPatientsByConjunctionOf(vaccinated = vaccinated)
@@ -96,7 +95,7 @@ class PatientService(
             lastName = changeSet.lastName?.trim(),
             phoneNumber = changeSet.phoneNumber?.trim(),
             personalNumber = changeSet.personalNumber?.let { normalizePersonalNumber(it) },
-            email = changeSet.email?.trim(),
+            email = changeSet.email?.trim()?.toLowerCase(),
             insuranceCompany = changeSet.insuranceCompany,
             vaccinatedOn = changeSet.vaccinatedOn,
             answers = changeSet.answers?.associate { it.questionId to it.value }
@@ -123,15 +122,17 @@ class PatientService(
                 lastName = registration.lastName.trim(),
                 phoneNumber = registration.phoneNumber.trim(),
                 personalNumber = normalizePersonalNumber(registration.personalNumber),
-                email = registration.email.trim(),
+                email = registration.email.trim().toLowerCase(),
                 insuranceCompany = registration.insuranceCompany,
                 remoteHost = registrationRemoteHost,
                 answers = registration.answers.associate { it.questionId to it.value }
             )
         }).also { (patientId) ->
-            logger
-                .applyIf(logger.isDebugEnabled) { debug { "Patient ${registration.email} saved under id $patientId" } }
-                .applyIf(logger.isInfoEnabled) { info { "Patient $patientId registered." } }
+            if (logger.isDebugEnabled) {
+                logger.debug { "Patient ${registration.email} saved under id $patientId" }
+            } else {
+                logger.info { "Patient $patientId registered." }
+            }
         }
     }
 

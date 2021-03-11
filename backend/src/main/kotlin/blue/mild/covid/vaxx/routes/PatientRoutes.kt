@@ -63,7 +63,7 @@ fun NormalOpenAPIRoute.patientRoutes() {
     }
     // admin routes for registered users only
     authorizeRoute(requireOneOf = setOf(UserRole.ADMIN, UserRole.DOCTOR)) {
-        route(Routes.patient) {
+        route(Routes.adminSectionPatient) {
             route("single") {
                 get<PatientByPersonalNumberQueryDtoIn, PatientDtoOut, UserPrincipal>(
                     info("Get patient by personal number.")

@@ -6,6 +6,7 @@ import blue.mild.covid.vaxx.dto.request.UserRegistrationDtoIn
 import blue.mild.covid.vaxx.dto.response.UserRegisteredDtoOut
 import blue.mild.covid.vaxx.security.auth.CredentialsMismatchException
 import blue.mild.covid.vaxx.security.auth.UserPrincipal
+import mu.KLogging
 import pw.forst.tools.katlib.toUuid
 
 class UserService(
@@ -14,24 +15,31 @@ class UserService(
     private val passwordHashProvider: PasswordHashProvider
 ) {
 
+    private companion object : KLogging()
+
     /**
      * Verifies credentials and creates principal. If user does not exist
      * or supplied wrong password, throws [CredentialsMismatchException].
      */
-    suspend fun verifyCredentials(login: LoginDtoIn): UserPrincipal = runCatching {
+    suspend fun verifyCredentials(login: LoginDtoIn): UserPrincipal {
         val (id, passwordHash, role) = userRepository.viewByUsername(login.username) {
             Triple(it[id].toUuid(), it[passwordHash], it[role])
+        } ?: throw CredentialsMismatchException()
+
+        val passwordsMatch = passwordHashProvider.verifyPassword(login.password, passwordHash = passwordHash)
+        if (!passwordsMatch) {
+            throw CredentialsMismatchException()
         }
 
         require(passwordHashProvider.verifyPassword(login.password, passwordHash = passwordHash)) {
             "Password verification failed for user ${login.username}."
         }
 
-        UserPrincipal(
+        return UserPrincipal(
             userId = id,
             userRole = role
         )
-    }.getOrNull() ?: throw CredentialsMismatchException()
+    }
 
     /**
      * Creates new user registration.

@@ -11,8 +11,8 @@ object Patient : Table("patients") {
     val firstName = varchar("first_name", 256)
     val lastName = varchar("last_name", 256)
     val personalNumber = varchar("personal_number", 11)
-    val phoneNumber = varchar("phone_number", 13)
-    val email = varchar("email", 256)
+    val phoneNumber = varchar("phone_number", 14)
+    val email = text("email", "citext")
     val insuranceCompany = enumerationByName("insurance_company", 4, InsuranceCompany::class)
     val remoteHost = varchar("remote_host", 45) // for size see https://stackoverflow.com/a/166157/7169288
     val registrationEmailSent = timestamp("email_sent_date").nullable()

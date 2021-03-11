@@ -2,7 +2,6 @@ package blue.mild.covid.vaxx.dao.repository
 
 import blue.mild.covid.vaxx.dao.model.User
 import blue.mild.covid.vaxx.dao.model.UserRole
-import blue.mild.covid.vaxx.error.entityNotFound
 import org.jetbrains.exposed.sql.ResultRow
 import org.jetbrains.exposed.sql.insert
 import org.jetbrains.exposed.sql.select
@@ -16,11 +15,10 @@ class UserRepository {
     suspend fun <T> viewByUsername(
         username: String,
         viewBlock: suspend User.(ResultRow) -> T
-    ): T = newSuspendedTransaction {
-        val userRow = User.select { User.username eq username }
-            .singleOrNull() ?: throw entityNotFound<User>(User::username, username)
-
-        User.viewBlock(userRow)
+    ): T? = newSuspendedTransaction {
+        User.select { User.username eq username }
+            .singleOrNull()
+            ?.let { User.viewBlock(it) }
     }
 
     /**

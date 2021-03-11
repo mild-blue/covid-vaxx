@@ -28,6 +28,7 @@ import org.kodein.di.instance
 fun NormalOpenAPIRoute.userRoutes() {
     val userService by di().instance<UserService>()
     val jwtService by di().instance<JwtService>()
+
     route(Routes.registeredUserLogin) {
         post<Unit, UserLoginResponseDtoOut, LoginDtoIn>(
             info("Login endpoint for the registered users such as administrators and doctors.")

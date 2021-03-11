@@ -5,6 +5,7 @@ package blue.mild.covid.vaxx.routes
  */
 object Routes {
     val patient = apiName("patient")
+
     val question = apiName("question")
     val questionsCacheRefresh = apiName("question/refresh")
     val insuranceCompany = apiName("insurance-company")
@@ -13,9 +14,10 @@ object Routes {
     val status = apiName("status")
     val statusHealth = apiName("status/health")
 
-    val registeredUserLogin = apiName("login")
-    val userRegistration = apiName("register")
-    val userLoginVerification = apiName("user/self")
+    val registeredUserLogin = apiName("admin/login")
+    val userRegistration = apiName("admin/register")
+    val userLoginVerification = apiName("admin/self")
+    val adminSectionPatient = apiName("admin/patient")
 
     const val openApiJson = "/openapi.json"
     const val swaggerUi = "/swagger-ui"
