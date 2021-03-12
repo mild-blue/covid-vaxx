@@ -326,7 +326,7 @@
                                     </p>
                                     <p>
 
-                                        Ing. Tomáš Kouřim, CEO Mild Blue
+                                        MUDr. Alžběta Honzková, Mild Blue
                                     </p>
                                 </div>
                             </td>
