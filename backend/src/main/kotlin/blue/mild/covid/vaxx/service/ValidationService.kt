@@ -58,7 +58,7 @@ class ValidationService(private val questionService: QuestionService) {
 
     fun validatePersonalNumberAndThrow(personalNumber: String) {
         val validationResult = runCatching { validatePersonalNumber(personalNumber) }.getOrNull()
-        if (validationResult != true) { // aka it is either false it it failed to validate
+        if (validationResult != true) { // aka it is either false or it failed to validate
             throw ValidationException("personalNumber", personalNumber)
         }
     }
