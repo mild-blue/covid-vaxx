@@ -57,7 +57,8 @@ class ValidationService(private val questionService: QuestionService) {
     }
 
     fun validatePersonalNumberAndThrow(personalNumber: String) {
-        if (!validatePersonalNumber(personalNumber)) {
+        val validationResult = runCatching { validatePersonalNumber(personalNumber) }.getOrNull()
+        if (validationResult != true) { // aka it is either false or it failed to validate
             throw ValidationException("personalNumber", personalNumber)
         }
     }
@@ -74,7 +75,7 @@ class ValidationService(private val questionService: QuestionService) {
         }
     }
 
-    private fun validateEmptyString(value: String): Boolean = !value.isNullOrEmpty()
+    private fun validateEmptyString(value: String): Boolean = value.isNotEmpty()
 
     private fun validatePhoneNumber(phoneNumber: String): Boolean = """^\+\d{12}$""".toRegex() matches phoneNumber
 
@@ -87,13 +88,14 @@ class ValidationService(private val questionService: QuestionService) {
     private fun validateEmail(email: String): Boolean =
         """(?:[a-z0-9!#${'$'}%&'*+/=?^_`{|}~-]+(?:\.[a-z0-9!#${'$'}%&'*+/=?^_`{|}~-]+)*|"(?:[\x01-\x08\x0b\x0c\x0e-\x1f\x21\x23-\x5b\x5d-\x7f]|\\[\x01-\x09\x0b\x0c\x0e-\x7f])*")@(?:(?:[a-z0-9](?:[a-z0-9-]*[a-z0-9])?\.)+[a-z0-9](?:[a-z0-9-]*[a-z0-9])?|\[(?:(?:(2(5[0-5]|[0-4][0-9])|1[0-9][0-9]|[1-9]?[0-9]))\.){3}(?:(2(5[0-5]|[0-4][0-9])|1[0-9][0-9]|[1-9]?[0-9])|[a-z0-9-]*[a-z0-9]:(?:[\x01-\x08\x0b\x0c\x0e-\x1f\x21-\x5a\x53-\x7f]|\\[\x01-\x09\x0b\x0c\x0e-\x7f])+)\])""".toRegex() matches email
 
-    private fun validatePersonalNumber(personalNumber: String): Boolean {
-        if (personalNumber.isNullOrEmpty()) {
+    private fun validatePersonalNumber(rawString: String): Boolean {
+        val personalNumber = rawString.trim()
+        if (personalNumber.length < 9) {
             return false
         }
 
-        var firstPart = ""
-        var secondPart = ""
+        val firstPart: String
+        val secondPart: String
 
         val parts = personalNumber.split("/")
         if (parts.size == 1) {
