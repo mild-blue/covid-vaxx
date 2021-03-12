@@ -296,7 +296,7 @@
                     <table role="presentation" border="0" cellpadding="0" cellspacing="0" width="100%">
                         <tr>
                             <td class="logo" style="text-align: center;">
-                                <h1><a href="#">Očkování COVID-19</a></h1>
+                                <h1>Očkování COVID-19</h1>
                             </td>
                         </tr>
                     </table>
@@ -326,7 +326,7 @@
                                     </p>
                                     <p>
 
-                                        Tomáš Kouřim
+                                        MUDr. Alžběta Honzková, Mild Blue
                                     </p>
                                 </div>
                             </td>
@@ -375,7 +375,7 @@
                     <table>
                         <tr>
                             <td valign="top" width="100%" style="text-align: center;">
-                                Powered by 
+                                Powered by
                                 <a href="https://mild.blue" style="color: #fff;" target="_blank">
                                     Mild Blue
 								</a>
