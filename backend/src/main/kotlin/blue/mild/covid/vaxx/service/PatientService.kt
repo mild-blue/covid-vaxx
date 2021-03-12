@@ -109,13 +109,13 @@ class PatientService(
 
         val (registration, registrationRemoteHost) = patientRegistrationDto
 
-        logger.debug { "Registration validation for patient ${registration.email}." }
+        logger.debug { "Registration validation." }
         validationService.validatePatientRegistrationAndThrow(registration)
 
         return PatientRegisteredDtoOut(newSuspendedTransaction {
             val entityId = entityIdProvider.generateId()
 
-            logger.debug { "Saving registration for patient ${registration.email}." }
+            logger.debug { "Saving registration." }
             patientRepository.savePatient(
                 id = entityId,
                 firstName = registration.firstName.trim(),
