@@ -21,7 +21,11 @@ export class PatientService {
               private _questionService: QuestionService) {
   }
 
+<<<<<<< HEAD
   public async savePatientInfo(token: string, patientInfo: PatientData, questions: Question[], agreement: boolean, confirmation: boolean, gdpr: boolean): Promise<null> {
+=======
+  public async savePatientInfo(token: string, patientInfo: PatientData, questions: Question[], agreement: boolean, confirmation: boolean, gdpr: boolean): Promise<PatientRegisteredDtoOut> {
+>>>>>>> 2b7e032... send captcha as a query param
     const params = new HttpParams().set('captcha', token);
 
     const registration: PatientRegistrationDtoIn = {
@@ -44,7 +48,11 @@ export class PatientService {
 >>>>>>> a76b251... Page after successful registration #51
       `${environment.apiUrl}/patient`,
       registration,
+<<<<<<< HEAD
       { params }
+=======
+      { params },
+>>>>>>> 2b7e032... send captcha as a query param
     ).pipe(
       first()
     ).toPromise();
