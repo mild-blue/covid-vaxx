@@ -14,6 +14,9 @@ jobs:
         with:
           java-version: 11
 
+      - name: Change directory to backend
+        run: cd backend
+
       - name: Execute Detekt
         run: ./gradlew detekt
 
