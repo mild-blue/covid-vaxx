@@ -57,8 +57,8 @@ class ValidationServiceTest {
     @Test
     fun `test vaccinatedOn`() {
         val instance = instance()
-        // now is after 2020
-        assertDoesNotThrow { instance.requireValidVaccinatedOn(Instant.now()) }
+        // 2021 is after 2020
+        assertDoesNotThrow { instance.requireValidVaccinatedOn(Instant.parse("2021-01-01T00:00:00.00Z")) }
         // do not accept vaccinated on before 2020
         assertThrows<PropertyValidationException> {
             instance.requireValidVaccinatedOn(Instant.parse("2019-01-01T00:00:00.00Z"))

@@ -56,7 +56,7 @@ fun Application.installExceptionHandling() {
             call.errorResponse(HttpStatusCode.NotFound, cause.message)
         }
 
-        deserializationExceptions()
+        jsonExceptions()
 
         // validation failed for some property
         exception<ValidationException> { cause ->
@@ -91,7 +91,7 @@ fun Application.installExceptionHandling() {
     }
 }
 
-private fun StatusPages.Configuration.deserializationExceptions() {
+private fun StatusPages.Configuration.jsonExceptions() {
     val respond: suspend PipelineContext<Unit, ApplicationCall>.(String) -> Unit = { message ->
         call.errorResponse(HttpStatusCode.BadRequest, message)
     }
