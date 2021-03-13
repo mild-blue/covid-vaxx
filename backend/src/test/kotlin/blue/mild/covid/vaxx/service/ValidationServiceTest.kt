@@ -158,6 +158,9 @@ class ValidationServiceTest {
         assertThrows<EmptyStringException> {
             instance.requireNotEmptyString("", "     ")
         }
+        assertThrows<EmptyStringException> {
+            instance.requireNotEmptyString("", "\t")
+        }
         assertDoesNotThrow {
             instance.requireNotEmptyString("", "a")
         }
