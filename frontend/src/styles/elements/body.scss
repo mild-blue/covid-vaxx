@@ -42,4 +42,8 @@ body {
       opacity: 0.5;
     }
   }
+  .mat-menu-panel {
+    max-height: 500px;
+    max-width: 380px;
+  }
 }

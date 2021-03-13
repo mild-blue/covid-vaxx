@@ -38,6 +38,7 @@ import { InfoComponent } from './pages/info/info.component';
 import { GdprComponent } from './components/dialogs/gdpr/gdpr.component';
 import { RECAPTCHA_V3_SITE_KEY, RecaptchaV3Module } from 'ng-recaptcha';
 import { environment } from '@environments/environment';
+import {NgxMatIntlTelInputModule} from "ngx-mat-intl-tel-input";
 
 @NgModule({
   declarations: [
@@ -78,7 +79,8 @@ import { environment } from '@environments/environment';
     MatIconModule,
     MatProgressBarModule,
     MatBadgeModule,
-    RecaptchaV3Module
+    RecaptchaV3Module,
+    NgxMatIntlTelInputModule
   ],
   providers: [
     { provide: HTTP_INTERCEPTORS, useClass: AuthInterceptor, multi: true },

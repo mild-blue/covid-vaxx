@@ -35,9 +35,16 @@
               </mat-form-field>
 
               <mat-form-field>
-                <mat-label>Telefonní číslo</mat-label>
-                <input [(ngModel)]="patient.phoneNumber" formControlName="phoneNumber" matInput placeholder="Vaše telefonní číslo" required>
-                <mat-hint>Telefonní číslo ve formátu +420XXXXXXXXX</mat-hint>
+                <mat-label>Telefonní číslo *</mat-label>
+                <ngx-mat-intl-tel-input
+                  [(ngModel)]="patient.phoneNumber"
+                  [preferredCountries]="['cz', 'sk', 'de', 'at', 'pl']"
+                  [enablePlaceholder]="true"
+                  [enableSearch]="false"
+                  name="phoneNumber"
+                  formControlName="phoneNumber"
+                  placeholder="Vaše telefonní číslo"
+                ></ngx-mat-intl-tel-input>
               </mat-form-field>
               <mat-form-field>
                 <mat-label>E-mail</mat-label>

@@ -10,6 +10,7 @@ const unprobableMonthAddition = 20;
  * Validates phone number in format +123456789123.
  */
 export function validatePhoneNumber(control: AbstractControl): ValidationErrors | null {
+  console.log('!!! ' + control.value)
   const regex = /^\+\d{12}$/;
   if (!regex.test(control.value)) {
     return {phoneNumberInvalid: true};
