@@ -87,6 +87,8 @@ dependencies {
     testImplementation(kotlin("test"))
     testImplementation(kotlin("test-junit5"))
     val junitVersion = "5.7.1"
+    testImplementation("org.junit.jupiter", "junit-jupiter-api", junitVersion) // junit testing framework
+    testImplementation("org.junit.jupiter", "junit-jupiter-params", junitVersion) // generated parameters for tests
     testRuntimeOnly("org.junit.jupiter", "junit-jupiter-engine", junitVersion)
 }
 

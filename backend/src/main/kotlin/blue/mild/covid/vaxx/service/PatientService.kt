@@ -110,7 +110,7 @@ class PatientService(
         val (registration, registrationRemoteHost) = patientRegistrationDto
 
         logger.debug { "Registration validation." }
-        validationService.validatePatientRegistrationAndThrow(registration)
+        validationService.requireValidRegistration(registration)
 
         return PatientRegisteredDtoOut(newSuspendedTransaction {
             val entityId = entityIdProvider.generateId()
