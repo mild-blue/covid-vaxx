@@ -22,6 +22,7 @@ buildscript {
 
 detekt {
     config = files("detekt.yml")
+    parallel = true
 }
 
 

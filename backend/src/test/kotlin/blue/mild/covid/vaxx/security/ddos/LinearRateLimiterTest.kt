@@ -37,7 +37,7 @@ class LinearRateLimiterTest {
         )
 
         val workers = 5
-        val repetitionsPerWorker = 3
+        val repetitionsPerWorker = 10
         // just to check the parameters, that we can really get denied result
         assertTrue { limit < (workers + repetitionsPerWorker) }
         instance.stressTest(
