@@ -9,8 +9,8 @@ object Answer : Table("answers") {
     val created: Column<Instant> = timestamp("created")
     val updated: Column<Instant> = timestamp("updated")
 
-    val questionId = varchar("question_id", 36) references Question.id
-    val patientId = varchar("patient_id", 36) references Patient.id
+    val questionId = varchar("question_id", DatabaseTypeLength.ID) references Question.id
+    val patientId = varchar("patient_id", DatabaseTypeLength.ID) references Patient.id
 
     val value = bool("value")
 

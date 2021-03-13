@@ -64,6 +64,7 @@ fun DI.MainBuilder.registerClasses() {
     bind<DummyMailService>() with singleton { DummyMailService() }
 
     bind<Configuration>() with singleton {
+        @Suppress("MagicNumber") // version specification of the client.
         Configuration(Version(2, 3, 31)).apply {
             setClassForTemplateLoading(MailJetEmailService::class.java, "/templates")
         }

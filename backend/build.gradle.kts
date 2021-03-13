@@ -6,12 +6,25 @@ plugins {
     application
     distribution
     id("net.nemerosa.versioning") version "2.14.0"
+    id("io.gitlab.arturbosch.detekt").version("1.16.0")
 }
 
 group = "blue.mild.covid.vaxx"
 version = versioning.info?.tag ?: versioning.info?.lastTag ?: "development"
 
 val mClass = "blue.mild.covid.vaxx.MainKt"
+
+buildscript {
+    repositories {
+        jcenter()
+    }
+}
+
+detekt {
+    config = files("detekt.yml")
+    parallel = true
+}
+
 
 application {
     mainClass.set(mClass)
@@ -87,6 +100,8 @@ dependencies {
     testImplementation(kotlin("test"))
     testImplementation(kotlin("test-junit5"))
     val junitVersion = "5.7.1"
+    testImplementation("org.junit.jupiter", "junit-jupiter-api", junitVersion) // junit testing framework
+    testImplementation("org.junit.jupiter", "junit-jupiter-params", junitVersion) // generated parameters for tests
     testRuntimeOnly("org.junit.jupiter", "junit-jupiter-engine", junitVersion)
 }
 

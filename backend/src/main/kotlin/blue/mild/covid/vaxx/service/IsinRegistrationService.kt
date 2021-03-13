@@ -8,6 +8,7 @@ import java.util.UUID
 /**
  * Registering patients in ISIN.
  */
+@Suppress("unused")
 class IsinRegistrationService(
     private val configuration: IsinConfigurationDto,
     private val httpClient: HttpClient,
