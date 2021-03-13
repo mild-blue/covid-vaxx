@@ -76,12 +76,30 @@ fun Application.init() {
     connectDatabase()
     // configure Ktor
     installFrameworks()
-    // configure static routes to serve frontend
+    // configure routing
+    installRouting()
+}
+
+private fun Application.installRouting() {
     val staticContentPath by di().instance<String>(EnvVariables.FRONTEND_PATH)
     routing {
+        // configure static routes to serve frontend
         static {
             files(staticContentPath)
             default("${staticContentPath}/index.html")
+        }
+
+        // configure redirects on the frontend static pages
+        get("/admin") {
+            call.respondRedirect("/#/admin")
+        }
+
+        get("/registration") {
+            call.respondRedirect("/#/registration")
+        }
+
+        get("/info") {
+            call.respondRedirect("/#/info")
         }
     }
     // register routing with swagger
