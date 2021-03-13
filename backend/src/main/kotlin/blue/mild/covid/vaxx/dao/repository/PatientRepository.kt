@@ -31,7 +31,11 @@ class PatientRepository(
     /**
      * Updates patient entity with given id. Change set of the given properties
      * is applied to the entity.
+     *
+     * Note: use named parameters while using this method.
      */
+    // this can't be refactored as it is builder
+    @Suppress("LongParameterList")
     suspend fun updatePatientChangeSet(
         id: UUID,
         firstName: String? = null,
@@ -88,7 +92,11 @@ class PatientRepository(
      * Saves the given data to the database as a new patient registration record.
      *
      * Returns patient [id].
+     *
+     * Note: use named parameters while using this method.
      */
+    // this can't be refactored as it is builder
+    @Suppress("LongParameterList")
     suspend fun savePatient(
         id: UUID,
         firstName: String,

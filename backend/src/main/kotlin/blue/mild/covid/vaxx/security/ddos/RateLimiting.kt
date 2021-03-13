@@ -27,7 +27,7 @@ class RateLimiting private constructor(
 ) {
 
     class Configuration {
-        var limit: Long = 1000L
+        var limit: Long = 0
         lateinit var resetTime: Duration
         lateinit var keyExtraction: PipelineContext<*, ApplicationCall>.() -> String
         lateinit var requestExclusion: RateLimitExclusion

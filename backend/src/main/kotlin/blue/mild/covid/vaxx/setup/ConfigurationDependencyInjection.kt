@@ -22,6 +22,9 @@ import java.util.UUID
  * Loads the DI container with configuration from the system environment.
  */
 // TODO load all config from the file and then allow the replacement with env variables
+// default values explained in the code
+// it is DI, long method is expected
+@Suppress("MagicNumber", "LongMethod")
 fun DI.MainBuilder.bindConfiguration() {
     // The default values used in this configuration are for the local development.
     bind<DatabaseConfigurationDto>() with singleton {

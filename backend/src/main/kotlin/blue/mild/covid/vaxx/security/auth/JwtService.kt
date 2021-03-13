@@ -60,6 +60,7 @@ class JwtService(
             }
         }.getOrElse { throw InvalidJwtException("Invalid JWT!") }
 
+    @Suppress("MagicNumber") // minutes to milliseconds
     private fun obtainExpirationDate(): Date =
         Date(System.currentTimeMillis() + jwtConfiguration.jwtExpirationInMinutes * 60_000)
 }

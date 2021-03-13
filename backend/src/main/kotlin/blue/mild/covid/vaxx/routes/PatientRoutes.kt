@@ -37,6 +37,7 @@ import java.time.Instant
 /**
  * Routes related to patient entity.
  */
+@Suppress("LongMethod") // this is routing, that's fine
 fun NormalOpenAPIRoute.patientRoutes() {
     val logger = createLogger("PatientRoutes")
 

@@ -3,6 +3,8 @@ package blue.mild.covid.vaxx.dao.model
 import org.jetbrains.exposed.sql.Table
 import org.jetbrains.exposed.sql.`java-time`.timestamp
 
+// lengths in the database
+@Suppress("MagicNumber")
 object User : Table("users") {
     val id = varchar("id", 36)
     val created = timestamp("created")

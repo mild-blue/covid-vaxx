@@ -1,5 +1,6 @@
 package blue.mild.covid.vaxx.dao.model
 
+@Suppress("MagicNumber") // these are given numbers
 enum class InsuranceCompany(
     val csFullName: String,
     val code: Int

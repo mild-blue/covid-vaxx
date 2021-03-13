@@ -10,6 +10,7 @@ import pw.forst.tools.katlib.mapToSet
 import java.time.Instant
 import java.time.LocalDate
 
+@Suppress("TooManyFunctions") // this can't be split right now
 class ValidationService(private val questionService: QuestionService) {
     private companion object : KLogging() {
         private const val requiredMinimalTimeOfVaccination = "2020-01-01T00:00:00.00Z"
@@ -178,6 +179,9 @@ class ValidationService(private val questionService: QuestionService) {
             |-\x7f])+)])""".trimMargin()
             .toRegex() matches email
 
+    // because those are correct indices
+    // also because it is simply too complex to validate personal number
+    @Suppress("MagicNumber", "ReturnCount", "ComplexMethod")
     private fun validatePersonalNumber(personalNumber: String): Boolean {
         if (personalNumber.length < 9) {
             return false

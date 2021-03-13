@@ -5,6 +5,8 @@ import org.jetbrains.exposed.sql.Table
 import org.jetbrains.exposed.sql.`java-time`.timestamp
 import java.time.Instant
 
+// lengths in the database, 36 is length of UUID
+@Suppress("MagicNumber")
 object Answer : Table("answers") {
     val created: Column<Instant> = timestamp("created")
     val updated: Column<Instant> = timestamp("updated")

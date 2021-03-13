@@ -14,6 +14,7 @@ import java.util.concurrent.atomic.AtomicLong
  * Linear implementation of the rate limiting. If [limit] is depleted during the [resetTime]
  * from the first request, it denies access.
  */
+@Suppress("MagicNumber") // we need to specify some default values
 class LinearRateLimiter(
     private val limit: Long = 1000,
     private val resetTime: Duration = Duration.ofHours(1),
