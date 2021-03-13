@@ -12,3 +12,7 @@ data class PropertyValidationException(
 data class EmptyStringException(
     val parameterName: String,
 ) : ValidationException("Parameter $parameterName must not be empty.")
+
+class EmptyUpdateException : ValidationException("No data given for the update.")
+
+

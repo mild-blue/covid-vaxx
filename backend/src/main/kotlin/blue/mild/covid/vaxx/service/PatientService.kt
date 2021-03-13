@@ -88,7 +88,9 @@ class PatientService(
     /**
      * Updates patient with given change set.
      */
-    suspend fun updatePatientWithChangeSet(patientId: UUID, changeSet: PatientUpdateDtoIn) =
+    suspend fun updatePatientWithChangeSet(patientId: UUID, changeSet: PatientUpdateDtoIn) {
+        validationService.requireValidPatientUpdate(changeSet)
+
         patientRepository.updatePatientChangeSet(
             id = patientId,
             firstName = changeSet.firstName?.trim(),
@@ -100,6 +102,7 @@ class PatientService(
             vaccinatedOn = changeSet.vaccinatedOn,
             answers = changeSet.answers?.associate { it.questionId to it.value }
         ).whenFalse { throw entityNotFound<Patient>(Patient::id, patientId) }
+    }
 
     /**
      * Saves patient to the database.

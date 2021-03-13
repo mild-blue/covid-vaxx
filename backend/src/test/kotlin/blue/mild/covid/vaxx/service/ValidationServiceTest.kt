@@ -4,8 +4,10 @@ import blue.mild.covid.vaxx.dao.model.InsuranceCompany
 import blue.mild.covid.vaxx.dto.AnswerDto
 import blue.mild.covid.vaxx.dto.request.ConfirmationDtoIn
 import blue.mild.covid.vaxx.dto.request.PatientRegistrationDtoIn
+import blue.mild.covid.vaxx.dto.request.PatientUpdateDtoIn
 import blue.mild.covid.vaxx.dto.response.QuestionDtoOut
 import blue.mild.covid.vaxx.error.EmptyStringException
+import blue.mild.covid.vaxx.error.EmptyUpdateException
 import blue.mild.covid.vaxx.error.PropertyValidationException
 import blue.mild.covid.vaxx.util.generatePersonalNumber
 import io.mockk.coEvery
@@ -18,6 +20,7 @@ import org.junit.jupiter.params.ParameterizedTest
 import org.junit.jupiter.params.provider.Arguments
 import org.junit.jupiter.params.provider.MethodSource
 import org.junit.jupiter.params.provider.ValueSource
+import java.time.Instant
 import java.util.UUID
 import java.util.stream.Stream
 import kotlin.random.Random
@@ -38,6 +41,28 @@ class ValidationServiceTest {
             Arguments.of("0757236216"), // woman without /
             Arguments.of("0412101712"), // man without /
         )
+    }
+
+    @Test
+    fun `test validate change set`() {
+        val instance = instance()
+        val validChangeSet = PatientUpdateDtoIn(firstName = "John")
+        assertDoesNotThrow { instance.requireValidPatientUpdate(validChangeSet) }
+        val invalidChangeSet = PatientUpdateDtoIn()
+        assertThrows<EmptyUpdateException> {
+            instance.requireValidPatientUpdate(invalidChangeSet)
+        }
+    }
+
+    @Test
+    fun `test vaccinatedOn`() {
+        val instance = instance()
+        // now is after 2020
+        assertDoesNotThrow { instance.requireValidVaccinatedOn(Instant.now()) }
+        // do not accept vaccinated on before 2020
+        assertThrows<PropertyValidationException> {
+            instance.requireValidVaccinatedOn(Instant.parse("2019-01-01T00:00:00.00Z"))
+        }
     }
 
     @Test

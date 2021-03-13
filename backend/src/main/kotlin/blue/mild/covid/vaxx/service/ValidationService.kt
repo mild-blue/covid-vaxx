@@ -1,17 +1,26 @@
 package blue.mild.covid.vaxx.service
 
 import blue.mild.covid.vaxx.dto.request.PatientRegistrationDtoIn
+import blue.mild.covid.vaxx.dto.request.PatientUpdateDtoIn
 import blue.mild.covid.vaxx.error.EmptyStringException
+import blue.mild.covid.vaxx.error.EmptyUpdateException
 import blue.mild.covid.vaxx.error.PropertyValidationException
+import mu.KLogging
 import pw.forst.tools.katlib.mapToSet
+import java.time.Instant
 import java.time.LocalDate
 
 class ValidationService(private val questionService: QuestionService) {
-    private companion object {
+    private companion object : KLogging() {
+        private const val requiredMinimalTimeOfVaccination = "2020-01-01T00:00:00.00Z"
         private const val personalNumberAddingTwentyIssueYear = 4
         private const val tenDigitPersonalNumberIssueYear = 54
         private const val womanMonthAddition = 50
         private const val unprobableMonthAddition = 20
+
+        private val firstAllowedVaccinationTime by lazy {
+            Instant.parse(requiredMinimalTimeOfVaccination)
+        }
     }
 
     /**
@@ -55,6 +64,29 @@ class ValidationService(private val questionService: QuestionService) {
                 }
             )
         }
+    }
+
+    /**
+     * Validates that the [changeSet] if it is valid.
+     *
+     * Throws [PropertyValidationException] or [EmptyStringException] if any property
+     * does not pass the validation process.
+     * Throws [EmptyUpdateException] if [changeSet] does not contain not null value.
+     */
+    fun requireValidPatientUpdate(changeSet: PatientUpdateDtoIn) {
+        changeSet.firstName?.also { requireNotEmptyString("firstName", it) }
+        changeSet.lastName?.also { requireNotEmptyString("lastName", it) }
+
+        // now check specific cases
+        changeSet.personalNumber?.also(::requireValidPersonalNumber)
+        changeSet.phoneNumber?.also(::requireValidPhoneNumber)
+        changeSet.email?.also(::requireValidEmail)
+        changeSet.vaccinatedOn?.also(::requireValidVaccinatedOn)
+
+        // now check that at least one property is changed, so we don't perform useless update
+        changeSet.firstName ?: changeSet.lastName
+        ?: changeSet.personalNumber ?: changeSet.email
+        ?: changeSet.vaccinatedOn ?: throw EmptyUpdateException()
     }
 
     /**
@@ -112,6 +144,21 @@ class ValidationService(private val questionService: QuestionService) {
     fun requireTrue(parameterName: String, value: Boolean) {
         if (!value) {
             throw PropertyValidationException(parameterName, value)
+        }
+    }
+
+    /**
+     * Validates [vaccinatedOn], accepts only values after [requiredMinimalTimeOfVaccination].
+     *
+     * Throws [PropertyValidationException] if the value is invalid.
+     */
+    fun requireValidVaccinatedOn(vaccinatedOn: Instant) {
+        if (vaccinatedOn.isBefore(firstAllowedVaccinationTime)) {
+            logger.warn {
+                "Vaccinated on $vaccinatedOn submitted. It is very unlikely, that this is correct as it is before " +
+                        "$requiredMinimalTimeOfVaccination."
+            }
+            throw PropertyValidationException("vaccinatedOn", vaccinatedOn)
         }
     }
 
