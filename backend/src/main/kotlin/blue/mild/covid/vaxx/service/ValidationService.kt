@@ -2,7 +2,7 @@ package blue.mild.covid.vaxx.service
 
 import blue.mild.covid.vaxx.dto.request.PatientRegistrationDtoIn
 import blue.mild.covid.vaxx.error.EmptyStringException
-import blue.mild.covid.vaxx.error.ValidationException
+import blue.mild.covid.vaxx.error.PropertyValidationException
 import pw.forst.tools.katlib.mapToSet
 import java.time.LocalDate
 
@@ -37,7 +37,7 @@ class ValidationService(private val questionService: QuestionService) {
         val allQuestions = questionService.getCachedQuestions().mapToSet { it.id }
         val diff = allQuestions.subtract(answersByQuestion)
         if (diff.isNotEmpty()) {
-            throw ValidationException(
+            throw PropertyValidationException(
                 "answers",
                 patientRegistrationDto.answers.joinToString(",") { "${it.questionId} -> ${it.value}" }
             )
@@ -46,20 +46,20 @@ class ValidationService(private val questionService: QuestionService) {
 
     fun validatePhoneNumberAndThrow(phoneNumber: String) {
         if (!validatePhoneNumber(phoneNumber)) {
-            throw ValidationException("phoneNumber", phoneNumber)
+            throw PropertyValidationException("phoneNumber", phoneNumber)
         }
     }
 
     fun validateEmailAndThrow(email: String) {
         if (!validateEmail(email)) {
-            throw ValidationException("email", email)
+            throw PropertyValidationException("email", email)
         }
     }
 
     fun validatePersonalNumberAndThrow(personalNumber: String) {
         val validationResult = runCatching { validatePersonalNumber(personalNumber) }.getOrNull()
         if (validationResult != true) { // aka it is either false or it failed to validate
-            throw ValidationException("personalNumber", personalNumber)
+            throw PropertyValidationException("personalNumber", personalNumber)
         }
     }
 
@@ -71,7 +71,7 @@ class ValidationService(private val questionService: QuestionService) {
 
     fun validateTrueAndThrow(parameterName: String, value: Boolean) {
         if (!value) {
-            throw ValidationException(parameterName, value)
+            throw PropertyValidationException(parameterName, value)
         }
     }
 
