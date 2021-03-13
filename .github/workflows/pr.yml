@@ -15,7 +15,11 @@ jobs:
           java-version: 11
 
       - name: Execute Detekt
-        run: ./backend/gradlew detekt
+        run: |
+          cd backend
+          ./gradlew detekt
 
       - name: Execute Unit tests
-        run: ./backend/gradlew test
+        run: |
+          cd backend
+          ./gradlew test
