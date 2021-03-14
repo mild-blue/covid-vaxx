@@ -28,7 +28,7 @@ export class QuestionService {
     localStorage.removeItem(this._questionKey);
 
     return this._http.get<QuestionDtoOut[]>(
-      `${environment.apiUrl}/question`
+      `${environment.apiUrl}/questions`
     ).pipe(
       first(),
       map(response => {
