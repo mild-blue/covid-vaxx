@@ -16,6 +16,7 @@ import { fromInsuranceToInsuranceGenerated } from '@app/parsers/to-generated/ins
 })
 export class PatientService {
 
+
   constructor(private _http: HttpClient,
               private _questionService: QuestionService) {
   }
@@ -34,7 +35,13 @@ export class PatientService {
       }
     };
 
+<<<<<<< HEAD
     return this._http.post<null>(
+=======
+    sessionStorage.setItem("patientData", JSON.stringify(patientInfo));
+
+    return this._http.post<PatientRegisteredDtoOut>(
+>>>>>>> a76b251... Page after successful registration #51
       `${environment.apiUrl}/patient`,
       registration,
       { params }

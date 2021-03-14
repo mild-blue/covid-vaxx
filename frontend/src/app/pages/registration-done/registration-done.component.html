@@ -1,0 +1,31 @@
+<mat-toolbar color="primary">
+  <span>Dotazník před očkováním proti nemoci COVID-19</span>
+</mat-toolbar>
+
+<main>
+    <app-container [wide]="true">
+
+  <h1 class="mat-h1 mt-30">Uspěšná registrace</h1>
+        <mat-card>
+            <p>
+            Děkujeme za registraci k očkování. Dostavte se do Vaší volební místnosti ve stanovený čas. Den před očkování nepijte alkohol. Níže naleznete Vámi zadané údaje.
+             V případě jakýchkoliv dotazů či připomínek se na nás neváhejte obrátit na <a href = "mailto: info@mild.blue">info@mild.blue</a>.
+            </p>
+            <p>
+            Za tým Mild Blue a Prahy 7
+            </p>
+            <p>
+            Tomáš Kouřim
+            </p>
+        </mat-card>
+
+        <h2 class="mat-h2 mt-20">Shrnutí zadaných údajů</h2>
+        <app-patient-data [patientData]="patientData"></app-patient-data>
+
+        <div class="nav-buttons">
+          <button color="primary" class="nav-button" (click)="handleStartAgain()" mat-raised-button>
+            Registrovat další osobu
+          </button>
+        </div>
+    </app-container>
+</main>

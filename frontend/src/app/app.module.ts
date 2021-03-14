@@ -38,6 +38,7 @@ import { InfoComponent } from './pages/info/info.component';
 import { GdprComponent } from './components/dialogs/gdpr/gdpr.component';
 import { RECAPTCHA_V3_SITE_KEY, RecaptchaV3Module } from 'ng-recaptcha';
 import { environment } from '@environments/environment';
+import { RegistrationDoneComponent } from './pages/registration-done/registration-done.component';
 
 @NgModule({
   declarations: [
@@ -53,7 +54,8 @@ import { environment } from '@environments/environment';
     PatientDataComponent,
     FormFieldComponent,
     InfoComponent,
-    GdprComponent
+    GdprComponent,
+    RegistrationDoneComponent
   ],
   imports: [
     BrowserModule,
