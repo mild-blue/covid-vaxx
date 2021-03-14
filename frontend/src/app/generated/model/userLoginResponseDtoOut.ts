@@ -11,9 +11,15 @@
  */
 
 
-export interface ConfirmationDtoIn {
-    covid19VaccinationAgreement: boolean;
-    gdprAgreement: boolean;
-    healthStateDisclosureConfirmation: boolean;
+export interface UserLoginResponseDtoOut {
+  role: UserLoginResponseDtoOutRoleEnum;
+  token: string;
 }
+
+export enum UserLoginResponseDtoOutRoleEnum {
+  Admin = 'ADMIN',
+  Doctor = 'DOCTOR'
+};
+
+
 

@@ -39,7 +39,7 @@ export class AuthService {
 
   public login(username: string, password: string): Observable<User> {
     return this._http.post(
-      `${environment.apiUrl}/login`,
+      `${environment.apiUrl}/admin/login`,
       { username, password }
     ).pipe(
       map((r: Object) => {

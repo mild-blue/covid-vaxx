@@ -17,9 +17,13 @@ export class ErrorInterceptor implements HttpInterceptor {
         // auto logout if 401 response returned from api
         this._authService.logout();
         throw new Error('Špatné přihlašovací údaje');
+      } else if (err.status === 404) {
+        throw new Error('Je nám líto, ale Vašemu dotazu nic neodpovídá');
       }
 
-      const message = err.name || err.message;
+      console.log(err);
+      const error = err.error;
+      const message = error?.message ? error.message : 'Něco se pokazilo. Zkuste to prosím znovu.';
       throw new Error(message);
     }));
   }

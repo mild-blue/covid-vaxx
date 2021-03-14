@@ -103,7 +103,7 @@ export class HomeComponent implements OnInit, OnDestroy {
 
     try {
       const token = await this._recaptchaV3Service.execute('patientRegistration').toPromise();
-      const result = await this._patientService.savePatientInfo(
+      await this._patientService.savePatientInfo(
         token,
         this.getPatientData(),
         this.questions,
@@ -111,9 +111,8 @@ export class HomeComponent implements OnInit, OnDestroy {
         this.confirmationCheckboxValue,
         this.gdprCheckboxValue
       );
-      if (result.patientId) {
-        this._alertService.patientRegisteredDialog();
-      }
+
+      this._alertService.patientRegisteredDialog();
     } catch (e) {
       this._alertService.toast(e.message);
     }

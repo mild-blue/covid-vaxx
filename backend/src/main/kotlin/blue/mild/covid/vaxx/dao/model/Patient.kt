@@ -12,7 +12,7 @@ object Patient : Table("patients") {
     val lastName = varchar("last_name", DatabaseTypeLength.DEFAULT_STRING)
     val personalNumber = varchar("personal_number", DatabaseTypeLength.PERSONAL_NUMBER)
     val phoneNumber = varchar("phone_number", DatabaseTypeLength.PHONE_NUMBER)
-    val email = text("email", "citext")
+    val email = varchar("email", DatabaseTypeLength.DEFAULT_STRING)
     val insuranceCompany = enumerationByName("insurance_company", DatabaseTypeLength.INSURANCE_COMPANY, InsuranceCompany::class)
     val remoteHost = varchar("remote_host", DatabaseTypeLength.REMOTE_HOST)
     val registrationEmailSent = timestamp("email_sent_date").nullable()

@@ -39,7 +39,7 @@ CREATE TABLE patients
     last_name          VARCHAR(256)       NOT NULL,
     personal_number    VARCHAR(11) UNIQUE NOT NULL,
     phone_number       VARCHAR(13)        NOT NULL,
-    email              citext             NOT NULL,
+    email              VARCHAR(256)       NOT NULL,
     insurance_company  VARCHAR(4)         NOT NULL,
     remote_host        VARCHAR(45)        NOT NULL,
     email_sent_date    timestamptz,
