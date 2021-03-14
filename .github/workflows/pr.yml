@@ -1,7 +1,14 @@
 name: CI
 
 on:
+  # manual dispatch
+  workflow_dispatch:
+  # run on PRs to master when - is opened,
+  # new commit is pushed or is set as ready for review
   pull_request:
+    types: [ opened, synchronize, ready_for_review ]
+    branches:
+      - master
 
 jobs:
   check:
