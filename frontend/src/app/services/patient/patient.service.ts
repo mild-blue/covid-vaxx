@@ -5,7 +5,7 @@ import { HttpClient, HttpParams } from '@angular/common/http';
 import { Patient } from '@app/model/Patient';
 import { parsePatient } from '@app/parsers/patient.parser';
 import { QuestionService } from '@app/services/question/question.service';
-import { PatientDtoOut, PatientRegistrationDtoIn } from '@app/generated';
+import { PatientDtoOut, PatientRegistrationDtoIn} from '@app/generated';
 import { Question } from '@app/model/Question';
 import { fromQuestionToAnswerGenerated } from '@app/parsers/to-generated/answer.parser';
 import { PatientData } from '@app/model/PatientData';
@@ -16,16 +16,13 @@ import { fromInsuranceToInsuranceGenerated } from '@app/parsers/to-generated/ins
 })
 export class PatientService {
 
+  private _sessionStorageKey = "patientData";
 
   constructor(private _http: HttpClient,
               private _questionService: QuestionService) {
   }
 
-<<<<<<< HEAD
   public async savePatientInfo(token: string, patientInfo: PatientData, questions: Question[], agreement: boolean, confirmation: boolean, gdpr: boolean): Promise<null> {
-=======
-  public async savePatientInfo(token: string, patientInfo: PatientData, questions: Question[], agreement: boolean, confirmation: boolean, gdpr: boolean): Promise<PatientRegisteredDtoOut> {
->>>>>>> 2b7e032... send captcha as a query param
     const params = new HttpParams().set('captcha', token);
 
     const registration: PatientRegistrationDtoIn = {
@@ -39,20 +36,12 @@ export class PatientService {
       }
     };
 
-<<<<<<< HEAD
-    return this._http.post<null>(
-=======
-    sessionStorage.setItem("patientData", JSON.stringify(patientInfo));
+    this.saveToStorage(patientInfo);
 
-    return this._http.post<PatientRegisteredDtoOut>(
->>>>>>> a76b251... Page after successful registration #51
+    return this._http.post<null>(
       `${environment.apiUrl}/patient`,
       registration,
-<<<<<<< HEAD
-      { params }
-=======
       { params },
->>>>>>> 2b7e032... send captcha as a query param
     ).pipe(
       first()
     ).toPromise();
@@ -70,5 +59,17 @@ export class PatientService {
         return parsePatient(data, questions);
       })
     ).toPromise();
+  }
+
+  public getFromStorage(){
+    return sessionStorage.getItem(this._sessionStorageKey);
+  }
+
+  public saveToStorage(patientInfo: PatientData){
+    sessionStorage.setItem(this._sessionStorageKey, JSON.stringify(patientInfo));
+  }
+
+  public deleteFromStorage(){
+    sessionStorage.removeItem(this._sessionStorageKey);
   }
 }

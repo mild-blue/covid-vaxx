@@ -14,34 +14,26 @@ import { AlertService } from '@app/services/alert/alert.service';
 })
 export class RegistrationDoneComponent implements OnInit {
 
-  public patientData: Patient;
+  public patientData?: Patient;
 
   constructor(
-    private _router: Router
-  ) {
-    this.patientData = {
-      id: "",
-      firstName: "", 
-      lastName: "",
-      personalNumber: "",
-      email: "",
-      phoneNumber: "",
-      answers: [],
-      created: new Date,
-      updated: new Date,
-    };
-  }
+    private _router: Router,
+    private _patientService: PatientService,
+  ){}
 
   ngOnInit(): void {
     this._setPatient();
   }
 
   private _setPatient(){
-    this.patientData = JSON.parse(sessionStorage.getItem("patientData") || "");
+    const savedPatient = this._patientService.getFromStorage();
+    if(savedPatient){
+      this.patientData = JSON.parse(savedPatient);
+    }
   }
 
   handleStartAgain() {
-        sessionStorage.removeItem("patientData");
+        this._patientService.deleteFromStorage();
         this._router.navigate(['/registration']);
   }
 }

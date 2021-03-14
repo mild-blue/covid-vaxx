@@ -4,8 +4,7 @@
 
 <main>
     <app-container [wide]="true">
-
-  <h1 class="mat-h1 mt-30">Uspěšná registrace</h1>
+      <h1 class="mat-h1 mt-30">Uspěšná registrace</h1>
         <mat-card>
             <p>
             Děkujeme za registraci k očkování. Dostavte se do Vaší volební místnosti ve stanovený čas. Den před očkování nepijte alkohol. Níže naleznete Vámi zadané údaje.
@@ -22,10 +21,8 @@
         <h2 class="mat-h2 mt-20">Shrnutí zadaných údajů</h2>
         <app-patient-data [patientData]="patientData"></app-patient-data>
 
-        <div class="nav-buttons">
-          <button color="primary" class="nav-button" (click)="handleStartAgain()" mat-raised-button>
-            Registrovat další osobu
-          </button>
-        </div>
+        <button color="primary" class="nav-button mt-30" (click)="handleStartAgain()" mat-raised-button>
+          Registrovat další osobu
+        </button>
     </app-container>
 </main>
