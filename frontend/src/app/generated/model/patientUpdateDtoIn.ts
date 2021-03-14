@@ -12,21 +12,18 @@
 import { AnswerDto } from './answerDto';
 
 
-export interface PatientDtoOut {
-    answers: Array<AnswerDto>;
-    created: string;
-    email: string;
-    firstName: string;
-    id: string;
-    insuranceCompany: PatientDtoOutInsuranceCompanyEnum;
-    lastName: string;
-    personalNumber: string;
-    phoneNumber: string;
-    registrationEmailSentOn?: string | null;
-    updated: string;
+export interface PatientUpdateDtoIn {
+    answers?: Array<AnswerDto> | null;
+    email?: string | null;
+    firstName?: string | null;
+    insuranceCompany?: PatientUpdateDtoInInsuranceCompanyEnum | null;
+    lastName?: string | null;
+    personalNumber?: string | null;
+    phoneNumber?: string | null;
     vaccinatedOn?: string | null;
 }
-export enum PatientDtoOutInsuranceCompanyEnum {
+
+export enum PatientUpdateDtoInInsuranceCompanyEnum {
     Vzp = 'VZP',
     Vozp = 'VOZP',
     Cpzp = 'CPZP',

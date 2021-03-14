@@ -12,7 +12,7 @@
 </div>
 
 <main>
-  <ng-container *ngIf="patients.length then results else search"></ng-container>
+  <ng-container *ngIf="patient then results else search"></ng-container>
 </main>
 
 <ng-template #results>
@@ -22,13 +22,10 @@
     </app-back-button>
 
     <h1 class="mat-h1">
-      <span [matBadge]="patients.length" [matBadgeOverlap]="false">Nalezení pacienti</span>
+      <span>Nalezený pacient</span>
     </h1>
 
-    <div *ngFor="let patient of patients; let i = index" class="patient">
-      <app-patient-data [patientData]="patient"></app-patient-data>
-      <mat-divider *ngIf="i < patients.length - 1"></mat-divider>
-    </div>
+    <app-patient-data [patientData]="patient"></app-patient-data>
   </app-container>
 </ng-template>
 

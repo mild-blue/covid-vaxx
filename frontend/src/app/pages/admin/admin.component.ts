@@ -15,7 +15,7 @@ import { AuthService } from '@app/services/auth/auth.service';
 export class AdminComponent implements OnInit {
 
   public personalNumber: FormControl = new FormControl('', [Validators.required, validatePersonalNumber]);
-  public patients: Patient[] = [];
+  public patient?: Patient;
 
   public loading: boolean = false;
   public submitted: boolean = false;
@@ -46,9 +46,9 @@ export class AdminComponent implements OnInit {
     this.loading = true;
 
     try {
-      this.patients = await this._patientService.findPatientByPersonalNumber(personalNumber);
+      this.patient = await this._patientService.findPatientByPersonalNumber(personalNumber);
       this._searchHistoryService.saveSearch(personalNumber);
-      if (!this.patients.length) {
+      if (!this.patient) {
         this._alertService.noPatientFoundDialog(personalNumber);
       }
     } catch (e) {
@@ -65,7 +65,7 @@ export class AdminComponent implements OnInit {
   }
 
   public searchAgain(): void {
-    this.patients = [];
+    this.patient = undefined;
     this.personalNumber.reset();
   }
 
