@@ -5,13 +5,14 @@ import { Patient } from '@app/model/Patient';
 import { AlertService } from '@app/services/alert/alert.service';
 import { SearchHistoryService } from '@app/services/search-history/search-history.service';
 import { PatientService } from '@app/services/patient/patient.service';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-search-patient',
-  templateUrl: './search-patient.component.html',
-  styleUrls: ['./search-patient.component.scss']
+  templateUrl: './admin-search.component.html',
+  styleUrls: ['./admin-search.component.scss']
 })
-export class SearchPatientComponent implements OnInit {
+export class AdminSearchComponent implements OnInit {
 
   public personalNumber: FormControl = new FormControl('', [Validators.required, validatePersonalNumber]);
   public patient?: Patient;
@@ -20,6 +21,7 @@ export class SearchPatientComponent implements OnInit {
   public submitted: boolean = false;
 
   constructor(private _alertService: AlertService,
+              private _router: Router,
               private _searchHistoryService: SearchHistoryService,
               private _patientService: PatientService) {
   }
@@ -48,6 +50,8 @@ export class SearchPatientComponent implements OnInit {
       this._searchHistoryService.saveSearch(personalNumber);
       if (!this.patient) {
         this._alertService.noPatientFoundDialog(personalNumber);
+      } else {
+        await this._router.navigate(['/admin/patient', this.patient.id]);
       }
     } catch (e) {
       this._alertService.toast(e.message);

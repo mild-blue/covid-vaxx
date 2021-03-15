@@ -5,8 +5,9 @@ import { AdminComponent } from '@app/pages/admin/admin.component';
 import { LoginComponent } from '@app/pages/login/login.component';
 import { InfoComponent } from '@app/pages/info/info.component';
 import { AuthGuard } from '@app/guards/auth/auth.guard';
-import { EditPatientComponent } from '@app/pages/edit-patient/edit-patient.component';
-import { SearchPatientComponent } from '@app/pages/search-patient/search-patient.component';
+import { AdminEditComponent } from '@app/pages/admin/edit/admin-edit.component';
+import { AdminSearchComponent } from '@app/pages/admin/search/admin-search.component';
+import { AdminDetailComponent } from '@app/pages/admin/detail/admin-detail.component';
 
 const routes: Routes = [
   {
@@ -28,8 +29,10 @@ const routes: Routes = [
     canActivate: [AuthGuard],
     component: AdminComponent,
     children: [
-      { path: '', component: SearchPatientComponent },
-      { path: 'edit/:id', component: EditPatientComponent }
+      { path: '', redirectTo: 'search', pathMatch: 'full' },
+      { path: 'search', component: AdminSearchComponent },
+      { path: 'patient/:id', component: AdminDetailComponent },
+      { path: 'edit/:id', component: AdminEditComponent }
     ]
   },
 

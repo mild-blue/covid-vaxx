@@ -38,11 +38,13 @@ import { InfoComponent } from './pages/info/info.component';
 import { GdprComponent } from './components/dialogs/gdpr/gdpr.component';
 import { RECAPTCHA_V3_SITE_KEY, RecaptchaV3Module } from 'ng-recaptcha';
 import { environment } from '@environments/environment';
-import { EditPatientComponent } from './pages/edit-patient/edit-patient.component';
-import { SearchPatientComponent } from './pages/search-patient/search-patient.component';
+import { AdminEditComponent } from './pages/admin/edit/admin-edit.component';
+import { AdminSearchComponent } from './pages/admin/search/admin-search.component';
 import { PatientInfoFormComponent } from './components/patient-info-form/patient-info-form.component';
 import { PatientQuestionsFormComponent } from './components/patient-questions-form/patient-questions-form.component';
 import { A11yModule } from '@angular/cdk/a11y';
+import { AdminDetailComponent } from './pages/admin/detail/admin-detail.component';
+import { AdminAbstractComponent } from './pages/admin/abstract/admin-abstract.component';
 
 @NgModule({
   declarations: [
@@ -59,10 +61,12 @@ import { A11yModule } from '@angular/cdk/a11y';
     FormFieldComponent,
     InfoComponent,
     GdprComponent,
-    EditPatientComponent,
-    SearchPatientComponent,
+    AdminEditComponent,
+    AdminSearchComponent,
     PatientInfoFormComponent,
-    PatientQuestionsFormComponent
+    PatientQuestionsFormComponent,
+    AdminDetailComponent,
+    AdminAbstractComponent
   ],
   imports: [
     BrowserModule,

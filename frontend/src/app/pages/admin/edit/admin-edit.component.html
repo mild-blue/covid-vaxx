@@ -1,0 +1,16 @@
+<app-container *ngIf="patient" [wide]="true">
+  <h1 class="mat-h1">Editace údajů pacienta</h1>
+
+  <div *ngIf="patient" class="patient-form">
+    <app-patient-info-form></app-patient-info-form>
+    <app-patient-questions-form [patient]="patient"></app-patient-questions-form>
+  </div>
+
+  <div class="buttons">
+    <button [routerLink]="['/admin/patient', patient.id]" mat-flat-button>Zrušit</button>
+    <button (click)="handleSave()" mat-raised-button color="success">
+      Uložit změny
+      <mat-icon>save</mat-icon>
+    </button>
+  </div>
+</app-container>
