@@ -26,10 +26,7 @@ export class RegistrationDoneComponent implements OnInit {
   }
 
   private _setPatient(){
-    const savedPatient = this._patientService.getFromStorage();
-    if(savedPatient){
-      this.patientData = JSON.parse(savedPatient);
-    }
+    this.patientData = this._patientService.getFromStorage();
   }
 
   handleStartAgain() {

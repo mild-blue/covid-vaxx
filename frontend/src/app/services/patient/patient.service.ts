@@ -16,7 +16,7 @@ import { fromInsuranceToInsuranceGenerated } from '@app/parsers/to-generated/ins
 })
 export class PatientService {
 
-  private _sessionStorageKey = "patientData";
+  private _sessionStorageKey: string = 'patientData';
 
   constructor(private _http: HttpClient,
               private _questionService: QuestionService) {
@@ -61,15 +61,21 @@ export class PatientService {
     ).toPromise();
   }
 
-  public getFromStorage(){
-    return sessionStorage.getItem(this._sessionStorageKey);
+  public getFromStorage(): Patient | undefined {
+    const retrieveData = sessionStorage.getItem(this._sessionStorageKey)
+    let patientData = null; 
+
+    if(retrieveData){
+      patientData = JSON.parse(retrieveData);
+    }
+    return patientData; 
   }
 
-  public saveToStorage(patientInfo: PatientData){
+  public saveToStorage(patientInfo: PatientData): void{
     sessionStorage.setItem(this._sessionStorageKey, JSON.stringify(patientInfo));
   }
 
-  public deleteFromStorage(){
+  public deleteFromStorage(): void{
     sessionStorage.removeItem(this._sessionStorageKey);
   }
 }
