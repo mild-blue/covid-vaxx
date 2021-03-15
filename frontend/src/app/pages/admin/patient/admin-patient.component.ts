@@ -11,6 +11,8 @@ import { AdminPatientAbstractComponent } from '@app/pages/admin/abstract/admin-p
 })
 export class AdminPatientComponent extends AdminPatientAbstractComponent implements OnInit {
 
+  public loading: boolean = false;
+
   constructor(private _router: Router,
               private _route: ActivatedRoute,
               private _patientService: PatientService,
@@ -18,8 +20,9 @@ export class AdminPatientComponent extends AdminPatientAbstractComponent impleme
     super(_route, _patientService, _alertService);
   }
 
-  ngOnInit(): void {
-    super.ngOnInit();
+  async ngOnInit(): Promise<void> {
+    this.loading = true;
+    super.ngOnInit().finally(() => this.loading = false);
   }
 
   public searchAgain(): void {

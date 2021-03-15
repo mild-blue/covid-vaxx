@@ -11,14 +11,17 @@ import { AdminPatientAbstractComponent } from '@app/pages/admin/abstract/admin-p
 })
 export class AdminEditComponent extends AdminPatientAbstractComponent implements OnInit {
 
+  public loading: boolean = false;
+
   constructor(private _route: ActivatedRoute,
               private _patientService: PatientService,
               private _alertService: AlertService) {
     super(_route, _patientService, _alertService);
   }
 
-  ngOnInit(): void {
-    super.ngOnInit();
+  async ngOnInit(): Promise<void> {
+    this.loading = true;
+    super.ngOnInit().finally(() => this.loading = false);
   }
 
   public handleSave(): void {

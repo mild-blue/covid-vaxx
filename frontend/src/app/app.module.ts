@@ -49,6 +49,7 @@ import { PatientInfoFormComponent } from './components/patient-info-form/patient
 import { PatientQuestionsFormComponent } from './components/patient-questions-form/patient-questions-form.component';
 import { AdminPatientComponent } from './pages/admin/patient/admin-patient.component';
 import { AdminPatientAbstractComponent } from './pages/admin/abstract/admin-patient-abstract.component';
+import { ProgressLoadingComponent } from './components/progress-loading/progress-loading.component';
 
 @NgModule({
   declarations: [
@@ -76,7 +77,8 @@ import { AdminPatientAbstractComponent } from './pages/admin/abstract/admin-pati
     PatientInfoFormComponent,
     PatientQuestionsFormComponent,
     AdminPatientComponent,
-    AdminPatientAbstractComponent
+    AdminPatientAbstractComponent,
+    ProgressLoadingComponent
   ],
   imports: [
     BrowserModule,

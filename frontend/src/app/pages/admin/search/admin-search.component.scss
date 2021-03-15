@@ -7,16 +7,6 @@ form {
   }
 }
 
-.progress-bar__holder {
-  opacity: 0;
-  top: -30px;
-  position: relative;
-
-  &.visible {
-    opacity: 1;
-  }
-}
-
 mat-card {
   margin-bottom: 30px;
 }
@@ -54,8 +44,4 @@ mat-card {
   &__item {
     padding: 5px 0;
   }
-}
-
-:host {
-  flex: 1;
 }

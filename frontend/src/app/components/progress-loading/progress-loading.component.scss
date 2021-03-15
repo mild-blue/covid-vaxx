@@ -1,0 +1,9 @@
+.progress-bar__holder {
+  opacity: 0;
+  top: -30px;
+  position: relative;
+
+  &.visible {
+    opacity: 1;
+  }
+}

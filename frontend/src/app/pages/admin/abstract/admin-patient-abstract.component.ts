@@ -15,11 +15,11 @@ export class AdminPatientAbstractComponent implements OnInit {
               protected alertService: AlertService) {
   }
 
-  ngOnInit(): void {
+  async ngOnInit(): Promise<void> {
     const id = this.route.snapshot.paramMap.get('id');
     if (id) {
       this.id = id;
-      this._initPatient();
+      await this._initPatient();
     } else {
       this.alertService.toast('Patient ID is not specified');
     }
