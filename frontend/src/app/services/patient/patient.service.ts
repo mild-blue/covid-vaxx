@@ -63,7 +63,7 @@ export class PatientService {
 
   public getFromStorage(): Patient | undefined {
     const retrieveData = sessionStorage.getItem(this._sessionStorageKey)
-    let patientData = null; 
+    let patientData = undefined; 
 
     if(retrieveData){
       patientData = JSON.parse(retrieveData);
