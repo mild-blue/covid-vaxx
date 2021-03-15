@@ -261,8 +261,13 @@ private fun Application.installMonitoring() {
 
         // enable logging for all routes that are not /status
         // this filter does not influence MDC
-        filter { !it.request.uri.endsWith(Routes.status) }
-        level = Level.DEBUG
+        val ignoredPaths = setOf(Routes.status, Routes.statusHealth)
+        filter {
+            val path = it.request.path()
+            // log just requests that goes to api and are not ignored
+            path.startsWith("/api") && !ignoredPaths.contains(path)
+        }
+        level = Level.INFO // we want to log especially the results of the requests
         logger = createLogger("HttpCallLogger")
         format {
             "${it.request.determineRealIp()}: ${it.request.httpMethod.value} ${it.request.path()} -> " +
