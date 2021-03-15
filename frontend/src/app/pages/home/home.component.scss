@@ -30,6 +30,10 @@ mat-form-field {
   }
 }
 
+::ng-deep .country-selector {
+  padding-right: 18px !important;
+}
+
 mat-button-toggle {
   width: 50%;
 

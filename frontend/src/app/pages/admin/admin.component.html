@@ -40,12 +40,12 @@
             <input matInput [(ngModel)]="personalNumber"
                    placeholder="Zadejte rodné číslo"
                    name="personalNumber"
-                   #personalNumber="ngModel"
+                   #personalNumberInput="ngModel"
                    required personalNumberValidator>
             <mat-hint>Rodné číslo ve formátu RRMMDD/ČČČ(Č)</mat-hint>
           </mat-form-field>
           <button color="primary"
-                  [disabled]="personalNumber.invalid || submitted"
+                  [disabled]="personalNumberInput.invalid || submitted"
                   mat-raised-button>
             Vyhledat pacienta
           </button>
