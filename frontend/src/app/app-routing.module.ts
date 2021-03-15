@@ -4,6 +4,7 @@ import { HomeComponent } from '@app/pages/home/home.component';
 import { AdminComponent } from '@app/pages/admin/admin.component';
 import { LoginComponent } from '@app/pages/login/login.component';
 import { InfoComponent } from '@app/pages/info/info.component';
+import { RegistrationDoneComponent } from '@app/pages/registration-done/registration-done.component';
 import { AuthGuard } from '@app/guards/auth/auth.guard';
 
 const routes: Routes = [
@@ -23,6 +24,10 @@ const routes: Routes = [
   {
     path: 'info',
     component: InfoComponent
+  },
+  {
+    path: 'registration-done',
+    component: RegistrationDoneComponent 
   },
   // Redirect all to InfoComponent
   { path: '', pathMatch: 'full', redirectTo: 'info' },

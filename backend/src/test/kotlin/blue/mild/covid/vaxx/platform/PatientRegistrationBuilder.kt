@@ -1,22 +1,33 @@
 package blue.mild.covid.vaxx.platform
 
-import blue.mild.covid.vaxx.dao.model.InsuranceCompany
-import blue.mild.covid.vaxx.dto.AnswerDto
 import blue.mild.covid.vaxx.dto.request.ConfirmationDtoIn
-import blue.mild.covid.vaxx.dto.request.PatientRegistrationDtoIn
+import blue.mild.covid.vaxx.util.generatePersonalNumber
+import blue.mild.covid.vaxx.utils.PatientRegistrationDtoInForTests
 import java.util.UUID
 import kotlin.random.Random
 
-typealias PatientRegistrationBuilder = (answers: List<AnswerDto>, insuranceCompany: InsuranceCompany, confirmation: ConfirmationDtoIn) -> PatientRegistrationDtoIn
+typealias PatientRegistrationBuilder = (answers: Any, insuranceCompany: Any) -> PatientRegistrationDtoInForTests
 
-fun defaultPatientRegistrationBuilder(): PatientRegistrationBuilder =
-    { answers, insuranceCompany, confirmation ->
-        PatientRegistrationDtoIn(
-            firstName = "[PerformanceTest] - ${UUID.randomUUID()}",
-            lastName = "[PerformanceTest] - ${UUID.randomUUID()}",
-            personalNumber = "7401040020",
-            phoneNumber = "+420${(1..9).joinToString("") { Random.nextInt(10).toString() }}",
-            email = "${UUID.randomUUID()}@test.com",
+
+fun defaultPatientRegistrationBuilder(
+    firstName: Any? = "[PerformanceTest] - ${UUID.randomUUID()}",
+    lastName: Any? = "[PerformanceTest] - ${UUID.randomUUID()}",
+    personalNumber: Any? = generatePersonalNumber(),
+    phoneNumber: Any? = "+420${(1..9).joinToString("") { Random.nextInt(10).toString() }}",
+    email: Any? = "${UUID.randomUUID()}@test.com",
+    confirmation: Any? = ConfirmationDtoIn(
+        healthStateDisclosureConfirmation = true,
+        covid19VaccinationAgreement = true,
+        gdprAgreement = true
+    )
+): (Any, Any) -> PatientRegistrationDtoInForTests =
+    { answers, insuranceCompany ->
+        PatientRegistrationDtoInForTests(
+            firstName = firstName,
+            lastName = lastName,
+            personalNumber = personalNumber,
+            phoneNumber = phoneNumber,
+            email = email,
             insuranceCompany, answers, confirmation
         )
     }

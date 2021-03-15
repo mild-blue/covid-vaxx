@@ -46,8 +46,9 @@ fun DI.MainBuilder.bindConfiguration() {
         MailJetConfigurationDto(
             apiKey = requireEnv(EnvVariables.MAIL_JET_API_KEY),
             apiSecret = requireEnv(EnvVariables.MAIL_JET_API_SECRET),
-            emailFrom = getEnvOrLogDefault(EnvVariables.MAIL_ADDRESS_FROM, "services@mild.blue"),
-            nameFrom = getEnvOrLogDefault(EnvVariables.NAME_FROM, "Registrace Očkování")
+            emailFrom = getEnvOrLogDefault(EnvVariables.MAIL_ADDRESS_FROM, "ockovani@mild.blue"),
+            nameFrom = getEnvOrLogDefault(EnvVariables.NAME_FROM, "Registrace Očkování"),
+            subject = getEnvOrLogDefault(EnvVariables.SUBJECT, "Detaily k registraci na Očkování")
         )
     }
 
