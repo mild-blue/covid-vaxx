@@ -49,34 +49,42 @@ class PatientRepository(
         vaccinatedOn: Instant? = null
     ): Boolean = newSuspendedTransaction {
         val patientId = id.toString()
-        val updated = Patient.update(
-            where = { Patient.id eq patientId },
-            body = { row ->
-                row.apply {
-                    updateIfNotNull(firstName, Patient.firstName)
-                    updateIfNotNull(lastName, Patient.lastName)
-                    updateIfNotNull(phoneNumber, Patient.phoneNumber)
-                    updateIfNotNull(personalNumber, Patient.personalNumber)
-                    updateIfNotNull(email, Patient.email)
-                    updateIfNotNull(insuranceCompany, Patient.insuranceCompany)
-                    updateIfNotNull(firstName, Patient.firstName)
-                    updateIfNotNull(registrationEmailSent, Patient.registrationEmailSent)
-                    updateIfNotNull(vaccinatedOn, Patient.vaccinatedOn)
+        // check if any property is not null
+        val isPatientEntityUpdateNecessary =
+            firstName ?: lastName ?: phoneNumber ?: personalNumber ?: email
+            ?: insuranceCompany ?: registrationEmailSent ?: vaccinatedOn
+        // if so, perform update query
+        val patientUpdated = if (isPatientEntityUpdateNecessary != null) {
+            Patient.update(
+                where = { Patient.id eq patientId },
+                body = { row ->
+                    row.apply {
+                        updateIfNotNull(firstName, Patient.firstName)
+                        updateIfNotNull(lastName, Patient.lastName)
+                        updateIfNotNull(phoneNumber, Patient.phoneNumber)
+                        updateIfNotNull(personalNumber, Patient.personalNumber)
+                        updateIfNotNull(email, Patient.email)
+                        updateIfNotNull(insuranceCompany, Patient.insuranceCompany)
+                        updateIfNotNull(firstName, Patient.firstName)
+                        updateIfNotNull(registrationEmailSent, Patient.registrationEmailSent)
+                        updateIfNotNull(vaccinatedOn, Patient.vaccinatedOn)
+                    }
                 }
-            }
-        )
-        // continue in update only if there's a patient with given ID
-        // and answers needs to be updated as well
-        if (updated == 1 && answers != null) {
-            answers.forEach { (questionId, value) ->
-                Answer.update(
-                    where = { (Answer.questionId eq questionId.toString()) and (Answer.patientId eq patientId) },
-                    body = { row -> row[Answer.value] = value }
-                )
-            }
-        }
-        // indicate that patient was updated if single patient row was updated
-        updated == 1
+            )
+        } else 0
+        // check if it is necessary to update answers
+        val answersUpdated = if (answers != null && answers.isNotEmpty()) {
+            answers.entries
+                .groupBy({ it.value }, { it.key.toString() })
+                .map { (value, questionIds) ->
+                    Answer.update(
+                        where = { (Answer.patientId eq patientId) and (Answer.questionId inList questionIds) },
+                        body = { row -> row[Answer.value] = value }
+                    )
+                }.sum()
+        } else 0
+        // indicate that patient was updated if patient entity was updated OR at least one answer was updated
+        patientUpdated + answersUpdated >= 1
     }
 
     /**
