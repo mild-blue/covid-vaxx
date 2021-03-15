@@ -11,8 +11,8 @@ export const fromPatientToGenerated = (patient: Patient): PatientUpdateDtoIn => 
     personalNumber: patient.personalNumber,
     phoneNumber: patient.phoneNumber,
     answers: patient.answers.map(fromQuestionToAnswerGenerated),
-    insuranceCompany: fromInsuranceToUpdateInsuranceGenerated(patient.insuranceCompany)
-    // vaccinatedOn: string | null;  // TODO: allow to change vaccination date
+    insuranceCompany: fromInsuranceToUpdateInsuranceGenerated(patient.insuranceCompany),
+    vaccinatedOn: patient.vaccinatedOn ? patient.vaccinatedOn.toISOString() : undefined
   };
 };
 

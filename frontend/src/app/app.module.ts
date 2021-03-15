@@ -1,6 +1,7 @@
 import { BrowserModule } from '@angular/platform-browser';
-import { NgModule } from '@angular/core';
-
+import { LOCALE_ID, NgModule } from '@angular/core';
+import { registerLocaleData } from '@angular/common';
+import localeCs from '@angular/common/locales/cs';
 import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
@@ -50,6 +51,8 @@ import { PatientQuestionsFormComponent } from './components/patient-questions-fo
 import { AdminPatientComponent } from './pages/admin/patient/admin-patient.component';
 import { AdminPatientAbstractComponent } from './pages/admin/abstract/admin-patient-abstract.component';
 import { ProgressLoadingComponent } from './components/progress-loading/progress-loading.component';
+
+registerLocaleData(localeCs);
 
 @NgModule({
   declarations: [
@@ -107,6 +110,7 @@ import { ProgressLoadingComponent } from './components/progress-loading/progress
     NgxMatIntlTelInputModule
   ],
   providers: [
+    { provide: LOCALE_ID, useValue: 'cs-CZ' },
     { provide: HTTP_INTERCEPTORS, useClass: AuthInterceptor, multi: true },
     { provide: HTTP_INTERCEPTORS, useClass: ErrorInterceptor, multi: true },
     { provide: RECAPTCHA_V3_SITE_KEY, useValue: environment.recaptchaSiteKey },

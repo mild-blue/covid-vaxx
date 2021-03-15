@@ -42,6 +42,16 @@
           {{ patientData.email }}
         </mat-label>
       </app-form-field>
+      <mat-divider></mat-divider>
+      <ng-container *ngIf="showVaccinationDate">
+        <app-form-field>
+          <mat-label>Datum vakcinace:</mat-label>
+          <mat-label *ngIf="patientData.vaccinatedOn else unspecified;">
+            {{ patientData.vaccinatedOn | date:'EEEE, d. MMMM y, H:MM' }}
+          </mat-label>
+        </app-form-field>
+        <mat-divider></mat-divider>
+      </ng-container>
     </mat-card-content>
   </mat-card>
 

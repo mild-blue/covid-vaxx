@@ -10,6 +10,7 @@ import { InsuranceCompany } from '@app/model/InsuranceCompany';
 export class PatientInfoFormComponent implements OnInit {
 
   @Input() patient?: Patient;
+  @Input() showVaccinationDate: boolean = false;
 
   public allInsuranceCompanies: string[] = Object.values(InsuranceCompany);
 
