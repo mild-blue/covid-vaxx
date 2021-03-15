@@ -13,6 +13,7 @@ import blue.mild.covid.vaxx.service.MedicalRegistrationService
 import blue.mild.covid.vaxx.service.PasswordHashProvider
 import blue.mild.covid.vaxx.service.PatientService
 import blue.mild.covid.vaxx.service.QuestionService
+import blue.mild.covid.vaxx.service.SystemStatisticsService
 import blue.mild.covid.vaxx.service.UserService
 import blue.mild.covid.vaxx.service.ValidationService
 import blue.mild.covid.vaxx.service.dummy.DummyMailService
@@ -51,6 +52,7 @@ fun DI.MainBuilder.registerClasses() {
     bind<UserService>() with singleton { UserService(instance(), instance(), instance()) }
     bind<MailJetEmailService>() with singleton { MailJetEmailService(instance(), instance(), instance(), instance()) }
     bind<TimeProvider<Instant>>() with singleton { InstantTimeProvider }
+    bind<SystemStatisticsService>() with singleton { SystemStatisticsService() }
 
     bind<MailjetClient>() with singleton {
         val mailJetConfig = instance<MailJetConfigurationDto>()
