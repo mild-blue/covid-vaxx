@@ -26,8 +26,8 @@ class JsonLoggingLayout : LayoutBase<ILoggingEvent>() {
         val finalMap: MutableMap<String, Any> = mutableMapOf(
             "@timestamp" to formatTime(event),
             "message" to event.formattedMessage,
-            "logger" to event.loggerName.takeLastWhile { it != '.' },
-            "level" to event.level.levelStr
+            "logger" to event.loggerName.takeLastWhile { it != '.' }, // take only names without packages
+            "level" to event.level.levelStr.replace("\$Companion", "") // delete static companion from name
         )
 
         finalMap.includeMdc(event, CALL_ID)
@@ -49,7 +49,7 @@ class JsonLoggingLayout : LayoutBase<ILoggingEvent>() {
     private fun exception(proxy: IThrowableProxy) = mapOf(
         "message" to proxy.message,
         "class" to proxy.className,
-        "stacktrace" to ThrowableProxyUtil.asString(proxy).replace("\n", "--")
+        "stacktrace" to ThrowableProxyUtil.asString(proxy)
     )
 
     private fun formatTime(event: ILoggingEvent): String =
