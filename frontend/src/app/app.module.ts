@@ -39,7 +39,6 @@ import { GdprComponent } from './components/dialogs/gdpr/gdpr.component';
 import { RECAPTCHA_V3_SITE_KEY, RecaptchaV3Module } from 'ng-recaptcha';
 import { environment } from '@environments/environment';
 import { NgxMatIntlTelInputModule } from 'ngx-mat-intl-tel-input';
-import { PhoneNumberValidatorDirective } from './directives/phone-number-validator/phone-number-validator.directive';
 import { PersonalNumberValidatorDirective } from './directives/personal-number-validator/personal-number-validator.directive';
 import { EmailValidatorDirective } from './directives/email-validator/email-validator.directive';
 
@@ -58,7 +57,6 @@ import { EmailValidatorDirective } from './directives/email-validator/email-vali
     FormFieldComponent,
     InfoComponent,
     GdprComponent,
-    PhoneNumberValidatorDirective,
     PersonalNumberValidatorDirective,
     EmailValidatorDirective
   ],
