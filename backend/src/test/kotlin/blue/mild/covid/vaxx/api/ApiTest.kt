@@ -23,6 +23,3 @@ private fun registrationApiTest() = RegistrationApiTest(
 private fun loginApiTest() = LoginApiTest(
     targetHost = TARGET_HOST
 )
-
-
-

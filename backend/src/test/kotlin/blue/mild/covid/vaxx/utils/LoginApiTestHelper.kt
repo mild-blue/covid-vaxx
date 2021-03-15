@@ -7,9 +7,9 @@ import io.ktor.client.request.accept
 import io.ktor.client.request.post
 import io.ktor.client.statement.HttpResponse
 import io.ktor.http.ContentType
+import io.ktor.http.HttpStatusCode
 import io.ktor.http.contentType
 import mu.KLogging
-import org.apache.http.HttpStatus
 
 
 abstract class LoginApiTestHelper(
@@ -20,10 +20,10 @@ abstract class LoginApiTestHelper(
 
     protected suspend fun runPatientLogin(
         loginUserForTest: Any,
-        httpStatus: Int = HttpStatus.SC_OK,
+        httpStatus: HttpStatusCode = HttpStatusCode.OK,
     ) {
             val request = loginUser(loginUserForTest)
-            require(request.status.value == httpStatus) {
+            require(request.status == httpStatus) {
                 "Login did not run as expected " +
                         "expected was status code $httpStatus but got ${request.status.value} ${request.status.description}" +
                         "${request.receive<JsonNode>()}"

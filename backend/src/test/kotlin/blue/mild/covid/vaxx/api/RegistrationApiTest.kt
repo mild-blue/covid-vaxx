@@ -1,13 +1,13 @@
 package blue.mild.covid.vaxx.api
 
+import blue.mild.covid.vaxx.platform.RequestMetric
+import blue.mild.covid.vaxx.platform.defaultPatientRegistrationBuilder
 import blue.mild.covid.vaxx.utils.AnswerDtoInForTest
 import blue.mild.covid.vaxx.utils.ConfirmationDtoInForTest
-import blue.mild.covid.vaxx.platform.RequestMetric
-import blue.mild.covid.vaxx.utils.WrongObjectDtoInForTest
-import blue.mild.covid.vaxx.platform.defaultPatientRegistrationBuilder
 import blue.mild.covid.vaxx.utils.RegistrationApiTestHelper
+import blue.mild.covid.vaxx.utils.WrongObjectDtoInForTest
+import io.ktor.http.HttpStatusCode
 import mu.KLogging
-import org.apache.http.HttpStatus
 import java.util.UUID
 
 open class RegistrationApiTest(
@@ -23,107 +23,104 @@ open class RegistrationApiTest(
             defaultPatientRegistrationBuilder(
                 lastName = ""
             ),
-            httpStatus = HttpStatus.SC_BAD_REQUEST
+            httpStatus = HttpStatusCode.BadRequest
         ) {}
         runPatientRegistrationWithBuilder(
             defaultPatientRegistrationBuilder(
                 firstName = null
             ),
-            httpStatus = HttpStatus.SC_BAD_REQUEST
+            httpStatus = HttpStatusCode.BadRequest
         ) { }
         runPatientRegistrationWithBuilder(
             defaultPatientRegistrationBuilder(
                 phoneNumber = "12"
             ),
-            httpStatus = HttpStatus.SC_BAD_REQUEST
+            httpStatus = HttpStatusCode.BadRequest
         ) { }
         runPatientRegistrationWithBuilder(
             defaultPatientRegistrationBuilder(
                 phoneNumber = "---"
             ),
-            httpStatus = HttpStatus.SC_BAD_REQUEST
+            httpStatus = HttpStatusCode.BadRequest
         ) { }
         runPatientRegistrationWithBuilder(
             defaultPatientRegistrationBuilder(
                 email = "a@a.cz"
-            ),
-            httpStatus = HttpStatus.SC_OK
+            )
         ) { }
         runPatientRegistrationWithBuilder(
             defaultPatientRegistrationBuilder(
                 personalNumber = "33"
             ),
-            httpStatus = HttpStatus.SC_BAD_REQUEST
+            httpStatus = HttpStatusCode.BadRequest
         ) { }
         runPatientRegistrationWithBuilder(
             defaultPatientRegistrationBuilder(
                 personalNumber = "karel"
             ),
-            httpStatus = HttpStatus.SC_BAD_REQUEST
+            httpStatus = HttpStatusCode.BadRequest
         ) { }
 
         runPatientRegistrationWithBuilder(
             defaultPatientRegistrationBuilder(),
             maybeAnswers = listOf(AnswerDtoInForTest(UUID.randomUUID(), true)),
-            httpStatus = HttpStatus.SC_BAD_REQUEST
+            httpStatus = HttpStatusCode.BadRequest
         ) { }
-
-//        TODO All the tests below are not handled correctly. Fix them in https://github.com/mild-blue/covid-vaxx/issues/139
 
         runPatientRegistrationWithBuilder(
             defaultPatientRegistrationBuilder(
             ),
             maybeAnswers = listOf("a"),
-            httpStatus = HttpStatus.SC_BAD_REQUEST
+            httpStatus = HttpStatusCode.BadRequest
         ) { }
 
         runPatientRegistrationWithBuilder(
             defaultPatientRegistrationBuilder(
             ),
             maybeAnswers = listOf(AnswerDtoInForTest(UUID.randomUUID(), "a")),
-            httpStatus = HttpStatus.SC_BAD_REQUEST
+            httpStatus = HttpStatusCode.BadRequest
         ) { }
 
         runPatientRegistrationWithBuilder(
             defaultPatientRegistrationBuilder(
             ),
             maybeAnswers = listOf(AnswerDtoInForTest("a", "a")),
-            httpStatus = HttpStatus.SC_BAD_REQUEST
+            httpStatus = HttpStatusCode.BadRequest
         ) { }
 
         runPatientRegistrationWithBuilder(
             defaultPatientRegistrationBuilder(
             ),
             maybeAnswers = "a",
-            httpStatus = HttpStatus.SC_BAD_REQUEST
+            httpStatus = HttpStatusCode.BadRequest
         ) { }
 
         runPatientRegistrationWithBuilder(
             defaultPatientRegistrationBuilder(
             ),
             maybeInsuranceCompany = "a",
-            httpStatus = HttpStatus.SC_BAD_REQUEST
+            httpStatus = HttpStatusCode.BadRequest
         ) { }
 
         runPatientRegistrationWithBuilder(
             defaultPatientRegistrationBuilder(
                 confirmation = "a"
             ),
-            httpStatus = HttpStatus.SC_BAD_REQUEST
+            httpStatus = HttpStatusCode.BadRequest
         ) { }
 
         runPatientRegistrationWithBuilder(
             defaultPatientRegistrationBuilder(
                 confirmation = ConfirmationDtoInForTest("a")
             ),
-            httpStatus = HttpStatus.SC_BAD_REQUEST
+            httpStatus = HttpStatusCode.BadRequest
         ) { }
 
         runPatientRegistrationWithBuilder(
             defaultPatientRegistrationBuilder(
                 confirmation = WrongObjectDtoInForTest("a")
             ),
-            httpStatus = HttpStatus.SC_BAD_REQUEST
+            httpStatus = HttpStatusCode.BadRequest
         ) { }
 
         return callsCollection.toList()

@@ -14,6 +14,7 @@ import io.ktor.client.request.parameter
 import io.ktor.client.request.post
 import io.ktor.client.statement.HttpResponse
 import io.ktor.http.ContentType
+import io.ktor.http.HttpStatusCode
 import io.ktor.http.contentType
 import io.ktor.http.isSuccess
 import mu.KLogging
@@ -32,7 +33,7 @@ abstract class RegistrationApiTestHelper(
         registrationBuilder: PatientRegistrationBuilder = defaultPatientRegistrationBuilder(),
         maybeInsuranceCompany: Any? = null,
         maybeAnswers: Any? = null,
-        httpStatus: Int = HttpStatus.SC_OK,
+        httpStatus: HttpStatusCode = HttpStatusCode.OK,
         onDone: (requestNumber: Int) -> Unit
     ) {
         runPatientRegistrationWithBuilder(
@@ -48,7 +49,7 @@ abstract class RegistrationApiTestHelper(
         registrationBuilder: PatientRegistrationBuilder,
         maybeInsuranceCompany: Any? = null,
         maybeAnswers: Any? = null,
-        httpStatus: Int = HttpStatus.SC_OK
+        httpStatus: HttpStatusCode = HttpStatusCode.OK
     ) {
         var request = loadClientSource()
         require(request.status.isSuccess()) { "It was not possible to load client sources ${request.status.description}" }
@@ -73,7 +74,7 @@ abstract class RegistrationApiTestHelper(
             )
         )
 
-        require(request.status.value == httpStatus) {
+        require(request.status == httpStatus) {
             "Patient registration did not run as expected " +
                     "expected was status code $httpStatus but got ${request.status.value} ${request.status.description}" +
                     "${request.receive<JsonNode>()}"
@@ -82,7 +83,7 @@ abstract class RegistrationApiTestHelper(
 
     private suspend fun registerPatient(patient: PatientRegistrationDtoInForTests) =
         meteredClient.post<HttpResponse>("${targetHost}${Routes.patient}") {
-            parameter(CaptchaVerificationDtoIn.NAME, "1234") // should be disabled
+            parameter(CaptchaVerificationDtoIn.NAME, "1234")
             contentType(ContentType.Application.Json)
             accept(ContentType.Companion.Any)
             body = patient
