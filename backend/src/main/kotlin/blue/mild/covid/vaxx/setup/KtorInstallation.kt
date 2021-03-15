@@ -259,13 +259,14 @@ private fun Application.installMonitoring() {
         mdc(REMOTE_HOST) { it.request.determineRealIp() }
         mdc(PATH) { "${it.request.httpMethod.value} ${it.request.path()}" }
 
-        // enable logging for all routes that are not /status
-        // this filter does not influence MDC
         val ignoredPaths = setOf(Routes.status, Routes.statusHealth)
+        val ignoredMethods = setOf(HttpMethod.Options, HttpMethod.Head)
         filter {
             val path = it.request.path()
-            // log just requests that goes to api and are not ignored
-            path.startsWith("/api") && !ignoredPaths.contains(path)
+            // log just requests that goes to api
+            path.startsWith("/api")
+                    && !ignoredPaths.contains(path) // without ignored service paths
+                    && !ignoredMethods.contains(it.request.httpMethod) // and ignored, not used, methods
         }
         level = Level.INFO // we want to log especially the results of the requests
         logger = createLogger("HttpCallLogger")
