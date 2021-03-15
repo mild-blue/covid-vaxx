@@ -25,4 +25,10 @@ export class AdminPatientComponent extends AdminPatientAbstractComponent impleme
   public searchAgain(): void {
     this._router.navigate(['admin']);
   }
+
+  public async vaccinated(): Promise<void> {
+    if (this.patient) {
+      this._alertService.confirmVaccinateDialog(this.patient.id);
+    }
+  }
 }

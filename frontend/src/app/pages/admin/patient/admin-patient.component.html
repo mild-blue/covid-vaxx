@@ -7,10 +7,14 @@
 
   <app-patient-data [patientData]="patient"></app-patient-data>
 
-  <div *ngIf="patient" class="button-holder">
+  <div *ngIf="patient" class="buttons">
     <button mat-raised-button [routerLink]="['/admin/edit', patient.id]" color="primary">
       Editovat údaje pacienta
       <mat-icon>create</mat-icon>
+    </button>
+    <button color="success" mat-button mat-raised-button (click)="vaccinated()" class="submit-button">
+      Potvrdit proběhlé očkování
+      <mat-icon>check</mat-icon>
     </button>
   </div>
 </app-container>

@@ -47,7 +47,6 @@ import { AdminEditComponent } from './pages/admin/edit/admin-edit.component';
 import { AdminSearchComponent } from './pages/admin/search/admin-search.component';
 import { PatientInfoFormComponent } from './components/patient-info-form/patient-info-form.component';
 import { PatientQuestionsFormComponent } from './components/patient-questions-form/patient-questions-form.component';
-import { A11yModule } from '@angular/cdk/a11y';
 import { AdminPatientComponent } from './pages/admin/patient/admin-patient.component';
 import { AdminPatientAbstractComponent } from './pages/admin/abstract/admin-patient-abstract.component';
 
@@ -103,8 +102,7 @@ import { AdminPatientAbstractComponent } from './pages/admin/abstract/admin-pati
     MatProgressBarModule,
     MatBadgeModule,
     RecaptchaV3Module,
-    NgxMatIntlTelInputModule,
-    A11yModule
+    NgxMatIntlTelInputModule
   ],
   providers: [
     { provide: HTTP_INTERCEPTORS, useClass: AuthInterceptor, multi: true },
