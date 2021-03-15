@@ -23,6 +23,7 @@ export const parseAnswer = (data: AnswerDto, questions: Question[]): Answer | un
   }
 
   return {
+    id: question.id,
     label: question.label,
     name: question.name,
     value: data.value

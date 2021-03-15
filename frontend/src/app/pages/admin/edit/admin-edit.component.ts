@@ -24,7 +24,16 @@ export class AdminEditComponent extends AdminPatientAbstractComponent implements
     super.ngOnInit().finally(() => this.loading = false);
   }
 
-  public handleSave(): void {
-    console.log('Saving patient', this.patient);
+  public async handleSave(): Promise<void> {
+    if (!this.patient) {
+      return;
+    }
+
+    try {
+      await this._patientService.updatePatient(this.patient);
+      this._alertService.toast('Pacient úspěšně uložen');
+    } catch (e) {
+      this._alertService.toast(e.message);
+    }
   }
 }
