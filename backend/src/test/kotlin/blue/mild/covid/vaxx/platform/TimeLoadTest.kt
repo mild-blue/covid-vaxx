@@ -1,5 +1,6 @@
 package blue.mild.covid.vaxx.platform
 
+import blue.mild.covid.vaxx.utils.RegistrationApiTestHelper
 import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.launch
 import mu.KLogging
@@ -11,7 +12,7 @@ class TimeLoadTest(
     requestTimeoutsSeconds: Int = 60,
     private val coroutineWorkers: Int = 2,
     private val runningTimeInSeconds: Long
-) : LoadTest(targetHost, requestTimeoutsSeconds) {
+) : RegistrationApiTestHelper(targetHost, requestTimeoutsSeconds) {
 
     private companion object : KLogging()
 

@@ -1,5 +1,6 @@
 package blue.mild.covid.vaxx.platform
 
+import blue.mild.covid.vaxx.api.RegistrationApiTest
 import blue.mild.covid.vaxx.utils.createLogger
 import kotlinx.coroutines.runBlocking
 
@@ -12,12 +13,13 @@ private const val TARGET_HOST = "https://covid-vaxx.stg.mild.blue"
  */
 fun main() {
     listOf(
-//        timeTest(),
+        timeTest(),
         requestsCountTest()
     ).map {
         runBlocking { it.execute() }.also(::logResults)
     }
 }
+
 
 private fun timeTest() = TimeLoadTest(
     targetHost = TARGET_HOST,
