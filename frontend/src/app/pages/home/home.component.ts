@@ -56,10 +56,6 @@ export class HomeComponent implements OnDestroy {
     return unanswered.length === 0;
   }
 
-  get canProceedToStep2(): boolean {
-    return !!this.patientForm?.valid;
-  }
-
   get canProceedToStep3(): boolean {
     return !!this.patientForm?.valid && this.allQuestionsAnswered;
   }

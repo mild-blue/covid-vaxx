@@ -4,7 +4,7 @@
 
 <main>
   <mat-horizontal-stepper [linear]="true">
-    <mat-step [completed]="canProceedToStep2" label="Osobní informace">
+    <mat-step [completed]="patientForm.valid" label="Osobní informace">
       <app-container>
         <mat-card>
           <mat-card-content>
@@ -40,6 +40,7 @@
                                         [preferredCountries]="['cz', 'sk', 'de', 'at', 'pl']"
                                         [enablePlaceholder]="true"
                                         [enableSearch]="false"
+                                        [format]="'national'"
                                         class="ngx-floating"
                                         name="phoneNumber"
                                         phoneNumberValidator
@@ -55,7 +56,7 @@
 
         <div class="nav-buttons">
           <div></div>
-          <button [disabled]="!canProceedToStep2"
+          <button [disabled]="patientForm.invalid"
                   color="primary" mat-raised-button matStepperNext>
             Další krok
           </button>
