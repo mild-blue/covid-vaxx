@@ -56,4 +56,15 @@ export class PatientService {
       })
     ).toPromise();
   }
+
+  public async findPatientById(id: string): Promise<Patient> {
+    return this._http.get<PatientDtoOut>(
+      `${environment.apiUrl}/admin/patient/single/${id}`
+    ).pipe(
+      map(data => {
+        const questions = this._questionService.questions;
+        return parsePatient(data, questions);
+      })
+    ).toPromise();
+  }
 }
