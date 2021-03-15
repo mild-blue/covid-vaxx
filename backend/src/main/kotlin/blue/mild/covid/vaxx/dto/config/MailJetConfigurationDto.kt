@@ -19,5 +19,9 @@ data class MailJetConfigurationDto(
     /**
      * Name to give to the email address to send the emails from.
      */
-    val nameFrom: String
+    val nameFrom: String,
+    /**
+     * Subject of the email send to users
+     */
+    val subject: String
 )
