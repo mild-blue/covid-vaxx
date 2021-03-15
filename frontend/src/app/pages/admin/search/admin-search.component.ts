@@ -65,10 +65,4 @@ export class AdminSearchComponent implements OnInit {
   public clearHistory(): void {
     this._searchHistoryService.clearHistory();
   }
-
-  public searchAgain(): void {
-    this.patient = undefined;
-    this.personalNumber.reset();
-  }
-
 }

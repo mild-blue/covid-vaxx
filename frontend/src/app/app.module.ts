@@ -43,8 +43,8 @@ import { AdminSearchComponent } from './pages/admin/search/admin-search.componen
 import { PatientInfoFormComponent } from './components/patient-info-form/patient-info-form.component';
 import { PatientQuestionsFormComponent } from './components/patient-questions-form/patient-questions-form.component';
 import { A11yModule } from '@angular/cdk/a11y';
-import { AdminDetailComponent } from './pages/admin/detail/admin-detail.component';
-import { AdminAbstractComponent } from './pages/admin/abstract/admin-abstract.component';
+import { AdminPatientComponent } from './pages/admin/patient/admin-patient.component';
+import { AdminPatientAbstractComponent } from './pages/admin/abstract/admin-patient-abstract.component';
 
 @NgModule({
   declarations: [
@@ -65,8 +65,8 @@ import { AdminAbstractComponent } from './pages/admin/abstract/admin-abstract.co
     AdminSearchComponent,
     PatientInfoFormComponent,
     PatientQuestionsFormComponent,
-    AdminDetailComponent,
-    AdminAbstractComponent
+    AdminPatientComponent,
+    AdminPatientAbstractComponent
   ],
   imports: [
     BrowserModule,

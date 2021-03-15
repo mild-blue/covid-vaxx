@@ -7,7 +7,7 @@ import { InfoComponent } from '@app/pages/info/info.component';
 import { AuthGuard } from '@app/guards/auth/auth.guard';
 import { AdminEditComponent } from '@app/pages/admin/edit/admin-edit.component';
 import { AdminSearchComponent } from '@app/pages/admin/search/admin-search.component';
-import { AdminDetailComponent } from '@app/pages/admin/detail/admin-detail.component';
+import { AdminPatientComponent } from '@app/pages/admin/patient/admin-patient.component';
 
 const routes: Routes = [
   {
@@ -31,7 +31,7 @@ const routes: Routes = [
     children: [
       { path: '', redirectTo: 'search', pathMatch: 'full' },
       { path: 'search', component: AdminSearchComponent },
-      { path: 'patient/:id', component: AdminDetailComponent },
+      { path: 'patient/:id', component: AdminPatientComponent },
       { path: 'edit/:id', component: AdminEditComponent }
     ]
   },

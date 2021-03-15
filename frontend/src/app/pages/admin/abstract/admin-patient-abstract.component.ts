@@ -5,7 +5,7 @@ import { PatientService } from '@app/services/patient/patient.service';
 import { AlertService } from '@app/services/alert/alert.service';
 
 @Component({ template: '' })
-export class AdminAbstractComponent implements OnInit {
+export class AdminPatientAbstractComponent implements OnInit {
 
   public patient?: Patient;
 
@@ -33,5 +33,4 @@ export class AdminAbstractComponent implements OnInit {
       this.alertService.toast(e.message);
     }
   }
-
 }
