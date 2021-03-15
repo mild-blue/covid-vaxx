@@ -13,6 +13,7 @@ import { Question } from '@app/model/Question';
 import { Subscription } from 'rxjs';
 import { parseInsuranceCompany } from '@app/parsers/insurance.parser';
 import { ReCaptchaV3Service } from 'ng-recaptcha';
+import { Router } from "@angular/router"
 
 @Component({
   selector: 'app-home',
@@ -34,6 +35,7 @@ export class HomeComponent implements OnInit, OnDestroy {
   public gdprCheckboxValue: boolean = false;
 
   constructor(private _route: ActivatedRoute,
+              private _router: Router,
               private _formBuilder: FormBuilder,
               private _questionService: QuestionService,
               private _patientService: PatientService,
@@ -111,8 +113,7 @@ export class HomeComponent implements OnInit, OnDestroy {
         this.confirmationCheckboxValue,
         this.gdprCheckboxValue
       );
-
-      this._alertService.patientRegisteredDialog();
+        this._router.navigate(['/registration-done'])
     } catch (e) {
       this._alertService.toast(e.message);
     }
