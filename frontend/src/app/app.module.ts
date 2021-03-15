@@ -42,6 +42,7 @@ import { RegistrationDoneComponent } from './pages/registration-done/registratio
 import { NgxMatIntlTelInputModule } from 'ngx-mat-intl-tel-input';
 import { PersonalNumberValidatorDirective } from './directives/personal-number-validator/personal-number-validator.directive';
 import { EmailValidatorDirective } from './directives/email-validator/email-validator.directive';
+import { ConfirmVaccinationComponent } from './components/dialogs/confirm-vaccination/confirm-vaccination.component';
 import { AdminEditComponent } from './pages/admin/edit/admin-edit.component';
 import { AdminSearchComponent } from './pages/admin/search/admin-search.component';
 import { PatientInfoFormComponent } from './components/patient-info-form/patient-info-form.component';
@@ -67,6 +68,8 @@ import { AdminPatientAbstractComponent } from './pages/admin/abstract/admin-pati
     GdprComponent,
     RegistrationDoneComponent,
     PersonalNumberValidatorDirective,
+    EmailValidatorDirective,
+    ConfirmVaccinationComponent,
     EmailValidatorDirective,
     GdprComponent,
     AdminEditComponent,
