@@ -40,6 +40,9 @@ import { RECAPTCHA_V3_SITE_KEY, RecaptchaV3Module } from 'ng-recaptcha';
 import { environment } from '@environments/environment';
 import { EditPatientComponent } from './pages/edit-patient/edit-patient.component';
 import { SearchPatientComponent } from './pages/search-patient/search-patient.component';
+import { PatientInfoFormComponent } from './components/patient-info-form/patient-info-form.component';
+import { PatientQuestionsFormComponent } from './components/patient-questions-form/patient-questions-form.component';
+import { A11yModule } from '@angular/cdk/a11y';
 
 @NgModule({
   declarations: [
@@ -57,7 +60,9 @@ import { SearchPatientComponent } from './pages/search-patient/search-patient.co
     InfoComponent,
     GdprComponent,
     EditPatientComponent,
-    SearchPatientComponent
+    SearchPatientComponent,
+    PatientInfoFormComponent,
+    PatientQuestionsFormComponent
   ],
   imports: [
     BrowserModule,
@@ -82,7 +87,8 @@ import { SearchPatientComponent } from './pages/search-patient/search-patient.co
     MatIconModule,
     MatProgressBarModule,
     MatBadgeModule,
-    RecaptchaV3Module
+    RecaptchaV3Module,
+    A11yModule
   ],
   providers: [
     { provide: HTTP_INTERCEPTORS, useClass: AuthInterceptor, multi: true },

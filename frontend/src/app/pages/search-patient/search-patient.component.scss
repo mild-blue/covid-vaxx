@@ -1,7 +1,3 @@
-main {
-  margin-top: 30px;
-}
-
 form {
   padding: 20px;
 
@@ -58,8 +54,12 @@ mat-card {
   }
 }
 
+.button-holder {
+  margin-top: 3em;
+  display: flex;
+  justify-content: center;
+}
+
 :host {
   flex: 1;
-  display: flex;
-  flex-direction: column;
 }

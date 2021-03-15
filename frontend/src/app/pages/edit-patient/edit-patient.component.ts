@@ -31,6 +31,7 @@ export class EditPatientComponent implements OnInit {
   private async _initPatient(id: string): Promise<void> {
     try {
       this.patient = await this._patientService.findPatientById(id);
+      console.log('Patient', this.patient);
     } catch (e) {
       this._alertService.toast(e.message);
     }

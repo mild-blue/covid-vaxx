@@ -3,9 +3,7 @@
   <mat-progress-bar mode="indeterminate"></mat-progress-bar>
 </div>
 
-<main>
   <ng-container *ngIf="patient then results else search"></ng-container>
-</main>
 
 <ng-template #results>
   <app-container [wide]="true">
@@ -13,16 +11,17 @@
       Vyhledat jiného pacienta
     </app-back-button>
 
-    <h1 class="mat-h1">
-      <span>Nalezený pacient</span>
-    </h1>
+    <h1 class="mat-h1">Nalezený pacient</h1>
 
     <app-patient-data [patientData]="patient"></app-patient-data>
 
-    <button *ngIf="patient" mat-raised-button [routerLink]="['edit', patient.id]" color="primary">
-      Editovat údaje pacienta
-      <mat-icon>create</mat-icon>
-    </button>
+    <div *ngIf="patient" class="button-holder">
+      <button mat-raised-button [routerLink]="['edit', patient.id]" color="primary">
+        Editovat údaje pacienta
+        <mat-icon>create</mat-icon>
+      </button>
+    </div>
+
   </app-container>
 </ng-template>
 

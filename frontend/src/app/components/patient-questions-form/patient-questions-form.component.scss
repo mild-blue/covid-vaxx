@@ -1,0 +1,26 @@
+@import "../../../styles/variables";
+
+mat-button-toggle {
+  width: 50%;
+
+  &.mat-button-toggle-checked {
+    &.true {
+      background-color: rgba($success, 0.2);
+      color: $success;
+    }
+
+    &.false {
+      background-color: rgba($danger, 0.2);
+      color: $danger;
+    }
+  }
+
+  ::ng-deep .mat-button-toggle-label-content {
+    line-height: 36px;
+  }
+}
+
+mat-card {
+  padding-top: 0;
+  padding-bottom: 0;
+}

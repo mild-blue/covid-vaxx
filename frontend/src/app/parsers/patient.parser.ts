@@ -24,6 +24,7 @@ export const parseAnswer = (data: AnswerDto, questions: Question[]): Answer | un
 
   return {
     label: question.label,
+    name: question.name,
     value: data.value
   };
 };
