@@ -65,7 +65,6 @@ class PatientRepository(
                         updateIfNotNull(personalNumber, Patient.personalNumber)
                         updateIfNotNull(email, Patient.email)
                         updateIfNotNull(insuranceCompany, Patient.insuranceCompany)
-                        updateIfNotNull(firstName, Patient.firstName)
                         updateIfNotNull(registrationEmailSent, Patient.registrationEmailSent)
                         updateIfNotNull(vaccinatedOn, Patient.vaccinatedOn)
                     }
