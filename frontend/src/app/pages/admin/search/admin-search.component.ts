@@ -1,6 +1,4 @@
 import { Component, OnInit } from '@angular/core';
-import { FormControl, Validators } from '@angular/forms';
-import { validatePersonalNumber } from '@app/validators/form.validators';
 import { Patient } from '@app/model/Patient';
 import { AlertService } from '@app/services/alert/alert.service';
 import { SearchHistoryService } from '@app/services/search-history/search-history.service';
@@ -14,7 +12,7 @@ import { Router } from '@angular/router';
 })
 export class AdminSearchComponent implements OnInit {
 
-  public personalNumber: FormControl = new FormControl('', [Validators.required, validatePersonalNumber]);
+  public personalNumber?: string;
   public patient?: Patient;
 
   public loading: boolean = false;
@@ -34,11 +32,11 @@ export class AdminSearchComponent implements OnInit {
   }
 
   public async onSubmit(): Promise<void> {
-    if (this.personalNumber.invalid) {
+    if (!this.personalNumber) {
       return;
     }
 
-    await this.findPatient(this.personalNumber.value);
+    await this.findPatient(this.personalNumber);
   }
 
   public async findPatient(personalNumber: string): Promise<void> {
@@ -58,7 +56,7 @@ export class AdminSearchComponent implements OnInit {
     } finally {
       this.loading = false;
       this.submitted = false;
-      this.personalNumber.reset();
+      this.personalNumber = '';
     }
   }
 
