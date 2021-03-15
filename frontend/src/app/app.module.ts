@@ -39,6 +39,9 @@ import { GdprComponent } from './components/dialogs/gdpr/gdpr.component';
 import { RECAPTCHA_V3_SITE_KEY, RecaptchaV3Module } from 'ng-recaptcha';
 import { environment } from '@environments/environment';
 import { RegistrationDoneComponent } from './pages/registration-done/registration-done.component';
+import { NgxMatIntlTelInputModule } from 'ngx-mat-intl-tel-input';
+import { PersonalNumberValidatorDirective } from './directives/personal-number-validator/personal-number-validator.directive';
+import { EmailValidatorDirective } from './directives/email-validator/email-validator.directive';
 
 @NgModule({
   declarations: [
@@ -55,7 +58,9 @@ import { RegistrationDoneComponent } from './pages/registration-done/registratio
     FormFieldComponent,
     InfoComponent,
     GdprComponent,
-    RegistrationDoneComponent
+    RegistrationDoneComponent,
+    PersonalNumberValidatorDirective,
+    EmailValidatorDirective
   ],
   imports: [
     BrowserModule,
@@ -80,7 +85,8 @@ import { RegistrationDoneComponent } from './pages/registration-done/registratio
     MatIconModule,
     MatProgressBarModule,
     MatBadgeModule,
-    RecaptchaV3Module
+    RecaptchaV3Module,
+    NgxMatIntlTelInputModule
   ],
   providers: [
     { provide: HTTP_INTERCEPTORS, useClass: AuthInterceptor, multi: true },

@@ -35,13 +35,17 @@
     <mat-card>
       <mat-card-content>
         <form (ngSubmit)="onSubmit()">
-          <mat-form-field class="">
+          <mat-form-field>
             <mat-label>Rodné číslo očkovaného</mat-label>
-            <input matInput [formControl]="personalNumber" placeholder="Zadejte rodné číslo" required>
+            <input matInput [(ngModel)]="personalNumber"
+                   placeholder="Zadejte rodné číslo"
+                   name="personalNumber"
+                   #personalNumberInput="ngModel"
+                   required personalNumberValidator>
             <mat-hint>Rodné číslo ve formátu RRMMDD/ČČČ(Č)</mat-hint>
           </mat-form-field>
           <button color="primary"
-                  [disabled]="personalNumber.invalid || submitted"
+                  [disabled]="personalNumberInput.invalid || submitted"
                   mat-raised-button>
             Vyhledat pacienta
           </button>
