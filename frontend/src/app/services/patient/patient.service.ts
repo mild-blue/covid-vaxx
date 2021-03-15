@@ -23,7 +23,7 @@ export class PatientService {
               private _questionService: QuestionService) {
   }
 
-  public async savePatientInfo(token: string, patientInfo: PatientData, questions: Question[], agreement: boolean, confirmation: boolean, gdpr: boolean): Promise<null> {
+  public async savePatientInfo(token: string, patientInfo: PatientData, questions: Question[], agreement: boolean, confirmation: boolean, gdpr: boolean): Promise<HttpResponse<unknown>> {
     const params = new HttpParams().set('captcha', token);
 
     const registration: PatientRegistrationDtoIn = {
@@ -39,7 +39,7 @@ export class PatientService {
 
     this.saveToStorage(patientInfo);
 
-    return this._http.post<null>(
+    return this._http.post<HttpResponse<unknown>>(
       `${environment.apiUrl}/patient`,
       registration,
       { params }
@@ -83,13 +83,13 @@ export class PatientService {
   // public confirmVaccination(id: string, token: string): void{
   //   const params = new HttpParams().set('captcha', token);
 
-  public async confirmVaccination(id: string): Promise<void> {
+  public async confirmVaccination(id: string): Promise<HttpResponse<unknown>> {
     // const params = new HttpParams().set('captcha', token);
     //const params = new HttpParams().set('vaccinatedOn', new Date().getTime().toString());
 
-    this._http.put<null>(
+    return this._http.put<HttpResponse<unknown>>(
       `${environment.apiUrl}/admin/patient/single/${id}`,
-      { vaccinatedOn: new Date() }
+      { vaccinatedOn: new Date().toISOString() }
     ).pipe(
       first()
     ).toPromise();

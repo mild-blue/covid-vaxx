@@ -47,7 +47,7 @@
         <app-form-field>
           <mat-label>Datum vakcinace:</mat-label>
           <mat-label *ngIf="patientData.vaccinatedOn else unspecified;">
-            {{ patientData.vaccinatedOn | date:'EEEE, d. MMMM y, H:MM' }}
+            {{ patientData.vaccinatedOn | date:'EEEE, d. MMMM y, H:mm' }}
           </mat-label>
         </app-form-field>
         <mat-divider></mat-divider>

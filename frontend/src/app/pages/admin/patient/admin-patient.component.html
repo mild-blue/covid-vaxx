@@ -7,7 +7,7 @@
 
   <h1 class="mat-h1">Nalezený pacient</h1>
 
-  <app-patient-data [patientData]="patient"></app-patient-data>
+  <app-patient-data [patientData]="patient" [showVaccinationDate]="true"></app-patient-data>
 
   <div *ngIf="patient" class="buttons">
     <button mat-raised-button [routerLink]="['/admin/edit', patient.id]" color="primary">
