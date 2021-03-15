@@ -5,14 +5,13 @@ import { InsuranceCompany } from '@app/model/InsuranceCompany';
 import { QuestionService } from '@app/services/question/question.service';
 import { PatientService } from '@app/services/patient/patient.service';
 import { AlertService } from '@app/services/alert/alert.service';
-import { ActivatedRoute } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 import { PatientData } from '@app/model/PatientData';
 import { parseAnswerFromQuestion } from '@app/parsers/answer.parser';
 import { Question } from '@app/model/Question';
 import { Subscription } from 'rxjs';
 import { parseInsuranceCompany } from '@app/parsers/insurance.parser';
 import { ReCaptchaV3Service } from 'ng-recaptcha';
-import { Router } from "@angular/router"
 
 @Component({
   selector: 'app-home',
@@ -97,7 +96,7 @@ export class HomeComponent implements OnDestroy {
         this.confirmationCheckboxValue,
         this.gdprCheckboxValue
       );
-        this._router.navigate(['/registration-done'])
+      this._router.navigate(['/registration-done']);
     } catch (e) {
       this._alertService.toast(e.message);
     }

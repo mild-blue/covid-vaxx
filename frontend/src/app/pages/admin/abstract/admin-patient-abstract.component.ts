@@ -7,6 +7,7 @@ import { AlertService } from '@app/services/alert/alert.service';
 @Component({ template: '' })
 export class AdminPatientAbstractComponent implements OnInit {
 
+  public id: string = '';
   public patient?: Patient;
 
   constructor(protected route: ActivatedRoute,
@@ -15,20 +16,18 @@ export class AdminPatientAbstractComponent implements OnInit {
   }
 
   ngOnInit(): void {
-    console.log(this.route.params, this.route.parent?.params);
     const id = this.route.snapshot.paramMap.get('id');
-    console.log(id);
     if (id) {
-      this._initPatient(id);
+      this.id = id;
+      this._initPatient();
     } else {
       this.alertService.toast('Patient ID is not specified');
     }
   }
 
-  private async _initPatient(id: string): Promise<void> {
+  private async _initPatient(): Promise<void> {
     try {
-      this.patient = await this.patientService.findPatientById(id);
-      console.log('Patient', this.patient);
+      this.patient = await this.patientService.findPatientById(this.id);
     } catch (e) {
       this.alertService.toast(e.message);
     }
