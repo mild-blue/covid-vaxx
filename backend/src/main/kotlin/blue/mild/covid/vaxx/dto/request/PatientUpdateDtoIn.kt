@@ -23,6 +23,6 @@ data class PatientUpdateDtoIn(
             email?.let { "email=$it" },
             insuranceCompany?.let { "insuranceCompany=$it" },
             vaccinatedOn?.let { "vaccinatedOn=$it" },
-            answers?.let { answers -> "answers=[${answers.joinToString(",") { "${it.questionId}: ${it.value}" }}]" },
+            answers?.let { answers -> "answers=[${answers.joinToString(", ") { "${it.questionId}: ${it.value}" }}]" },
         ).joinToString(", ", prefix = "update(", postfix = ")")
 }

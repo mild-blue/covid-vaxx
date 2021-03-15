@@ -4,6 +4,7 @@ import { HomeComponent } from '@app/pages/home/home.component';
 import { AdminComponent } from '@app/pages/admin/admin.component';
 import { LoginComponent } from '@app/pages/login/login.component';
 import { InfoComponent } from '@app/pages/info/info.component';
+import { RegistrationDoneComponent } from '@app/pages/registration-done/registration-done.component';
 import { AuthGuard } from '@app/guards/auth/auth.guard';
 import { AdminEditComponent } from '@app/pages/admin/edit/admin-edit.component';
 import { AdminSearchComponent } from '@app/pages/admin/search/admin-search.component';
@@ -21,6 +22,10 @@ const routes: Routes = [
   {
     path: 'info',
     component: InfoComponent
+  },
+  {
+    path: 'registration-done',
+    component: RegistrationDoneComponent
   },
 
   // Admin

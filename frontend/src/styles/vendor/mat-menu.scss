@@ -1,0 +1,8 @@
+.mat-menu {
+  &-panel {
+    body & {
+      max-height: 200px;
+      min-width: 380px;
+    }
+  }
+}

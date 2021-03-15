@@ -4,44 +4,51 @@
 
 <main>
   <mat-horizontal-stepper [linear]="true">
-    <mat-step *ngIf="patientForm" [completed]="canProceedToStep2" label="Osobní informace">
+    <mat-step [completed]="patientForm.valid" label="Osobní informace">
       <app-container>
         <mat-card>
           <mat-card-content>
-            <form [formGroup]="patientForm">
-              <mat-form-field>
+            <form #patientForm="ngForm">
+              <mat-form-field floatLabel="always">
                 <mat-label>Jméno</mat-label>
-                <input [(ngModel)]="patient.firstName" formControlName="firstName" matInput placeholder="Vaše jméno" required>
+                <input [(ngModel)]="patient.firstName" name="firstName" matInput placeholder="Vaše jméno" required maxlength="64">
               </mat-form-field>
 
-              <mat-form-field>
+              <mat-form-field floatLabel="always">
                 <mat-label>Příjmení</mat-label>
-                <input [(ngModel)]="patient.lastName" formControlName="lastName" matInput placeholder="Vaše příjmení" required>
+                <input [(ngModel)]="patient.lastName" name="lastName" matInput placeholder="Vaše příjmení" required maxlength="64">
               </mat-form-field>
 
-              <mat-form-field>
+              <mat-form-field floatLabel="always" class="has-hint">
                 <mat-label>Rodné číslo</mat-label>
-                <input [(ngModel)]="patient.personalNumber" formControlName="personalNumber" matInput placeholder="Vaše rodné číslo" required>
+                <input [(ngModel)]="patient.personalNumber" name="personalNumber" matInput personalNumberValidator placeholder="Vaše rodné číslo" required maxlength="11">
                 <mat-hint>Rodné číslo ve formátu RRMMDD/ČČČ(Č)</mat-hint>
               </mat-form-field>
 
-              <mat-form-field>
+              <mat-form-field floatLabel="always">
                 <mat-label>Zdravotní pojišťovna</mat-label>
-                <mat-select formControlName="insuranceCompany" [(ngModel)]="patient.insuranceCompany">
+                <mat-select name="insuranceCompany" [(ngModel)]="patient.insuranceCompany" placeholder="Vyberte Vaší zdravotní pojišťovnu" required>
                   <mat-option *ngFor="let insuranceCompany of allInsuranceCompanies" [value]="insuranceCompany">
                     {{insuranceCompany}}
                   </mat-option>
                 </mat-select>
               </mat-form-field>
 
-              <mat-form-field>
+              <mat-form-field floatLabel="always">
                 <mat-label>Telefonní číslo</mat-label>
-                <input [(ngModel)]="patient.phoneNumber" formControlName="phoneNumber" matInput placeholder="Vaše telefonní číslo" required>
-                <mat-hint>Telefonní číslo ve formátu +420XXXXXXXXX</mat-hint>
+                <ngx-mat-intl-tel-input [(ngModel)]="patient.phoneNumber"
+                                        [preferredCountries]="['cz', 'sk', 'de', 'at', 'pl']"
+                                        [enablePlaceholder]="true"
+                                        [enableSearch]="false"
+                                        [format]="'national'"
+                                        [required]="true"
+                                        class="ngx-floating"
+                                        name="phoneNumber"
+                                        inputPlaceholder="Vaše telefonní číslo"></ngx-mat-intl-tel-input>
               </mat-form-field>
-              <mat-form-field>
+              <mat-form-field floatLabel="always">
                 <mat-label>E-mail</mat-label>
-                <input [(ngModel)]="patient.email" formControlName="email" matInput placeholder="Váš e-mail" required>
+                <input [(ngModel)]="patient.email" name="email" matInput placeholder="Váš e-mail" emailValidator required maxlength="64">
               </mat-form-field>
             </form>
           </mat-card-content>
@@ -49,7 +56,7 @@
 
         <div class="nav-buttons">
           <div></div>
-          <button [disabled]="!canProceedToStep2"
+          <button [disabled]="patientForm.invalid"
                   color="primary" mat-raised-button matStepperNext>
             Další krok
           </button>

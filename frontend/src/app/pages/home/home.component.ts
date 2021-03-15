@@ -1,10 +1,9 @@
-import { Component, OnDestroy, OnInit } from '@angular/core';
-import { FormBuilder, FormGroup, Validators } from '@angular/forms';
+import { Component, OnDestroy, ViewChild } from '@angular/core';
+import { FormBuilder, NgForm } from '@angular/forms';
 import { PatientEditable } from '@app/model/PatientEditable';
 import { InsuranceCompany } from '@app/model/InsuranceCompany';
 import { QuestionService } from '@app/services/question/question.service';
 import { PatientService } from '@app/services/patient/patient.service';
-import { validateEmail, validatePersonalNumber, validatePhoneNumber } from '@app/validators/form.validators';
 import { AlertService } from '@app/services/alert/alert.service';
 import { ActivatedRoute } from '@angular/router';
 import { PatientData } from '@app/model/PatientData';
@@ -13,17 +12,18 @@ import { Question } from '@app/model/Question';
 import { Subscription } from 'rxjs';
 import { parseInsuranceCompany } from '@app/parsers/insurance.parser';
 import { ReCaptchaV3Service } from 'ng-recaptcha';
+import { Router } from "@angular/router"
 
 @Component({
   selector: 'app-home',
   templateUrl: './home.component.html',
   styleUrls: ['./home.component.scss']
 })
-export class HomeComponent implements OnInit, OnDestroy {
+export class HomeComponent implements OnDestroy {
 
   private _questionsSubscription?: Subscription;
 
-  public patientForm?: FormGroup;
+  @ViewChild('patientForm') patientForm?: NgForm;
 
   public patient: PatientEditable = new PatientEditable();
   public questions: Question[] = [];
@@ -34,6 +34,7 @@ export class HomeComponent implements OnInit, OnDestroy {
   public gdprCheckboxValue: boolean = false;
 
   constructor(private _route: ActivatedRoute,
+              private _router: Router,
               private _formBuilder: FormBuilder,
               private _questionService: QuestionService,
               private _patientService: PatientService,
@@ -48,17 +49,6 @@ export class HomeComponent implements OnInit, OnDestroy {
     .subscribe(questions => this.questions = questions);
   }
 
-  ngOnInit() {
-    this.patientForm = this._formBuilder.group({
-      firstName: ['', Validators.required],
-      lastName: ['', Validators.required],
-      personalNumber: [this.patient.personalNumber ?? '', [Validators.required, validatePersonalNumber]],
-      insuranceCompany: ['', Validators.required],
-      phoneNumber: ['', [Validators.required, validatePhoneNumber]],
-      email: ['', [Validators.required, validateEmail]]
-    });
-  }
-
   ngOnDestroy() {
     this._questionsSubscription?.unsubscribe();
   }
@@ -66,10 +56,6 @@ export class HomeComponent implements OnInit, OnDestroy {
   get allQuestionsAnswered(): boolean {
     const unanswered = this.questions.filter(q => q.value === undefined);
     return unanswered.length === 0;
-  }
-
-  get canProceedToStep2(): boolean {
-    return !!this.patientForm?.valid;
   }
 
   get canProceedToStep3(): boolean {
@@ -111,8 +97,7 @@ export class HomeComponent implements OnInit, OnDestroy {
         this.confirmationCheckboxValue,
         this.gdprCheckboxValue
       );
-
-      this._alertService.patientRegisteredDialog();
+        this._router.navigate(['/registration-done'])
     } catch (e) {
       this._alertService.toast(e.message);
     }

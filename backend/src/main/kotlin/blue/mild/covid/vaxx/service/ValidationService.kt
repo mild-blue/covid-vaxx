@@ -87,7 +87,8 @@ class ValidationService(private val questionService: QuestionService) {
         // now check that at least one property is changed, so we don't perform useless update
         changeSet.firstName ?: changeSet.lastName
         ?: changeSet.personalNumber ?: changeSet.email
-        ?: changeSet.vaccinatedOn ?: throw EmptyUpdateException()
+        ?: changeSet.vaccinatedOn ?: changeSet.answers?.takeIf { it.isNotEmpty() }
+        ?: throw EmptyUpdateException()
     }
 
     /**

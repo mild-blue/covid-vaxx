@@ -5,7 +5,7 @@ import { HttpClient, HttpParams } from '@angular/common/http';
 import { Patient } from '@app/model/Patient';
 import { parsePatient } from '@app/parsers/patient.parser';
 import { QuestionService } from '@app/services/question/question.service';
-import { PatientDtoOut, PatientRegistrationDtoIn } from '@app/generated';
+import { PatientDtoOut, PatientRegistrationDtoIn} from '@app/generated';
 import { Question } from '@app/model/Question';
 import { fromQuestionToAnswerGenerated } from '@app/parsers/to-generated/answer.parser';
 import { PatientData } from '@app/model/PatientData';
@@ -15,6 +15,8 @@ import { fromInsuranceToInsuranceGenerated } from '@app/parsers/to-generated/ins
   providedIn: 'root'
 })
 export class PatientService {
+
+  private _sessionStorageKey: string = 'patientData';
 
   constructor(private _http: HttpClient,
               private _questionService: QuestionService) {
@@ -33,6 +35,8 @@ export class PatientService {
         gdprAgreement: gdpr
       }
     };
+
+    this.saveToStorage(patientInfo);
 
     return this._http.post<null>(
       `${environment.apiUrl}/patient`,
@@ -55,6 +59,24 @@ export class PatientService {
         return parsePatient(data, questions);
       })
     ).toPromise();
+  }
+
+  public getFromStorage(): Patient | undefined {
+    const retrieveData = sessionStorage.getItem(this._sessionStorageKey)
+    let patientData = undefined;
+
+    if(retrieveData){
+      patientData = JSON.parse(retrieveData);
+    }
+    return patientData;
+  }
+
+  public saveToStorage(patientInfo: PatientData): void{
+    sessionStorage.setItem(this._sessionStorageKey, JSON.stringify(patientInfo));
+  }
+
+  public deleteFromStorage(): void{
+    sessionStorage.removeItem(this._sessionStorageKey);
   }
 
   public async findPatientById(id: string): Promise<Patient> {
