@@ -38,7 +38,10 @@ import { InfoComponent } from './pages/info/info.component';
 import { GdprComponent } from './components/dialogs/gdpr/gdpr.component';
 import { RECAPTCHA_V3_SITE_KEY, RecaptchaV3Module } from 'ng-recaptcha';
 import { environment } from '@environments/environment';
-import {NgxMatIntlTelInputModule} from "ngx-mat-intl-tel-input";
+import { NgxMatIntlTelInputModule } from 'ngx-mat-intl-tel-input';
+import { PhoneNumberValidatorDirective } from './directives/phone-number-validator/phone-number-validator.directive';
+import { PersonalNumberValidatorDirective } from './directives/personal-number-validator/personal-number-validator.directive';
+import { EmailValidatorDirective } from './directives/email-validator/email-validator.directive';
 
 @NgModule({
   declarations: [
@@ -54,7 +57,10 @@ import {NgxMatIntlTelInputModule} from "ngx-mat-intl-tel-input";
     PatientDataComponent,
     FormFieldComponent,
     InfoComponent,
-    GdprComponent
+    GdprComponent,
+    PhoneNumberValidatorDirective,
+    PersonalNumberValidatorDirective,
+    EmailValidatorDirective
   ],
   imports: [
     BrowserModule,

@@ -20,6 +20,16 @@ mat-horizontal-stepper {
   background-color: transparent;
 }
 
+mat-form-field {
+  &.mat-form-field-should-float {
+    margin: 10px 0;
+  }
+
+  &.has-hint {
+    margin-bottom: 20px;
+  }
+}
+
 mat-button-toggle {
   width: 50%;
 
