@@ -78,4 +78,19 @@ export class PatientService {
   public deleteFromStorage(): void{
     sessionStorage.removeItem(this._sessionStorageKey);
   }
+
+  // public confirmVaccination(id: string, token: string): void{
+  //   const params = new HttpParams().set('captcha', token);
+
+  public async confirmVaccination(id: string): Promise<void>{
+  // const params = new HttpParams().set('captcha', token);
+  //const params = new HttpParams().set('vaccinatedOn', new Date().getTime().toString());
+
+    this._http.put<null>(
+      `${environment.apiUrl}/admin/patient/single/${id}`,
+      {vaccinatedOn: new Date()},
+    ).pipe(
+      first()
+    ).toPromise();
+  }
 }

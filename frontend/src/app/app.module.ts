@@ -42,6 +42,7 @@ import { RegistrationDoneComponent } from './pages/registration-done/registratio
 import { NgxMatIntlTelInputModule } from 'ngx-mat-intl-tel-input';
 import { PersonalNumberValidatorDirective } from './directives/personal-number-validator/personal-number-validator.directive';
 import { EmailValidatorDirective } from './directives/email-validator/email-validator.directive';
+import { ConfirmVaccinationComponent } from './components/dialogs/confirm-vaccination/confirm-vaccination.component';
 
 @NgModule({
   declarations: [
@@ -60,7 +61,8 @@ import { EmailValidatorDirective } from './directives/email-validator/email-vali
     GdprComponent,
     RegistrationDoneComponent,
     PersonalNumberValidatorDirective,
-    EmailValidatorDirective
+    EmailValidatorDirective,
+    ConfirmVaccinationComponent
   ],
   imports: [
     BrowserModule,

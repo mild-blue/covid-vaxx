@@ -4,6 +4,7 @@ import { PatientRegisteredComponent } from '@app/components/dialogs/patient-regi
 import { MatDialog } from '@angular/material/dialog';
 import { NoPatientFoundComponent } from '@app/components/dialogs/no-patient-found/no-patient-found.component';
 import { GdprComponent } from '@app/components/dialogs/gdpr/gdpr.component';
+import { ConfirmVaccinationComponent } from '@app/components/dialogs/confirm-vaccination/confirm-vaccination.component';
 
 @Injectable({
   providedIn: 'root'
@@ -32,5 +33,11 @@ export class AlertService {
 
   public gdprDialog(): void {
     this._dialog.open(GdprComponent);
+  }
+
+  public confirmVaccinateDialog(patientId: string): void{
+    this._dialog.open(ConfirmVaccinationComponent, {
+      data: { patientId }
+    });
   }
 }

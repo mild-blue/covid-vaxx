@@ -26,6 +26,11 @@
     </h1>
 
     <app-patient-data [patientData]="patient"></app-patient-data>
+
+    <button color="primary" mat-button mat-raised-button (click)="vaccinated()" class="submit-button">
+      Potvrdit proběhlé očkování
+      <mat-icon>check</mat-icon>
+    </button>
   </app-container>
 </ng-template>
 
