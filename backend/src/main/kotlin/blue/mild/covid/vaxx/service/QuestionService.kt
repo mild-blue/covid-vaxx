@@ -15,7 +15,7 @@ class QuestionService {
 
     private val cache by lazy {
         // we can totally wait for the first time
-        MemoryCacheService(dataInit = this::getAllQuestions)
+        MemoryCacheService(dataInit = ::getAllQuestions)
             .apply { runBlocking { initialize() } }
     }
 
@@ -40,6 +40,6 @@ class QuestionService {
                 cs = it[Question.cs],
                 eng = it[Question.eng],
             )
-        }
+        }.sortedBy { it.id } // sort it to keep it consistent
     }
 }
