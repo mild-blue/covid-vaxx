@@ -25,7 +25,6 @@ import java.time.Instant
 import java.util.*
 import java.util.stream.Stream
 import kotlin.random.Random
-import kotlin.test.assertEquals
 
 
 class ValidationServiceTest {
@@ -287,12 +286,6 @@ class ValidationServiceTest {
         }
     }
 
-    @Test
-    fun `test format phone number`() {
-        val result = instance().formatPhoneNumber(PhoneNumberDtoIn(number = "   420 7 36 11 456 7", countryCode = "CZ"))
-        assertEquals("+420736114567", result)
-    }
-
     private fun validRegistration(questions: List<QuestionDtoOut> = emptyList()) =
         PatientRegistrationDtoIn(
             firstName = "John",
@@ -321,8 +314,7 @@ class ValidationServiceTest {
         ValidationService(questionService)
 
     private fun generateValidCzPhoneNumber() = PhoneNumberDtoIn(
-        "+420736 ${(1..6).map { Random.nextInt(0, 10) }.joinToString("")
-        }",
+        "+420736 ${(1..6).map { Random.nextInt(0, 10) }.joinToString("")}",
         "CZ"
     )
 

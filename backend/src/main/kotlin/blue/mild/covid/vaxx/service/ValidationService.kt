@@ -2,11 +2,9 @@ package blue.mild.covid.vaxx.service
 
 import blue.mild.covid.vaxx.dto.request.PatientRegistrationDtoIn
 import blue.mild.covid.vaxx.dto.request.PatientUpdateDtoIn
-import blue.mild.covid.vaxx.dto.request.PhoneNumberDtoIn
 import blue.mild.covid.vaxx.error.EmptyStringException
 import blue.mild.covid.vaxx.error.EmptyUpdateException
 import blue.mild.covid.vaxx.error.PropertyValidationException
-import com.google.i18n.phonenumbers.NumberParseException
 import com.google.i18n.phonenumbers.PhoneNumberUtil
 import mu.KLogging
 import pw.forst.tools.katlib.mapToSet
@@ -185,16 +183,11 @@ class ValidationService(private val questionService: QuestionService) {
     }
 
     @Suppress("EmptyCatchBlock")
-    private fun isPhoneNumberValid(phoneNumber: String, countryCode: String): Boolean {
-        try {
-            val phoneUtil = PhoneNumberUtil.getInstance()
-            val result = phoneUtil.parse(phoneNumber, countryCode)
-            return phoneUtil.isValidNumberForRegion(result, countryCode)
-        } catch (e: NumberParseException) {
-
-        }
-        return false
-    }
+    private fun isPhoneNumberValid(phoneNumber: String, countryCode: String): Boolean = runCatching {
+        val phoneUtil = PhoneNumberUtil.getInstance()
+        val result = phoneUtil.parse(phoneNumber, countryCode)
+        return phoneUtil.isValidNumberForRegion(result, countryCode)
+    }.getOrNull() ?: false
 
     /**
      * Source: https://emailregex.com/
@@ -272,11 +265,6 @@ class ValidationService(private val questionService: QuestionService) {
         }
 
         return isDateValid(year, month, day)
-    }
-
-    fun formatPhoneNumber(phoneNumber: PhoneNumberDtoIn): String {
-        val phoneUtil = PhoneNumberUtil.getInstance()
-        return phoneUtil.format(phoneUtil.parse(phoneNumber.number, phoneNumber.countryCode), PhoneNumberUtil.PhoneNumberFormat.INTERNATIONAL).replace(" ", "")
     }
 
     private fun isDateValid(year: Int, month: Int, day: Int): Boolean =

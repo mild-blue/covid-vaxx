@@ -7,6 +7,9 @@ import blue.mild.covid.vaxx.dto.request.PatientUpdateDtoIn
 import blue.mild.covid.vaxx.dto.response.PatientDtoOut
 import blue.mild.covid.vaxx.dto.response.PatientRegisteredDtoOut
 import blue.mild.covid.vaxx.error.entityNotFound
+import blue.mild.covid.vaxx.utils.formatPhoneNumber
+import blue.mild.covid.vaxx.utils.normalizePersonalNumber
+import blue.mild.covid.vaxx.utils.removeAllWhitespaces
 import mu.KLogging
 import org.jetbrains.exposed.sql.Column
 import org.jetbrains.exposed.sql.Op
@@ -49,8 +52,8 @@ class PatientService(
     ): List<PatientDtoOut> =
         patientRepository.getAndMapPatientsBy {
             Op.TRUE
-                .andWithIfNotEmpty(email?.trim()?.toLowerCase(), Patient.email)
-                .andWithIfNotEmpty(phoneNumber?.trim(), Patient.phoneNumber)
+                .andWithIfNotEmpty(email?.removeAllWhitespaces().toLowerCase(), Patient.email)
+                .andWithIfNotEmpty(phoneNumber?.removeAllWhitespaces(), Patient.phoneNumber)
                 .let { query ->
                     vaccinated?.let {
                         query.and(
@@ -73,7 +76,7 @@ class PatientService(
             lastName = changeSet.lastName?.trim(),
             zipCode = changeSet.zipCode,
             district = changeSet.district?.trim(),
-            phoneNumber = changeSet.phoneNumber?.let { validationService.formatPhoneNumber(it) },
+            phoneNumber = changeSet.phoneNumber?.formatPhoneNumber(),
             personalNumber = changeSet.personalNumber?.let { normalizePersonalNumber(it) },
             email = changeSet.email?.trim()?.toLowerCase(),
             insuranceCompany = changeSet.insuranceCompany,
@@ -103,7 +106,7 @@ class PatientService(
                 lastName = registration.lastName.trim(),
                 zipCode = registration.zipCode,
                 district = registration.district.trim(),
-                phoneNumber = validationService.formatPhoneNumber(registration.phoneNumber),
+                phoneNumber = registration.phoneNumber.formatPhoneNumber(),
                 personalNumber = normalizePersonalNumber(registration.personalNumber),
                 email = registration.email.trim().toLowerCase(),
                 insuranceCompany = registration.insuranceCompany,
