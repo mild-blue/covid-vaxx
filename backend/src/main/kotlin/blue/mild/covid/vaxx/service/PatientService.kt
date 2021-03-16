@@ -28,7 +28,7 @@ class PatientService(
      */
     suspend fun getPatientById(patientId: UUID): PatientDtoOut =
         patientRepository.getAndMapPatientsBy { Patient.id eq patientId.toString() }
-            .singleOrNull() ?: throw entityNotFound<Patient>(Patient::id, patientId)
+            .singleOrNull()?.withSortedAnswers() ?: throw entityNotFound<Patient>(Patient::id, patientId)
 
     /**
      * Returns single patient with given personal number or throws exception.
@@ -36,7 +36,8 @@ class PatientService(
     suspend fun getPatientsByPersonalNumber(patientPersonalNumber: String): PatientDtoOut =
         patientRepository.getAndMapPatientsBy {
             Patient.personalNumber eq normalizePersonalNumber(patientPersonalNumber)
-        }.singleOrNull() ?: throw entityNotFound<Patient>(Patient::personalNumber, patientPersonalNumber)
+        }.singleOrNull()?.withSortedAnswers()
+            ?: throw entityNotFound<Patient>(Patient::personalNumber, patientPersonalNumber)
 
     /**
      * Filters the database with the conjunction (and clause) of the given properties.
@@ -58,35 +59,7 @@ class PatientService(
                         )
                     } ?: query
                 }
-        }.map { patient ->
-            // sort the patients answers for frontend by question id
-            patient.copy(answers = patient.answers.sortedBy { it.questionId })
-        }.sortedBy { it.created } // sort the patients by created as well, to keep it consistent
-
-    /**
-     * Returns all patients in the database.
-     */
-    suspend fun getAllPatients(): List<PatientDtoOut> =
-        getPatientsByConjunctionOf()
-
-    /**
-     * Returns all patients with given [email].
-     */
-    suspend fun getPatientsByEmail(email: String) =
-        getPatientsByConjunctionOf(email = email)
-
-    /**
-     * Returns all patients with given [phoneNumber].
-     */
-    suspend fun getPatientsByPhoneNumber(phoneNumber: String) =
-        getPatientsByConjunctionOf(phoneNumber = phoneNumber)
-
-
-    /**
-     * Returns all patients that were vaccinated or not vaccinated.
-     */
-    suspend fun getPatientsByVaccinated(vaccinated: Boolean) =
-        getPatientsByConjunctionOf(vaccinated = vaccinated)
+        }.sorted()
 
     /**
      * Updates patient with given change set.
@@ -147,6 +120,10 @@ class PatientService(
             throw entityNotFound<Patient>(Patient::id, patientId)
         }
     }
+
+    private fun List<PatientDtoOut>.sorted() = map { it.withSortedAnswers() }.sortedBy { it.created }
+
+    private fun PatientDtoOut.withSortedAnswers() = copy(answers = answers.sortedBy { it.questionId })
 
     private fun normalizePersonalNumber(personalNumber: String): String =
         personalNumber.replace("/", "").trim()
