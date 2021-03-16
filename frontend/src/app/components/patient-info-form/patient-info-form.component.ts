@@ -14,6 +14,7 @@ export class PatientInfoFormComponent implements OnInit {
 
   public allInsuranceCompanies: string[] = Object.values(InsuranceCompany);
   public minVaccinationDate = new Date('1/1/2020');
+  public maxVaccinationDate = new Date();
 
   constructor() {
   }
