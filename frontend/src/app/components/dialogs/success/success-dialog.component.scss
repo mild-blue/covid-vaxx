@@ -20,23 +20,27 @@
 // Check mark
 
 $loader-size: 60px;
-$check-height: $loader-size/2;
+$check-height: $loader-size/3;
 $check-width: $check-height/2;
 $check-left: ($loader-size/6 + $loader-size/12);
-$check-thickness: 5px;
+$check-thickness: 3px;
 $check-color: $success;
 
 .circle-loader {
-  position: relative;
-  display: inline-block;
-  vertical-align: top;
+  display: flex;
+  justify-content: center;
+  align-items: center;
   border-radius: 50%;
   width: $loader-size;
   height: $loader-size;
-  border: $check-thickness solid rgba($success, 0.2);
+  border: calc(#{$check-thickness} * 2) solid rgba($success, 0.2);
 }
 
 .checkmark {
+
+  height: $check-height;
+  width: $check-width;
+  position: relative;
 
   &.draw:after {
     animation-duration: 800ms;
@@ -46,17 +50,16 @@ $check-color: $success;
   }
 
   &:after {
+    content: '';
     opacity: 1;
     height: $check-height;
     width: $check-width;
     transform-origin: left top;
     border-right: $check-thickness solid $check-color;
     border-top: $check-thickness solid $check-color;
-    content: '';
-    left: 50%;
-    top: 50%;
-    margin-left: calc(-1 * #{$loader-size} / 3);
     position: absolute;
+    top: 50%;
+    left: -80%;
   }
 }
 

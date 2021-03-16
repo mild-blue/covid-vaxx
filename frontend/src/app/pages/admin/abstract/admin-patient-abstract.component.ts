@@ -7,6 +7,7 @@ import { AlertService } from '@app/services/alert/alert.service';
 @Component({ template: '' })
 export class AdminPatientAbstractComponent implements OnInit {
 
+  public loading: boolean = false;
   public id: string = '';
   public patient?: Patient;
 
@@ -19,17 +20,20 @@ export class AdminPatientAbstractComponent implements OnInit {
     const id = this.route.snapshot.paramMap.get('id');
     if (id) {
       this.id = id;
-      await this._initPatient();
+      await this.initPatient();
     } else {
       this.alertService.toast('Patient ID is not specified');
     }
   }
 
-  private async _initPatient(): Promise<void> {
+  public async initPatient(): Promise<void> {
+    this.loading = true;
     try {
       this.patient = await this.patientService.findPatientById(this.id);
     } catch (e) {
       this.alertService.toast(e.message);
+    } finally {
+      this.loading = false;
     }
   }
 }

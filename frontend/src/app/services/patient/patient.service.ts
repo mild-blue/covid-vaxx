@@ -80,13 +80,7 @@ export class PatientService {
     sessionStorage.removeItem(this._sessionStorageKey);
   }
 
-  // public confirmVaccination(id: string, token: string): void{
-  //   const params = new HttpParams().set('captcha', token);
-
   public async confirmVaccination(id: string): Promise<HttpResponse<unknown>> {
-    // const params = new HttpParams().set('captcha', token);
-    //const params = new HttpParams().set('vaccinatedOn', new Date().getTime().toString());
-
     const now = new Date();
 
     // set afternoon, since we do not care about time, just about date

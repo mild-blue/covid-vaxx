@@ -11,8 +11,6 @@ import { AdminPatientAbstractComponent } from '@app/pages/admin/abstract/admin-p
 })
 export class AdminPatientComponent extends AdminPatientAbstractComponent implements OnInit {
 
-  public loading: boolean = false;
-
   constructor(private _router: Router,
               private _route: ActivatedRoute,
               private _patientService: PatientService,
@@ -21,17 +19,27 @@ export class AdminPatientComponent extends AdminPatientAbstractComponent impleme
   }
 
   async ngOnInit(): Promise<void> {
-    this.loading = true;
-    super.ngOnInit().finally(() => this.loading = false);
+    await super.ngOnInit();
   }
 
   public searchAgain(): void {
     this._router.navigate(['admin']);
   }
 
-  public async vaccinated(): Promise<void> {
-    if (this.patient) {
-      this._alertService.confirmVaccinateDialog(this.patient.id);
+  public vaccinate(): void {
+    this._alertService.confirmVaccinateDialog(this._handleConfirmation.bind(this));
+  }
+
+  private async _handleConfirmation(): Promise<void> {
+    if (!this.patient) {
+      return;
+    }
+
+    try {
+      await this._patientService.confirmVaccination(this.patient.id);
+      this._alertService.successDialog('Očkování bylo zaznamenáno', this.initPatient.bind(this));
+    } catch (e) {
+      this._alertService.toast(e.message);
     }
   }
 }

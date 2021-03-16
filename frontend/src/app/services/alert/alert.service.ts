@@ -19,10 +19,14 @@ export class AlertService {
     this._snackBar.open(message, 'Zavřít');
   }
 
-  public successDialog(message: string): void {
-    this._dialog.open(SuccessDialogComponent, {
+  public successDialog(message: string, onClose?: () => unknown): void {
+    const dialog = this._dialog.open(SuccessDialogComponent, {
       data: { message }
     });
+
+    if (onClose) {
+      dialog.afterClosed().subscribe(onClose);
+    }
   }
 
   public noPatientFoundDialog(personalNumber: string): void {
@@ -35,9 +39,10 @@ export class AlertService {
     this._dialog.open(GdprComponent);
   }
 
-  public confirmVaccinateDialog(patientId: string): void{
-    this._dialog.open(ConfirmVaccinationComponent, {
-      data: { patientId }
-    });
+  public confirmVaccinateDialog(onConfirm: () => unknown): void {
+    const dialog = this._dialog.open(ConfirmVaccinationComponent);
+    const subscription = dialog.componentInstance.onConfirm.subscribe(onConfirm);
+
+    dialog.afterClosed().subscribe(() => subscription.unsubscribe());
   }
 }
