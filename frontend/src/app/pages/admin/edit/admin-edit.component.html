@@ -18,7 +18,7 @@
     <div class="buttons">
       <button [routerLink]="['/admin/patient', patient.id]" mat-flat-button>Zrušit</button>
       <button (click)="handleSave()"
-              [disabled]="patientForm.invalid"
+              [disabled]="patientForm.invalid || !(patientInfoChanged || answersChanged())"
               color="success"
               mat-raised-button>
         Uložit změny
