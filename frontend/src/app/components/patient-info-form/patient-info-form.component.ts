@@ -13,6 +13,7 @@ export class PatientInfoFormComponent implements OnInit {
   @Input() showVaccinationDate: boolean = false;
 
   public allInsuranceCompanies: string[] = Object.values(InsuranceCompany);
+  public minVaccinationDate = new Date('1/1/2020');
 
   constructor() {
   }

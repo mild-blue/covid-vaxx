@@ -11,7 +11,7 @@ import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { MatButtonModule } from '@angular/material/button';
 import { MatToolbarModule } from '@angular/material/toolbar';
-import { MatNativeDateModule, MatOptionModule } from '@angular/material/core';
+import { DateAdapter, MatNativeDateModule, MatOptionModule } from '@angular/material/core';
 import { MatButtonToggleModule } from '@angular/material/button-toggle';
 import { MatDividerModule } from '@angular/material/divider';
 import { MatCardModule } from '@angular/material/card';
@@ -52,6 +52,7 @@ import { AdminPatientComponent } from './pages/admin/patient/admin-patient.compo
 import { AdminPatientAbstractComponent } from './pages/admin/abstract/admin-patient-abstract.component';
 import { ProgressLoadingComponent } from './components/progress-loading/progress-loading.component';
 import { MatDatepickerModule } from '@angular/material/datepicker';
+import { CustomDateAdapter } from '@app/components/patient-info-form/custom-date-adapter';
 
 registerLocaleData(localeCs);
 
@@ -114,6 +115,7 @@ registerLocaleData(localeCs);
   ],
   providers: [
     { provide: LOCALE_ID, useValue: 'cs-CZ' },
+    { provide: DateAdapter, useClass: CustomDateAdapter },
     { provide: HTTP_INTERCEPTORS, useClass: AuthInterceptor, multi: true },
     { provide: HTTP_INTERCEPTORS, useClass: ErrorInterceptor, multi: true },
     { provide: RECAPTCHA_V3_SITE_KEY, useValue: environment.recaptchaSiteKey },
