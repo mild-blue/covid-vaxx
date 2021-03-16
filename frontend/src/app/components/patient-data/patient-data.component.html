@@ -43,10 +43,10 @@
         </mat-label>
       </app-form-field>
       <mat-divider></mat-divider>
-      <ng-container *ngIf="showVaccinationDate">
+      <ng-container *ngIf="showVaccinationDate && patientData.vaccinatedOn">
         <app-form-field>
           <mat-label>Datum vakcinace:</mat-label>
-          <mat-label *ngIf="patientData.vaccinatedOn else unspecified;">
+          <mat-label>
             {{ patientData.vaccinatedOn | date:'EEEE, d. MMMM y' }}
           </mat-label>
         </app-form-field>

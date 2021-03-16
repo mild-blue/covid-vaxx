@@ -14,7 +14,7 @@
       Editovat údaje pacienta
       <mat-icon>create</mat-icon>
     </button>
-    <button mat-raised-button (click)="vaccinate()" color="success">
+    <button *ngIf="patient.vaccinatedOn === undefined" mat-raised-button (click)="vaccinate()" color="success">
       Potvrdit proběhlé očkování
       <mat-icon>check</mat-icon>
     </button>
