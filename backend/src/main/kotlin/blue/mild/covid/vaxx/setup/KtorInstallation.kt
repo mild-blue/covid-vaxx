@@ -18,6 +18,7 @@ import blue.mild.covid.vaxx.security.auth.registerJwtAuth
 import blue.mild.covid.vaxx.security.ddos.RateLimiting
 import blue.mild.covid.vaxx.utils.createLogger
 import com.auth0.jwt.JWTVerifier
+import com.fasterxml.jackson.databind.SerializationFeature
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule
 import com.papsign.ktor.openapigen.OpenAPIGen
 import com.papsign.ktor.openapigen.openAPIGen
@@ -156,6 +157,8 @@ private fun Application.installBasics() {
     install(ContentNegotiation) {
         jackson {
             registerModule(JavaTimeModule())
+            // use ie. 2021-03-15T13:55:39.813985Z instead of 1615842349.47899
+            disable(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS)
         }
     }
 
@@ -234,7 +237,6 @@ private fun Application.installSwagger() {
                 .replace(Regex("[A-Za-z0-9_.]+")) { it.value.split(".").last() }
                 .replace(Regex(">|<|, "), "_")
         })
-
     }
     // install swagger routes
     if (enableSwagger) {
