@@ -25,6 +25,7 @@ import java.time.Instant
 import java.util.*
 import java.util.stream.Stream
 import kotlin.random.Random
+import kotlin.test.assertEquals
 
 
 class ValidationServiceTest {
@@ -262,8 +263,7 @@ class ValidationServiceTest {
     @Test
     fun `test validate invalid phone number - wrong length`() {
         val phoneNumber = generateValidCzPhoneNumber()
-        // TODO: Check while CZ number is still valid
-        val phoneWithMoreNumbers = "${phoneNumber.number}123"
+        val phoneWithMoreNumbers = "${phoneNumber.number}1"
         assertThrows<PropertyValidationException> {
             instance().requireValidPhoneNumber(phoneWithMoreNumbers, phoneNumber.countryCode)
         }
@@ -280,34 +280,17 @@ class ValidationServiceTest {
     }
 
     @Test
-    fun `test validate invalid phone number - no prefix`() {
-        val instance = instance()
-
-        var phoneNumber = generateValidCzPhoneNumber()
-        val phoneWithoutPrefix = phoneNumber.number.substring(4)
-        assertThrows<PropertyValidationException> {
-            instance.requireValidPhoneNumber(phoneWithoutPrefix, phoneNumber.countryCode)
-        }
-
-        phoneNumber = generateValidCzPhoneNumber()
-        val noPlus = phoneNumber.number.substring(1)
-        assertThrows<PropertyValidationException> {
-            instance.requireValidPhoneNumber(noPlus, phoneNumber.countryCode)
-        }
-
-        phoneNumber = generateValidCzPhoneNumber()
-        val letterBeginning = "-${phoneNumber.number.substring(1)}"
-        assertThrows<PropertyValidationException> {
-            instance.requireValidPhoneNumber(letterBeginning, phoneNumber.countryCode)
-        }
-    }
-
-    @Test
     fun `test validate correct phone number`() {
         assertDoesNotThrow {
             val phoneNumber = generateValidCzPhoneNumber()
             instance().requireValidPhoneNumber(phoneNumber.number, phoneNumber.countryCode)
         }
+    }
+
+    @Test
+    fun `test format phone number`() {
+        val result = instance().formatPhoneNumber(PhoneNumberDtoIn(number = "   420 7 36 11 456 7", countryCode = "CZ"))
+        assertEquals("+420736114567", result)
     }
 
     private fun validRegistration(questions: List<QuestionDtoOut> = emptyList()) =
@@ -338,8 +321,7 @@ class ValidationServiceTest {
         ValidationService(questionService)
 
     private fun generateValidCzPhoneNumber() = PhoneNumberDtoIn(
-        "+420${(1..3).map { Random.nextInt(6, 8) }.joinToString("")}${
-            (1..6).map { Random.nextInt(0, 10) }.joinToString("")
+        "+420736 ${(1..6).map { Random.nextInt(0, 10) }.joinToString("")
         }",
         "CZ"
     )

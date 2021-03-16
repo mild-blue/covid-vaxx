@@ -13,7 +13,7 @@ import org.jetbrains.exposed.sql.Op
 import org.jetbrains.exposed.sql.and
 import org.jetbrains.exposed.sql.transactions.experimental.newSuspendedTransaction
 import pw.forst.tools.katlib.whenFalse
-import java.util.UUID
+import java.util.*
 
 class PatientService(
     private val patientRepository: PatientRepository,
@@ -73,7 +73,7 @@ class PatientService(
             lastName = changeSet.lastName?.trim(),
             zipCode = changeSet.zipCode,
             district = changeSet.district?.trim(),
-            phoneNumber = changeSet.phoneNumber?.number?.trim(),
+            phoneNumber = changeSet.phoneNumber?.let { validationService.formatPhoneNumber(it) },
             personalNumber = changeSet.personalNumber?.let { normalizePersonalNumber(it) },
             email = changeSet.email?.trim()?.toLowerCase(),
             insuranceCompany = changeSet.insuranceCompany,
@@ -103,7 +103,7 @@ class PatientService(
                 lastName = registration.lastName.trim(),
                 zipCode = registration.zipCode,
                 district = registration.district.trim(),
-                phoneNumber = registration.phoneNumber.number.trim(),
+                phoneNumber = validationService.formatPhoneNumber(registration.phoneNumber),
                 personalNumber = normalizePersonalNumber(registration.personalNumber),
                 email = registration.email.trim().toLowerCase(),
                 insuranceCompany = registration.insuranceCompany,
