@@ -7,16 +7,7 @@
   justify-content: space-between;
   padding: 10px 0;
 
-  @include media-breakpoint-down(md) {
-    flex-direction: column;
-    align-items: flex-start;
-
-    > ::ng-deep *:last-child {
-      margin-top: 10px;
-    }
-  }
-
-  ::ng-deep mat-label {
-    padding-right: 10px;
+  ::ng-deep mat-label:not(:last-of-type) {
+    padding-right: 20px;
   }
 }

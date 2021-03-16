@@ -1,0 +1,30 @@
+<app-progress-loading [show]="loading"></app-progress-loading>
+
+<app-container [wide]="true">
+  <app-back-button [routerLink]="['/admin/patient', id]">
+    Zpět na detail pacienta
+  </app-back-button>
+
+  <h1 class="mat-h1">Editace údajů pacienta</h1>
+
+  <ng-container *ngIf="patient">
+    <div class="patient-form">
+      <form #patientForm="ngForm">
+        <app-patient-info-form [patient]="patient" [showVaccinationDate]="true"></app-patient-info-form>
+      </form>
+      <app-patient-questions-form [patient]="patient"></app-patient-questions-form>
+    </div>
+
+    <div class="buttons">
+      <button [routerLink]="['/admin/patient', patient.id]" mat-flat-button>Zrušit</button>
+      <button (click)="handleSave()"
+              [disabled]="patientForm.invalid || !(patientInfoChanged || answersChanged())"
+              color="success"
+              mat-raised-button>
+        Uložit změny
+        <mat-icon>save</mat-icon>
+      </button>
+    </div>
+  </ng-container>
+
+</app-container>

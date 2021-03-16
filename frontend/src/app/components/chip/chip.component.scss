@@ -1,0 +1,21 @@
+@import "../../../styles/variables";
+
+.chip {
+  padding: 2px 5px;
+  border-radius: 4px;
+
+  &.no {
+    background: rgba($danger, 0.2);
+    color: $danger;
+  }
+
+  &.yes {
+    background: rgba($success, 0.2);
+    color: $success;
+  }
+
+  &.maybe {
+    background: rgba($warning, 0.2);
+    color: $warning;
+  }
+}

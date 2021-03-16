@@ -9,4 +9,5 @@ export interface PatientData {
   phoneNumber: string;
   insuranceCompany?: InsuranceCompany;
   answers: Answer[];
+  vaccinatedOn?: Date;
 }

@@ -1,0 +1,11 @@
+.buttons {
+  margin-top: 3em;
+  display: flex;
+  justify-content: center;
+
+  button {
+    margin: 0 1em;
+    flex: 1;
+    max-width: 260px;
+  }
+}

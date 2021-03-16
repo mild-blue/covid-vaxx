@@ -12,8 +12,8 @@
 
 
 export interface ConfirmationDtoIn {
-    covid19VaccinationAgreement: boolean;
-    gdprAgreement: boolean;
-    healthStateDisclosureConfirmation: boolean;
+  covid19VaccinationAgreement: boolean;
+  gdprAgreement: boolean;
+  healthStateDisclosureConfirmation: boolean;
 }
 

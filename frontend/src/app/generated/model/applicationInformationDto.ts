@@ -12,6 +12,6 @@
 
 
 export interface ApplicationInformationDto {
-    version: string;
+  version: string;
 }
 

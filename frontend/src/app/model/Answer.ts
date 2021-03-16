@@ -1,4 +1,6 @@
 export interface Answer {
+  id: string;
   label: string;
-  value: boolean;
+  name: string;
+  value?: boolean;
 }

@@ -22,7 +22,6 @@ export interface PatientUpdateDtoIn {
     phoneNumber?: string | null;
     vaccinatedOn?: string | null;
 }
-
 export enum PatientUpdateDtoInInsuranceCompanyEnum {
     Vzp = 'VZP',
     Vozp = 'VOZP',

@@ -3,7 +3,9 @@ import { Question } from '@app/model/Question';
 
 export const parseAnswerFromQuestion = (question: Question): Answer => {
   return {
+    id: question.id,
     label: question.label,
-    value: question.value === 'true' || question.value === true
+    name: question.name,
+    value: question.value !== undefined ? question.value === 'true' || question.value === true : undefined
   };
 };

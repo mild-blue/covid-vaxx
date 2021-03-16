@@ -1,0 +1,17 @@
+@import "../variables";
+
+.mat-button, .mat-raised-button {
+  mat-icon {
+    font-size: 16px;
+    height: 18px;
+  }
+
+  &.mat-success {
+    background-color: $success;
+    color: $white;
+  }
+}
+
+.mat-button-toggle-group {
+  min-width: 94px !important;
+}

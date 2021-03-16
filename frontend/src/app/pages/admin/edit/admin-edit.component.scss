@@ -1,0 +1,45 @@
+@import "../../../../styles/variables";
+@import "../../../../styles/breakpoints";
+
+.patient-form {
+  display: flex;
+
+  margin-left: -20px;
+  margin-right: -20px;
+
+  @include media-breakpoint-down(sm) {
+    flex-direction: column;
+    align-items: flex-start;
+    margin: 0;
+  }
+
+  > * {
+    flex: 1;
+    margin-left: 20px;
+    margin-right: 20px;
+
+    padding-top: 0;
+    padding-bottom: 0;
+
+    @include media-breakpoint-down(sm) {
+      width: 100%;
+      margin: 0;
+
+      &:last-child {
+        margin-top: 20px;
+      }
+    }
+  }
+}
+
+.buttons {
+  margin-top: 3em;
+  display: flex;
+  justify-content: center;
+
+  button {
+    margin: 0 1em;
+    flex: 1;
+    max-width: 160px;
+  }
+}

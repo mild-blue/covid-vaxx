@@ -1,6 +1,7 @@
 import { BrowserModule } from '@angular/platform-browser';
-import { NgModule } from '@angular/core';
-
+import { LOCALE_ID, NgModule } from '@angular/core';
+import { registerLocaleData } from '@angular/common';
+import localeCs from '@angular/common/locales/cs';
 import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
@@ -16,7 +17,7 @@ import { MatDividerModule } from '@angular/material/divider';
 import { MatCardModule } from '@angular/material/card';
 import { MatSelectModule } from '@angular/material/select';
 import { MatCheckboxModule } from '@angular/material/checkbox';
-import { PatientRegisteredComponent } from './components/dialogs/patient-registered/patient-registered.component';
+import { SuccessDialogComponent } from './components/dialogs/success/success-dialog.component';
 import { MatDialogModule } from '@angular/material/dialog';
 import { HTTP_INTERCEPTORS, HttpClientModule } from '@angular/common/http';
 import { HomeComponent } from './pages/home/home.component';
@@ -42,11 +43,24 @@ import { RegistrationDoneComponent } from './pages/registration-done/registratio
 import { NgxMatIntlTelInputModule } from 'ngx-mat-intl-tel-input';
 import { PersonalNumberValidatorDirective } from './directives/personal-number-validator/personal-number-validator.directive';
 import { EmailValidatorDirective } from './directives/email-validator/email-validator.directive';
+import { ConfirmVaccinationComponent } from './components/dialogs/confirm-vaccination/confirm-vaccination.component';
+import { AdminEditComponent } from './pages/admin/edit/admin-edit.component';
+import { AdminSearchComponent } from './pages/admin/search/admin-search.component';
+import { PatientInfoFormComponent } from './components/patient-info-form/patient-info-form.component';
+import { PatientQuestionsFormComponent } from './components/patient-questions-form/patient-questions-form.component';
+import { AdminPatientComponent } from './pages/admin/patient/admin-patient.component';
+import { AdminPatientAbstractComponent } from './pages/admin/abstract/admin-patient-abstract.component';
+import { ProgressLoadingComponent } from './components/progress-loading/progress-loading.component';
+import { MatDatepickerModule } from '@angular/material/datepicker';
+import { ChipComponent } from './components/chip/chip.component';
+import { MAT_MOMENT_DATE_ADAPTER_OPTIONS, MatMomentDateModule } from '@angular/material-moment-adapter';
+
+registerLocaleData(localeCs);
 
 @NgModule({
   declarations: [
     AppComponent,
-    PatientRegisteredComponent,
+    SuccessDialogComponent,
     HomeComponent,
     ContainerComponent,
     FooterComponent,
@@ -60,7 +74,18 @@ import { EmailValidatorDirective } from './directives/email-validator/email-vali
     GdprComponent,
     RegistrationDoneComponent,
     PersonalNumberValidatorDirective,
-    EmailValidatorDirective
+    EmailValidatorDirective,
+    ConfirmVaccinationComponent,
+    EmailValidatorDirective,
+    GdprComponent,
+    AdminEditComponent,
+    AdminSearchComponent,
+    PatientInfoFormComponent,
+    PatientQuestionsFormComponent,
+    AdminPatientComponent,
+    AdminPatientAbstractComponent,
+    ProgressLoadingComponent,
+    ChipComponent
   ],
   imports: [
     BrowserModule,
@@ -86,9 +111,13 @@ import { EmailValidatorDirective } from './directives/email-validator/email-vali
     MatProgressBarModule,
     MatBadgeModule,
     RecaptchaV3Module,
-    NgxMatIntlTelInputModule
+    NgxMatIntlTelInputModule,
+    MatDatepickerModule,
+    MatMomentDateModule
   ],
   providers: [
+    { provide: LOCALE_ID, useValue: 'cs-CZ' },
+    { provide: MAT_MOMENT_DATE_ADAPTER_OPTIONS, useValue: { useUtc: true, strict: true } },
     { provide: HTTP_INTERCEPTORS, useClass: AuthInterceptor, multi: true },
     { provide: HTTP_INTERCEPTORS, useClass: ErrorInterceptor, multi: true },
     { provide: RECAPTCHA_V3_SITE_KEY, useValue: environment.recaptchaSiteKey },

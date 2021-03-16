@@ -1,28 +1,46 @@
-$brand-success: #5cb85c;
-$loader-size: 7em;
-$check-height: $loader-size/2;
-$check-width: $check-height/2;
-$check-left: ($loader-size/6 + $loader-size/12);
-$check-thickness: 3px;
-$check-color: $brand-success;
+@import "../../../../styles/variables";
 
-.centered {
+.content {
   display: flex;
-  flex-direction: column;
-  justify-content: center;
+  align-items: center;
+  padding-bottom: 20px;
+
+  h3 {
+    margin: 0 0 0 20px;
+    color: $success;
+  }
+}
+
+.buttons {
+  display: flex;
+  justify-content: flex-end;
   align-items: center;
 }
 
+// Check mark
+
+$loader-size: 60px;
+$check-height: $loader-size/3;
+$check-width: $check-height/2;
+$check-left: ($loader-size/6 + $loader-size/12);
+$check-thickness: 3px;
+$check-color: $success;
+
 .circle-loader {
-  position: relative;
-  display: inline-block;
-  vertical-align: top;
+  display: flex;
+  justify-content: center;
+  align-items: center;
   border-radius: 50%;
   width: $loader-size;
   height: $loader-size;
+  border: calc(#{$check-thickness} * 2) solid rgba($success, 0.2);
 }
 
 .checkmark {
+
+  height: $check-height;
+  width: $check-width;
+  position: relative;
 
   &.draw:after {
     animation-duration: 800ms;
@@ -32,16 +50,16 @@ $check-color: $brand-success;
   }
 
   &:after {
+    content: '';
     opacity: 1;
     height: $check-height;
     width: $check-width;
     transform-origin: left top;
     border-right: $check-thickness solid $check-color;
     border-top: $check-thickness solid $check-color;
-    content: '';
-    left: $check-left;
-    top: $check-height;
     position: absolute;
+    top: 50%;
+    left: -80%;
   }
 }
 

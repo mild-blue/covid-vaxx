@@ -1,0 +1,17 @@
+mat-form-field {
+  &.mat-form-field-should-float {
+    margin: 10px 0;
+  }
+
+  &.has-hint {
+    margin-bottom: 20px;
+  }
+}
+
+::ng-deep .country-selector {
+  padding-right: 18px !important;
+}
+
+mat-card {
+  height: 100%;
+}

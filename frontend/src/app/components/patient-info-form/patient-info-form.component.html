@@ -1,0 +1,58 @@
+<mat-card *ngIf="patient">
+  <mat-card-content>
+      <mat-form-field floatLabel="always">
+        <mat-label>Jméno</mat-label>
+        <input [(ngModel)]="patient.firstName" name="firstName" matInput placeholder="Vaše jméno" required maxlength="64">
+      </mat-form-field>
+
+      <mat-form-field floatLabel="always">
+        <mat-label>Příjmení</mat-label>
+        <input [(ngModel)]="patient.lastName" name="lastName" matInput placeholder="Vaše příjmení" required maxlength="64">
+      </mat-form-field>
+
+      <mat-form-field floatLabel="always" class="has-hint">
+        <mat-label>Rodné číslo</mat-label>
+        <input [(ngModel)]="patient.personalNumber" name="personalNumber" matInput personalNumberValidator placeholder="Vaše rodné číslo" required maxlength="11">
+        <mat-hint>Rodné číslo ve formátu RRMMDD/ČČČ(Č)</mat-hint>
+      </mat-form-field>
+
+      <mat-form-field floatLabel="always">
+        <mat-label>Zdravotní pojišťovna</mat-label>
+        <mat-select name="insuranceCompany" [(ngModel)]="patient.insuranceCompany" placeholder="Vyberte Vaší zdravotní pojišťovnu" required>
+          <mat-option *ngFor="let insuranceCompany of allInsuranceCompanies" [value]="insuranceCompany">
+            {{insuranceCompany}}
+          </mat-option>
+        </mat-select>
+      </mat-form-field>
+
+      <mat-form-field floatLabel="always">
+        <mat-label>Telefonní číslo</mat-label>
+        <ngx-mat-intl-tel-input [(ngModel)]="patient.phoneNumber"
+                                [preferredCountries]="['cz', 'sk', 'de', 'at', 'pl']"
+                                [enablePlaceholder]="true"
+                                [enableSearch]="false"
+                                [format]="'national'"
+                                [required]="true"
+                                class="ngx-floating"
+                                name="phoneNumber"
+                                inputPlaceholder="Vaše telefonní číslo"></ngx-mat-intl-tel-input>
+      </mat-form-field>
+      <mat-form-field floatLabel="always">
+        <mat-label>E-mail</mat-label>
+        <input [(ngModel)]="patient.email" name="email" matInput placeholder="Váš e-mail" emailValidator required maxlength="64">
+      </mat-form-field>
+
+      <mat-form-field *ngIf="showVaccinationDate && patient.vaccinatedOn" floatLabel="always">
+        <mat-label>Datum vakcinace</mat-label>
+        <input [matDatepicker]="$any(picker)"
+               [(ngModel)]="patient.vaccinatedOn"
+               [min]="minVaccinationDate"
+               [max]="maxVaccinationDate"
+               (click)="picker.open()"
+               readonly
+               name="vaccinatedOn" matInput>
+        <mat-datepicker-toggle matSuffix [for]="picker"></mat-datepicker-toggle>
+        <mat-datepicker #picker></mat-datepicker>
+      </mat-form-field>
+  </mat-card-content>
+</mat-card>

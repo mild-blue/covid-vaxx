@@ -1,0 +1,44 @@
+<app-progress-loading [show]="loading"></app-progress-loading>
+
+<app-container>
+  <h1 class="mat-h1">Vyhledávání pacienta</h1>
+  <mat-card>
+    <mat-card-content>
+      <form (ngSubmit)="onSubmit()">
+        <mat-form-field class="">
+          <mat-label>Rodné číslo očkovaného</mat-label>
+          <input matInput [(ngModel)]="personalNumber"
+                 placeholder="Zadejte rodné číslo"
+                 name="personalNumber"
+                 #personalNumberInput="ngModel"
+                 required maxlength="11" personalNumberValidator>
+          <mat-hint>Rodné číslo ve formátu RRMMDD/ČČČ(Č)</mat-hint>
+        </mat-form-field>
+        <button color="primary"
+                [disabled]="personalNumberInput.invalid || submitted"
+                mat-raised-button>
+          Vyhledat pacienta
+        </button>
+      </form>
+    </mat-card-content>
+  </mat-card>
+
+  <div class="history__header">
+    <h3 class="mat-h3">Historie vyhledávání</h3>
+    <button *ngIf="searchHistory.length"
+            (click)="clearHistory()" mat-button color="warn">
+      Vymazat historii
+    </button>
+  </div>
+
+  <mat-card class="history">
+    <div *ngFor="let query of searchHistory">
+      <div class="history__item">
+        <span>{{ query }}</span>
+        <button (click)="findPatient(query)" mat-button color="primary">Hledat znovu</button>
+      </div>
+      <mat-divider></mat-divider>
+    </div>
+  </mat-card>
+
+</app-container>

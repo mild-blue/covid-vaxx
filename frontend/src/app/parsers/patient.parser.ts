@@ -12,7 +12,8 @@ export const parsePatient = (data: PatientDtoOut, questions: Question[]): Patien
     answers: answers.filter(notEmpty),
     insuranceCompany: parseInsuranceCompany(data.insuranceCompany),
     created: new Date(data.created),
-    updated: new Date(data.updated)
+    updated: new Date(data.updated),
+    vaccinatedOn: data.vaccinatedOn ? new Date(data.vaccinatedOn) : undefined
   };
 };
 
@@ -23,7 +24,9 @@ export const parseAnswer = (data: AnswerDto, questions: Question[]): Answer | un
   }
 
   return {
+    id: question.id,
     label: question.label,
+    name: question.name,
     value: data.value
   };
 };

@@ -1,9 +1,10 @@
 import { Injectable } from '@angular/core';
 import { MatSnackBar } from '@angular/material/snack-bar';
-import { PatientRegisteredComponent } from '@app/components/dialogs/patient-registered/patient-registered.component';
+import { SuccessDialogComponent } from '@app/components/dialogs/success/success-dialog.component';
 import { MatDialog } from '@angular/material/dialog';
 import { NoPatientFoundComponent } from '@app/components/dialogs/no-patient-found/no-patient-found.component';
 import { GdprComponent } from '@app/components/dialogs/gdpr/gdpr.component';
+import { ConfirmVaccinationComponent } from '@app/components/dialogs/confirm-vaccination/confirm-vaccination.component';
 
 @Injectable({
   providedIn: 'root'
@@ -18,10 +19,14 @@ export class AlertService {
     this._snackBar.open(message, 'Zavřít');
   }
 
-  public patientRegisteredDialog(): void {
-    this._dialog.open(PatientRegisteredComponent, {
-      width: '250px'
+  public successDialog(message: string, onClose?: () => unknown): void {
+    const dialog = this._dialog.open(SuccessDialogComponent, {
+      data: { message }
     });
+
+    if (onClose) {
+      dialog.afterClosed().subscribe(onClose);
+    }
   }
 
   public noPatientFoundDialog(personalNumber: string): void {
@@ -32,5 +37,12 @@ export class AlertService {
 
   public gdprDialog(): void {
     this._dialog.open(GdprComponent);
+  }
+
+  public confirmVaccinateDialog(onConfirm: () => unknown): void {
+    const dialog = this._dialog.open(ConfirmVaccinationComponent);
+    const subscription = dialog.componentInstance.onConfirm.subscribe(onConfirm);
+
+    dialog.afterClosed().subscribe(() => subscription.unsubscribe());
   }
 }
