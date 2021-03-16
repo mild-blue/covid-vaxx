@@ -1,11 +1,13 @@
 import { Component, Input } from '@angular/core';
 import { Patient } from '@app/model/Patient';
 import { InsuranceCompany } from '@app/model/InsuranceCompany';
+import { ControlContainer, NgForm } from '@angular/forms';
 
 @Component({
   selector: 'app-patient-info-form',
   templateUrl: './patient-info-form.component.html',
-  styleUrls: ['./patient-info-form.component.scss']
+  styleUrls: ['./patient-info-form.component.scss'],
+  viewProviders: [{ provide: ControlContainer, useExisting: NgForm }]
 })
 export class PatientInfoFormComponent {
 

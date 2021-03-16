@@ -1,6 +1,5 @@
 <mat-card *ngIf="patient">
   <mat-card-content>
-    <form>
       <mat-form-field floatLabel="always">
         <mat-label>Jméno</mat-label>
         <input [(ngModel)]="patient.firstName" name="firstName" matInput placeholder="Vaše jméno" required maxlength="64">
@@ -55,7 +54,5 @@
         <mat-datepicker-toggle matSuffix [for]="picker"></mat-datepicker-toggle>
         <mat-datepicker #picker></mat-datepicker>
       </mat-form-field>
-
-    </form>
   </mat-card-content>
 </mat-card>
