@@ -2,6 +2,6 @@
   <h3>Potrvdit proběhlé očkování?</h3>
 </div>
 <mat-dialog-actions class="buttons">
-  <button mat-raised-button color="success" mat-dialog-close (click)="confirm()">Ano</button>
-  <button mat-button mat-dialog-close color="warn">Ne</button>
+  <button mat-button mat-dialog-close>Ne</button>
+  <button mat-raised-button color="success" mat-dialog-close (click)="confirm()" cdkFocusInitial>Ano</button>
 </mat-dialog-actions>
