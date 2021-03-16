@@ -18,6 +18,7 @@ import blue.mild.covid.vaxx.security.auth.registerJwtAuth
 import blue.mild.covid.vaxx.security.ddos.RateLimiting
 import blue.mild.covid.vaxx.utils.createLogger
 import com.auth0.jwt.JWTVerifier
+import com.fasterxml.jackson.databind.SerializationFeature
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule
 import com.papsign.ktor.openapigen.OpenAPIGen
 import com.papsign.ktor.openapigen.openAPIGen
@@ -156,6 +157,8 @@ private fun Application.installBasics() {
     install(ContentNegotiation) {
         jackson {
             registerModule(JavaTimeModule())
+            // use ie. 2021-03-15T13:55:39.813985Z instead of 1615842349.47899
+            disable(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS)
         }
     }
 
@@ -234,7 +237,6 @@ private fun Application.installSwagger() {
                 .replace(Regex("[A-Za-z0-9_.]+")) { it.value.split(".").last() }
                 .replace(Regex(">|<|, "), "_")
         })
-
     }
     // install swagger routes
     if (enableSwagger) {
@@ -259,13 +261,14 @@ private fun Application.installMonitoring() {
         mdc(REMOTE_HOST) { it.request.determineRealIp() }
         mdc(PATH) { "${it.request.httpMethod.value} ${it.request.path()}" }
 
-        // enable logging for all routes that are not /status
-        // this filter does not influence MDC
         val ignoredPaths = setOf(Routes.status, Routes.statusHealth)
+        val ignoredMethods = setOf(HttpMethod.Options, HttpMethod.Head)
         filter {
             val path = it.request.path()
-            // log just requests that goes to api and are not ignored
-            path.startsWith("/api") && !ignoredPaths.contains(path)
+            // log just requests that goes to api
+            path.startsWith("/api")
+                    && !ignoredPaths.contains(path) // without ignored service paths
+                    && !ignoredMethods.contains(it.request.httpMethod) // and ignored, not used, methods
         }
         level = Level.INFO // we want to log especially the results of the requests
         logger = createLogger("HttpCallLogger")

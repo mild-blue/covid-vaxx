@@ -13,6 +13,7 @@ object Routes {
     val version = apiName("version")
     val status = apiName("status")
     val statusHealth = apiName("status/health")
+    val systemStatistics = apiName("statistics")
 
     val registeredUserLogin = apiName("admin/login")
     val userRegistration = apiName("admin/register")
