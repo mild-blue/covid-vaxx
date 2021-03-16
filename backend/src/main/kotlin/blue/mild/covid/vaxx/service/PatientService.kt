@@ -58,7 +58,10 @@ class PatientService(
                         )
                     } ?: query
                 }
-        }
+        }.map { patient ->
+            // sort the patients answers for frontend by question id
+            patient.copy(answers = patient.answers.sortedBy { it.questionId })
+        }.sortedBy { it.created } // sort the patients by created as well, to keep it consistent
 
     /**
      * Returns all patients in the database.
