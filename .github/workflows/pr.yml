@@ -13,6 +13,8 @@ on:
 jobs:
   check:
     runs-on: ubuntu-20.04
+    # disable run if the PR is draft (as our CLI creates PR as draft once the issue is in progress)
+    if: github.event.pull_request.draft == false
     steps:
       - uses: actions/checkout@v2
 
