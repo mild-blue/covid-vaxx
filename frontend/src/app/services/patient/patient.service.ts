@@ -87,9 +87,15 @@ export class PatientService {
     // const params = new HttpParams().set('captcha', token);
     //const params = new HttpParams().set('vaccinatedOn', new Date().getTime().toString());
 
+    const now = new Date();
+
+    // set afternoon, since we do not care about time, just about date
+    const hours = 12;
+    now.setHours(hours);
+
     return this._http.put<HttpResponse<unknown>>(
       `${environment.apiUrl}/admin/patient/single/${id}`,
-      { vaccinatedOn: new Date().toISOString() }
+      { vaccinatedOn: now.toISOString() }
     ).pipe(
       first()
     ).toPromise();

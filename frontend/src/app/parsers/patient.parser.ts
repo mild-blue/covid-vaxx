@@ -11,9 +11,9 @@ export const parsePatient = (data: PatientDtoOut, questions: Question[]): Patien
     ...data,
     answers: answers.filter(notEmpty),
     insuranceCompany: parseInsuranceCompany(data.insuranceCompany),
-    created: new Date(+data.created * 1000),
-    updated: new Date(+data.updated * 1000),
-    vaccinatedOn: data.vaccinatedOn ? new Date(+data.vaccinatedOn * 1000) : undefined
+    created: new Date(data.created),
+    updated: new Date(data.updated),
+    vaccinatedOn: data.vaccinatedOn ? new Date(data.vaccinatedOn) : undefined
   };
 };
 

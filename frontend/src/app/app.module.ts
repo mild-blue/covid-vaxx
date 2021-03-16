@@ -11,7 +11,7 @@ import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { MatButtonModule } from '@angular/material/button';
 import { MatToolbarModule } from '@angular/material/toolbar';
-import { MatOptionModule } from '@angular/material/core';
+import { MatNativeDateModule, MatOptionModule } from '@angular/material/core';
 import { MatButtonToggleModule } from '@angular/material/button-toggle';
 import { MatDividerModule } from '@angular/material/divider';
 import { MatCardModule } from '@angular/material/card';
@@ -51,6 +51,7 @@ import { PatientQuestionsFormComponent } from './components/patient-questions-fo
 import { AdminPatientComponent } from './pages/admin/patient/admin-patient.component';
 import { AdminPatientAbstractComponent } from './pages/admin/abstract/admin-patient-abstract.component';
 import { ProgressLoadingComponent } from './components/progress-loading/progress-loading.component';
+import { MatDatepickerModule } from '@angular/material/datepicker';
 
 registerLocaleData(localeCs);
 
@@ -107,7 +108,9 @@ registerLocaleData(localeCs);
     MatProgressBarModule,
     MatBadgeModule,
     RecaptchaV3Module,
-    NgxMatIntlTelInputModule
+    NgxMatIntlTelInputModule,
+    MatDatepickerModule,
+    MatNativeDateModule
   ],
   providers: [
     { provide: LOCALE_ID, useValue: 'cs-CZ' },

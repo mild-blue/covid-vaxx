@@ -42,6 +42,13 @@
         <mat-label>E-mail</mat-label>
         <input [(ngModel)]="patient.email" name="email" matInput placeholder="Váš e-mail" emailValidator required maxlength="64">
       </mat-form-field>
+
+      <mat-form-field *ngIf="showVaccinationDate" floatLabel="always">
+        <mat-label>Datum vakcinace</mat-label>
+        <input matInput [matDatepicker]="picker" [(ngModel)]="patient.vaccinatedOn" name="vaccinatedOn">
+        <mat-datepicker-toggle matSuffix [for]="picker"></mat-datepicker-toggle>
+        <mat-datepicker #picker></mat-datepicker>
+      </mat-form-field>
     </form>
   </mat-card-content>
 </mat-card>
