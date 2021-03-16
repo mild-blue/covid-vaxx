@@ -83,9 +83,8 @@ export class PatientService {
   public async confirmVaccination(id: string): Promise<HttpResponse<unknown>> {
     const now = new Date();
 
-    // set afternoon, since we do not care about time, just about date
-    const hours = 12;
-    now.setHours(hours);
+    // we do not care about time, just about date
+    now.setUTCHours(0, 0, 0, 0);
 
     return this._http.put<HttpResponse<unknown>>(
       `${environment.apiUrl}/admin/patient/single/${id}`,
