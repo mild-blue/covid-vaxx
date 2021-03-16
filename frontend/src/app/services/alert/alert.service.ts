@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { MatSnackBar } from '@angular/material/snack-bar';
-import { PatientRegisteredComponent } from '@app/components/dialogs/patient-registered/patient-registered.component';
+import { SuccessDialogComponent } from '@app/components/dialogs/success/success-dialog.component';
 import { MatDialog } from '@angular/material/dialog';
 import { NoPatientFoundComponent } from '@app/components/dialogs/no-patient-found/no-patient-found.component';
 import { GdprComponent } from '@app/components/dialogs/gdpr/gdpr.component';
@@ -19,9 +19,9 @@ export class AlertService {
     this._snackBar.open(message, 'Zavřít');
   }
 
-  public patientRegisteredDialog(): void {
-    this._dialog.open(PatientRegisteredComponent, {
-      width: '250px'
+  public successDialog(message: string): void {
+    this._dialog.open(SuccessDialogComponent, {
+      data: { message }
     });
   }
 

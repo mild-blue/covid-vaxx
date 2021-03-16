@@ -17,7 +17,7 @@ import { MatDividerModule } from '@angular/material/divider';
 import { MatCardModule } from '@angular/material/card';
 import { MatSelectModule } from '@angular/material/select';
 import { MatCheckboxModule } from '@angular/material/checkbox';
-import { PatientRegisteredComponent } from './components/dialogs/patient-registered/patient-registered.component';
+import { SuccessDialogComponent } from './components/dialogs/success/success-dialog.component';
 import { MatDialogModule } from '@angular/material/dialog';
 import { HTTP_INTERCEPTORS, HttpClientModule } from '@angular/common/http';
 import { HomeComponent } from './pages/home/home.component';
@@ -59,7 +59,7 @@ registerLocaleData(localeCs);
 @NgModule({
   declarations: [
     AppComponent,
-    PatientRegisteredComponent,
+    SuccessDialogComponent,
     HomeComponent,
     ContainerComponent,
     FooterComponent,

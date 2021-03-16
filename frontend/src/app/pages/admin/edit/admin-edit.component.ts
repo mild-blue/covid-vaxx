@@ -31,7 +31,7 @@ export class AdminEditComponent extends AdminPatientAbstractComponent implements
 
     try {
       await this._patientService.updatePatient(this.patient);
-      this._alertService.toast('Pacient úspěšně uložen');
+      this._alertService.successDialog('Pacient úspěšně uložen');
     } catch (e) {
       this._alertService.toast(e.message);
     }

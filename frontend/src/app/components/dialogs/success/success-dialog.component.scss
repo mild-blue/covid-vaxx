@@ -1,17 +1,30 @@
-$brand-success: #5cb85c;
-$loader-size: 7em;
+@import "../../../../styles/variables";
+
+.content {
+  display: flex;
+  align-items: center;
+  padding-bottom: 20px;
+
+  h3 {
+    margin: 0 0 0 20px;
+    color: $success;
+  }
+}
+
+.buttons {
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
+}
+
+// Check mark
+
+$loader-size: 60px;
 $check-height: $loader-size/2;
 $check-width: $check-height/2;
 $check-left: ($loader-size/6 + $loader-size/12);
-$check-thickness: 3px;
-$check-color: $brand-success;
-
-.centered {
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  align-items: center;
-}
+$check-thickness: 5px;
+$check-color: $success;
 
 .circle-loader {
   position: relative;
@@ -20,6 +33,7 @@ $check-color: $brand-success;
   border-radius: 50%;
   width: $loader-size;
   height: $loader-size;
+  border: $check-thickness solid rgba($success, 0.2);
 }
 
 .checkmark {
@@ -39,8 +53,9 @@ $check-color: $brand-success;
     border-right: $check-thickness solid $check-color;
     border-top: $check-thickness solid $check-color;
     content: '';
-    left: $check-left;
-    top: $check-height;
+    left: 50%;
+    top: 50%;
+    margin-left: calc(-1 * #{$loader-size} / 3);
     position: absolute;
   }
 }
