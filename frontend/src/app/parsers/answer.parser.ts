@@ -6,6 +6,6 @@ export const parseAnswerFromQuestion = (question: Question): Answer => {
     id: question.id,
     label: question.label,
     name: question.name,
-    value: question.value === 'true' || question.value === true
+    value: question.value !== undefined ? question.value === 'true' || question.value === true : undefined
   };
 };

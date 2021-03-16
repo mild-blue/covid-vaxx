@@ -53,6 +53,7 @@ import { AdminPatientAbstractComponent } from './pages/admin/abstract/admin-pati
 import { ProgressLoadingComponent } from './components/progress-loading/progress-loading.component';
 import { MatDatepickerModule } from '@angular/material/datepicker';
 import { CustomDateAdapter } from '@app/components/patient-info-form/custom-date-adapter';
+import { ChipComponent } from './components/chip/chip.component';
 
 registerLocaleData(localeCs);
 
@@ -83,7 +84,8 @@ registerLocaleData(localeCs);
     PatientQuestionsFormComponent,
     AdminPatientComponent,
     AdminPatientAbstractComponent,
-    ProgressLoadingComponent
+    ProgressLoadingComponent,
+    ChipComponent
   ],
   imports: [
     BrowserModule,

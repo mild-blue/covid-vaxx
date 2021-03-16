@@ -1,0 +1,8 @@
+<div class="chip"
+     [class.no]="value === false"
+     [class.yes]="value === true"
+     [class.maybe]="value === undefined">
+  {{ value === true ? trueLabel : '' }}
+  {{ value === false ? falseLabel : '' }}
+  {{ value === undefined ? undefinedLabel : '' }}
+</div>

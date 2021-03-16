@@ -43,8 +43,15 @@
         </mat-label>
       </app-form-field>
       <mat-divider></mat-divider>
-      <ng-container *ngIf="showVaccinationDate && patientData.vaccinatedOn">
+      <ng-container *ngIf="showVaccinationDate">
         <app-form-field>
+          <mat-label>Očkování proběhlo:</mat-label>
+          <mat-label>
+            <app-chip [value]="!!patientData.vaccinatedOn"></app-chip>
+          </mat-label>
+        </app-form-field>
+        <mat-divider></mat-divider>
+        <app-form-field *ngIf="patientData.vaccinatedOn">
           <mat-label>Datum vakcinace:</mat-label>
           <mat-label>
             {{ patientData.vaccinatedOn | date:'EEEE, d. MMMM y' }}
@@ -60,10 +67,8 @@
       <ng-container *ngFor="let q of patientData.answers; let i = index">
         <app-form-field>
           <mat-label>{{ q.label }}</mat-label>
-          <mat-label [ngSwitch]="q.value">
-            <span *ngSwitchCase="true">Ano</span>
-            <span *ngSwitchCase="false">Ne</span>
-            <ng-container *ngSwitchDefault [ngTemplateOutlet]="unspecified"></ng-container>
+          <mat-label *ngIf="q.value !== undefined else unspecified;">
+            <app-chip [value]="q.value"></app-chip>
           </mat-label>
         </app-form-field>
         <mat-divider *ngIf="i < patientData.answers.length - 1"></mat-divider>
@@ -73,7 +78,5 @@
 </div>
 
 <ng-template #unspecified>
-  <span class="unspecified">
-    Neuvedeno
-  </span>
+  <app-chip [value]="undefined"></app-chip>
 </ng-template>
