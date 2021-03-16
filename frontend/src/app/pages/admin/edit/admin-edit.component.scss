@@ -37,7 +37,9 @@
   display: flex;
   justify-content: center;
 
-  button + button {
-    margin-left: 1em;
+  button {
+    margin: 0 1em;
+    flex: 1;
+    max-width: 160px;
   }
 }
