@@ -4,7 +4,9 @@
 
 <main>
   <mat-horizontal-stepper [linear]="true">
-    <mat-step [completed]="patientForm.valid" label="Osobní informace">
+
+    <!-- 1. Osobní informace -->
+    <mat-step #firstStep [completed]="patientForm.valid" label="Osobní informace">
       <app-container>
         <form #patientForm="ngForm">
           <app-patient-info-form [patient]="patient"></app-patient-info-form>
@@ -12,30 +14,34 @@
 
         <div class="nav-buttons">
           <div></div>
-          <button [disabled]="patientForm.invalid"
+          <button [disabled]="!firstStep.completed"
                   color="primary" mat-raised-button matStepperNext>
             Další krok
           </button>
         </div>
       </app-container>
     </mat-step>
-    <mat-step label="Zdravotní informace" [completed]="canProceedToStep3">
-      <app-container>
+
+    <!-- 2. Zdravotní informace -->
+    <mat-step #secondStep [completed]="firstStep.completed && allQuestionsAnswered" label="Zdravotní informace">
+      <app-container *ngIf="firstStep.completed">
         <app-patient-questions-form [patient]="patient"></app-patient-questions-form>
         <div class="nav-buttons">
           <button color="secondary" mat-raised-button matStepperPrevious>
             Předchozí krok
           </button>
-          <button [disabled]="!canProceedToStep3"
+          <button [disabled]="!secondStep.completed"
                   color="primary" mat-raised-button matStepperNext>
             Další krok
           </button>
         </div>
       </app-container>
     </mat-step>
-    <mat-step label="Odeslání požadavku">
+
+    <!-- 3. Odeslání požadavku -->
+    <mat-step #thirdStep [completed]="!!confirmationCheckboxValue && !!agreementCheckboxValue && !!gdprCheckboxValue" label="Odeslání požadavku">
       <app-container [wide]="true">
-        <app-patient-data *ngIf="canProceedToStep3" [patientData]="patient"></app-patient-data>
+        <app-patient-data [patientData]="patient"></app-patient-data>
 
         <div class="checkboxes">
           <mat-checkbox [(ngModel)]="confirmationCheckboxValue">
@@ -58,7 +64,7 @@
             Předchozí krok
           </button>
           <button (click)="submit()"
-                  [disabled]="!canSubmit"
+                  [disabled]="!thirdStep.completed"
                   color="primary" mat-raised-button matStepperNext>
             Odeslat požadavek
           </button>

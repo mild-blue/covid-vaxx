@@ -47,14 +47,6 @@ export class HomeComponent {
     return unanswered.length === 0;
   }
 
-  get canProceedToStep3(): boolean {
-    return !!this.patientForm?.valid && this.allQuestionsAnswered;
-  }
-
-  get canSubmit(): boolean {
-    return !!this.patientForm?.valid && this.allQuestionsAnswered && this.agreementCheckboxValue && this.confirmationCheckboxValue && this.gdprCheckboxValue;
-  }
-
   private _initPatient(): PatientData {
     return {
       firstName: '',
@@ -72,7 +64,7 @@ export class HomeComponent {
   }
 
   public async submit(): Promise<void> {
-    if (!this.canSubmit || !this.patient) {
+    if (!this.patient) {
       return;
     }
 
