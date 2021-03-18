@@ -5,11 +5,11 @@ import { InsuranceCompany } from '@app/model/InsuranceCompany';
 
 export const fromPatientToGenerated = (patient: Patient): PatientUpdateDtoIn => {
   return {
-    email: patient.email,
-    firstName: patient.firstName,
-    lastName: patient.lastName,
-    personalNumber: patient.personalNumber,
-    phoneNumber: patient.phoneNumber,
+    email: patient.email.trim(),
+    firstName: patient.firstName.trim(),
+    lastName: patient.lastName.trim(),
+    personalNumber: patient.personalNumber.trim(),
+    phoneNumber: patient.phoneNumber.trim(),
     answers: patient.answers.map(fromQuestionToAnswerGenerated),
     insuranceCompany: fromInsuranceToUpdateInsuranceGenerated(patient.insuranceCompany),
     vaccinatedOn: patient.vaccinatedOn ? patient.vaccinatedOn.toISOString() : undefined

@@ -49,7 +49,7 @@ export class PatientService {
   }
 
   public async findPatientByPersonalNumber(personalNumber: string): Promise<Patient> {
-    const params = new HttpParams().set('personalNumber', personalNumber);
+    const params = new HttpParams().set('personalNumber', personalNumber.trim());
 
     return this._http.get<PatientDtoOut>(
       `${environment.apiUrl}/admin/patient/single`,
