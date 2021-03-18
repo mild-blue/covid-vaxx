@@ -1,15 +1,15 @@
 <mat-card *ngIf="patient">
   <mat-card-content>
     <form>
-      <ng-container *ngFor="let answer of patient.answers; let i = index">
+      <ng-container *ngFor="let question of patient.questionnaire; let i = index">
         <app-form-field>
-          <mat-label>{{ answer.label }}</mat-label>
-          <mat-button-toggle-group [(ngModel)]="answer.value" [name]="answer.name">
-            <mat-button-toggle [value]="true" [class.true]="answer.value === true">Ano</mat-button-toggle>
-            <mat-button-toggle [value]="false" [class.false]="answer.value === false">Ne</mat-button-toggle>
+          <mat-label>{{ question.label }}</mat-label>
+          <mat-button-toggle-group [(ngModel)]="question.answer" [name]="question.name">
+            <mat-button-toggle [value]="true" [class.true]="question.answer === true">Ano</mat-button-toggle>
+            <mat-button-toggle [value]="false" [class.false]="question.answer === false">Ne</mat-button-toggle>
           </mat-button-toggle-group>
         </app-form-field>
-        <mat-divider *ngIf="i < patient.answers.length - 1"></mat-divider>
+        <mat-divider *ngIf="i < patient.questionnaire.length - 1"></mat-divider>
       </ng-container>
     </form>
   </mat-card-content>

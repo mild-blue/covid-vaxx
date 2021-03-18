@@ -15,6 +15,7 @@ export class AdminEditComponent extends AdminPatientAbstractComponent implements
   private _patientDiffer?: KeyValueDiffer<string, unknown>;
   private _patientBase?: Patient;
 
+  // public patientEditable?: PatientEditable;
   public patientInfoChanged: boolean = false;
 
   constructor(private _route: ActivatedRoute,
@@ -32,7 +33,7 @@ export class AdminEditComponent extends AdminPatientAbstractComponent implements
       // Create deep copy of patient
       this._patientBase = { ...this.patient };
       // Create deep copy of answers
-      this._patientBase.answers = this.patient.answers.map(a => ({ ...a }));
+      this._patientBase.questionnaire = this.patient.questionnaire.map(a => ({ ...a }));
     }
 
     // Listen for changes
@@ -75,8 +76,8 @@ export class AdminEditComponent extends AdminPatientAbstractComponent implements
       return false;
     }
 
-    const previousAnswers = this._patientBase.answers.map(a => a.value);
-    const currentAnswers = this.patient.answers.map(a => a.value);
+    const previousAnswers = this._patientBase.questionnaire.map(a => a.answer);
+    const currentAnswers = this.patient.questionnaire.map(a => a.answer);
 
     // just to be sure
     if (previousAnswers.length !== currentAnswers.length) {

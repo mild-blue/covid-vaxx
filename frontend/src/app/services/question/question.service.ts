@@ -3,9 +3,9 @@ import { HttpClient } from '@angular/common/http';
 import { environment } from '@environments/environment';
 import { first, map } from 'rxjs/operators';
 import { parseQuestion } from '@app/parsers/question.parser';
-import { BehaviorSubject, Observable } from 'rxjs';
+import { BehaviorSubject } from 'rxjs';
 import { QuestionDtoOut } from '@app/generated';
-import { Question } from '@app/model/Question';
+import { AnsweredQuestion } from '@app/model/AnsweredQuestion';
 
 @Injectable({
   providedIn: 'root'
@@ -13,18 +13,17 @@ import { Question } from '@app/model/Question';
 export class QuestionService {
 
   private _questionKey = 'questions';
-  private _questionsSubject: BehaviorSubject<Question[]> = new BehaviorSubject<Question[]>([]);
-  public questionsObservable: Observable<Question[]> = this._questionsSubject.asObservable();
+  private _questionsSubject: BehaviorSubject<AnsweredQuestion[]> = new BehaviorSubject<AnsweredQuestion[]>([]);
 
   constructor(private _http: HttpClient) {
     this._initQuestions();
   }
 
-  get questions(): Question[] {
+  get questions(): AnsweredQuestion[] {
     return this._questionsSubject.value;
   }
 
-  public async loadQuestions(): Promise<Question[]> {
+  public async loadQuestions(): Promise<AnsweredQuestion[]> {
     localStorage.removeItem(this._questionKey);
 
     return this._http.get<QuestionDtoOut[]>(
