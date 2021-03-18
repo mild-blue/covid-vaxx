@@ -9,6 +9,7 @@ import { AuthGuard } from '@app/guards/auth/auth.guard';
 import { AdminEditComponent } from '@app/pages/admin/edit/admin-edit.component';
 import { AdminSearchComponent } from '@app/pages/admin/search/admin-search.component';
 import { AdminPatientComponent } from '@app/pages/admin/patient/admin-patient.component';
+import { RegistrationDoneGuard } from '@app/guards/registration-done/registration-done.guard';
 
 const routes: Routes = [
   {
@@ -25,6 +26,7 @@ const routes: Routes = [
   },
   {
     path: 'registration-done',
+    canActivate: [RegistrationDoneGuard],
     component: RegistrationDoneComponent
   },
 
