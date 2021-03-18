@@ -47,7 +47,7 @@ export class LoginComponent {
         this._router.navigate(['/admin']);
       },
       (error: Error) => {
-        this._alertService.toast(error.message);
+        this._alertService.error(error.message);
       });
   }
 

@@ -56,8 +56,7 @@
 
         <div class="nav-buttons">
           <div></div>
-          <button [disabled]="patientForm.invalid"
-                  color="primary" mat-raised-button matStepperNext>
+          <button color="primary" mat-raised-button matStepperNext>
             Další krok
           </button>
         </div>
@@ -85,8 +84,7 @@
           <button color="secondary" mat-raised-button matStepperPrevious>
             Předchozí krok
           </button>
-          <button [disabled]="!canProceedToStep3"
-                  color="primary" mat-raised-button matStepperNext>
+          <button color="primary" mat-raised-button matStepperNext>
             Další krok
           </button>
         </div>
@@ -117,7 +115,6 @@
             Předchozí krok
           </button>
           <button (click)="submit()"
-                  [disabled]="!canSubmit"
                   color="primary" mat-raised-button matStepperNext>
             Odeslat požadavek
           </button>

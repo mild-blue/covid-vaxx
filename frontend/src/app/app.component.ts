@@ -21,7 +21,7 @@ export class AppComponent implements OnInit {
     try {
       await this._questionService.loadQuestions();
     } catch (e) {
-      this._alertService.toast(e.message);
+      this._alertService.error(e.message);
     }
   }
 }

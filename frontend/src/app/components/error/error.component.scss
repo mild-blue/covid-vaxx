@@ -1,0 +1,21 @@
+@import "../../../styles/variables";
+
+.error {
+  padding-bottom: 20px;
+
+  &__header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 15px;
+
+    h3 {
+      margin: 5px 0 0;
+    }
+  }
+
+  ::ng-deep a {
+    color: $danger;
+    font-weight: 700;
+  }
+}

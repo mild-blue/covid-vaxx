@@ -22,7 +22,7 @@ export class AdminPatientAbstractComponent implements OnInit {
       this.id = id;
       await this.initPatient();
     } else {
-      this.alertService.toast('Patient ID is not specified');
+      this.alertService.error('Patient ID is not specified');
     }
   }
 
@@ -31,7 +31,7 @@ export class AdminPatientAbstractComponent implements OnInit {
     try {
       this.patient = await this.patientService.findPatientById(this.id);
     } catch (e) {
-      this.alertService.toast(e.message);
+      this.alertService.error(e.message);
     } finally {
       this.loading = false;
     }

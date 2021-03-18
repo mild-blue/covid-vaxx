@@ -52,7 +52,7 @@ export class AdminSearchComponent implements OnInit {
         await this._router.navigate(['/admin/patient', this.patient.id]);
       }
     } catch (e) {
-      this._alertService.toast(e.message);
+      this._alertService.error(e.message);
     } finally {
       this.loading = false;
       this.submitted = false;
