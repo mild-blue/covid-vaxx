@@ -26,6 +26,9 @@ export const fromPatientToRegistrationGenerated = (patient: PatientData, agreeme
 };
 
 export const fromPatientToUpdateGenerated = (patient: Patient): PatientUpdateDtoIn => {
+  // TODO: add postalCode.replace(' ', '')
+  // TODO: add distict
+
   return {
     email: patient.email,
     firstName: patient.firstName,
