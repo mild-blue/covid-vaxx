@@ -6,6 +6,9 @@ import { fromInsuranceToInsuranceGenerated } from '@app/parsers/to-generated/ins
 import { PatientData } from '@app/model/PatientData';
 
 export const fromPatientToRegistrationGenerated = (patient: PatientData, agreement: boolean, confirmation: boolean, gdpr: boolean): PatientRegistrationDtoIn => {
+  // TODO: add postalCode.replace(' ', '')
+  // TODO: add distict
+
   return {
     firstName: patient.firstName,
     lastName: patient.lastName,
