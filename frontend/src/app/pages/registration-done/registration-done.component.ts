@@ -2,6 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
 import { Patient } from '@app/model/Patient';
 import { PatientService } from '@app/services/patient/patient.service';
+import { environment } from '@environments/environment';
 
 @Component({
   selector: 'app-registration-done',
@@ -11,6 +12,7 @@ import { PatientService } from '@app/services/patient/patient.service';
 export class RegistrationDoneComponent implements OnInit {
 
   public patientData?: Patient;
+  public companyEmail: string = environment.companyEmail;
 
   constructor(private _router: Router,
               private _patientService: PatientService) {

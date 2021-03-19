@@ -11,8 +11,8 @@
       </mat-card-title>
       <mat-card-content class="success__content">
         <p>Děkujeme za registraci k očkování. Dostavte se do Vaší volební místnosti ve stanovený čas. Den před očkování nepijte alkohol. Níže naleznete Vámi zadané údaje.
-          V případě jakýchkoliv dotazů či připomínek se na nás neváhejte obrátit na <a href="mailto: info@mild.blue">info@mild.blue</a>.</p>
-        <p><i>Za tým Mild Blue a Prahy 7<br><b>Tomáš Kouřim</b></i></p>
+          V případě jakýchkoliv dotazů či připomínek se na nás neváhejte obrátit na <a href="mailto:{{ companyEmail }}">{{ companyEmail }}</a>.</p>
+        <p><i>Za tým Mild Blue a Prahy 7<br><b>MUDr. Alžběta Honzková, Mild Blue</b></i></p>
       </mat-card-content>
     </mat-card>
   </app-container>
@@ -24,7 +24,7 @@
     <mat-card class="warning">
       <mat-card-content>
         Pokud vidíte chybu v zadaných údajích, anebo je chcete změnit, kontaktujte nás prosím na <a
-        href="mailto:ockovani@mild.blue?subject=Požadavek na úpravu osobních údajů pacienta r.č. {{ patientData.personalNumber }}">ockovani@mild.blue</a>.
+        href="mailto:{{ companyEmail }}?subject=Požadavek na úpravu osobních údajů pacienta r.č. {{ patientData.personalNumber }}">{{ companyEmail }}</a>.
       </mat-card-content>
     </mat-card>
 
