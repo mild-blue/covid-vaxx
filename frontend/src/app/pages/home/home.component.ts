@@ -81,7 +81,7 @@ export class HomeComponent {
       );
       this._router.navigate(['/registration-done']);
     } catch (e) {
-      this._alertService.toast(e.message);
+      this._alertService.error(e.message);
     }
   }
 }

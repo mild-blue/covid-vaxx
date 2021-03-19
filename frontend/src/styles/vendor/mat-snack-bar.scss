@@ -1,0 +1,14 @@
+@import "../variables";
+
+.mat-snack-bar {
+  &-container {
+    &.error-snack-bar {
+      //background: #fad9da;
+      background-color: lighten($danger, 40%);
+      color: $danger;
+      min-width: 400px;
+      max-width: 600px;
+      width: 50%;
+    }
+  }
+}
