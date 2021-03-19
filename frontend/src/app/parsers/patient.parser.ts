@@ -8,7 +8,7 @@ export const parsePatient = (data: PatientDtoOut, questions: AnsweredQuestion[])
 
   return {
     ...data,
-    zipCode: `${data.zipCode}`,
+    zipCode: data.zipCode ? `${data.zipCode}` : '',
     questionnaire: answeredQuestions.filter(notEmpty),
     insuranceCompany: parseInsuranceCompany(data.insuranceCompany),
     created: new Date(data.created),
