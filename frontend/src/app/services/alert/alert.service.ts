@@ -5,6 +5,7 @@ import { MatDialog } from '@angular/material/dialog';
 import { NoPatientFoundComponent } from '@app/components/dialogs/no-patient-found/no-patient-found.component';
 import { GdprComponent } from '@app/components/dialogs/gdpr/gdpr.component';
 import { ConfirmVaccinationComponent } from '@app/components/dialogs/confirm-vaccination/confirm-vaccination.component';
+import { ErrorComponent } from '@app/components/error/error.component';
 
 @Injectable({
   providedIn: 'root'
@@ -15,8 +16,14 @@ export class AlertService {
               private _dialog: MatDialog) {
   }
 
-  public toast(message: string): void {
-    this._snackBar.open(message, 'Zavřít');
+  public error(message: string): void {
+    this._snackBar.openFromComponent(ErrorComponent, {
+      duration: undefined,
+      data: {
+        html: message
+      },
+      panelClass: 'error-snack-bar'
+    });
   }
 
   public successDialog(message: string, onClose?: () => unknown): void {

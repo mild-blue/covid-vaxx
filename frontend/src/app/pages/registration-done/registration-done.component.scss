@@ -1,12 +1,38 @@
+@import "../../../styles/variables";
+
+.success {
+    margin-bottom: 30px;
+
+    &__header {
+        display: flex;
+        justify-content: center;
+        color: $success;
+        padding: 30px 0;
+
+        h1 {
+            margin: 0 0 0 20px;
+        }
+    }
+
+    &__content {
+        text-align: center;
+        line-height: 1.6;
+        padding-bottom: 30px;
+    }
+}
+
 .nav-button {
     margin: 0 auto;
     display: block;
 }
 
-.mt-20 {
-    margin-top: 20px;
+main {
+    margin-top: 30px;
 }
 
-.mt-30 {
-    margin-top: 30px;
+.warning {
+    background: lighten($warning, 45%);
+    color: $warning;
+    margin: 30px auto;
+    text-align: center;
 }
