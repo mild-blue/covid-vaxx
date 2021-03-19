@@ -50,7 +50,7 @@ class ValidationServiceTest {
         assertDoesNotThrow {
             runBlocking { instance.requireValidRegistration(registration) }
         }
-        assertThrows<PropertyValidationException> {
+        assertThrows<EmptyStringException> {
             runBlocking { instance.requireValidRegistration(registration.copy(district = "")) }
         }
     }
