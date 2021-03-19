@@ -5,12 +5,9 @@ import { HttpClient, HttpParams, HttpResponse } from '@angular/common/http';
 import { Patient } from '@app/model/Patient';
 import { parsePatient } from '@app/parsers/patient.parser';
 import { QuestionService } from '@app/services/question/question.service';
-import { PatientDtoOut, PatientRegistrationDtoIn } from '@app/generated';
-import { Question } from '@app/model/Question';
-import { fromQuestionToAnswerGenerated } from '@app/parsers/to-generated/answer.parser';
+import { PatientDtoOut } from '@app/generated';
 import { PatientData } from '@app/model/PatientData';
-import { fromInsuranceToInsuranceGenerated } from '@app/parsers/to-generated/insurance.parse';
-import { fromPatientToGenerated } from '@app/parsers/to-generated/patient.parser';
+import { fromPatientToRegistrationGenerated, fromPatientToUpdateGenerated } from '@app/parsers/to-generated/patient.parser';
 
 @Injectable({
   providedIn: 'root'
@@ -23,25 +20,13 @@ export class PatientService {
               private _questionService: QuestionService) {
   }
 
-  public async savePatientInfo(token: string, patientInfo: PatientData, questions: Question[], agreement: boolean, confirmation: boolean, gdpr: boolean): Promise<HttpResponse<unknown>> {
+  public async savePatientInfo(token: string, patient: PatientData, agreement: boolean, confirmation: boolean, gdpr: boolean): Promise<HttpResponse<unknown>> {
     const params = new HttpParams().set('captcha', token);
-
-    const registration: PatientRegistrationDtoIn = {
-      ...patientInfo,
-      insuranceCompany: fromInsuranceToInsuranceGenerated(patientInfo.insuranceCompany),
-      answers: questions.map(fromQuestionToAnswerGenerated),
-      confirmation: {
-        covid19VaccinationAgreement: agreement,
-        healthStateDisclosureConfirmation: confirmation,
-        gdprAgreement: gdpr
-      }
-    };
-
-    this.saveToStorage(patientInfo);
+    this.saveToStorage(patient);
 
     return this._http.post<HttpResponse<unknown>>(
       `${environment.apiUrl}/patient`,
-      registration,
+      fromPatientToRegistrationGenerated(patient, agreement, confirmation, gdpr),
       { params }
     ).pipe(
       first()
@@ -108,7 +93,7 @@ export class PatientService {
   public async updatePatient(patient: Patient): Promise<HttpResponse<unknown>> {
     return this._http.put<HttpResponse<unknown>>(
       `${environment.apiUrl}/admin/patient/single/${patient.id}`,
-      fromPatientToGenerated(patient)
+      fromPatientToUpdateGenerated(patient)
     ).pipe(first()).toPromise();
   }
 }

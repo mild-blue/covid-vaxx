@@ -1,5 +1,5 @@
 import { InsuranceCompany } from '@app/model/InsuranceCompany';
-import { Answer } from '@app/model/Answer';
+import { AnsweredQuestion } from '@app/model/AnsweredQuestion';
 
 export interface PatientData {
   firstName: string;
@@ -8,6 +8,6 @@ export interface PatientData {
   email: string;
   phoneNumber: string;
   insuranceCompany?: InsuranceCompany;
-  answers: Answer[];
   vaccinatedOn?: Date;
+  questionnaire: AnsweredQuestion[];
 }

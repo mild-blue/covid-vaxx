@@ -7,7 +7,7 @@ import { Component, Input, OnInit } from '@angular/core';
 })
 export class ChipComponent implements OnInit {
 
-  @Input() value: boolean | undefined;
+  @Input() value: string | boolean | undefined;
   @Input() falseLabel: string = 'Ne';
   @Input() trueLabel: string = 'Ano';
   @Input() undefinedLabel: string = 'Neuvedeno';

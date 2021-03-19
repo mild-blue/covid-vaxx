@@ -1,7 +1,7 @@
 import { Component, Input } from '@angular/core';
-import { Patient } from '@app/model/Patient';
 import { InsuranceCompany } from '@app/model/InsuranceCompany';
 import { ControlContainer, NgForm } from '@angular/forms';
+import { PatientData } from '@app/model/PatientData';
 
 @Component({
   selector: 'app-patient-info-form',
@@ -11,7 +11,7 @@ import { ControlContainer, NgForm } from '@angular/forms';
 })
 export class PatientInfoFormComponent {
 
-  @Input() patient?: Patient;
+  @Input() patient?: PatientData;
   @Input() showVaccinationDate: boolean = false;
 
   public allInsuranceCompanies: string[] = Object.values(InsuranceCompany);
