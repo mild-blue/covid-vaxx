@@ -31,8 +31,8 @@
       <mat-divider></mat-divider>
       <app-form-field>
         <mat-label>PSČ:</mat-label>
-        <mat-label *ngIf="patientData.postalCode else unspecified;">
-          {{ patientData.postalCode | postalCode }}
+        <mat-label *ngIf="patientData.zipCode else unspecified;">
+          {{ patientData.zipCode | zipCode }}
         </mat-label>
       </app-form-field>
       <mat-divider></mat-divider>

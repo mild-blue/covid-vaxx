@@ -16,12 +16,14 @@ import { ConfirmationDtoIn } from './confirmationDtoIn';
 export interface PatientRegistrationDtoIn {
     answers: Array<AnswerDto>;
     confirmation: ConfirmationDtoIn;
+    district: string;
     email: string;
     firstName: string;
     insuranceCompany: PatientRegistrationDtoInInsuranceCompanyEnum;
     lastName: string;
     personalNumber: string;
     phoneNumber: string;
+    zipCode: number;
 }
 export enum PatientRegistrationDtoInInsuranceCompanyEnum {
     Vzp = 'VZP',

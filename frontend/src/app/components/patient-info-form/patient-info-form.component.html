@@ -23,7 +23,7 @@
 
     <mat-form-field floatLabel="always">
       <mat-label>PSČ</mat-label>
-      <input #postalCode="ngModel" [(ngModel)]="patient.postalCode" (input)="formatPostalCode(postalCode)" name="postalCode" matInput postalCodeValidator placeholder="Vaše PSČ" required maxlength="6">
+      <input [(ngModel)]="patient.zipCode" #zipCode="ngModel" (input)="formatZipCode(zipCode)" name="zipCode" matInput postalCodeValidator placeholder="Vaše PSČ" required maxlength="6">
     </mat-form-field>
 
     <mat-form-field floatLabel="always">

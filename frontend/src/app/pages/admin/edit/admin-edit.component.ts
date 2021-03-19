@@ -67,7 +67,7 @@ export class AdminEditComponent extends AdminPatientAbstractComponent implements
       old.phoneNumber !== current.phoneNumber ||
       old.personalNumber !== current.personalNumber ||
       old.insuranceCompany !== current.insuranceCompany ||
-      old.postalCode !== current.postalCode ||
+      old.zipCode !== current.zipCode ||
       old.district !== current.district ||
       old.vaccinatedOn !== current.vaccinatedOn;
   }

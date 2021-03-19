@@ -1,22 +1,12 @@
-import { PatientRegistrationDtoIn, PatientUpdateDtoIn, PatientUpdateDtoInInsuranceCompanyEnum } from '../../generated';
-import { Patient } from '@app/model/Patient';
+import { AnswerDto, PatientRegistrationDtoIn, PatientUpdateDtoIn } from '../../generated';
 import { fromQuestionToAnswerGenerated } from './question.parser';
-import { InsuranceCompany } from '@app/model/InsuranceCompany';
-import { fromInsuranceToInsuranceGenerated } from '@app/parsers/to-generated/insurance.parse';
+import { fromInsuranceToInsuranceGenerated, fromInsuranceToUpdateInsuranceGenerated } from '@app/parsers/to-generated/insurance.parse';
 import { PatientData } from '@app/model/PatientData';
 
 export const fromPatientToRegistrationGenerated = (patient: PatientData, agreement: boolean, confirmation: boolean, gdpr: boolean): PatientRegistrationDtoIn => {
-  // TODO: add postalCode.replace(' ', '')
-  // TODO: add distict
-
   return {
-    firstName: patient.firstName.trim(),
-    lastName: patient.lastName.trim(),
-    personalNumber: patient.personalNumber.trim(),
-    email: patient.email.trim(),
-    phoneNumber: patient.phoneNumber.trim(),
+    ...fromPatientToPartialGenerated(patient),
     insuranceCompany: fromInsuranceToInsuranceGenerated(patient.insuranceCompany),
-    answers: patient.questionnaire.map(fromQuestionToAnswerGenerated),
     confirmation: {
       covid19VaccinationAgreement: agreement,
       healthStateDisclosureConfirmation: confirmation,
@@ -25,32 +15,34 @@ export const fromPatientToRegistrationGenerated = (patient: PatientData, agreeme
   };
 };
 
-export const fromPatientToUpdateGenerated = (patient: Patient): PatientUpdateDtoIn => {
-  // TODO: add postalCode.replace(' ', '')
-  // TODO: add distict
-
+export const fromPatientToUpdateGenerated = (patient: PatientData): PatientUpdateDtoIn => {
   return {
-    email: patient.email.trim(),
-    firstName: patient.firstName.trim(),
-    lastName: patient.lastName.trim(),
-    personalNumber: patient.personalNumber.trim(),
-    phoneNumber: patient.phoneNumber.trim(),
-    answers: patient.questionnaire.map(fromQuestionToAnswerGenerated),
+    ...fromPatientToPartialGenerated(patient),
     insuranceCompany: fromInsuranceToUpdateInsuranceGenerated(patient.insuranceCompany),
     vaccinatedOn: patient.vaccinatedOn ? patient.vaccinatedOn.toISOString() : undefined
   };
 };
 
-const fromInsuranceToUpdateInsuranceGenerated = (insurance?: InsuranceCompany): PatientUpdateDtoInInsuranceCompanyEnum => {
-  let converted = PatientUpdateDtoInInsuranceCompanyEnum.Cpzp;
-
-  if (insurance) {
-    const key = Object.keys(InsuranceCompany).find(v => InsuranceCompany[v as keyof typeof InsuranceCompany] === insurance);
-
-    if (key) {
-      converted = PatientUpdateDtoInInsuranceCompanyEnum[key as keyof typeof PatientUpdateDtoInInsuranceCompanyEnum];
-    }
-  }
-
-  return converted;
+const fromPatientToPartialGenerated = (patient: PatientData): PatientPartialDataGenerated => {
+  return {
+    firstName: patient.firstName.trim(),
+    lastName: patient.lastName.trim(),
+    personalNumber: patient.personalNumber.trim(),
+    email: patient.email.trim(),
+    phoneNumber: patient.phoneNumber.trim(),
+    zipCode: +patient.zipCode.replace(' ', ''),
+    district: patient.district.trim(),
+    answers: patient.questionnaire.map(fromQuestionToAnswerGenerated)
+  };
 };
+
+interface PatientPartialDataGenerated {
+  firstName: string;
+  lastName: string;
+  personalNumber: string;
+  email: string;
+  phoneNumber: string;
+  district: string;
+  zipCode: number;
+  answers: AnswerDto[];
+}

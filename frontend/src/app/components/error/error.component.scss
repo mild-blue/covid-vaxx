@@ -15,7 +15,12 @@
   }
 
   ::ng-deep a {
-    color: $danger;
+    color: $primary;
+    text-decoration: underline;
     font-weight: 700;
+
+    &:hover {
+      text-decoration: none;
+    }
   }
 }

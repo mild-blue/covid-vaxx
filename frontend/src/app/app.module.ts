@@ -58,7 +58,7 @@ import { CookiesComponent } from './components/cookies/cookies.component';
 import { ErrorComponent } from './components/error/error.component';
 import { CheckMarkComponent } from './components/check-mark/check-mark.component';
 import { PostalCodeValidatorDirective } from './directives/postal-code-validator/postal-code-validator.directive';
-import { PostalCodePipe } from './pipes/postal-code/postal-code.pipe';
+import { ZipCodePipe } from './pipes/zip-code/zip-code.pipe';
 import { PhoneNumberPipe } from './pipes/phone-number/phone-number.pipe';
 
 registerLocaleData(localeCs);
@@ -97,7 +97,7 @@ registerLocaleData(localeCs);
     CheckMarkComponent,
     PostalCodeValidatorDirective,
     PostalCodeValidatorDirective,
-    PostalCodePipe,
+    ZipCodePipe,
     PhoneNumberPipe
   ],
   imports: [

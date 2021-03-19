@@ -18,7 +18,7 @@ export class PatientInfoFormComponent {
   public minVaccinationDate = new Date('1/1/2020');
   public maxVaccinationDate = new Date();
 
-  public formatPostalCode(inputValue: NgModel): void {
+  public formatZipCode(inputValue: NgModel): void {
     if (!this.patient) {
       return;
     }
@@ -26,7 +26,7 @@ export class PatientInfoFormComponent {
     if (inputValue.valid) {
       const value = inputValue.value.toString().replace(' ', '');
       // eslint-disable-next-line no-magic-numbers
-      this.patient.postalCode = `${value.substring(0, 3)} ${value.substring(3, 5)}`;
+      this.patient.zipCode = `${value.substring(0, 3)} ${value.substring(3, 5)}`;
     }
   }
 }

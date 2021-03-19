@@ -11,8 +11,9 @@
  */
 
 
-export interface AnswerDto {
-  questionId: string;
-  value: boolean;
+export interface SystemStatisticsDtoOut {
+    emailsSent: number;
+    registrationsCount: number;
+    vaccinatedPatientsCount: number;
 }
 

@@ -1,9 +1,9 @@
 import { Pipe, PipeTransform } from '@angular/core';
 
 @Pipe({
-  name: 'postalCode'
+  name: 'zipCode'
 })
-export class PostalCodePipe implements PipeTransform {
+export class ZipCodePipe implements PipeTransform {
 
   transform(value: string): string {
     // eslint-disable-next-line no-magic-numbers
