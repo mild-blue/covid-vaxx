@@ -7,11 +7,11 @@ import { PatientData } from '@app/model/PatientData';
 
 export const fromPatientToRegistrationGenerated = (patient: PatientData, agreement: boolean, confirmation: boolean, gdpr: boolean): PatientRegistrationDtoIn => {
   return {
-    firstName: patient.firstName,
-    lastName: patient.lastName,
-    personalNumber: patient.personalNumber,
-    email: patient.email,
-    phoneNumber: patient.phoneNumber,
+    firstName: patient.firstName.trim(),
+    lastName: patient.lastName.trim(),
+    personalNumber: patient.personalNumber.trim(),
+    email: patient.email.trim(),
+    phoneNumber: patient.phoneNumber.trim(),
     insuranceCompany: fromInsuranceToInsuranceGenerated(patient.insuranceCompany),
     answers: patient.questionnaire.map(fromQuestionToAnswerGenerated),
     confirmation: {
@@ -24,11 +24,11 @@ export const fromPatientToRegistrationGenerated = (patient: PatientData, agreeme
 
 export const fromPatientToUpdateGenerated = (patient: Patient): PatientUpdateDtoIn => {
   return {
-    email: patient.email,
-    firstName: patient.firstName,
-    lastName: patient.lastName,
-    personalNumber: patient.personalNumber,
-    phoneNumber: patient.phoneNumber,
+    email: patient.email.trim(),
+    firstName: patient.firstName.trim(),
+    lastName: patient.lastName.trim(),
+    personalNumber: patient.personalNumber.trim(),
+    phoneNumber: patient.phoneNumber.trim(),
     answers: patient.questionnaire.map(fromQuestionToAnswerGenerated),
     insuranceCompany: fromInsuranceToUpdateInsuranceGenerated(patient.insuranceCompany),
     vaccinatedOn: patient.vaccinatedOn ? patient.vaccinatedOn.toISOString() : undefined
