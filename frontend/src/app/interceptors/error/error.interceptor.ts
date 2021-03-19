@@ -46,6 +46,8 @@ export class ErrorInterceptor implements HttpInterceptor {
         if (personalNumber) {
           emailSubject += ` s rodným číslem ${personalNumber}`;
         }
+      } else if (err.status === 429) {
+        message = 'Server je zahlcen požadavky, zkuste to prosím za hodinu znovu.';
       } else if (err.status === 0) {
         message = 'Zkontrolujte prosím své připojení k internetu a znovu načtěte stránku.';
       }
