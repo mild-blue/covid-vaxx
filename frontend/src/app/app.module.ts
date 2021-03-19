@@ -54,6 +54,7 @@ import { ProgressLoadingComponent } from './components/progress-loading/progress
 import { MatDatepickerModule } from '@angular/material/datepicker';
 import { ChipComponent } from './components/chip/chip.component';
 import { MAT_MOMENT_DATE_ADAPTER_OPTIONS, MatMomentDateModule } from '@angular/material-moment-adapter';
+import { CookiesComponent } from './components/cookies/cookies.component';
 
 registerLocaleData(localeCs);
 
@@ -85,7 +86,8 @@ registerLocaleData(localeCs);
     AdminPatientComponent,
     AdminPatientAbstractComponent,
     ProgressLoadingComponent,
-    ChipComponent
+    ChipComponent,
+    CookiesComponent
   ],
   imports: [
     BrowserModule,
