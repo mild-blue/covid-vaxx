@@ -4,95 +4,44 @@
 
 <main>
   <mat-horizontal-stepper [linear]="true">
-    <mat-step [completed]="patientForm.valid" label="Osobní informace">
+
+    <!-- 1. Osobní informace -->
+    <mat-step #firstStep [completed]="patientForm.valid" label="Osobní informace">
       <app-container>
-        <mat-card>
-          <mat-card-content>
-            <form #patientForm="ngForm">
-              <mat-form-field floatLabel="always">
-                <mat-label>Jméno</mat-label>
-                <input [(ngModel)]="patient.firstName" name="firstName" matInput placeholder="Vaše jméno" required maxlength="64">
-              </mat-form-field>
-
-              <mat-form-field floatLabel="always">
-                <mat-label>Příjmení</mat-label>
-                <input [(ngModel)]="patient.lastName" name="lastName" matInput placeholder="Vaše příjmení" required maxlength="64">
-              </mat-form-field>
-
-              <mat-form-field floatLabel="always" class="has-hint">
-                <mat-label>Rodné číslo</mat-label>
-                <input [(ngModel)]="patient.personalNumber" name="personalNumber" matInput personalNumberValidator placeholder="Vaše rodné číslo" required maxlength="11">
-                <mat-hint>Rodné číslo ve formátu RRMMDD/ČČČ(Č)</mat-hint>
-              </mat-form-field>
-
-              <mat-form-field floatLabel="always">
-                <mat-label>Zdravotní pojišťovna</mat-label>
-                <mat-select name="insuranceCompany" [(ngModel)]="patient.insuranceCompany" placeholder="Vyberte Vaší zdravotní pojišťovnu" required>
-                  <mat-option *ngFor="let insuranceCompany of allInsuranceCompanies" [value]="insuranceCompany">
-                    {{insuranceCompany}}
-                  </mat-option>
-                </mat-select>
-              </mat-form-field>
-
-              <mat-form-field floatLabel="always">
-                <mat-label>Telefonní číslo</mat-label>
-                <ngx-mat-intl-tel-input [(ngModel)]="patient.phoneNumber"
-                                        [preferredCountries]="['cz', 'sk', 'de', 'at', 'pl']"
-                                        [enablePlaceholder]="true"
-                                        [enableSearch]="false"
-                                        [format]="'national'"
-                                        [required]="true"
-                                        class="ngx-floating"
-                                        name="phoneNumber"
-                                        inputPlaceholder="Vaše telefonní číslo"></ngx-mat-intl-tel-input>
-              </mat-form-field>
-              <mat-form-field floatLabel="always">
-                <mat-label>E-mail</mat-label>
-                <input [(ngModel)]="patient.email" name="email" matInput placeholder="Váš e-mail" emailValidator required maxlength="64">
-              </mat-form-field>
-            </form>
-          </mat-card-content>
-        </mat-card>
+        <form #patientForm="ngForm">
+          <app-patient-info-form [patient]="patient"></app-patient-info-form>
+        </form>
 
         <div class="nav-buttons">
           <div></div>
-          <button color="primary" mat-raised-button matStepperNext>
+          <button [disabled]="!firstStep.completed"
+                  color="primary" mat-raised-button matStepperNext>
             Další krok
           </button>
         </div>
       </app-container>
     </mat-step>
-    <mat-step label="Zdravotní informace" [completed]="canProceedToStep3">
-      <app-container>
-        <mat-card class="py-0">
-          <mat-card-content>
-            <form>
-              <ng-container *ngFor="let q of questions; let i = index">
-                <app-form-field>
-                  <mat-label>{{ q.label }}</mat-label>
-                  <mat-button-toggle-group [(ngModel)]="q.value" [name]="q.name">
-                    <mat-button-toggle value="true">Ano</mat-button-toggle>
-                    <mat-button-toggle value="false">Ne</mat-button-toggle>
-                  </mat-button-toggle-group>
-                </app-form-field>
-                <mat-divider *ngIf="i < questions.length - 1"></mat-divider>
-              </ng-container>
-            </form>
-          </mat-card-content>
-        </mat-card>
+
+    <!-- 2. Zdravotní informace -->
+    <mat-step #secondStep [completed]="firstStep.completed && allQuestionsAnswered" label="Zdravotní informace">
+      <app-container *ngIf="firstStep.completed">
+        <app-patient-questions-form [patient]="patient"></app-patient-questions-form>
         <div class="nav-buttons">
           <button color="secondary" mat-raised-button matStepperPrevious>
             Předchozí krok
           </button>
-          <button color="primary" mat-raised-button matStepperNext>
+          <button [disabled]="!secondStep.completed"
+                  color="primary" mat-raised-button matStepperNext>
             Další krok
           </button>
         </div>
       </app-container>
     </mat-step>
-    <mat-step label="Odeslání požadavku">
+
+    <!-- 3. Odeslání požadavku -->
+    <mat-step #thirdStep [completed]="!!confirmationCheckboxValue && !!agreementCheckboxValue && !!gdprCheckboxValue" label="Odeslání požadavku">
       <app-container [wide]="true">
-        <app-patient-data *ngIf="canProceedToStep3" [patientData]="getPatientData()"></app-patient-data>
+        <app-patient-data [patientData]="patient"></app-patient-data>
 
         <div class="checkboxes">
           <mat-checkbox [(ngModel)]="confirmationCheckboxValue">
@@ -115,6 +64,7 @@
             Předchozí krok
           </button>
           <button (click)="submit()"
+                  [disabled]="!thirdStep.completed"
                   color="primary" mat-raised-button matStepperNext>
             Odeslat požadavek
           </button>
@@ -124,3 +74,4 @@
   </mat-horizontal-stepper>
 </main>
 
+<app-cookies></app-cookies>

@@ -1,15 +1,14 @@
 import { Patient } from '../model/Patient';
 import { AnswerDto, PatientDtoOut } from '@app/generated';
-import { Answer } from '@app/model/Answer';
-import { Question } from '@app/model/Question';
+import { AnsweredQuestion } from '@app/model/AnsweredQuestion';
 import { parseInsuranceCompany } from '@app/parsers/insurance.parser';
 
-export const parsePatient = (data: PatientDtoOut, questions: Question[]): Patient => {
-  const answers = data.answers.map(a => parseAnswer(a, questions));
+export const parsePatient = (data: PatientDtoOut, questions: AnsweredQuestion[]): Patient => {
+  const answeredQuestions = data.answers.map(a => parseAnsweredQuestion(a, questions));
 
   return {
     ...data,
-    answers: answers.filter(notEmpty),
+    questionnaire: answeredQuestions.filter(notEmpty),
     insuranceCompany: parseInsuranceCompany(data.insuranceCompany),
     created: new Date(data.created),
     updated: new Date(data.updated),
@@ -17,7 +16,7 @@ export const parsePatient = (data: PatientDtoOut, questions: Question[]): Patien
   };
 };
 
-export const parseAnswer = (data: AnswerDto, questions: Question[]): Answer | undefined => {
+export const parseAnsweredQuestion = (data: AnswerDto, questions: AnsweredQuestion[]): AnsweredQuestion | undefined => {
   const question = questions.find(q => q.id === data.questionId);
   if (!question) {
     return undefined;
@@ -27,7 +26,7 @@ export const parseAnswer = (data: AnswerDto, questions: Question[]): Answer | un
     id: question.id,
     label: question.label,
     name: question.name,
-    value: data.value
+    answer: data.value
   };
 };
 
