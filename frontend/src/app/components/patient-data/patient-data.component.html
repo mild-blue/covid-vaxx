@@ -64,14 +64,14 @@
 
   <mat-card>
     <mat-card-content>
-      <ng-container *ngFor="let q of patientData.answers; let i = index">
+      <ng-container *ngFor="let q of patientData.questionnaire; let i = index">
         <app-form-field>
           <mat-label>{{ q.label }}</mat-label>
-          <mat-label *ngIf="q.value !== undefined else unspecified;">
-            <app-chip [value]="q.value"></app-chip>
+          <mat-label *ngIf="q.answer !== undefined else unspecified;">
+            <app-chip [value]="q.answer"></app-chip>
           </mat-label>
         </app-form-field>
-        <mat-divider *ngIf="i < patientData.answers.length - 1"></mat-divider>
+        <mat-divider *ngIf="i < patientData.questionnaire.length - 1"></mat-divider>
       </ng-container>
     </mat-card-content>
   </mat-card>

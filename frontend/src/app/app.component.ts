@@ -14,6 +14,7 @@ export class AppComponent implements OnInit {
   }
 
   async ngOnInit(): Promise<void> {
+    // Reload questions from BE on every app load (page refresh as well)
     await this._initQuestions();
   }
 

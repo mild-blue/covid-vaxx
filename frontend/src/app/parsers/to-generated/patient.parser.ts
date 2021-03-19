@@ -1,16 +1,35 @@
-import { PatientUpdateDtoIn, PatientUpdateDtoInInsuranceCompanyEnum } from '../../generated';
+import { PatientRegistrationDtoIn, PatientUpdateDtoIn, PatientUpdateDtoInInsuranceCompanyEnum } from '../../generated';
 import { Patient } from '@app/model/Patient';
-import { fromQuestionToAnswerGenerated } from './answer.parser';
+import { fromQuestionToAnswerGenerated } from './question.parser';
 import { InsuranceCompany } from '@app/model/InsuranceCompany';
+import { fromInsuranceToInsuranceGenerated } from '@app/parsers/to-generated/insurance.parse';
+import { PatientData } from '@app/model/PatientData';
 
-export const fromPatientToGenerated = (patient: Patient): PatientUpdateDtoIn => {
+export const fromPatientToRegistrationGenerated = (patient: PatientData, agreement: boolean, confirmation: boolean, gdpr: boolean): PatientRegistrationDtoIn => {
   return {
-    email: patient.email.trim(),
-    firstName: patient.firstName.trim(),
-    lastName: patient.lastName.trim(),
-    personalNumber: patient.personalNumber.trim(),
-    phoneNumber: patient.phoneNumber.trim(),
-    answers: patient.answers.map(fromQuestionToAnswerGenerated),
+    firstName: patient.firstName,
+    lastName: patient.lastName,
+    personalNumber: patient.personalNumber,
+    email: patient.email,
+    phoneNumber: patient.phoneNumber,
+    insuranceCompany: fromInsuranceToInsuranceGenerated(patient.insuranceCompany),
+    answers: patient.questionnaire.map(fromQuestionToAnswerGenerated),
+    confirmation: {
+      covid19VaccinationAgreement: agreement,
+      healthStateDisclosureConfirmation: confirmation,
+      gdprAgreement: gdpr
+    }
+  };
+};
+
+export const fromPatientToUpdateGenerated = (patient: Patient): PatientUpdateDtoIn => {
+  return {
+    email: patient.email,
+    firstName: patient.firstName,
+    lastName: patient.lastName,
+    personalNumber: patient.personalNumber,
+    phoneNumber: patient.phoneNumber,
+    answers: patient.questionnaire.map(fromQuestionToAnswerGenerated),
     insuranceCompany: fromInsuranceToUpdateInsuranceGenerated(patient.insuranceCompany),
     vaccinatedOn: patient.vaccinatedOn ? patient.vaccinatedOn.toISOString() : undefined
   };

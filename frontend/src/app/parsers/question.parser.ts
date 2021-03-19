@@ -1,7 +1,7 @@
 import { QuestionDtoOut } from '@app/generated';
-import { Question } from '@app/model/Question';
+import { AnsweredQuestion } from '@app/model/AnsweredQuestion';
 
-export const parseQuestion = (question: QuestionDtoOut): Question => {
+export const parseQuestion = (question: QuestionDtoOut): AnsweredQuestion => {
   return {
     id: question.id,
     name: question.placeholder,
