@@ -36,6 +36,7 @@ class ValidationService(private val questionService: QuestionService) {
         requireNotEmptyString("lastName", patientRegistrationDto.lastName)
         requireNotEmptyString("district", patientRegistrationDto.district)
         // now check specific cases
+        requireValidZipCode(patientRegistrationDto.zipCode)
         requireValidPersonalNumber(patientRegistrationDto.personalNumber)
         requireValidPhoneNumber(patientRegistrationDto.phoneNumber)
         requireValidEmail(patientRegistrationDto.email)
