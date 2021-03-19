@@ -40,6 +40,8 @@ class PatientRepository(
         id: UUID,
         firstName: String? = null,
         lastName: String? = null,
+        zipCode: Int? = null,
+        district: String? = null,
         phoneNumber: String? = null,
         personalNumber: String? = null,
         email: String? = null,
@@ -51,7 +53,9 @@ class PatientRepository(
         val patientId = id.toString()
         // check if any property is not null
         val isPatientEntityUpdateNecessary =
-            firstName ?: lastName ?: phoneNumber ?: personalNumber ?: email
+            firstName ?: lastName
+            ?: district ?: zipCode
+            ?: phoneNumber ?: personalNumber ?: email
             ?: insuranceCompany ?: registrationEmailSent ?: vaccinatedOn
         // if so, perform update query
         val patientUpdated = if (isPatientEntityUpdateNecessary != null) {
@@ -61,6 +65,8 @@ class PatientRepository(
                     row.apply {
                         updateIfNotNull(firstName, Patient.firstName)
                         updateIfNotNull(lastName, Patient.lastName)
+                        updateIfNotNull(zipCode, Patient.zipCode)
+                        updateIfNotNull(district, Patient.district)
                         updateIfNotNull(phoneNumber, Patient.phoneNumber)
                         updateIfNotNull(personalNumber, Patient.personalNumber)
                         updateIfNotNull(email, Patient.email)
@@ -108,6 +114,8 @@ class PatientRepository(
         id: UUID,
         firstName: String,
         lastName: String,
+        zipCode: Int,
+        district: String,
         phoneNumber: String,
         personalNumber: String,
         email: String,
@@ -120,6 +128,8 @@ class PatientRepository(
             it[Patient.id] = patientStringId
             it[Patient.firstName] = firstName
             it[Patient.lastName] = lastName
+            it[Patient.zipCode] = zipCode
+            it[Patient.district] = district
             it[Patient.personalNumber] = personalNumber
             it[Patient.phoneNumber] = phoneNumber
             it[Patient.email] = email
@@ -173,6 +183,8 @@ class PatientRepository(
         id = row[Patient.id].toUuid(),
         firstName = row[Patient.firstName],
         lastName = row[Patient.lastName],
+        zipCode = row[Patient.zipCode],
+        district = row[Patient.district],
         personalNumber = row[Patient.personalNumber],
         phoneNumber = row[Patient.phoneNumber],
         email = row[Patient.email],

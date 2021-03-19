@@ -23,8 +23,8 @@ enum class EnvVariables {
     MAIL_JET_API_SECRET,
     MAIL_JET_API_KEY,
     MAIL_ADDRESS_FROM,
-    NAME_FROM,
-    SUBJECT,
+    MAIL_FROM,
+    MAIL_SUBJECT,
 
     /**
      * From which path should backend serve static

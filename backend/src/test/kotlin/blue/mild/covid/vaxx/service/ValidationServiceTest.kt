@@ -44,6 +44,25 @@ class ValidationServiceTest {
     }
 
     @Test
+    fun `test empty district`() {
+        val instance = instance()
+        val registration = validRegistration()
+        assertDoesNotThrow {
+            runBlocking { instance.requireValidRegistration(registration) }
+        }
+        assertThrows<PropertyValidationException> {
+            runBlocking { instance.requireValidRegistration(registration.copy(district = "")) }
+        }
+    }
+
+    @Test
+    fun `test validate zip code`() {
+        val instance = instance()
+        assertDoesNotThrow { instance.requireValidZipCode(16000) }
+        assertThrows<PropertyValidationException> { instance.requireValidZipCode(0) }
+    }
+
+    @Test
     fun `test validate change set`() {
         val instance = instance()
         val validChangeSet = PatientUpdateDtoIn(firstName = "John")
@@ -286,6 +305,8 @@ class ValidationServiceTest {
         PatientRegistrationDtoIn(
             firstName = "John",
             lastName = "Doe",
+            zipCode = 16000,
+            district = "Praha 6",
             personalNumber = generatePersonalNumber(),
             phoneNumber = generateValidPhone(),
             email = "john@mild.blue",

@@ -47,8 +47,8 @@ fun DI.MainBuilder.bindConfiguration() {
             apiKey = requireEnv(EnvVariables.MAIL_JET_API_KEY),
             apiSecret = requireEnv(EnvVariables.MAIL_JET_API_SECRET),
             emailFrom = getEnvOrLogDefault(EnvVariables.MAIL_ADDRESS_FROM, "ockovani@mild.blue"),
-            nameFrom = getEnvOrLogDefault(EnvVariables.NAME_FROM, "Registrace Očkování"),
-            subject = getEnvOrLogDefault(EnvVariables.SUBJECT, "Detaily k registraci na Očkování")
+            nameFrom = getEnvOrLogDefault(EnvVariables.MAIL_FROM, "Registrace Očkování"),
+            subject = getEnvOrLogDefault(EnvVariables.MAIL_SUBJECT, "Detaily k registraci na Očkování")
         )
     }
 
@@ -85,11 +85,12 @@ fun DI.MainBuilder.bindConfiguration() {
     }
 
     bind<CorsConfigurationDto>() with singleton {
-        val hosts = getEnvOrLogDefault(EnvVariables.CORS_ALLOWED_HOSTS, "http://localhost:4200")
-            .split(",")
-            .map { it.trim() }
-
-        val enableCors = getEnvOrLogDefault(EnvVariables.ENABLE_CORS, "${hosts.isNotEmpty()}").toBoolean()
+        val enableCors = getEnvOrLogDefault(EnvVariables.ENABLE_CORS, "true").toBoolean()
+        val hosts = if (enableCors) {
+            getEnvOrLogDefault(EnvVariables.CORS_ALLOWED_HOSTS, "http://localhost:4200")
+                .split(",")
+                .map { it.trim() }
+        } else emptyList()
         CorsConfigurationDto(enableCors, hosts)
     }
 

@@ -24,7 +24,7 @@ class JsonLoggingLayout : LayoutBase<ILoggingEvent>() {
 
     override fun doLayout(event: ILoggingEvent): String {
         val finalMap: MutableMap<String, Any> = mutableMapOf(
-            "@timestamp" to formatTime(event),
+            "timestamp" to formatTime(event),
             "message" to event.formattedMessage,
             "logger" to event.loggerName.takeLastWhile { it != '.' }, // take only names without packages
             "level" to event.level.levelStr.replace("\$Companion", "") // delete static companion from name
@@ -33,6 +33,7 @@ class JsonLoggingLayout : LayoutBase<ILoggingEvent>() {
         finalMap.includeMdc(event, CALL_ID)
         finalMap.includeMdc(event, REMOTE_HOST)
         finalMap.includeMdc(event, PATH)
+        finalMap.includeMdc(event, AMAZON_TRACE)
 
         // if this was an exception, include necessary data
         if (event.throwableProxy != null) {

@@ -34,6 +34,7 @@ class ValidationService(private val questionService: QuestionService) {
         // check empty strings first
         requireNotEmptyString("firstName", patientRegistrationDto.firstName)
         requireNotEmptyString("lastName", patientRegistrationDto.lastName)
+        requireNotEmptyString("district", patientRegistrationDto.district)
         // now check specific cases
         requireValidPersonalNumber(patientRegistrationDto.personalNumber)
         requireValidPhoneNumber(patientRegistrationDto.phoneNumber)
@@ -77,8 +78,10 @@ class ValidationService(private val questionService: QuestionService) {
     fun requireValidPatientUpdate(changeSet: PatientUpdateDtoIn) {
         changeSet.firstName?.also { requireNotEmptyString("firstName", it) }
         changeSet.lastName?.also { requireNotEmptyString("lastName", it) }
+        changeSet.district?.also { requireNotEmptyString("district", it) }
 
         // now check specific cases
+        changeSet.zipCode?.also(::requireValidZipCode)
         changeSet.personalNumber?.also(::requireValidPersonalNumber)
         changeSet.phoneNumber?.also(::requireValidPhoneNumber)
         changeSet.email?.also(::requireValidEmail)
@@ -86,9 +89,21 @@ class ValidationService(private val questionService: QuestionService) {
 
         // now check that at least one property is changed, so we don't perform useless update
         changeSet.firstName ?: changeSet.lastName
+        ?: changeSet.district ?: changeSet.zipCode
         ?: changeSet.personalNumber ?: changeSet.email
         ?: changeSet.vaccinatedOn ?: changeSet.answers?.takeIf { it.isNotEmpty() }
         ?: throw EmptyUpdateException()
+    }
+
+    /**
+     * Validates zip code.
+     *
+     * Throws [PropertyValidationException] if the value is invalid.
+     */
+    fun requireValidZipCode(zipCode: Int) {
+        if (zipCode <= 0) { // TODO correct validation
+            throw PropertyValidationException("zipCode", zipCode)
+        }
     }
 
     /**
