@@ -2,13 +2,15 @@ import { Patient } from '../model/Patient';
 import { AnswerDto, PatientDtoOut } from '@app/generated';
 import { AnsweredQuestion } from '@app/model/AnsweredQuestion';
 import { parseInsuranceCompany } from '@app/parsers/insurance.parser';
+import { ZipCodePipe } from '@app/pipes/zip-code/zip-code.pipe';
 
 export const parsePatient = (data: PatientDtoOut, questions: AnsweredQuestion[]): Patient => {
   const answeredQuestions = data.answers.map(a => parseAnsweredQuestion(a, questions));
+  const zipCodePipe = new ZipCodePipe();
 
   return {
     ...data,
-    zipCode: data.zipCode ? `${data.zipCode}` : '',
+    zipCode: data.zipCode ? zipCodePipe.transform(`${data.zipCode}`) : '',
     questionnaire: answeredQuestions.filter(notEmpty),
     insuranceCompany: parseInsuranceCompany(data.insuranceCompany),
     created: new Date(data.created),

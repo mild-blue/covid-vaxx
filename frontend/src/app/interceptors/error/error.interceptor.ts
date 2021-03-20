@@ -18,7 +18,7 @@ export class ErrorInterceptor implements HttpInterceptor {
     return next.handle(request).pipe(catchError(err => {
 
       const error = err.error;
-      const requestId = error.requestId;
+      const requestId = error?.requestId;
 
       const defaultMessage = 'Něco se pokazilo. Zkuste to prosím znovu.';
       const defaultSubject = 'Problém na webu';
