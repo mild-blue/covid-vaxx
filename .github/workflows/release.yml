@@ -57,12 +57,22 @@ jobs:
           build-args: |
             release_version=${{ env.RELEASE_VERSION }}
 
-      - name: Install SSH key
-        uses: shimataro/ssh-key-action@v2
-        with:
-          key: ${{ secrets.PROD_SSH_KEY }}
-          known_hosts: ${{ secrets.PROD_KNOWN_HOST }}
-
-      - name: Redeploy application
+      - name: Download task definition
         run: |
-          ssh "${{ secrets.PROD_SSH_CONNECTION }}" "cd /srv/service && ./redeploy.sh ${DEPLOYMENT_SERVICE}"
+          aws ecs describe-task-definition --task-definition prod-covid-vaxx-app-task --query taskDefinition > task-definition.json
+
+      - name: Fill in the new image ID in the Amazon ECS task definition
+        id: task-def
+        uses: aws-actions/amazon-ecs-render-task-definition@v1
+        with:
+          task-definition: task-definition.json
+          container-name: prod-covid-vaxx
+          image: ${{ steps.login-ecr.outputs.registry }}/${{ env.AWS_ECR_REPOSITORY }}:latest
+
+      - name: Deploy Amazon ECS task definition
+        uses: aws-actions/amazon-ecs-deploy-task-definition@v1
+        with:
+          task-definition: ${{ steps.task-def.outputs.task-definition }}
+          service: prod-covid-vaxx-service
+          cluster: prod-covid-vaxx
+          wait-for-service-stability: true

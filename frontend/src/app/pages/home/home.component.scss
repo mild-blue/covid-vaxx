@@ -1,5 +1,13 @@
 @import "../../../styles/breakpoints";
-@import "../../../styles/variables";
+
+mat-horizontal-stepper {
+  background-color: transparent;
+}
+
+app-patient-info-form, app-patient-questions-form, app-patient-data {
+  margin: 30px 0;
+  display: block;
+}
 
 .nav-buttons {
   display: flex;
@@ -9,54 +17,6 @@
   button:not(:first-child) {
     margin-left: 20px;
   }
-}
-
-mat-card, app-patient-data {
-  margin: 30px 0;
-  display: block;
-}
-
-mat-horizontal-stepper {
-  background-color: transparent;
-}
-
-mat-form-field {
-  &.mat-form-field-should-float {
-    margin: 10px 0;
-  }
-
-  &.has-hint {
-    margin-bottom: 20px;
-  }
-}
-
-::ng-deep .country-selector {
-  padding-right: 18px !important;
-}
-
-mat-button-toggle {
-  width: 50%;
-
-  &.mat-button-toggle-checked {
-    &[value="true"] {
-      background-color: rgba($success, 0.2);
-      color: $success;
-    }
-
-    &[value="false"] {
-      background-color: rgba($danger, 0.2);
-      color: $danger;
-    }
-  }
-
-  ::ng-deep .mat-button-toggle-label-content {
-    line-height: 36px;
-  }
-}
-
-.py-0 {
-  padding-top: 0;
-  padding-bottom: 0;
 }
 
 .checkboxes {
@@ -78,13 +38,11 @@ mat-button-toggle {
     white-space: normal;
   }
 
-  @include media-breakpoint-down(md) {
+  @include media-breakpoint-down(sm) {
     align-items: flex-start;
   }
 }
 
 :host {
   flex: 1;
-  display: flex;
-  flex-direction: column;
 }

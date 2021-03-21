@@ -11,4 +11,8 @@ body {
   &, * {
     box-sizing: border-box;
   }
+
+  .grecaptcha-badge {
+    display: none;
+  }
 }

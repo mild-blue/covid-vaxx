@@ -1,16 +1,11 @@
-import { Component, OnDestroy, ViewChild } from '@angular/core';
+import { Component, ViewChild } from '@angular/core';
 import { FormBuilder, NgForm } from '@angular/forms';
-import { PatientEditable } from '@app/model/PatientEditable';
 import { InsuranceCompany } from '@app/model/InsuranceCompany';
 import { QuestionService } from '@app/services/question/question.service';
 import { PatientService } from '@app/services/patient/patient.service';
 import { AlertService } from '@app/services/alert/alert.service';
 import { ActivatedRoute, Router } from '@angular/router';
 import { PatientData } from '@app/model/PatientData';
-import { parseAnswerFromQuestion } from '@app/parsers/answer.parser';
-import { Question } from '@app/model/Question';
-import { Subscription } from 'rxjs';
-import { parseInsuranceCompany } from '@app/parsers/insurance.parser';
 import { ReCaptchaV3Service } from 'ng-recaptcha';
 
 @Component({
@@ -18,14 +13,11 @@ import { ReCaptchaV3Service } from 'ng-recaptcha';
   templateUrl: './home.component.html',
   styleUrls: ['./home.component.scss']
 })
-export class HomeComponent implements OnDestroy {
-
-  private _questionsSubscription?: Subscription;
+export class HomeComponent {
 
   @ViewChild('patientForm') patientForm?: NgForm;
 
-  public patient: PatientEditable = new PatientEditable();
-  public questions: Question[] = [];
+  public patient?: PatientData;
   public allInsuranceCompanies: string[] = Object.values(InsuranceCompany);
 
   public agreementCheckboxValue: boolean = false;
@@ -39,50 +31,40 @@ export class HomeComponent implements OnDestroy {
               private _patientService: PatientService,
               private _recaptchaV3Service: ReCaptchaV3Service,
               private _alertService: AlertService) {
+    this.patient = this._initPatient();
+
     const personalNumber = this._route.snapshot.paramMap.get('personalNumber');
     if (personalNumber) {
       this.patient.personalNumber = personalNumber;
     }
-
-    this._questionsSubscription = this._questionService.questionsObservable
-    .subscribe(questions => this.questions = questions);
-  }
-
-  ngOnDestroy() {
-    this._questionsSubscription?.unsubscribe();
   }
 
   get allQuestionsAnswered(): boolean {
-    const unanswered = this.questions.filter(q => q.value === undefined);
+    if (!this.patient) {
+      return false;
+    }
+    const unanswered = this.patient.questionnaire.filter(q => q.answer === undefined);
     return unanswered.length === 0;
   }
 
-  get canProceedToStep3(): boolean {
-    return !!this.patientForm?.valid && this.allQuestionsAnswered;
-  }
-
-  get canSubmit(): boolean {
-    return !!this.patientForm?.valid && this.allQuestionsAnswered && this.agreementCheckboxValue && this.confirmationCheckboxValue && this.gdprCheckboxValue;
+  private _initPatient(): PatientData {
+    return {
+      firstName: '',
+      lastName: '',
+      personalNumber: '',
+      insuranceCompany: undefined,
+      phoneNumber: '',
+      email: '',
+      questionnaire: this._questionService.questions
+    };
   }
 
   public openGdprInfo(): void {
     this._alertService.gdprDialog();
   }
 
-  public getPatientData(): PatientData {
-    return {
-      firstName: this.patient.firstName ?? '',
-      lastName: this.patient.lastName ?? '',
-      personalNumber: this.patient.personalNumber ?? '',
-      insuranceCompany: this.patient.insuranceCompany ? parseInsuranceCompany(this.patient.insuranceCompany) : undefined,
-      phoneNumber: this.patient.phoneNumber ?? '',
-      email: this.patient.email ?? '',
-      answers: this.questions.map(parseAnswerFromQuestion)
-    };
-  }
-
   public async submit(): Promise<void> {
-    if (!this.canSubmit) {
+    if (!this.patient) {
       return;
     }
 
@@ -90,15 +72,14 @@ export class HomeComponent implements OnDestroy {
       const token = await this._recaptchaV3Service.execute('patientRegistration').toPromise();
       await this._patientService.savePatientInfo(
         token,
-        this.getPatientData(),
-        this.questions,
+        this.patient,
         this.agreementCheckboxValue,
         this.confirmationCheckboxValue,
         this.gdprCheckboxValue
       );
       this._router.navigate(['/registration-done']);
     } catch (e) {
-      this._alertService.toast(e.message);
+      this._alertService.error(e.message);
     }
   }
 }
