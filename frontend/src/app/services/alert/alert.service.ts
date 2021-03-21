@@ -16,7 +16,7 @@ export class AlertService {
   }
 
   public toast(message: string): void {
-    this._snackBar.open(message, 'Zavřít');
+    this._snackBar.open(message, 'OK');
   }
 
   public successDialog(message: string, onClose?: () => unknown): void {

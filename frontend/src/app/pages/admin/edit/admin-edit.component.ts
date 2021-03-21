@@ -101,7 +101,7 @@ export class AdminEditComponent extends AdminPatientAbstractComponent implements
 
     try {
       await this._patientService.updatePatient(this.patient);
-      this._alertService.successDialog('Data pacienta byla úspěšně uložena', this._routeBack.bind(this));
+      this._alertService.successDialog('Data pacienta byla úspěšně uložena.', this._routeBack.bind(this));
     } catch (e) {
       this._alertService.toast(e.message);
     }
