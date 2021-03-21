@@ -24,7 +24,7 @@ export class ErrorInterceptor implements HttpInterceptor {
       const defaultSubject = 'Problém na webu';
 
       let message = defaultMessage;
-      let contactMessage = 'V případě potíží kontaktujte nás na';
+      let contactMessage = 'V případě potíží nás kontaktujte na';
       let emailSubject = defaultSubject;
 
       if (err.status === 401) {
@@ -35,10 +35,11 @@ export class ErrorInterceptor implements HttpInterceptor {
         message = 'Přístup byl odmítnut.';
         emailSubject = 'Požadavek na udělení přístupu';
       } else if (err.status === 404) {
-        message = 'Je nám líto, ale Vašemu dotazu nic neodpovídá.';
+        // TODO Pres href a lepe. Mame na to uz button
+        message = 'Je nám líto, ale Vašemu dotazu nic neodpovídá. Zkuste pacienta registrovat na ockovani.mild.blue.';
       } else if (err.status === 409) {
 
-        message = 'Myslíme si, že jste se už pokusil jednou registrovat.';
+        message = 'Myslíme si, že pacient s Vašimi údaji je již registrován.';
         contactMessage = 'Pokud potřebujete opravit svoji registraci, napište nám na';
 
         emailSubject = 'Problém s registaci nového pacienta';

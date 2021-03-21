@@ -37,7 +37,7 @@ export class AdminPatientComponent extends AdminPatientAbstractComponent impleme
 
     try {
       await this._patientService.confirmVaccination(this.patient.id);
-      this._alertService.successDialog('Očkování bylo zaznamenáno', this.initPatient.bind(this));
+      this._alertService.successDialog('Očkování bylo zaznamenáno.', this.initPatient.bind(this));
     } catch (e) {
       this._alertService.error(e.message);
     }
