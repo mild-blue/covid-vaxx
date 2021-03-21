@@ -11,6 +11,8 @@ data class PatientDtoOut(
     val updated: Instant,
     val firstName: String,
     val lastName: String,
+    val zipCode: Int,
+    val district: String,
     val personalNumber: String,
     val phoneNumber: String,
     val email: String,

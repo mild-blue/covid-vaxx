@@ -7,6 +7,8 @@ export interface PatientData {
   personalNumber: string;
   email: string;
   phoneNumber: string;
+  district: string;
+  zipCode: string;
   insuranceCompany?: InsuranceCompany;
   vaccinatedOn?: Date;
   questionnaire: AnsweredQuestion[];

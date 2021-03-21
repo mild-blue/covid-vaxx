@@ -14,6 +14,7 @@ import { AnswerDto } from './answerDto';
 
 export interface PatientUpdateDtoIn {
     answers?: Array<AnswerDto> | null;
+    district?: string | null;
     email?: string | null;
     firstName?: string | null;
     insuranceCompany?: PatientUpdateDtoInInsuranceCompanyEnum | null;
@@ -21,6 +22,7 @@ export interface PatientUpdateDtoIn {
     personalNumber?: string | null;
     phoneNumber?: string | null;
     vaccinatedOn?: string | null;
+    zipCode?: number | null;
 }
 export enum PatientUpdateDtoInInsuranceCompanyEnum {
     Vzp = 'VZP',

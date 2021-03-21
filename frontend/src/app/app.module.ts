@@ -57,6 +57,9 @@ import { MAT_MOMENT_DATE_ADAPTER_OPTIONS, MatMomentDateModule } from '@angular/m
 import { CookiesComponent } from './components/cookies/cookies.component';
 import { ErrorComponent } from './components/error/error.component';
 import { CheckMarkComponent } from './components/check-mark/check-mark.component';
+import { PostalCodeValidatorDirective } from './directives/postal-code-validator/postal-code-validator.directive';
+import { ZipCodePipe } from './pipes/zip-code/zip-code.pipe';
+import { PhoneNumberPipe } from './pipes/phone-number/phone-number.pipe';
 
 registerLocaleData(localeCs);
 
@@ -91,7 +94,11 @@ registerLocaleData(localeCs);
     ChipComponent,
     CookiesComponent,
     ErrorComponent,
-    CheckMarkComponent
+    CheckMarkComponent,
+    PostalCodeValidatorDirective,
+    PostalCodeValidatorDirective,
+    ZipCodePipe,
+    PhoneNumberPipe
   ],
   imports: [
     BrowserModule,

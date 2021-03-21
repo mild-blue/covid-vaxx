@@ -37,6 +37,8 @@ CREATE TABLE patients
     updated            timestamptz        NOT NULL,
     first_name         VARCHAR(256)       NOT NULL,
     last_name          VARCHAR(256)       NOT NULL,
+    zip_code           INTEGER            NOT NULL,
+    district           VARCHAR(128)       NOT NULL,
     personal_number    VARCHAR(11) UNIQUE NOT NULL,
     phone_number       VARCHAR(13)        NOT NULL,
     email              VARCHAR(256)       NOT NULL,

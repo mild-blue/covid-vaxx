@@ -7,6 +7,8 @@ import blue.mild.covid.vaxx.dto.AnswerDto
 data class PatientRegistrationDtoIn(
     val firstName: String,
     val lastName: String,
+    val zipCode: Int,
+    val district: String,
     val personalNumber: String,
     val phoneNumber: String,
     val email: String,

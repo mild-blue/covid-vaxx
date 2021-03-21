@@ -23,6 +23,20 @@
       </app-form-field>
       <mat-divider></mat-divider>
       <app-form-field>
+        <mat-label>Městská část:</mat-label>
+        <mat-label *ngIf="patientData.district else unspecified;">
+          {{ patientData.district }}
+        </mat-label>
+      </app-form-field>
+      <mat-divider></mat-divider>
+      <app-form-field>
+        <mat-label>PSČ:</mat-label>
+        <mat-label *ngIf="patientData.zipCode else unspecified;">
+          {{ patientData.zipCode }}
+        </mat-label>
+      </app-form-field>
+      <mat-divider></mat-divider>
+      <app-form-field>
         <mat-label>Pojištovna:</mat-label>
         <mat-label *ngIf="patientData.insuranceCompany else unspecified;">
           {{ patientData.insuranceCompany }}
@@ -32,7 +46,7 @@
       <app-form-field>
         <mat-label>Telefonní číslo:</mat-label>
         <mat-label *ngIf="patientData.phoneNumber else unspecified;">
-          {{ patientData.phoneNumber }}
+          {{ patientData.phoneNumber | phoneNumber }}
         </mat-label>
       </app-form-field>
       <mat-divider></mat-divider>

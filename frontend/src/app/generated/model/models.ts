@@ -8,6 +8,7 @@ export * from './patientRegistrationDtoIn';
 export * from './patientUpdateDtoIn';
 export * from './questionDtoOut';
 export * from './serviceHealthDtoOut';
+export * from './systemStatisticsDtoOut';
 export * from './userLoginResponseDtoOut';
 export * from './userRegisteredDtoOut';
 export * from './userRegistrationDtoIn';

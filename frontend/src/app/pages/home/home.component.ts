@@ -55,6 +55,8 @@ export class HomeComponent {
       insuranceCompany: undefined,
       phoneNumber: '',
       email: '',
+      zipCode: '',
+      district: '',
       questionnaire: this._questionService.questions
     };
   }

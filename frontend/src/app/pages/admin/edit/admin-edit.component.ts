@@ -15,7 +15,6 @@ export class AdminEditComponent extends AdminPatientAbstractComponent implements
   private _patientDiffer?: KeyValueDiffer<string, unknown>;
   private _patientBase?: Patient;
 
-  // public patientEditable?: PatientEditable;
   public patientInfoChanged: boolean = false;
 
   constructor(private _route: ActivatedRoute,
@@ -68,6 +67,8 @@ export class AdminEditComponent extends AdminPatientAbstractComponent implements
       old.phoneNumber !== current.phoneNumber ||
       old.personalNumber !== current.personalNumber ||
       old.insuranceCompany !== current.insuranceCompany ||
+      old.zipCode !== current.zipCode ||
+      old.district !== current.district ||
       old.vaccinatedOn !== current.vaccinatedOn;
   }
 
