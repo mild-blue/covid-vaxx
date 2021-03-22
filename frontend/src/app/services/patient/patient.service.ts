@@ -71,6 +71,8 @@ export class PatientService {
     // we do not care about time, just about date
     now.setUTCHours(0, 0, 0, 0);
 
+    // TODO: Add isNonDominantHandUsed
+
     return this._http.put<HttpResponse<unknown>>(
       `${environment.apiUrl}/admin/patient/single/${id}`,
       { vaccinatedOn: now.toISOString() }

@@ -1,3 +1,12 @@
+@import "../../../../styles/variables";
+
+.checkbox {
+  border: 1px solid $gray-300;
+  border-radius: 6px;
+  padding: 10px;
+  background: $gray-100;
+}
+
 .buttons {
   display: flex;
   justify-content: center;

@@ -10,7 +10,9 @@ export interface PatientData {
   district: string;
   zipCode: string;
   insuranceCompany?: InsuranceCompany;
-  vaccinatedOn?: Date;
-  verifiedOn?: Date;
   questionnaire: AnsweredQuestion[];
+
+  verifiedOn?: Date;
+  vaccinatedOn?: Date;
+  isNonDominantHandUsed?: boolean;
 }

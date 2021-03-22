@@ -17,6 +17,7 @@ export const parsePatient = (data: PatientDtoOut, questions: AnsweredQuestion[])
     updated: new Date(data.updated),
     vaccinatedOn: data.vaccinatedOn ? new Date(data.vaccinatedOn) : undefined
     // TODO: Add verifiedOn
+    // TODO: Add isNonDominantHandUsed
   };
 };
 

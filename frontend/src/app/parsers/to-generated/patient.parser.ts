@@ -21,6 +21,7 @@ export const fromPatientToUpdateGenerated = (patient: PatientData): PatientUpdat
     insuranceCompany: fromInsuranceToUpdateInsuranceGenerated(patient.insuranceCompany),
     vaccinatedOn: patient.vaccinatedOn ? patient.vaccinatedOn.toISOString() : undefined
     // TODO: Add verifiedOn
+    // TODO: Add isNonDominantHandUsed
   };
 };
 

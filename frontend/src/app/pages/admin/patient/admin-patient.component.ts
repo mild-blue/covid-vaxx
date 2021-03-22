@@ -53,10 +53,12 @@ export class AdminPatientComponent extends AdminPatientAbstractComponent impleme
     }
   }
 
-  private async _handleConfirmation(): Promise<void> {
+  private async _handleConfirmation(isNonDominantHandUsed: boolean): Promise<void> {
     if (!this.patient) {
       return;
     }
+
+    this.patient.isNonDominantHandUsed = isNonDominantHandUsed;
 
     try {
       await this._patientService.confirmVaccination(this.patient.id);
