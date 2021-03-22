@@ -1,11 +1,9 @@
 <div mat-dialog-content>
   <div class="content">
-    <div class="circle-loader">
-      <div class="checkmark draw"></div>
-    </div>
+    <app-check-mark></app-check-mark>
     <h3>{{ data.message }}</h3>
   </div>
 </div>
 <mat-dialog-actions class="buttons">
-  <button mat-button mat-dialog-close>Zavřít</button>
+  <button mat-button mat-dialog-close>OK</button>
 </mat-dialog-actions>

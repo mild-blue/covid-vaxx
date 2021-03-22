@@ -15,7 +15,6 @@ export class AdminEditComponent extends AdminPatientAbstractComponent implements
   private _patientDiffer?: KeyValueDiffer<string, unknown>;
   private _patientBase?: Patient;
 
-  // public patientEditable?: PatientEditable;
   public patientInfoChanged: boolean = false;
 
   constructor(private _route: ActivatedRoute,
@@ -68,6 +67,8 @@ export class AdminEditComponent extends AdminPatientAbstractComponent implements
       old.phoneNumber !== current.phoneNumber ||
       old.personalNumber !== current.personalNumber ||
       old.insuranceCompany !== current.insuranceCompany ||
+      old.zipCode !== current.zipCode ||
+      old.district !== current.district ||
       old.vaccinatedOn !== current.vaccinatedOn;
   }
 
@@ -102,9 +103,9 @@ export class AdminEditComponent extends AdminPatientAbstractComponent implements
 
     try {
       await this._patientService.updatePatient(this.patient);
-      this._alertService.successDialog('Data pacienta byla úspěšně uložena', this._routeBack.bind(this));
+      this._alertService.successDialog('Data pacienta byla úspěšně uložena.', this._routeBack.bind(this));
     } catch (e) {
-      this._alertService.toast(e.message);
+      this._alertService.error(e.message);
     }
   }
 

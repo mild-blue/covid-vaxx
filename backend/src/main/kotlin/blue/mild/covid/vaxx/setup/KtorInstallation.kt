@@ -7,6 +7,7 @@ import blue.mild.covid.vaxx.dto.config.JwtConfigurationDto
 import blue.mild.covid.vaxx.dto.config.RateLimitConfigurationDto
 import blue.mild.covid.vaxx.error.installExceptionHandling
 import blue.mild.covid.vaxx.extensions.determineRealIp
+import blue.mild.covid.vaxx.monitoring.AMAZON_TRACE
 import blue.mild.covid.vaxx.monitoring.CALL_ID
 import blue.mild.covid.vaxx.monitoring.PATH
 import blue.mild.covid.vaxx.monitoring.REMOTE_HOST
@@ -44,6 +45,7 @@ import io.ktor.http.content.default
 import io.ktor.http.content.files
 import io.ktor.http.content.static
 import io.ktor.jackson.jackson
+import io.ktor.request.header
 import io.ktor.request.httpMethod
 import io.ktor.request.path
 import io.ktor.request.uri
@@ -260,6 +262,10 @@ private fun Application.installMonitoring() {
         mdc(CALL_ID) { it.callId }
         mdc(REMOTE_HOST) { it.request.determineRealIp() }
         mdc(PATH) { "${it.request.httpMethod.value} ${it.request.path()}" }
+        // see https://docs.aws.amazon.com/elasticloadbalancing/latest/application/load-balancer-request-tracing.html
+        mdc(AMAZON_TRACE) { call ->
+            call.request.header("X-Amzn-Trace-Id")
+        }
 
         val ignoredPaths = setOf(Routes.status, Routes.statusHealth)
         val ignoredMethods = setOf(HttpMethod.Options, HttpMethod.Head)
@@ -293,7 +299,9 @@ private fun Application.installRateLimiting() {
             resetTime = configuration.rateLimitDuration
             keyExtraction = { call.request.determineRealIp() }
             requestExclusion = {
-                it.httpMethod == HttpMethod.Options || it.uri.endsWith(Routes.status)
+                it.httpMethod == HttpMethod.Options
+                        || it.uri.endsWith(Routes.status)
+                        || it.uri.endsWith(Routes.statusHealth)
             }
         }
     }

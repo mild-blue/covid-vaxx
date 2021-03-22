@@ -5,27 +5,37 @@
         <input [(ngModel)]="patient.firstName" name="firstName" matInput placeholder="Vaše jméno" required maxlength="64">
       </mat-form-field>
 
-      <mat-form-field floatLabel="always">
-        <mat-label>Příjmení</mat-label>
-        <input [(ngModel)]="patient.lastName" name="lastName" matInput placeholder="Vaše příjmení" required maxlength="64">
-      </mat-form-field>
+    <mat-form-field floatLabel="always">
+      <mat-label>Příjmení</mat-label>
+      <input [(ngModel)]="patient.lastName" name="lastName" matInput placeholder="Vaše příjmení" required maxlength="64">
+    </mat-form-field>
 
-      <mat-form-field floatLabel="always" class="has-hint">
-        <mat-label>Rodné číslo</mat-label>
-        <input [(ngModel)]="patient.personalNumber" name="personalNumber" matInput personalNumberValidator placeholder="Vaše rodné číslo" required maxlength="11">
-        <mat-hint>Rodné číslo ve formátu RRMMDD/ČČČ(Č)</mat-hint>
-      </mat-form-field>
+    <mat-form-field floatLabel="always" class="has-hint">
+      <mat-label>Rodné číslo</mat-label>
+      <input [(ngModel)]="patient.personalNumber" name="personalNumber" matInput personalNumberValidator placeholder="Vaše rodné číslo" required maxlength="11">
+      <mat-hint>Rodné číslo ve formátu RRMMDD/ČČČ(Č)</mat-hint>
+    </mat-form-field>
 
-      <mat-form-field floatLabel="always">
-        <mat-label>Zdravotní pojišťovna</mat-label>
-        <mat-select name="insuranceCompany" [(ngModel)]="patient.insuranceCompany" placeholder="Vyberte Vaší zdravotní pojišťovnu" required>
-          <mat-option *ngFor="let insuranceCompany of allInsuranceCompanies" [value]="insuranceCompany">
-            {{insuranceCompany}}
-          </mat-option>
-        </mat-select>
-      </mat-form-field>
+    <mat-form-field floatLabel="always">
+      <mat-label>Městská část</mat-label>
+      <input [(ngModel)]="patient.district" name="district" matInput placeholder="Vaše městská část" required maxlength="64">
+    </mat-form-field>
 
-      <mat-form-field floatLabel="always">
+    <mat-form-field floatLabel="always">
+      <mat-label>PSČ</mat-label>
+      <input [(ngModel)]="patient.zipCode" #zipCode="ngModel" (input)="formatZipCode(zipCode)" name="zipCode" matInput postalCodeValidator placeholder="Vaše PSČ" required maxlength="6">
+    </mat-form-field>
+
+    <mat-form-field floatLabel="always">
+      <mat-label>Zdravotní pojišťovna</mat-label>
+      <mat-select name="insuranceCompany" [(ngModel)]="patient.insuranceCompany" placeholder="Vyberte Vaší zdravotní pojišťovnu" required>
+        <mat-option *ngFor="let insuranceCompany of allInsuranceCompanies" [value]="insuranceCompany">
+          {{insuranceCompany}}
+        </mat-option>
+      </mat-select>
+    </mat-form-field>
+
+    <mat-form-field floatLabel="always">
         <mat-label>Telefonní číslo</mat-label>
         <ngx-mat-intl-tel-input [(ngModel)]="patient.phoneNumber"
                                 [preferredCountries]="['cz', 'sk', 'de', 'at', 'pl']"

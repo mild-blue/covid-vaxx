@@ -55,6 +55,11 @@ import { MatDatepickerModule } from '@angular/material/datepicker';
 import { ChipComponent } from './components/chip/chip.component';
 import { MAT_MOMENT_DATE_ADAPTER_OPTIONS, MatMomentDateModule } from '@angular/material-moment-adapter';
 import { CookiesComponent } from './components/cookies/cookies.component';
+import { ErrorComponent } from './components/error/error.component';
+import { CheckMarkComponent } from './components/check-mark/check-mark.component';
+import { PostalCodeValidatorDirective } from './directives/postal-code-validator/postal-code-validator.directive';
+import { ZipCodePipe } from './pipes/zip-code/zip-code.pipe';
+import { PhoneNumberPipe } from './pipes/phone-number/phone-number.pipe';
 
 registerLocaleData(localeCs);
 
@@ -87,7 +92,13 @@ registerLocaleData(localeCs);
     AdminPatientAbstractComponent,
     ProgressLoadingComponent,
     ChipComponent,
-    CookiesComponent
+    CookiesComponent,
+    ErrorComponent,
+    CheckMarkComponent,
+    PostalCodeValidatorDirective,
+    PostalCodeValidatorDirective,
+    ZipCodePipe,
+    PhoneNumberPipe
   ],
   imports: [
     BrowserModule,

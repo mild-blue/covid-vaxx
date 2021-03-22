@@ -7,6 +7,8 @@ import java.time.Instant
 data class PatientUpdateDtoIn(
     val firstName: String? = null,
     val lastName: String? = null,
+    val zipCode: Int? = null,
+    val district: String? = null,
     val phoneNumber: String? = null,
     val personalNumber: String? = null,
     val email: String? = null,
@@ -18,6 +20,8 @@ data class PatientUpdateDtoIn(
         listOfNotNull(
             firstName?.let { "firstName=$it" },
             lastName?.let { "lastName=$it" },
+            zipCode?.let { "zipCode=$it" },
+            district?.let { "district=$it" },
             phoneNumber?.let { "phoneNumber=$it" },
             personalNumber?.let { "personalNumber=$it" },
             email?.let { "email=$it" },

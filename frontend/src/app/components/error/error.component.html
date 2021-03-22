@@ -1,0 +1,11 @@
+<div class="error">
+
+  <div class="error__header">
+    <h3>Nastala chyba</h3>
+    <button (click)="snackBar.dismiss()"
+            mat-icon-button color="warn" aria-label="Zavřít">
+      <mat-icon>close</mat-icon>
+    </button>
+  </div>
+  <div [innerHTML]="data.html"></div>
+</div>

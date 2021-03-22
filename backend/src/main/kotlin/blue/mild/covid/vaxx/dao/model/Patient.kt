@@ -10,6 +10,8 @@ object Patient : Table("patients") {
 
     val firstName = varchar("first_name", DatabaseTypeLength.DEFAULT_STRING)
     val lastName = varchar("last_name", DatabaseTypeLength.DEFAULT_STRING)
+    val zipCode = integer("zip_code")
+    val district = varchar("district", DatabaseTypeLength.SHORT_STRING)
     val personalNumber = varchar("personal_number", DatabaseTypeLength.PERSONAL_NUMBER)
     val phoneNumber = varchar("phone_number", DatabaseTypeLength.PHONE_NUMBER)
     val email = varchar("email", DatabaseTypeLength.DEFAULT_STRING)

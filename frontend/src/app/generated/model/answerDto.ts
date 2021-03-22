@@ -12,7 +12,7 @@
 
 
 export interface AnswerDto {
-    questionId: string;
-    value: boolean;
+  questionId: string;
+  value: boolean;
 }
 

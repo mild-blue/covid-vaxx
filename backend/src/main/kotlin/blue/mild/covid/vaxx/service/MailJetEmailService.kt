@@ -92,7 +92,7 @@ class MailJetEmailService(
                                             .put("Name", "${emailRequest.firstName} ${emailRequest.lastName}")
                                     )
                             )
-                            .put(Emailv31.Message.SUBJECT, "Testing Subject")
+                            .put(Emailv31.Message.SUBJECT, mailJetConfig.subject)
                             .put(
                                 Emailv31.Message.HTMLPART, emailHtmlPart
                             )
