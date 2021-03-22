@@ -16,6 +16,7 @@ export const parsePatient = (data: PatientDtoOut, questions: AnsweredQuestion[])
     created: new Date(data.created),
     updated: new Date(data.updated),
     vaccinatedOn: data.vaccinatedOn ? new Date(data.vaccinatedOn) : undefined
+    // TODO: Add verifiedOn
   };
 };
 

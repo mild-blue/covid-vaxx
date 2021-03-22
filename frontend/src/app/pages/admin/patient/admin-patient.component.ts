@@ -3,6 +3,8 @@ import { ActivatedRoute, Router } from '@angular/router';
 import { PatientService } from '@app/services/patient/patient.service';
 import { AlertService } from '@app/services/alert/alert.service';
 import { AdminPatientAbstractComponent } from '@app/pages/admin/abstract/admin-patient-abstract.component';
+import { ConfirmVaccinationComponent } from '@app/components/dialogs/confirm-vaccination/confirm-vaccination.component';
+import { ConfirmPatientDataComponent } from '@app/components/dialogs/confirm-patient-data/confirm-patient-data.component';
 
 @Component({
   selector: 'app-patient-detail',
@@ -26,8 +28,29 @@ export class AdminPatientComponent extends AdminPatientAbstractComponent impleme
     this._router.navigate(['admin']);
   }
 
+  public verify(): void {
+    this._alertService.confirmDialog(ConfirmPatientDataComponent, this._handleVerification.bind(this));
+  }
+
   public vaccinate(): void {
-    this._alertService.confirmVaccinateDialog(this._handleConfirmation.bind(this));
+    this._alertService.confirmDialog(ConfirmVaccinationComponent, this._handleConfirmation.bind(this));
+  }
+
+  private async _handleVerification(): Promise<void> {
+    if (!this.patient) {
+      return;
+    }
+
+    const now = new Date();
+    now.setUTCHours(0, 0, 0, 0);
+    this.patient.verifiedOn = now;
+
+    try {
+      await this._patientService.updatePatient(this.patient);
+      this._alertService.successDialog('Údaje pacienta byly ověřeny.', this.initPatient.bind(this));
+    } catch (e) {
+      this._alertService.error(e.message);
+    }
   }
 
   private async _handleConfirmation(): Promise<void> {

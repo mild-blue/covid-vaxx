@@ -60,6 +60,8 @@ import { CheckMarkComponent } from './components/check-mark/check-mark.component
 import { PostalCodeValidatorDirective } from './directives/postal-code-validator/postal-code-validator.directive';
 import { ZipCodePipe } from './pipes/zip-code/zip-code.pipe';
 import { PhoneNumberPipe } from './pipes/phone-number/phone-number.pipe';
+import { ConfirmPatientDataComponent } from './components/dialogs/confirm-patient-data/confirm-patient-data.component';
+import { AbstractConfirmComponent } from './components/dialogs/abstract-confirm/abstract-confirm.component';
 
 registerLocaleData(localeCs);
 
@@ -98,7 +100,9 @@ registerLocaleData(localeCs);
     PostalCodeValidatorDirective,
     PostalCodeValidatorDirective,
     ZipCodePipe,
-    PhoneNumberPipe
+    PhoneNumberPipe,
+    ConfirmPatientDataComponent,
+    AbstractConfirmComponent
   ],
   imports: [
     BrowserModule,

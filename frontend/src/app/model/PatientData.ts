@@ -11,5 +11,6 @@ export interface PatientData {
   zipCode: string;
   insuranceCompany?: InsuranceCompany;
   vaccinatedOn?: Date;
+  verifiedOn?: Date;
   questionnaire: AnsweredQuestion[];
 }

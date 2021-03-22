@@ -1,18 +1,11 @@
-import { Component, EventEmitter } from '@angular/core';
+import { Component } from '@angular/core';
+import { AbstractConfirmComponent } from '@app/components/dialogs/abstract-confirm/abstract-confirm.component';
 
 @Component({
   selector: 'app-confirm-vaccination',
   templateUrl: './confirm-vaccination.component.html',
   styleUrls: ['./confirm-vaccination.component.scss']
 })
-export class ConfirmVaccinationComponent {
+export class ConfirmVaccinationComponent extends AbstractConfirmComponent {
 
-  public onConfirm: EventEmitter<void> = new EventEmitter<void>();
-
-  constructor() {
-  }
-
-  public async confirm(): Promise<void> {
-    this.onConfirm.emit();
-  }
 }
