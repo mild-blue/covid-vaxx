@@ -1,32 +1,30 @@
 <app-progress-loading [show]="loading"></app-progress-loading>
 
 <app-container [wide]="true">
+
   <app-back-button (click)="searchAgain()">
     Vyhledat jiného pacienta
   </app-back-button>
 
-  <h1 class="mat-h1">Nalezený pacient</h1>
+  <div class="header">
+    <h1 class="mat-h1">Nalezený pacient</h1>
+    <button *ngIf="patient" mat-button [routerLink]="['/admin/edit', patient.id]" color="primary">
+      Editovat údaje pacienta
+      <mat-icon>create</mat-icon>
+    </button>
+  </div>
 
   <app-patient-data [patientData]="patient" [showVaccinationDate]="true"></app-patient-data>
 
   <div *ngIf="patient" class="buttons">
-    <button mat-raised-button [routerLink]="['/admin/edit', patient.id]" color="primary">
-      Editovat údaje pacienta
-      <mat-icon>create</mat-icon>
+    <button *ngIf="!patient.verifiedOn" mat-raised-button (click)="verify()" color="success">
+      Potvrdit správnost údajů
+      <mat-icon>check</mat-icon>
     </button>
-    <ng-container [ngSwitch]="!patient.verifiedOn && 'notVerified'">
-      <ng-container *ngSwitchCase="'notVerified'">
-        <button mat-raised-button (click)="verify()" color="success">
-          Potvrdit správnost údajů
-          <mat-icon>check</mat-icon>
-        </button>
-      </ng-container>
-      <ng-container *ngSwitchDefault>
-        <button *ngIf="patient.vaccinatedOn === undefined" mat-raised-button (click)="vaccinate()" color="accent">
-          Potvrdit proběhlé očkování
-          <mat-icon>health_and_safety</mat-icon>
-        </button>
-      </ng-container>
-    </ng-container>
+
+    <button *ngIf="!patient.vaccinatedOn" mat-raised-button (click)="vaccinate()" color="accent">
+      Potvrdit proběhlé očkování
+      <mat-icon>health_and_safety</mat-icon>
+    </button>
   </div>
 </app-container>
