@@ -83,7 +83,7 @@ class UserService(
         }
     }
 
-    private suspend fun loginFailed(
+    private suspend inline fun loginFailed(
         request: ContextAware<LoginDtoIn>,
         userId: EntityId?,
         exception: () -> AuthorizationException
