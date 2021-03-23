@@ -4,7 +4,7 @@ object PatientDataCorrectnessConfirmation : ManagedTable("patient_data_correctne
     /**
      * Patient data that were checked.
      */
-    val patientId = patientReference()
+    val patientId = patientReference().uniqueIndex()
 
     /**
      * What user performed check.

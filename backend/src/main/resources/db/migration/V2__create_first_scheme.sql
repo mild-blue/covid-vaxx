@@ -4,6 +4,8 @@ CREATE TABLE users
     id            UUID PRIMARY KEY    NOT NULL DEFAULT uuid_generate_v4(),
     created       TIMESTAMPTZ         NOT NULL,
     updated       TIMESTAMPTZ         NOT NULL,
+    first_name    VARCHAR(256)        NOT NULL,
+    last_name     VARCHAR(256)        NOT NULL,
     email         VARCHAR(256) UNIQUE NOT NULL,
     password_hash VARCHAR(128)        NOT NULL,
     role          VARCHAR(16)         NOT NULL
@@ -24,12 +26,12 @@ EXECUTE PROCEDURE set_updated();
 -- Create table nurses
 CREATE TABLE nurses
 (
-    id         UUID PRIMARY KEY NOT NULL DEFAULT uuid_generate_v4(),
-    created    TIMESTAMPTZ      NOT NULL,
-    updated    TIMESTAMPTZ      NOT NULL,
-    first_name VARCHAR(256)     NOT NULL,
-    last_name  VARCHAR(256)     NOT NULL,
-    email      VARCHAR(256)     NOT NULL
+    id         UUID PRIMARY KEY    NOT NULL DEFAULT uuid_generate_v4(),
+    created    TIMESTAMPTZ         NOT NULL,
+    updated    TIMESTAMPTZ         NOT NULL,
+    first_name VARCHAR(256)        NOT NULL,
+    last_name  VARCHAR(256)        NOT NULL,
+    email      VARCHAR(256) UNIQUE NOT NULL
 );
 
 CREATE TRIGGER tgr_nurses_set_created
@@ -53,7 +55,9 @@ CREATE TABLE user_logins
     user_id               UUID             NOT NULL REFERENCES users (id) ON DELETE CASCADE,
     vaccine_serial_number VARCHAR(256),
     nurse_id              UUID             REFERENCES nurses (id) ON DELETE SET NULL,
-    success               BOOLEAN          NOT NULL
+    success               BOOL             NOT NULL,
+    remote_host           VARCHAR(45)      NOT NULL,
+    call_id               VARCHAR(256)
 );
 
 CREATE TRIGGER tgr_user_logins_set_created
@@ -71,21 +75,20 @@ EXECUTE PROCEDURE set_updated();
 -- Create table patients
 CREATE TABLE patients
 (
-    id                  UUID PRIMARY KEY   NOT NULL DEFAULT uuid_generate_v4(),
-    created             TIMESTAMPTZ        NOT NULL,
-    updated             TIMESTAMPTZ        NOT NULL,
-    first_name          VARCHAR(256)       NOT NULL,
-    last_name           VARCHAR(256)       NOT NULL,
-    zip_code            INTEGER            NOT NULL,
-    district            VARCHAR(128)       NOT NULL,
-    personal_number     VARCHAR(11) UNIQUE NOT NULL,
-    phone_number        VARCHAR(13)        NOT NULL,
-    email               VARCHAR(256)       NOT NULL,
-    insurance_company   VARCHAR(4)         NOT NULL,
-    remote_host         VARCHAR(45)        NOT NULL,
-    email_sent_date     TIMESTAMPTZ,
-    data_correctness_id UUID               REFERENCES patient_data_correctness (id) ON DELETE SET NULL,
-    vaccination_id      UUID               REFERENCES vaccinations (id) ON DELETE SET NULL
+    id                UUID PRIMARY KEY   NOT NULL DEFAULT uuid_generate_v4(),
+    created           TIMESTAMPTZ        NOT NULL,
+    updated           TIMESTAMPTZ        NOT NULL,
+    first_name        VARCHAR(256)       NOT NULL,
+    last_name         VARCHAR(256)       NOT NULL,
+    zip_code          INTEGER            NOT NULL,
+    district          VARCHAR(128)       NOT NULL,
+    personal_number   VARCHAR(11) UNIQUE NOT NULL,
+    phone_number      VARCHAR(13)        NOT NULL,
+    email             VARCHAR(256)       NOT NULL,
+    insurance_company VARCHAR(4)         NOT NULL,
+    indication        VARCHAR(256),
+    remote_host       VARCHAR(45)        NOT NULL,
+    email_sent_date   TIMESTAMPTZ
 );
 
 CREATE TRIGGER tgr_patients_set_created
@@ -106,8 +109,9 @@ CREATE TABLE patient_data_correctness
     id                   UUID PRIMARY KEY NOT NULL DEFAULT uuid_generate_v4(),
     created              TIMESTAMPTZ      NOT NULL,
     updated              TIMESTAMPTZ      NOT NULL,
-    patient_id           UUID             NOT NULL UNIQUE REFERENCES patients (id) ON DELETE CASCADE,
+    patient_id           UUID UNIQUE      NOT NULL REFERENCES patients (id) ON DELETE CASCADE,
     user_performed_check UUID             NOT NULL REFERENCES users (id) ON DELETE RESTRICT,
+    nurse_id             UUID             REFERENCES nurses (id) ON DELETE SET NULL,
     data_are_correct     BOOL             NOT NULL,
     notes                TEXT
 );
@@ -127,15 +131,16 @@ EXECUTE PROCEDURE set_updated();
 -- Create table vaccinations
 CREATE TABLE vaccinations
 (
-    id                    UUID PRIMARY KEY NOT NULL DEFAULT uuid_generate_v4(),
-    created               TIMESTAMPTZ      NOT NULL,
-    updated               TIMESTAMPTZ      NOT NULL,
-    patient_id            UUID UNIQUE REFERENCES patients (id) ON DELETE CASCADE,
-    body_part             VARCHAR(17)      NOT NULL,
-    vaccine_serial_number VARCHAR(256)     NOT NULL,
-    user_performing       UUID             NOT NULL REFERENCES users (id) ON DELETE RESTRICT,
-    nurse_id              UUID             REFERENCES nurses (id) ON DELETE SET NULL,
-    notes                 TEXT
+    id                          UUID PRIMARY KEY NOT NULL DEFAULT uuid_generate_v4(),
+    created                     TIMESTAMPTZ      NOT NULL,
+    updated                     TIMESTAMPTZ      NOT NULL,
+    patient_id                  UUID UNIQUE      NOT NULL REFERENCES patients (id) ON DELETE CASCADE,
+    body_part                   VARCHAR(17)      NOT NULL,
+    vaccinated_on               TIMESTAMPTZ      NOT NULL,
+    vaccine_serial_number       VARCHAR(256)     NOT NULL,
+    user_performing_vaccination UUID             NOT NULL REFERENCES users (id) ON DELETE RESTRICT,
+    nurse_id                    UUID             REFERENCES nurses (id) ON DELETE SET NULL,
+    notes                       TEXT
 );
 
 CREATE TRIGGER tgr_vaccinations_set_created
@@ -178,8 +183,8 @@ CREATE TABLE answers
 (
     created     TIMESTAMPTZ NOT NULL,
     updated     TIMESTAMPTZ NOT NULL,
-    question_id VARCHAR(36) NOT NULL REFERENCES questions (id) ON DELETE CASCADE,
-    patient_id  VARCHAR(36) NOT NULL REFERENCES patients (id) ON DELETE CASCADE,
+    question_id UUID        NOT NULL REFERENCES questions (id) ON DELETE CASCADE,
+    patient_id  UUID        NOT NULL REFERENCES patients (id) ON DELETE CASCADE,
     value       bool        NOT NULL,
     PRIMARY KEY (question_id, patient_id)
 );
@@ -195,3 +200,10 @@ CREATE TRIGGER tgr_answers_set_updated
     ON answers
     FOR EACH ROW
 EXECUTE PROCEDURE set_updated();
+
+-- Now add backrefs to patient
+
+ALTER TABLE patients
+    ADD COLUMN data_correctness_id UUID REFERENCES patient_data_correctness (id) ON DELETE SET NULL;
+ALTER TABLE patients
+    ADD COLUMN vaccination_id UUID REFERENCES vaccinations (id) ON DELETE SET NULL;

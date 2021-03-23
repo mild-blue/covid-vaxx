@@ -17,5 +17,5 @@ open class PersonnelTable(name: String) : ManagedTable(name) {
     /**
      * Validated email address.
      */
-    val email = varchar("email", DatabaseTypeLength.DEFAULT_STRING)
+    val email = varchar("email", DatabaseTypeLength.DEFAULT_STRING).uniqueIndex()
 }
