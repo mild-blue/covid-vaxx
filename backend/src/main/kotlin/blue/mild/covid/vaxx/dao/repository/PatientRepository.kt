@@ -47,6 +47,7 @@ class PatientRepository(
         personalNumber: String? = null,
         email: String? = null,
         insuranceCompany: InsuranceCompany? = null,
+        indication: String? = null,
         answers: Map<EntityId, Boolean>? = null,
         registrationEmailSent: Instant? = null
     ): Boolean = newSuspendedTransaction {
@@ -55,7 +56,7 @@ class PatientRepository(
             firstName ?: lastName
             ?: district ?: zipCode
             ?: phoneNumber ?: personalNumber ?: email
-            ?: insuranceCompany ?: registrationEmailSent
+            ?: insuranceCompany ?: registrationEmailSent ?: indication
         // if so, perform update query
         val patientUpdated = if (isPatientEntityUpdateNecessary != null) {
             Patient.update(
@@ -70,6 +71,7 @@ class PatientRepository(
                         updateIfNotNull(personalNumber, Patient.personalNumber)
                         updateIfNotNull(email, Patient.email)
                         updateIfNotNull(insuranceCompany, Patient.insuranceCompany)
+                        updateIfNotNull(indication, Patient.indication)
                         updateIfNotNull(registrationEmailSent, Patient.registrationEmailSent)
                     }
                 }
@@ -115,10 +117,11 @@ class PatientRepository(
         personalNumber: String,
         email: String,
         insuranceCompany: InsuranceCompany,
+        indication: String?,
         remoteHost: String,
         answers: Map<EntityId, Boolean>
     ): EntityId = newSuspendedTransaction {
-        val patient = Patient.insert {
+        val patientId = Patient.insert {
             it[Patient.firstName] = firstName
             it[Patient.lastName] = lastName
             it[Patient.zipCode] = zipCode
@@ -127,9 +130,10 @@ class PatientRepository(
             it[Patient.phoneNumber] = phoneNumber
             it[Patient.email] = email
             it[Patient.insuranceCompany] = insuranceCompany
+            it[Patient.indication] = indication
             it[Patient.remoteHost] = remoteHost
-        }
-        val patientId = patient[Patient.id]
+        }[Patient.id]
+
         val now = instantTimeProvider.now()
         val answersIterable = answers.map { (questionId, value) -> questionId to value }
         // even though this statement prints multiple insert into statements
@@ -178,6 +182,7 @@ class PatientRepository(
         phoneNumber = row[Patient.phoneNumber],
         email = row[Patient.email],
         insuranceCompany = row[Patient.insuranceCompany],
+        indication = row[Patient.indication],
         registrationEmailSentOn = row[Patient.registrationEmailSent],
         answers = answers,
         registeredOn = row[Patient.created],

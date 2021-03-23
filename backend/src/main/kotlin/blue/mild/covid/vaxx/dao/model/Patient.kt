@@ -44,6 +44,11 @@ object Patient : ManagedTable("patients") {
     val insuranceCompany = enumerationByName("insurance_company", DatabaseTypeLength.INSURANCE_COMPANY, InsuranceCompany::class)
 
     /**
+     * Indication about patient - ie. chronic disease or teacher.
+     */
+    val indication = varchar("indication", DatabaseTypeLength.DEFAULT_STRING).nullable()
+
+    /**
      * From which IP address was the registration created.
      */
     val remoteHost = varchar("remote_host", DatabaseTypeLength.REMOTE_HOST)

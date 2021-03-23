@@ -12,6 +12,7 @@ data class PatientRegistrationDtoIn(
     val phoneNumber: PhoneNumberDtoIn,
     val email: String,
     val insuranceCompany: InsuranceCompany,
+    val indication: String? = null,
     val answers: List<AnswerDtoIn>,
     val confirmation: ConfirmationDtoIn
 )

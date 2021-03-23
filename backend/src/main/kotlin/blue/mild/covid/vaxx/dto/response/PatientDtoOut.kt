@@ -15,6 +15,7 @@ data class PatientDtoOut(
     val phoneNumber: String,
     val email: String,
     val insuranceCompany: InsuranceCompany,
+    val indication: String? = null,
     val answers: List<AnswerDtoOut>,
     val registrationEmailSentOn: Instant? = null,
     val vaccinated: VaccinationDtoOut? = null,

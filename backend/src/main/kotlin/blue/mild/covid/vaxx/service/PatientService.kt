@@ -103,6 +103,7 @@ class PatientService(
             personalNumber = normalizePersonalNumber(registration.personalNumber),
             email = registration.email.trim().toLowerCase(),
             insuranceCompany = registration.insuranceCompany,
+            indication = registration.indication?.trim(),
             remoteHost = registrationDto.remoteHost,
             answers = registration.answers.associate { it.questionId to it.value }
         ).also { patientId ->
