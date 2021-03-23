@@ -2,7 +2,6 @@ package blue.mild.covid.vaxx.util
 
 import blue.mild.covid.vaxx.dto.request.PhoneNumberDtoIn
 import blue.mild.covid.vaxx.utils.formatPhoneNumber
-import blue.mild.covid.vaxx.utils.normalizePersonalNumber
 import blue.mild.covid.vaxx.utils.removeAllWhitespaces
 import org.junit.jupiter.api.Test
 import kotlin.test.assertEquals
@@ -23,11 +22,4 @@ class FormattersTest {
         val result = "# @345l      khj      345+fdgd  fg$ # %35  ".removeAllWhitespaces()
         assertEquals("#@345lkhj345+fdgdfg$#%35", result)
     }
-
-    @Test
-    fun `should normalize personal number`() {
-        val result = "870504/6501".normalizePersonalNumber()
-        assertEquals("8705046501", result)
-    }
-
 }

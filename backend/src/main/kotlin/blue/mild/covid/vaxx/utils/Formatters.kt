@@ -9,5 +9,3 @@ fun PhoneNumberDtoIn.formatPhoneNumber(): String {
 }
 
 fun String.removeAllWhitespaces() = this.replace("\\s".toRegex(), "")
-
-fun String.normalizePersonalNumber(): String = this.replace("/", "").removeAllWhitespaces()
