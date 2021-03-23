@@ -30,6 +30,11 @@ object PatientDataCorrectnessConfirmation : Table("patient_data_correctness") {
     val userPerformedCheck = entityId("user_performed_check") references User.id
 
     /**
+     * Nurse set during the login.
+     */
+    val nurseId = entityId("nurse_id").nullable()
+
+    /**
      * Indication that the data are correct.
      */
     val dataAreCorrect = bool("data_are_correct")

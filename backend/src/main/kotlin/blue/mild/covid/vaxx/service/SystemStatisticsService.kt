@@ -3,7 +3,7 @@ package blue.mild.covid.vaxx.service
 import blue.mild.covid.vaxx.dao.model.Patient
 import blue.mild.covid.vaxx.dao.model.PatientDataCorrectnessConfirmation
 import blue.mild.covid.vaxx.dao.model.Vaccination
-import blue.mild.covid.vaxx.dto.request.SystemStatisticsFilterDtoIn
+import blue.mild.covid.vaxx.dto.request.query.SystemStatisticsFilterDtoIn
 import blue.mild.covid.vaxx.dto.response.SystemStatisticsDtoOut
 import org.jetbrains.exposed.sql.and
 import org.jetbrains.exposed.sql.select

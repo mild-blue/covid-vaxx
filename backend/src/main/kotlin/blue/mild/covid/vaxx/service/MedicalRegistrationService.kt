@@ -1,10 +1,10 @@
 package blue.mild.covid.vaxx.service
 
-import java.util.UUID
+import blue.mild.covid.vaxx.dto.internal.PatientVaccinationDetailDto
 
 interface MedicalRegistrationService {
     /**
-     * Register that the patient with given [patientId] was vaccinated in the remote service.
+     * Register that the patient with given [patientVaccination] was vaccinated in the remote service.
      */
-    suspend fun registerPatientsVaccination(patientId: UUID)
+    suspend fun registerPatientsVaccination(patientVaccination: PatientVaccinationDetailDto)
 }

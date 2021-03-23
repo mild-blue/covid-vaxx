@@ -4,9 +4,12 @@ import blue.mild.covid.vaxx.dao.model.Answer
 import blue.mild.covid.vaxx.dao.model.EntityId
 import blue.mild.covid.vaxx.dao.model.InsuranceCompany
 import blue.mild.covid.vaxx.dao.model.Patient
-import blue.mild.covid.vaxx.dto.AnswerDto
+import blue.mild.covid.vaxx.dao.model.PatientDataCorrectnessConfirmation
+import blue.mild.covid.vaxx.dao.model.Vaccination
+import blue.mild.covid.vaxx.dto.response.AnswerDtoOut
+import blue.mild.covid.vaxx.dto.response.DataCorrectnessConfirmationDtoOut
 import blue.mild.covid.vaxx.dto.response.PatientDtoOut
-import org.jetbrains.exposed.sql.Column
+import blue.mild.covid.vaxx.dto.response.VaccinationDtoOut
 import org.jetbrains.exposed.sql.Op
 import org.jetbrains.exposed.sql.ResultRow
 import org.jetbrains.exposed.sql.SqlExpressionBuilder
@@ -17,14 +20,13 @@ import org.jetbrains.exposed.sql.insert
 import org.jetbrains.exposed.sql.leftJoin
 import org.jetbrains.exposed.sql.select
 import org.jetbrains.exposed.sql.selectAll
-import org.jetbrains.exposed.sql.statements.UpdateStatement
 import org.jetbrains.exposed.sql.transactions.experimental.newSuspendedTransaction
 import org.jetbrains.exposed.sql.update
 import pw.forst.tools.katlib.TimeProvider
 import java.time.Instant
 
 class PatientRepository(
-    private val instantTimeProvider: TimeProvider<Instant>,
+    private val instantTimeProvider: TimeProvider<Instant>
 ) {
 
     /**
@@ -100,14 +102,11 @@ class PatientRepository(
     /**
      * Saves the given data to the database as a new patient registration record.
      *
-     * Returns patient [id].
-     *
      * Note: use named parameters while using this method.
      */
     // this can't be refactored as it is builder
     @Suppress("LongParameterList")
     suspend fun savePatient(
-        id: EntityId,
         firstName: String,
         lastName: String,
         zipCode: Int,
@@ -119,8 +118,7 @@ class PatientRepository(
         remoteHost: String,
         answers: Map<EntityId, Boolean>
     ): EntityId = newSuspendedTransaction {
-        Patient.insert {
-            it[Patient.id] = id
+        val patient = Patient.insert {
             it[Patient.firstName] = firstName
             it[Patient.lastName] = lastName
             it[Patient.zipCode] = zipCode
@@ -131,7 +129,7 @@ class PatientRepository(
             it[Patient.insuranceCompany] = insuranceCompany
             it[Patient.remoteHost] = remoteHost
         }
-
+        val patientId = patient[Patient.id]
         val now = instantTimeProvider.now()
         val answersIterable = answers.map { (questionId, value) -> questionId to value }
         // even though this statement prints multiple insert into statements
@@ -143,11 +141,11 @@ class PatientRepository(
             this[Answer.created] = now
             this[Answer.updated] = now
 
-            this[Answer.patientId] = id
+            this[Answer.patientId] = patientId
             this[Answer.questionId] = questionId
             this[Answer.value] = value
         }
-        id
+        patientId
     }
 
     /**
@@ -157,24 +155,20 @@ class PatientRepository(
         newSuspendedTransaction { Patient.deleteWhere(op = where) }
 
 
-    private fun <T> UpdateStatement.updateIfNotNull(value: T?, column: Column<T>) {
-        if (value != null) {
-            this[column] = value
-        }
-    }
-
     private fun getAndMapPatients(where: (SqlExpressionBuilder.() -> Op<Boolean>)? = null) =
         Patient
             .leftJoin(Answer, { id }, { patientId })
+            .leftJoin(Vaccination, { Patient.vaccination }, { id })
+            .leftJoin(PatientDataCorrectnessConfirmation, { Patient.dataCorrectness }, { id })
             .let { if (where != null) it.select(where) else it.selectAll() }
             .toList() // eager fetch all data from the database
             .let { data ->
-                val answers = data.groupBy({ it[Patient.id] }, { mapAnswer(it) })
+                val answers = data.groupBy({ it[Patient.id] }, { it.mapAnswer() })
                 data.distinctBy { it[Patient.id] }
                     .map { mapPatient(it, answers.getValue(it[Patient.id])) }
             }
 
-    private fun mapPatient(row: ResultRow, answers: List<AnswerDto>) = PatientDtoOut(
+    private fun mapPatient(row: ResultRow, answers: List<AnswerDtoOut>) = PatientDtoOut(
         id = row[Patient.id],
         firstName = row[Patient.firstName],
         lastName = row[Patient.lastName],
@@ -186,12 +180,25 @@ class PatientRepository(
         insuranceCompany = row[Patient.insuranceCompany],
         registrationEmailSentOn = row[Patient.registrationEmailSent],
         answers = answers,
-        created = row[Patient.created],
-        updated = row[Patient.updated]
+        registeredOn = row[Patient.created],
+        vaccinated = row.mapVaccinated(),
+        dataCorrect = row.mapDataCorrect()
     )
 
-    private fun mapAnswer(row: ResultRow) = AnswerDto(
-        questionId = row[Answer.questionId],
-        value = row[Answer.value]
+    private fun ResultRow.mapDataCorrect() =
+        if (this.hasValue(PatientDataCorrectnessConfirmation.id)) DataCorrectnessConfirmationDtoOut(
+            id = this[PatientDataCorrectnessConfirmation.id],
+            dataAreCorrect = this[PatientDataCorrectnessConfirmation.dataAreCorrect]
+        ) else null
+
+    private fun ResultRow.mapVaccinated() =
+        if (this.hasValue(Vaccination.id)) VaccinationDtoOut(
+            id = this[Vaccination.id],
+            vaccinatedOn = this[Vaccination.vaccinatedOn]
+        ) else null
+
+    private fun ResultRow.mapAnswer() = AnswerDtoOut(
+        questionId = this[Answer.questionId],
+        value = this[Answer.value]
     )
 }

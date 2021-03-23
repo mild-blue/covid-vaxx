@@ -3,7 +3,7 @@ package blue.mild.covid.vaxx.dao.model
 import org.jetbrains.exposed.sql.Table
 import org.jetbrains.exposed.sql.`java-time`.timestamp
 
-object User : Table("users") {
+object Nurse : Table("nurses") {
     /**
      * Primary key.
      */
@@ -30,19 +30,9 @@ object User : Table("users") {
     val lastName = varchar("last_name", DatabaseTypeLength.DEFAULT_STRING)
 
     /**
-     * An email address used as an username.
+     * Validated email address.
      */
     val email = varchar("email", DatabaseTypeLength.DEFAULT_STRING)
-
-    /**
-     * SCrypt hash of the password.
-     */
-    val passwordHash = varchar("password_hash", DatabaseTypeLength.SHORT_STRING)
-
-    /**
-     * User role.
-     */
-    val role = enumerationByName("role", DatabaseTypeLength.ROLE, UserRole::class)
 
     override val primaryKey = PrimaryKey(id)
 }

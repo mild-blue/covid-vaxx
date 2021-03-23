@@ -27,7 +27,12 @@ object Vaccination : Table("vaccinations") {
     /**
      * To which body part was [patientId] vaccinated.
      */
-    val vaccinationBodyPart = enumerationByName("body_part", DatabaseTypeLength.BODY_PART, VaccinationBodyPart::class)
+    val bodyPart = enumerationByName("body_part", DatabaseTypeLength.BODY_PART, VaccinationBodyPart::class)
+
+    /**
+     * When was the vaccination administrated.
+     */
+    val vaccinatedOn = timestamp("vaccinated_on")
 
     /**
      * Vaccine serial number set during login.
@@ -40,9 +45,9 @@ object Vaccination : Table("vaccinations") {
     val userPerformingVaccination = entityId("user_performing") references User.id
 
     /**
-     * Nurse name set during the login.
+     * Nurse set during the login.
      */
-    val nurseName = varchar("nurse", DatabaseTypeLength.DEFAULT_STRING).nullable()
+    val nurseId = (entityId("nurse_id") references Nurse.id).nullable()
 
     /**
      * Optional notes for the performed vaccination.

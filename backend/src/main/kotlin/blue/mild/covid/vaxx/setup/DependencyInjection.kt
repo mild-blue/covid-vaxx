@@ -1,10 +1,14 @@
 package blue.mild.covid.vaxx.setup
 
+import blue.mild.covid.vaxx.dao.repository.DataCorrectnessRepository
+import blue.mild.covid.vaxx.dao.repository.NurseRepository
 import blue.mild.covid.vaxx.dao.repository.PatientRepository
 import blue.mild.covid.vaxx.dao.repository.UserRepository
+import blue.mild.covid.vaxx.dao.repository.VaccinationRepository
 import blue.mild.covid.vaxx.dto.config.MailJetConfigurationDto
 import blue.mild.covid.vaxx.security.ddos.CaptchaVerificationService
 import blue.mild.covid.vaxx.security.ddos.RequestVerificationService
+import blue.mild.covid.vaxx.service.DataCorrectnessService
 import blue.mild.covid.vaxx.service.EntityIdProvider
 import blue.mild.covid.vaxx.service.IsinRegistrationService
 import blue.mild.covid.vaxx.service.MailJetEmailService
@@ -15,6 +19,7 @@ import blue.mild.covid.vaxx.service.PatientService
 import blue.mild.covid.vaxx.service.QuestionService
 import blue.mild.covid.vaxx.service.SystemStatisticsService
 import blue.mild.covid.vaxx.service.UserService
+import blue.mild.covid.vaxx.service.VaccinationService
 import blue.mild.covid.vaxx.service.ValidationService
 import blue.mild.covid.vaxx.service.dummy.DummyMailService
 import blue.mild.covid.vaxx.service.dummy.DummyMedicalRegistrationService
@@ -43,15 +48,21 @@ import java.time.Instant
 fun DI.MainBuilder.registerClasses() {
     bind<PatientRepository>() with singleton { PatientRepository(instance()) }
     bind<UserRepository>() with singleton { UserRepository() }
+    bind<DataCorrectnessRepository>() with singleton { DataCorrectnessRepository() }
+    bind<NurseRepository>() with singleton { NurseRepository() }
+    bind<VaccinationRepository>() with singleton { VaccinationRepository() }
 
     bind<EntityIdProvider>() with singleton { EntityIdProvider() }
     bind<PasswordHashProvider>() with singleton { PasswordHashProvider() }
+    bind<TimeProvider<Instant>>() with singleton { InstantTimeProvider }
+
     bind<QuestionService>() with singleton { QuestionService() }
     bind<ValidationService>() with singleton { ValidationService(instance()) }
-    bind<PatientService>() with singleton { PatientService(instance(), instance(), instance()) }
-    bind<UserService>() with singleton { UserService(instance(), instance(), instance()) }
+    bind<PatientService>() with singleton { PatientService(instance(), instance()) }
+    bind<UserService>() with singleton { UserService(instance(), instance()) }
+    bind<VaccinationService>() with singleton { VaccinationService(instance()) }
+    bind<DataCorrectnessService>() with singleton { DataCorrectnessService(instance()) }
     bind<MailJetEmailService>() with singleton { MailJetEmailService(instance(), instance(), instance(), instance()) }
-    bind<TimeProvider<Instant>>() with singleton { InstantTimeProvider }
     bind<SystemStatisticsService>() with singleton { SystemStatisticsService() }
 
     bind<MailjetClient>() with singleton {

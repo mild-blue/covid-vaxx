@@ -12,18 +12,25 @@ object Routes {
 
     val version = apiName("version")
     val status = apiName("status")
-    val statusHealth = apiName("status/health")
-    val systemStatistics = apiName("statistics")
+    val statusHealth = "$status/health"
 
-    val registeredUserLogin = apiName("admin/login")
-    val userRegistration = apiName("admin/register")
-    val userLoginVerification = apiName("admin/self")
-    val adminSectionPatient = apiName("admin/patient")
-    val cacheRefresh = apiName("admin/cache-refresh")
+    val systemStatistics = adminRoute("statistics")
+
+    val registeredUserLogin = adminRoute("login")
+    val userRegistration = adminRoute("register")
+    val userLoginVerification = adminRoute("self")
+
+    val adminSectionPatient = adminRoute("patient")
+    val vaccination = adminRoute("vaccination")
+
+    val dataCorrectness = adminRoute("data-correctness")
+
+    val cacheRefresh = adminRoute("cache-refresh")
 
     const val openApiJson = "/openapi.json"
     const val swaggerUi = "/swagger-ui"
 
+    private fun adminRoute(name: String) = apiName("admin/$name")
     private fun apiName(name: String) = "/api/$name"
 }
 

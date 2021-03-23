@@ -1,8 +1,8 @@
 package blue.mild.covid.vaxx.service
 
 import blue.mild.covid.vaxx.dao.model.Patient
-import blue.mild.covid.vaxx.dto.PatientEmailRequestDto
 import blue.mild.covid.vaxx.dto.config.MailJetConfigurationDto
+import blue.mild.covid.vaxx.dto.internal.PatientEmailRequestDto
 import com.mailjet.client.MailjetClient
 import com.mailjet.client.MailjetRequest
 import com.mailjet.client.resource.Emailv31

@@ -1,9 +1,9 @@
 package blue.mild.covid.vaxx.service
 
 import blue.mild.covid.vaxx.dto.config.IsinConfigurationDto
+import blue.mild.covid.vaxx.dto.internal.PatientVaccinationDetailDto
 import io.ktor.client.HttpClient
 import mu.KLogging
-import java.util.UUID
 
 /**
  * Registering patients in ISIN.
@@ -14,18 +14,18 @@ class IsinRegistrationService(
     private val httpClient: HttpClient,
     private val patientService: PatientService,
     nThreads: Int = 1
-) : MedicalRegistrationService, DispatchService<UUID>(nThreads) {
+) : MedicalRegistrationService, DispatchService<PatientVaccinationDetailDto>(nThreads) {
 
     private companion object : KLogging()
 
     /**
      * Asynchronously registers patient's vaccination ISIN.
      */
-    override suspend fun registerPatientsVaccination(patientId: UUID) {
-        insertToChannel(patientId)
+    override suspend fun registerPatientsVaccination(patientVaccination: PatientVaccinationDetailDto) {
+        insertToChannel(patientVaccination)
     }
 
-    override suspend fun dispatch(work: UUID) {
+    override suspend fun dispatch(work: PatientVaccinationDetailDto) {
         TODO("Not yet implemented")
     }
 }

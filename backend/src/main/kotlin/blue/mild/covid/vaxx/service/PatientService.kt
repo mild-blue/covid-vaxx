@@ -1,11 +1,12 @@
 package blue.mild.covid.vaxx.service
 
+import blue.mild.covid.vaxx.dao.model.EntityId
 import blue.mild.covid.vaxx.dao.model.Patient
 import blue.mild.covid.vaxx.dao.repository.PatientRepository
-import blue.mild.covid.vaxx.dto.PatientRegistrationDto
+import blue.mild.covid.vaxx.dto.internal.ContextAware
+import blue.mild.covid.vaxx.dto.request.PatientRegistrationDtoIn
 import blue.mild.covid.vaxx.dto.request.PatientUpdateDtoIn
 import blue.mild.covid.vaxx.dto.response.PatientDtoOut
-import blue.mild.covid.vaxx.dto.response.PatientRegisteredDtoOut
 import blue.mild.covid.vaxx.error.entityNotFound
 import blue.mild.covid.vaxx.utils.formatPhoneNumber
 import blue.mild.covid.vaxx.utils.removeAllWhitespaces
@@ -13,14 +14,12 @@ import mu.KLogging
 import org.jetbrains.exposed.sql.Column
 import org.jetbrains.exposed.sql.Op
 import org.jetbrains.exposed.sql.and
-import org.jetbrains.exposed.sql.transactions.experimental.newSuspendedTransaction
 import pw.forst.tools.katlib.whenFalse
 import java.util.*
 
 class PatientService(
     private val patientRepository: PatientRepository,
-    private val validationService: ValidationService,
-    private val entityIdProvider: EntityIdProvider
+    private val validationService: ValidationService
 ) {
 
     private companion object : KLogging()
@@ -28,14 +27,15 @@ class PatientService(
     /**
      * Returns patient with given ID.
      */
-    suspend fun getPatientById(patientId: UUID): PatientDtoOut =
+    suspend fun getPatientById(patientId: EntityId): PatientDtoOut =
         patientRepository.getAndMapPatientsBy { Patient.id eq patientId }
-            .singleOrNull()?.withSortedAnswers() ?: throw entityNotFound<Patient>(Patient::id, patientId)
+            .singleOrNull()
+            ?.withSortedAnswers() ?: throw entityNotFound<Patient>(Patient::id, patientId)
 
     /**
      * Returns single patient with given personal number or throws exception.
      */
-    suspend fun getPatientsByPersonalNumber(patientPersonalNumber: String): PatientDtoOut =
+    suspend fun getPatientByPersonalNumber(patientPersonalNumber: String): PatientDtoOut =
         patientRepository.getAndMapPatientsBy {
             Patient.personalNumber eq normalizePersonalNumber(patientPersonalNumber)
         }.singleOrNull()?.withSortedAnswers()
@@ -84,34 +84,28 @@ class PatientService(
     }
 
     /**
-     * Saves patient to the database.
+     * Saves patient to the database and return its id.
      */
-    suspend fun savePatient(patientRegistrationDto: PatientRegistrationDto): PatientRegisteredDtoOut {
-        logger.debug { "Registering patient ${patientRegistrationDto.registration.email}." }
-
-        val (registration, registrationRemoteHost) = patientRegistrationDto
+    suspend fun savePatient(registrationDto: ContextAware<PatientRegistrationDtoIn>): EntityId {
+        val registration = registrationDto.payload
+        logger.debug { "Registering patient ${registration.email}." }
 
         logger.debug { "Registration validation." }
         validationService.requireValidRegistration(registration)
 
-        return PatientRegisteredDtoOut(newSuspendedTransaction {
-            val entityId = entityIdProvider.generateId()
-
-            logger.debug { "Saving registration." }
-            patientRepository.savePatient(
-                id = entityId,
-                firstName = registration.firstName.trim(),
-                lastName = registration.lastName.trim(),
-                zipCode = registration.zipCode,
-                district = registration.district.trim(),
-                phoneNumber = registration.phoneNumber.formatPhoneNumber(),
-                personalNumber = normalizePersonalNumber(registration.personalNumber),
-                email = registration.email.trim().toLowerCase(),
-                insuranceCompany = registration.insuranceCompany,
-                remoteHost = registrationRemoteHost,
-                answers = registration.answers.associate { it.questionId to it.value }
-            )
-        }).also { (patientId) ->
+        logger.debug { "Saving registration." }
+        return patientRepository.savePatient(
+            firstName = registration.firstName.trim(),
+            lastName = registration.lastName.trim(),
+            zipCode = registration.zipCode,
+            district = registration.district.trim(),
+            phoneNumber = registration.phoneNumber.formatPhoneNumber(),
+            personalNumber = normalizePersonalNumber(registration.personalNumber),
+            email = registration.email.trim().toLowerCase(),
+            insuranceCompany = registration.insuranceCompany,
+            remoteHost = registrationDto.remoteHost,
+            answers = registration.answers.associate { it.questionId to it.value }
+        ).also { patientId ->
             logger.debug { "Patient ${registration.email} saved under id $patientId." }
         }
     }
@@ -126,7 +120,7 @@ class PatientService(
         }
     }
 
-    private fun List<PatientDtoOut>.sorted() = map { it.withSortedAnswers() }.sortedBy { it.created }
+    private fun List<PatientDtoOut>.sorted() = map { it.withSortedAnswers() }.sortedBy { it.registeredOn }
 
     private fun PatientDtoOut.withSortedAnswers() = copy(answers = answers.sortedBy { it.questionId })
 
