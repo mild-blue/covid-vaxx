@@ -29,7 +29,7 @@ class PatientService(
      * Returns patient with given ID.
      */
     suspend fun getPatientById(patientId: UUID): PatientDtoOut =
-        patientRepository.getAndMapPatientsBy { Patient.id eq patientId.toString() }
+        patientRepository.getAndMapPatientsBy { Patient.id eq patientId }
             .singleOrNull()?.withSortedAnswers() ?: throw entityNotFound<Patient>(Patient::id, patientId)
 
     /**
@@ -56,8 +56,8 @@ class PatientService(
                 .let { query ->
                     vaccinated?.let {
                         query.and(
-                            if (vaccinated) Patient.vaccinatedOn.isNotNull()
-                            else Patient.vaccinatedOn.isNull()
+                            if (vaccinated) Patient.vaccination.isNotNull()
+                            else Patient.vaccination.isNull()
                         )
                     } ?: query
                 }
@@ -79,7 +79,6 @@ class PatientService(
             personalNumber = changeSet.personalNumber?.let { normalizePersonalNumber(it) },
             email = changeSet.email?.trim()?.toLowerCase(),
             insuranceCompany = changeSet.insuranceCompany,
-            vaccinatedOn = changeSet.vaccinatedOn,
             answers = changeSet.answers?.associate { it.questionId to it.value }
         ).whenFalse { throw entityNotFound<Patient>(Patient::id, patientId) }
     }
@@ -121,7 +120,7 @@ class PatientService(
      * Deletes patient with given ID. Throws exception if patient was not deleted.
      * */
     suspend fun deletePatientById(patientId: UUID) {
-        val deletedCount = patientRepository.deletePatientsBy { Patient.id eq patientId.toString() }
+        val deletedCount = patientRepository.deletePatientsBy { Patient.id eq patientId }
         if (deletedCount != 1) {
             throw entityNotFound<Patient>(Patient::id, patientId)
         }

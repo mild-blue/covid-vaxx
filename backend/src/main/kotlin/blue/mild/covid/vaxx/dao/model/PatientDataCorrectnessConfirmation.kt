@@ -3,7 +3,7 @@ package blue.mild.covid.vaxx.dao.model
 import org.jetbrains.exposed.sql.Table
 import org.jetbrains.exposed.sql.`java-time`.timestamp
 
-object Question : Table("questions") {
+object PatientDataCorrectnessConfirmation : Table("patient_data_correctness") {
     /**
      * Primary key.
      */
@@ -20,19 +20,24 @@ object Question : Table("questions") {
     val updated = timestamp("updated")
 
     /**
-     * Placeholder for frontend.
+     * Patient data that were checked.
      */
-    val placeholder = varchar("placeholder", DatabaseTypeLength.DEFAULT_STRING)
+    val patientId = entityId("patient_id") references Patient.id
 
     /**
-     * Czech translation.
+     * What user performed check.
      */
-    val cs = text("cs")
+    val userPerformedCheck = entityId("user_performed_check") references User.id
 
     /**
-     * English translation.
+     * Indication that the data are correct.
      */
-    val eng = text("eng")
+    val dataAreCorrect = bool("data_are_correct")
+
+    /**
+     * Optional notes for the data check.
+     */
+    val notes = text("notes").nullable()
 
     override val primaryKey = PrimaryKey(id)
 }

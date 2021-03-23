@@ -5,7 +5,6 @@ import blue.mild.covid.vaxx.dto.response.QuestionDtoOut
 import kotlinx.coroutines.runBlocking
 import org.jetbrains.exposed.sql.selectAll
 import org.jetbrains.exposed.sql.transactions.experimental.newSuspendedTransaction
-import pw.forst.tools.katlib.toUuid
 
 /**
  * Service with access to [Question], internally it uses
@@ -35,7 +34,7 @@ class QuestionService {
     private suspend fun getAllQuestions(): List<QuestionDtoOut> = newSuspendedTransaction {
         Question.selectAll().map {
             QuestionDtoOut(
-                id = it[Question.id].toUuid(),
+                id = it[Question.id],
                 placeholder = it[Question.placeholder],
                 cs = it[Question.cs],
                 eng = it[Question.eng],

@@ -1,12 +1,12 @@
 package blue.mild.covid.vaxx.dto.response
 
+import blue.mild.covid.vaxx.dao.model.EntityId
 import blue.mild.covid.vaxx.dao.model.InsuranceCompany
 import blue.mild.covid.vaxx.dto.AnswerDto
 import java.time.Instant
-import java.util.UUID
 
 data class PatientDtoOut(
-    val id: UUID,
+    val id: EntityId,
     val created: Instant,
     val updated: Instant,
     val firstName: String,
@@ -17,7 +17,6 @@ data class PatientDtoOut(
     val phoneNumber: String,
     val email: String,
     val registrationEmailSentOn: Instant?,
-    val vaccinatedOn: Instant?,
     val insuranceCompany: InsuranceCompany,
     val answers: List<AnswerDto>
 )

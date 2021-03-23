@@ -1,17 +1,32 @@
 package blue.mild.covid.vaxx.dao.model
 
-import org.jetbrains.exposed.sql.Column
 import org.jetbrains.exposed.sql.Table
 import org.jetbrains.exposed.sql.`java-time`.timestamp
-import java.time.Instant
 
 object Answer : Table("answers") {
-    val created: Column<Instant> = timestamp("created")
-    val updated: Column<Instant> = timestamp("updated")
+    /**
+     * When this record was created.
+     */
+    val created = timestamp("created")
 
-    val questionId = varchar("question_id", DatabaseTypeLength.ID) references Question.id
-    val patientId = varchar("patient_id", DatabaseTypeLength.ID) references Patient.id
+    /**
+     * When this record was updated. By default same value as [created].
+     */
+    val updated = timestamp("updated")
 
+    /**
+     * This answer is for the [questionId].
+     */
+    val questionId = entityId("question_id") references Question.id
+
+    /**
+     * Answered by [patientId].
+     */
+    val patientId = entityId("patient_id") references Patient.id
+
+    /**
+     * Value of the answer.
+     */
     val value = bool("value")
 
     override val primaryKey = PrimaryKey(questionId, patientId)

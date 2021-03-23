@@ -1,12 +1,12 @@
 package blue.mild.covid.vaxx.dao.repository
 
+import blue.mild.covid.vaxx.dao.model.EntityId
 import blue.mild.covid.vaxx.dao.model.User
 import blue.mild.covid.vaxx.dao.model.UserRole
 import org.jetbrains.exposed.sql.ResultRow
 import org.jetbrains.exposed.sql.insert
 import org.jetbrains.exposed.sql.select
 import org.jetbrains.exposed.sql.transactions.experimental.newSuspendedTransaction
-import java.util.UUID
 
 class UserRepository {
     /**
@@ -25,13 +25,13 @@ class UserRepository {
      * Saves new user to the database and returns its [id].
      */
     suspend fun saveUser(
-        id: UUID,
+        id: EntityId,
         username: String,
         passwordHash: String,
         role: UserRole
-    ): UUID = newSuspendedTransaction {
+    ): EntityId = newSuspendedTransaction {
         User.insert {
-            it[User.id] = id.toString()
+            it[User.id] = id
             it[User.username] = username
             it[User.passwordHash] = passwordHash
             it[User.role] = role

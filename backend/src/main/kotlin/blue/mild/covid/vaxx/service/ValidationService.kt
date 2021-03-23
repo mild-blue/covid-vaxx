@@ -8,22 +8,16 @@ import blue.mild.covid.vaxx.error.PropertyValidationException
 import com.google.i18n.phonenumbers.PhoneNumberUtil
 import mu.KLogging
 import pw.forst.tools.katlib.mapToSet
-import java.time.Instant
 import java.time.LocalDate
 
 
 @Suppress("TooManyFunctions") // this can't be split right now
 class ValidationService(private val questionService: QuestionService) {
     private companion object : KLogging() {
-        private const val requiredMinimalTimeOfVaccination = "2020-01-01T00:00:00.00Z"
         private const val personalNumberAddingTwentyIssueYear = 4
         private const val tenDigitPersonalNumberIssueYear = 54
         private const val womanMonthAddition = 50
         private const val unprobableMonthAddition = 20
-
-        private val firstAllowedVaccinationTime by lazy {
-            Instant.parse(requiredMinimalTimeOfVaccination)
-        }
     }
 
     /**
@@ -88,13 +82,12 @@ class ValidationService(private val questionService: QuestionService) {
         changeSet.personalNumber?.also(::requireValidPersonalNumber)
         changeSet.phoneNumber?.also { requireValidPhoneNumber(it.number, it.countryCode) }
         changeSet.email?.also(::requireValidEmail)
-        changeSet.vaccinatedOn?.also(::requireValidVaccinatedOn)
 
         // now check that at least one property is changed, so we don't perform useless update
         changeSet.firstName ?: changeSet.lastName
         ?: changeSet.district ?: changeSet.zipCode
         ?: changeSet.personalNumber ?: changeSet.email
-        ?: changeSet.vaccinatedOn ?: changeSet.answers?.takeIf { it.isNotEmpty() }
+        ?: changeSet.answers?.takeIf { it.isNotEmpty() }
         ?: throw EmptyUpdateException()
     }
 
@@ -167,22 +160,6 @@ class ValidationService(private val questionService: QuestionService) {
         }
     }
 
-    /**
-     * Validates [vaccinatedOn], accepts only values after [requiredMinimalTimeOfVaccination].
-     *
-     * Throws [PropertyValidationException] if the value is invalid.
-     */
-    fun requireValidVaccinatedOn(vaccinatedOn: Instant) {
-        if (vaccinatedOn.isBefore(firstAllowedVaccinationTime)) {
-            logger.warn {
-                "Vaccinated on $vaccinatedOn submitted. It is very unlikely, that this is correct as it is before " +
-                        "$requiredMinimalTimeOfVaccination."
-            }
-            throw PropertyValidationException("vaccinatedOn", vaccinatedOn)
-        }
-    }
-
-    @Suppress("EmptyCatchBlock")
     private fun isPhoneNumberValid(phoneNumber: String, countryCode: String): Boolean = runCatching {
         val phoneUtil = PhoneNumberUtil.getInstance()
         val result = phoneUtil.parse(phoneNumber, countryCode)

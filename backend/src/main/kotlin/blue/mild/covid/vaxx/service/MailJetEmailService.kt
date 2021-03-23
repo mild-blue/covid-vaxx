@@ -59,7 +59,7 @@ class MailJetEmailService(
             // save information about email sent to the database
             // we want to keep this transaction on this thread, so we don't suspend it
             transaction {
-                Patient.update({ Patient.id eq emailRequest.patientId.toString() }) {
+                Patient.update({ Patient.id eq emailRequest.patientId }) {
                     it[registrationEmailSent] = nowProvider.now()
                 }
             }

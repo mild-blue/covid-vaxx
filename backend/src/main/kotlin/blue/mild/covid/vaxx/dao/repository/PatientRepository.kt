@@ -1,6 +1,7 @@
 package blue.mild.covid.vaxx.dao.repository
 
 import blue.mild.covid.vaxx.dao.model.Answer
+import blue.mild.covid.vaxx.dao.model.EntityId
 import blue.mild.covid.vaxx.dao.model.InsuranceCompany
 import blue.mild.covid.vaxx.dao.model.Patient
 import blue.mild.covid.vaxx.dto.AnswerDto
@@ -20,9 +21,7 @@ import org.jetbrains.exposed.sql.statements.UpdateStatement
 import org.jetbrains.exposed.sql.transactions.experimental.newSuspendedTransaction
 import org.jetbrains.exposed.sql.update
 import pw.forst.tools.katlib.TimeProvider
-import pw.forst.tools.katlib.toUuid
 import java.time.Instant
-import java.util.UUID
 
 class PatientRepository(
     private val instantTimeProvider: TimeProvider<Instant>,
@@ -37,7 +36,7 @@ class PatientRepository(
     // this can't be refactored as it is builder
     @Suppress("LongParameterList")
     suspend fun updatePatientChangeSet(
-        id: UUID,
+        id: EntityId,
         firstName: String? = null,
         lastName: String? = null,
         zipCode: Int? = null,
@@ -46,21 +45,19 @@ class PatientRepository(
         personalNumber: String? = null,
         email: String? = null,
         insuranceCompany: InsuranceCompany? = null,
-        answers: Map<UUID, Boolean>? = null,
-        registrationEmailSent: Instant? = null,
-        vaccinatedOn: Instant? = null
+        answers: Map<EntityId, Boolean>? = null,
+        registrationEmailSent: Instant? = null
     ): Boolean = newSuspendedTransaction {
-        val patientId = id.toString()
         // check if any property is not null
         val isPatientEntityUpdateNecessary =
             firstName ?: lastName
             ?: district ?: zipCode
             ?: phoneNumber ?: personalNumber ?: email
-            ?: insuranceCompany ?: registrationEmailSent ?: vaccinatedOn
+            ?: insuranceCompany ?: registrationEmailSent
         // if so, perform update query
         val patientUpdated = if (isPatientEntityUpdateNecessary != null) {
             Patient.update(
-                where = { Patient.id eq patientId },
+                where = { Patient.id eq id },
                 body = { row ->
                     row.apply {
                         updateIfNotNull(firstName, Patient.firstName)
@@ -72,7 +69,6 @@ class PatientRepository(
                         updateIfNotNull(email, Patient.email)
                         updateIfNotNull(insuranceCompany, Patient.insuranceCompany)
                         updateIfNotNull(registrationEmailSent, Patient.registrationEmailSent)
-                        updateIfNotNull(vaccinatedOn, Patient.vaccinatedOn)
                     }
                 }
             )
@@ -80,10 +76,10 @@ class PatientRepository(
         // check if it is necessary to update answers
         val answersUpdated = if (answers != null && answers.isNotEmpty()) {
             answers.entries
-                .groupBy({ it.value }, { it.key.toString() })
+                .groupBy({ it.value }, { it.key })
                 .map { (value, questionIds) ->
                     Answer.update(
-                        where = { (Answer.patientId eq patientId) and (Answer.questionId inList questionIds) },
+                        where = { (Answer.patientId eq id) and (Answer.questionId inList questionIds) },
                         body = { row -> row[Answer.value] = value }
                     )
                 }.sum()
@@ -111,7 +107,7 @@ class PatientRepository(
     // this can't be refactored as it is builder
     @Suppress("LongParameterList")
     suspend fun savePatient(
-        id: UUID,
+        id: EntityId,
         firstName: String,
         lastName: String,
         zipCode: Int,
@@ -121,11 +117,10 @@ class PatientRepository(
         email: String,
         insuranceCompany: InsuranceCompany,
         remoteHost: String,
-        answers: Map<UUID, Boolean>
-    ): UUID = newSuspendedTransaction {
-        val patientStringId = id.toString()
+        answers: Map<EntityId, Boolean>
+    ): EntityId = newSuspendedTransaction {
         Patient.insert {
-            it[Patient.id] = patientStringId
+            it[Patient.id] = id
             it[Patient.firstName] = firstName
             it[Patient.lastName] = lastName
             it[Patient.zipCode] = zipCode
@@ -148,8 +143,8 @@ class PatientRepository(
             this[Answer.created] = now
             this[Answer.updated] = now
 
-            this[Answer.patientId] = patientStringId
-            this[Answer.questionId] = questionId.toString()
+            this[Answer.patientId] = id
+            this[Answer.questionId] = questionId
             this[Answer.value] = value
         }
         id
@@ -180,7 +175,7 @@ class PatientRepository(
             }
 
     private fun mapPatient(row: ResultRow, answers: List<AnswerDto>) = PatientDtoOut(
-        id = row[Patient.id].toUuid(),
+        id = row[Patient.id],
         firstName = row[Patient.firstName],
         lastName = row[Patient.lastName],
         zipCode = row[Patient.zipCode],
@@ -190,14 +185,13 @@ class PatientRepository(
         email = row[Patient.email],
         insuranceCompany = row[Patient.insuranceCompany],
         registrationEmailSentOn = row[Patient.registrationEmailSent],
-        vaccinatedOn = row[Patient.vaccinatedOn],
         answers = answers,
         created = row[Patient.created],
         updated = row[Patient.updated]
     )
 
     private fun mapAnswer(row: ResultRow) = AnswerDto(
-        questionId = row[Answer.questionId].toUuid(),
+        questionId = row[Answer.questionId],
         value = row[Answer.value]
     )
 }

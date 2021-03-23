@@ -1,6 +1,8 @@
 package blue.mild.covid.vaxx.service
 
 import blue.mild.covid.vaxx.dao.model.Patient
+import blue.mild.covid.vaxx.dao.model.PatientDataCorrectnessConfirmation
+import blue.mild.covid.vaxx.dao.model.Vaccination
 import blue.mild.covid.vaxx.dto.request.SystemStatisticsFilterDtoIn
 import blue.mild.covid.vaxx.dto.response.SystemStatisticsDtoOut
 import org.jetbrains.exposed.sql.and
@@ -24,8 +26,12 @@ class SystemStatisticsService {
         val from = query.from ?: defaultFrom
         val to = query.to ?: defaultTo
 
-        val vaccinatedPatients = Patient.select {
-            Patient.vaccinatedOn.isNotNull() and (Patient.vaccinatedOn.between(from, to))
+        val vaccinatedPatients = Vaccination.select {
+            Vaccination.created.between(from, to)
+        }.count()
+
+        val patientDataVerified = PatientDataCorrectnessConfirmation.select {
+            PatientDataCorrectnessConfirmation.created.between(from, to)
         }.count()
 
         val registrationsCount = Patient.select {
@@ -38,6 +44,7 @@ class SystemStatisticsService {
 
         SystemStatisticsDtoOut(
             vaccinatedPatientsCount = vaccinatedPatients,
+            patientsDataVerifiedCount = patientDataVerified,
             registrationsCount = registrationsCount,
             emailsSent = emailSent
         )

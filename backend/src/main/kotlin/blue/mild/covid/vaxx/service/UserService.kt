@@ -7,7 +7,6 @@ import blue.mild.covid.vaxx.dto.response.UserRegisteredDtoOut
 import blue.mild.covid.vaxx.security.auth.CredentialsMismatchException
 import blue.mild.covid.vaxx.security.auth.UserPrincipal
 import mu.KLogging
-import pw.forst.tools.katlib.toUuid
 
 class UserService(
     private val userRepository: UserRepository,
@@ -23,7 +22,7 @@ class UserService(
      */
     suspend fun verifyCredentials(login: LoginDtoIn): UserPrincipal {
         val (id, passwordHash, role) = userRepository.viewByUsername(login.username) {
-            Triple(it[id].toUuid(), it[passwordHash], it[role])
+            Triple(it[id], it[passwordHash], it[role])
         } ?: throw CredentialsMismatchException()
 
         val passwordsMatch = passwordHashProvider.verifyPassword(login.password, passwordHash = passwordHash)
