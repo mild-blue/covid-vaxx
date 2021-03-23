@@ -1,28 +1,15 @@
 package blue.mild.covid.vaxx.dao.model
 
-import org.jetbrains.exposed.sql.Table
 import org.jetbrains.exposed.sql.`java-time`.timestamp
 
-object Vaccination : Table("vaccinations") {
-    /**
-     * Primary key.
-     */
-    val id = entityId("id")
-
-    /**
-     * When this record was created.
-     */
-    val created = timestamp("created")
-
-    /**
-     * When this record was updated. By default same value as [created].
-     */
-    val updated = timestamp("updated")
-
+/**
+ * Administered vaccination of the [Patient].
+ */
+object Vaccination : ManagedTable("vaccinations") {
     /**
      * Who was vaccinated.
      */
-    val patientId = entityId("patient_id") references Patient.id
+    val patientId = patientReference()
 
     /**
      * To which body part was [patientId] vaccinated.
@@ -42,17 +29,15 @@ object Vaccination : Table("vaccinations") {
     /**
      * What user administered vaccine.
      */
-    val userPerformingVaccination = entityId("user_performing") references User.id
+    val userPerformingVaccination = userReference("user_performing_vaccination")
 
     /**
      * Nurse set during the login.
      */
-    val nurseId = (entityId("nurse_id") references Nurse.id).nullable()
+    val nurseId = nurseReference().nullable()
 
     /**
      * Optional notes for the performed vaccination.
      */
     val notes = text("notes").nullable()
-
-    override val primaryKey = PrimaryKey(id)
 }

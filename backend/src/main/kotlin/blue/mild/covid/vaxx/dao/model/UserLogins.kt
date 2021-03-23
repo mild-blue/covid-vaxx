@@ -1,28 +1,13 @@
 package blue.mild.covid.vaxx.dao.model
 
-import org.jetbrains.exposed.sql.Table
-import org.jetbrains.exposed.sql.`java-time`.timestamp
-
-object UserLogins : Table("user_logins") {
-    /**
-     * Primary key.
-     */
-    val id = entityId("id")
-
-    /**
-     * When this record was created.
-     */
-    val created = timestamp("created")
-
-    /**
-     * When this record was updated. By default same value as [created].
-     */
-    val updated = timestamp("updated")
-
+/**
+ * Table that contains login requests.
+ */
+object UserLogins : ManagedTable("user_logins") {
     /**
      * Usually an email address.
      */
-    val userId = entityId("user_id") references User.id
+    val userId = userReference()
 
     /**
      * Serial number of vaccine set during login.
@@ -32,7 +17,7 @@ object UserLogins : Table("user_logins") {
     /**
      * Name of the nurse.
      */
-    val nurseId = (entityId("nurse_id") references Nurse.id).nullable()
+    val nurseId = nurseReference().nullable()
 
     /**
      * Determines whether the login was successful or not.
@@ -48,6 +33,4 @@ object UserLogins : Table("user_logins") {
      * Application call id that called login endpoint, can be null if call generation is disabled.
      */
     val callId = varchar("call_id", DatabaseTypeLength.DEFAULT_STRING).nullable()
-
-    override val primaryKey = PrimaryKey(id)
 }

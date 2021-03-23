@@ -22,6 +22,7 @@ object Routes {
 
     val adminSectionPatient = adminRoute("patient")
     val vaccination = adminRoute("vaccination")
+    val nurse = adminRoute("nurse")
 
     val dataCorrectness = adminRoute("data-correctness")
 

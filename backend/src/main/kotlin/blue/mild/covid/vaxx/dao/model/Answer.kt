@@ -1,8 +1,13 @@
 package blue.mild.covid.vaxx.dao.model
 
+import blue.mild.covid.vaxx.dao.model.Answer.patientId
+import blue.mild.covid.vaxx.dao.model.Answer.questionId
 import org.jetbrains.exposed.sql.Table
 import org.jetbrains.exposed.sql.`java-time`.timestamp
 
+/**
+ * Answers to the [questionId] for given [patientId].
+ */
 object Answer : Table("answers") {
     /**
      * When this record was created.
@@ -17,12 +22,12 @@ object Answer : Table("answers") {
     /**
      * This answer is for the [questionId].
      */
-    val questionId = entityId("question_id") references Question.id
+    val questionId = questionReference()
 
     /**
      * Answered by [patientId].
      */
-    val patientId = entityId("patient_id") references Patient.id
+    val patientId = patientReference()
 
     /**
      * Value of the answer.

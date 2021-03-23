@@ -14,6 +14,7 @@ import blue.mild.covid.vaxx.security.auth.UserPrincipal
 import mu.KLogging
 import org.jetbrains.exposed.sql.select
 import org.jetbrains.exposed.sql.transactions.experimental.newSuspendedTransaction
+import pw.forst.tools.katlib.whenFalse
 import pw.forst.tools.katlib.whenTrue
 
 class UserService(
@@ -24,18 +25,34 @@ class UserService(
     private companion object : KLogging()
 
     /**
+     * Verifies, that the credentials exist and that the password match.
+     * This is basically light login for a single request that does not produce token.
+     *
+     * Throws [CredentialsMismatchException] if they do not.
+     */
+    suspend fun verifyCredentials(email: String, password: String) {
+        val passwordHash = userRepository.viewByEmail(email) {
+            it[passwordHash]
+        } ?: throw CredentialsMismatchException()
+
+        passwordHashProvider.verifyPassword(password, passwordHash = passwordHash)
+            .whenFalse { throw CredentialsMismatchException() }
+    }
+
+    /**
      * Verifies credentials and creates principal. If user does not exist
      * or supplied wrong password, throws [AuthorizationException].
      */
-    suspend fun verifyCredentials(request: ContextAware<LoginDtoIn>): UserPrincipal = newSuspendedTransaction {
+    suspend fun createPrincipal(request: ContextAware<LoginDtoIn>): UserPrincipal = newSuspendedTransaction {
         val login = request.payload
+        val credentials = login.credentials
         // verify existing user
-        val (userId, passwordHash, role) = userRepository.viewByEmail(login.email) {
+        val (userId, passwordHash, role) = userRepository.viewByEmail(credentials.email) {
             Triple(it[id], it[passwordHash], it[role])
         } ?: loginFailed(request, null) { CredentialsMismatchException() }
 
         // verify passwords
-        val passwordsMatch = passwordHashProvider.verifyPassword(login.password, passwordHash = passwordHash)
+        val passwordsMatch = passwordHashProvider.verifyPassword(credentials.password, passwordHash = passwordHash)
         if (!passwordsMatch) {
             loginFailed(request, userId) { CredentialsMismatchException() }
         }
@@ -71,7 +88,7 @@ class UserService(
         userId: EntityId?,
         exception: () -> AuthorizationException
     ): Nothing {
-        logger.warn { "Login failed for user ${request.payload.email}." }
+        logger.warn { "Login failed for user ${request.payload.credentials.email}." }
         if (userId != null) {
             userRepository.recordLogin(
                 userId = userId,

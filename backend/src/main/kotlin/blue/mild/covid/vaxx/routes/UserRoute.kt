@@ -38,9 +38,9 @@ fun NormalOpenAPIRoute.userRoutes() {
         post<Unit, UserLoginResponseDtoOut, LoginDtoIn>(
             info("Login endpoint for the registered users such as administrators and doctors.")
         ) { _, loginDto ->
-            logger.info { "Login request for ${loginDto.email} from host ${request.determineRealIp()}." }
+            logger.info { "Login request for ${loginDto.credentials.email} from host ${request.determineRealIp()}." }
 
-            val principal = userService.verifyCredentials(asContextAware(loginDto))
+            val principal = userService.createPrincipal(asContextAware(loginDto))
             respond(jwtService.generateToken(principal))
         }
     }
