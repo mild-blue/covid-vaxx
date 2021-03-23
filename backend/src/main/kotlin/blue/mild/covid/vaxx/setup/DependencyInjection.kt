@@ -9,7 +9,6 @@ import blue.mild.covid.vaxx.dto.config.MailJetConfigurationDto
 import blue.mild.covid.vaxx.security.ddos.CaptchaVerificationService
 import blue.mild.covid.vaxx.security.ddos.RequestVerificationService
 import blue.mild.covid.vaxx.service.DataCorrectnessService
-import blue.mild.covid.vaxx.service.EntityIdProvider
 import blue.mild.covid.vaxx.service.IsinRegistrationService
 import blue.mild.covid.vaxx.service.MailJetEmailService
 import blue.mild.covid.vaxx.service.MailService
@@ -52,7 +51,6 @@ fun DI.MainBuilder.registerClasses() {
     bind<NurseRepository>() with singleton { NurseRepository() }
     bind<VaccinationRepository>() with singleton { VaccinationRepository() }
 
-    bind<EntityIdProvider>() with singleton { EntityIdProvider() }
     bind<PasswordHashProvider>() with singleton { PasswordHashProvider() }
     bind<TimeProvider<Instant>>() with singleton { InstantTimeProvider }
 
