@@ -1,7 +1,7 @@
 package blue.mild.covid.vaxx.dao.repository
 
 import blue.mild.covid.vaxx.dao.model.EntityId
-import blue.mild.covid.vaxx.dao.model.Nurse
+import blue.mild.covid.vaxx.dao.model.Nurses
 import blue.mild.covid.vaxx.dto.response.PersonnelDtoOut
 import org.jetbrains.exposed.sql.insert
 import org.jetbrains.exposed.sql.selectAll
@@ -12,12 +12,12 @@ class NurseRepository {
      * Returns all nurses in the database.
      */
     suspend fun getAll(): List<PersonnelDtoOut> = newSuspendedTransaction {
-        Nurse.selectAll().map {
+        Nurses.selectAll().map {
             PersonnelDtoOut(
-                id = it[Nurse.id],
-                firstName = it[Nurse.firstName],
-                lastName = it[Nurse.lastName],
-                email = it[Nurse.email]
+                id = it[Nurses.id],
+                firstName = it[Nurses.firstName],
+                lastName = it[Nurses.lastName],
+                email = it[Nurses.email]
             )
         }
     }
@@ -30,11 +30,11 @@ class NurseRepository {
         lastName: String,
         email: String
     ): EntityId = newSuspendedTransaction {
-        val nurse = Nurse.insert {
-            it[Nurse.firstName] = firstName
-            it[Nurse.lastName] = lastName
-            it[Nurse.email] = email
+        val nurse = Nurses.insert {
+            it[Nurses.firstName] = firstName
+            it[Nurses.lastName] = lastName
+            it[Nurses.email] = email
         }
-        nurse[Nurse.id]
+        nurse[Nurses.id]
     }
 }

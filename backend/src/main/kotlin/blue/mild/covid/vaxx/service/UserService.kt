@@ -1,7 +1,7 @@
 package blue.mild.covid.vaxx.service
 
 import blue.mild.covid.vaxx.dao.model.EntityId
-import blue.mild.covid.vaxx.dao.model.Nurse
+import blue.mild.covid.vaxx.dao.model.Nurses
 import blue.mild.covid.vaxx.dao.repository.UserRepository
 import blue.mild.covid.vaxx.dto.internal.ContextAware
 import blue.mild.covid.vaxx.dto.request.LoginDtoIn
@@ -31,7 +31,7 @@ class UserService(
      * Throws [CredentialsMismatchException] if they do not.
      */
     suspend fun verifyCredentials(email: String, password: String) {
-        val passwordHash = userRepository.viewByEmail(email) {
+        val passwordHash = userRepository.viewByEmail(email.trim().toLowerCase()) {
             it[passwordHash]
         } ?: throw CredentialsMismatchException()
 
@@ -47,7 +47,7 @@ class UserService(
         val login = request.payload
         val credentials = login.credentials
         // verify existing user
-        val (userId, passwordHash, role) = userRepository.viewByEmail(credentials.email) {
+        val (userId, passwordHash, role) = userRepository.viewByEmail(credentials.email.trim().toLowerCase()) {
             Triple(it[id], it[passwordHash], it[role])
         } ?: loginFailed(request, null) { CredentialsMismatchException() }
 
@@ -60,7 +60,7 @@ class UserService(
         // verify that the selected nurse exist
         login.nurseId?.also { nurseId ->
             newSuspendedTransaction {
-                Nurse.select { Nurse.id eq nurseId }.empty()
+                Nurses.select { Nurses.id eq nurseId }.empty()
             }.whenTrue { loginFailed(request, userId) { NonExistingNurseException(nurseId) } }
         }
 

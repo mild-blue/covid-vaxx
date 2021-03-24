@@ -1,6 +1,6 @@
 package blue.mild.covid.vaxx.dao.model
 
-object Question : ManagedTable("questions") {
+object Questions : ManagedTable("questions") {
     /**
      * Placeholder for frontend.
      */

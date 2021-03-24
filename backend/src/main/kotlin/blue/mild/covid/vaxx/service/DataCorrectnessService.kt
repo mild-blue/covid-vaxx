@@ -39,7 +39,7 @@ class DataCorrectnessService(
             userPerformedCheck = principal.userId,
             nurseId = principal.nurseId,
             dataAreCorrect = dataCorrectness.dataAreCorrect,
-            notes = dataCorrectness.notes
+            notes = dataCorrectness.notes?.trim()
         )
     }
 }

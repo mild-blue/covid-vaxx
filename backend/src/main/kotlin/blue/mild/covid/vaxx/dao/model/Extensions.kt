@@ -15,21 +15,21 @@ typealias EntityId = UUID
 fun Table.entityId(name: String): Column<EntityId> = uuid(name)
 
 /**
- * Reference to [Nurse.id].
+ * Reference to [Nurses.id].
  */
-fun Table.nurseReference(name: String = "nurse_id"): Column<EntityId> = entityId(name) references Nurse.id
+fun Table.nurseReference(name: String = "nurse_id"): Column<EntityId> = entityId(name) references Nurses.id
 
 /**
- * Reference to [User.id].
+ * Reference to [Users.id].
  */
-fun Table.userReference(name: String = "user_id"): Column<EntityId> = entityId(name) references User.id
+fun Table.userReference(name: String = "user_id"): Column<EntityId> = entityId(name) references Users.id
 
 /**
- * Reference to [Patient.id].
+ * Reference to [Patients.id].
  */
-fun Table.patientReference(name: String = "patient_id"): Column<EntityId> = entityId(name) references Patient.id
+fun Table.patientReference(name: String = "patient_id"): Column<EntityId> = entityId(name) references Patients.id
 
 /**
- * Reference to [Question.id].
+ * Reference to [Questions.id].
  */
-fun Table.questionReference(name: String = "question_id"): Column<EntityId> = entityId(name) references Question.id
+fun Table.questionReference(name: String = "question_id"): Column<EntityId> = entityId(name) references Questions.id

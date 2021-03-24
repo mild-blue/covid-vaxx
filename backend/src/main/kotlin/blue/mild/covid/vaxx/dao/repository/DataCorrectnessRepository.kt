@@ -1,9 +1,9 @@
 package blue.mild.covid.vaxx.dao.repository
 
 import blue.mild.covid.vaxx.dao.model.EntityId
-import blue.mild.covid.vaxx.dao.model.Nurse
+import blue.mild.covid.vaxx.dao.model.Nurses
 import blue.mild.covid.vaxx.dao.model.PatientDataCorrectnessConfirmation
-import blue.mild.covid.vaxx.dao.model.User
+import blue.mild.covid.vaxx.dao.model.Users
 import blue.mild.covid.vaxx.dto.response.DataCorrectnessConfirmationDetailDtoOut
 import blue.mild.covid.vaxx.dto.response.PersonnelDtoOut
 import org.jetbrains.exposed.sql.Op
@@ -48,8 +48,8 @@ class DataCorrectnessRepository {
     private suspend fun get(where: SqlExpressionBuilder.() -> Op<Boolean>) =
         newSuspendedTransaction {
             PatientDataCorrectnessConfirmation
-                .leftJoin(User, { userPerformedCheck }, { id })
-                .leftJoin(Nurse, { PatientDataCorrectnessConfirmation.nurseId }, { id })
+                .leftJoin(Users, { userPerformedCheck }, { id })
+                .leftJoin(Nurses, { PatientDataCorrectnessConfirmation.nurseId }, { id })
                 .select(where)
                 .singleOrNull()
                 ?.let {
@@ -59,16 +59,16 @@ class DataCorrectnessRepository {
                         dataAreCorrect = it[PatientDataCorrectnessConfirmation.dataAreCorrect],
                         notes = it[PatientDataCorrectnessConfirmation.notes],
                         doctor = PersonnelDtoOut(
-                            id = it[User.id],
-                            firstName = it[User.firstName],
-                            lastName = it[User.lastName],
-                            email = it[User.email]
+                            id = it[Users.id],
+                            firstName = it[Users.firstName],
+                            lastName = it[Users.lastName],
+                            email = it[Users.email]
                         ),
-                        nurse = if (it.hasValue(Nurse.id)) PersonnelDtoOut(
-                            id = it[Nurse.id],
-                            firstName = it[Nurse.firstName],
-                            lastName = it[Nurse.lastName],
-                            email = it[Nurse.email]
+                        nurse = if (it.hasValue(Nurses.id)) PersonnelDtoOut(
+                            id = it[Nurses.id],
+                            firstName = it[Nurses.firstName],
+                            lastName = it[Nurses.lastName],
+                            email = it[Nurses.email]
                         ) else null,
                     )
                 }

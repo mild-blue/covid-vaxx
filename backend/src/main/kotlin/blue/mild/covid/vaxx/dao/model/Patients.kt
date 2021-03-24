@@ -2,7 +2,7 @@ package blue.mild.covid.vaxx.dao.model
 
 import org.jetbrains.exposed.sql.`java-time`.timestamp
 
-object Patient : ManagedTable("patients") {
+object Patients : ManagedTable("patients") {
     /**
      * First name.
      */
@@ -66,5 +66,5 @@ object Patient : ManagedTable("patients") {
     /**
      * Data about patient's vaccination.
      */
-    val vaccination = (entityId("vaccination_id") references Vaccination.id).nullable()
+    val vaccination = (entityId("vaccination_id") references Vaccinations.id).nullable()
 }

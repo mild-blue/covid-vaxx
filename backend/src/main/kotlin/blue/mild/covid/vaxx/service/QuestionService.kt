@@ -1,13 +1,13 @@
 package blue.mild.covid.vaxx.service
 
-import blue.mild.covid.vaxx.dao.model.Question
+import blue.mild.covid.vaxx.dao.model.Questions
 import blue.mild.covid.vaxx.dto.response.QuestionDtoOut
 import kotlinx.coroutines.runBlocking
 import org.jetbrains.exposed.sql.selectAll
 import org.jetbrains.exposed.sql.transactions.experimental.newSuspendedTransaction
 
 /**
- * Service with access to [Question], internally it uses
+ * Service with access to [Questions], internally it uses
  * [MemoryCacheService] as the questions are not changed very often.
  */
 class QuestionService {
@@ -32,12 +32,12 @@ class QuestionService {
      * Get all questions from the database.
      */
     private suspend fun getAllQuestions(): List<QuestionDtoOut> = newSuspendedTransaction {
-        Question.selectAll().map {
+        Questions.selectAll().map {
             QuestionDtoOut(
-                id = it[Question.id],
-                placeholder = it[Question.placeholder],
-                cs = it[Question.cs],
-                eng = it[Question.eng],
+                id = it[Questions.id],
+                placeholder = it[Questions.placeholder],
+                cs = it[Questions.cs],
+                eng = it[Questions.eng],
             )
         }.sortedBy { it.id } // sort it to keep it consistent
     }

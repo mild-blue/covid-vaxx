@@ -1,11 +1,11 @@
 package blue.mild.covid.vaxx.dao.repository
 
-import blue.mild.covid.vaxx.dao.model.Answer
+import blue.mild.covid.vaxx.dao.model.Answers
 import blue.mild.covid.vaxx.dao.model.EntityId
 import blue.mild.covid.vaxx.dao.model.InsuranceCompany
-import blue.mild.covid.vaxx.dao.model.Patient
 import blue.mild.covid.vaxx.dao.model.PatientDataCorrectnessConfirmation
-import blue.mild.covid.vaxx.dao.model.Vaccination
+import blue.mild.covid.vaxx.dao.model.Patients
+import blue.mild.covid.vaxx.dao.model.Vaccinations
 import blue.mild.covid.vaxx.dto.response.AnswerDtoOut
 import blue.mild.covid.vaxx.dto.response.DataCorrectnessConfirmationDtoOut
 import blue.mild.covid.vaxx.dto.response.PatientDtoOut
@@ -59,20 +59,20 @@ class PatientRepository(
             ?: insuranceCompany ?: registrationEmailSent ?: indication
         // if so, perform update query
         val patientUpdated = if (isPatientEntityUpdateNecessary != null) {
-            Patient.update(
-                where = { Patient.id eq id },
+            Patients.update(
+                where = { Patients.id eq id },
                 body = { row ->
                     row.apply {
-                        updateIfNotNull(firstName, Patient.firstName)
-                        updateIfNotNull(lastName, Patient.lastName)
-                        updateIfNotNull(zipCode, Patient.zipCode)
-                        updateIfNotNull(district, Patient.district)
-                        updateIfNotNull(phoneNumber, Patient.phoneNumber)
-                        updateIfNotNull(personalNumber, Patient.personalNumber)
-                        updateIfNotNull(email, Patient.email)
-                        updateIfNotNull(insuranceCompany, Patient.insuranceCompany)
-                        updateIfNotNull(indication, Patient.indication)
-                        updateIfNotNull(registrationEmailSent, Patient.registrationEmailSent)
+                        updateIfNotNull(firstName, Patients.firstName)
+                        updateIfNotNull(lastName, Patients.lastName)
+                        updateIfNotNull(zipCode, Patients.zipCode)
+                        updateIfNotNull(district, Patients.district)
+                        updateIfNotNull(phoneNumber, Patients.phoneNumber)
+                        updateIfNotNull(personalNumber, Patients.personalNumber)
+                        updateIfNotNull(email, Patients.email)
+                        updateIfNotNull(insuranceCompany, Patients.insuranceCompany)
+                        updateIfNotNull(indication, Patients.indication)
+                        updateIfNotNull(registrationEmailSent, Patients.registrationEmailSent)
                     }
                 }
             )
@@ -82,9 +82,9 @@ class PatientRepository(
             answers.entries
                 .groupBy({ it.value }, { it.key })
                 .map { (value, questionIds) ->
-                    Answer.update(
-                        where = { (Answer.patientId eq id) and (Answer.questionId inList questionIds) },
-                        body = { row -> row[Answer.value] = value }
+                    Answers.update(
+                        where = { (Answers.patientId eq id) and (Answers.questionId inList questionIds) },
+                        body = { row -> row[Answers.value] = value }
                     )
                 }.sum()
         } else 0
@@ -121,33 +121,33 @@ class PatientRepository(
         remoteHost: String,
         answers: Map<EntityId, Boolean>
     ): EntityId = newSuspendedTransaction {
-        val patientId = Patient.insert {
-            it[Patient.firstName] = firstName
-            it[Patient.lastName] = lastName
-            it[Patient.zipCode] = zipCode
-            it[Patient.district] = district
-            it[Patient.personalNumber] = personalNumber
-            it[Patient.phoneNumber] = phoneNumber
-            it[Patient.email] = email
-            it[Patient.insuranceCompany] = insuranceCompany
-            it[Patient.indication] = indication
-            it[Patient.remoteHost] = remoteHost
-        }[Patient.id]
+        val patientId = Patients.insert {
+            it[Patients.firstName] = firstName
+            it[Patients.lastName] = lastName
+            it[Patients.zipCode] = zipCode
+            it[Patients.district] = district
+            it[Patients.personalNumber] = personalNumber
+            it[Patients.phoneNumber] = phoneNumber
+            it[Patients.email] = email
+            it[Patients.insuranceCompany] = insuranceCompany
+            it[Patients.indication] = indication
+            it[Patients.remoteHost] = remoteHost
+        }[Patients.id]
 
         val now = instantTimeProvider.now()
         val answersIterable = answers.map { (questionId, value) -> questionId to value }
         // even though this statement prints multiple insert into statements
         // they are in a fact translated to one thanks to reWriteBatchedInserts=true
         // see https://github.com/JetBrains/Exposed/wiki/DSL#batch-insert
-        Answer.batchInsert(answersIterable, shouldReturnGeneratedValues = false) { (questionId, value) ->
+        Answers.batchInsert(answersIterable, shouldReturnGeneratedValues = false) { (questionId, value) ->
             // we want to specify these values because DB defaults don't support in batch inserts
             // however, the real value will be set by the database once inserted
-            this[Answer.created] = now
-            this[Answer.updated] = now
+            this[Answers.created] = now
+            this[Answers.updated] = now
 
-            this[Answer.patientId] = patientId
-            this[Answer.questionId] = questionId
-            this[Answer.value] = value
+            this[Answers.patientId] = patientId
+            this[Answers.questionId] = questionId
+            this[Answers.value] = value
         }
         patientId
     }
@@ -156,36 +156,36 @@ class PatientRepository(
      * Deletes patient entity by given [where]. Returns number of deleted entities.
      */
     suspend fun deletePatientsBy(where: (SqlExpressionBuilder.() -> Op<Boolean>)): Int =
-        newSuspendedTransaction { Patient.deleteWhere(op = where) }
+        newSuspendedTransaction { Patients.deleteWhere(op = where) }
 
 
     private fun getAndMapPatients(where: (SqlExpressionBuilder.() -> Op<Boolean>)? = null) =
-        Patient
-            .leftJoin(Answer, { id }, { patientId })
-            .leftJoin(Vaccination, { Patient.vaccination }, { id })
-            .leftJoin(PatientDataCorrectnessConfirmation, { Patient.dataCorrectness }, { id })
+        Patients
+            .leftJoin(Answers, { id }, { patientId })
+            .leftJoin(Vaccinations, { Patients.vaccination }, { id })
+            .leftJoin(PatientDataCorrectnessConfirmation, { Patients.dataCorrectness }, { id })
             .let { if (where != null) it.select(where) else it.selectAll() }
             .toList() // eager fetch all data from the database
             .let { data ->
-                val answers = data.groupBy({ it[Patient.id] }, { it.mapAnswer() })
-                data.distinctBy { it[Patient.id] }
-                    .map { mapPatient(it, answers.getValue(it[Patient.id])) }
+                val answers = data.groupBy({ it[Patients.id] }, { it.mapAnswer() })
+                data.distinctBy { it[Patients.id] }
+                    .map { mapPatient(it, answers.getValue(it[Patients.id])) }
             }
 
     private fun mapPatient(row: ResultRow, answers: List<AnswerDtoOut>) = PatientDtoOut(
-        id = row[Patient.id],
-        firstName = row[Patient.firstName],
-        lastName = row[Patient.lastName],
-        zipCode = row[Patient.zipCode],
-        district = row[Patient.district],
-        personalNumber = row[Patient.personalNumber],
-        phoneNumber = row[Patient.phoneNumber],
-        email = row[Patient.email],
-        insuranceCompany = row[Patient.insuranceCompany],
-        indication = row[Patient.indication],
-        registrationEmailSentOn = row[Patient.registrationEmailSent],
+        id = row[Patients.id],
+        firstName = row[Patients.firstName],
+        lastName = row[Patients.lastName],
+        zipCode = row[Patients.zipCode],
+        district = row[Patients.district],
+        personalNumber = row[Patients.personalNumber],
+        phoneNumber = row[Patients.phoneNumber],
+        email = row[Patients.email],
+        insuranceCompany = row[Patients.insuranceCompany],
+        indication = row[Patients.indication],
+        registrationEmailSentOn = row[Patients.registrationEmailSent],
         answers = answers,
-        registeredOn = row[Patient.created],
+        registeredOn = row[Patients.created],
         vaccinated = row.mapVaccinated(),
         dataCorrect = row.mapDataCorrect()
     )
@@ -197,13 +197,13 @@ class PatientRepository(
         ) else null
 
     private fun ResultRow.mapVaccinated() =
-        if (this.hasValue(Vaccination.id)) VaccinationDtoOut(
-            id = this[Vaccination.id],
-            vaccinatedOn = this[Vaccination.vaccinatedOn]
+        if (this.hasValue(Vaccinations.id)) VaccinationDtoOut(
+            id = this[Vaccinations.id],
+            vaccinatedOn = this[Vaccinations.vaccinatedOn]
         ) else null
 
     private fun ResultRow.mapAnswer() = AnswerDtoOut(
-        questionId = this[Answer.questionId],
-        value = this[Answer.value]
+        questionId = this[Answers.questionId],
+        value = this[Answers.value]
     )
 }

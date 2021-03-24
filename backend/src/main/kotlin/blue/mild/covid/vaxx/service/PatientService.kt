@@ -1,7 +1,7 @@
 package blue.mild.covid.vaxx.service
 
 import blue.mild.covid.vaxx.dao.model.EntityId
-import blue.mild.covid.vaxx.dao.model.Patient
+import blue.mild.covid.vaxx.dao.model.Patients
 import blue.mild.covid.vaxx.dao.repository.PatientRepository
 import blue.mild.covid.vaxx.dto.internal.ContextAware
 import blue.mild.covid.vaxx.dto.request.PatientRegistrationDtoIn
@@ -28,18 +28,18 @@ class PatientService(
      * Returns patient with given ID.
      */
     suspend fun getPatientById(patientId: EntityId): PatientDtoOut =
-        patientRepository.getAndMapPatientsBy { Patient.id eq patientId }
+        patientRepository.getAndMapPatientsBy { Patients.id eq patientId }
             .singleOrNull()
-            ?.withSortedAnswers() ?: throw entityNotFound<Patient>(Patient::id, patientId)
+            ?.withSortedAnswers() ?: throw entityNotFound<Patients>(Patients::id, patientId)
 
     /**
      * Returns single patient with given personal number or throws exception.
      */
     suspend fun getPatientByPersonalNumber(patientPersonalNumber: String): PatientDtoOut =
         patientRepository.getAndMapPatientsBy {
-            Patient.personalNumber eq normalizePersonalNumber(patientPersonalNumber)
+            Patients.personalNumber eq normalizePersonalNumber(patientPersonalNumber)
         }.singleOrNull()?.withSortedAnswers()
-            ?: throw entityNotFound<Patient>(Patient::personalNumber, patientPersonalNumber)
+            ?: throw entityNotFound<Patients>(Patients::personalNumber, patientPersonalNumber)
 
     /**
      * Filters the database with the conjunction (and clause) of the given properties.
@@ -51,13 +51,13 @@ class PatientService(
     ): List<PatientDtoOut> =
         patientRepository.getAndMapPatientsBy {
             Op.TRUE
-                .andWithIfNotEmpty(email?.removeAllWhitespaces()?.toLowerCase(), Patient.email)
-                .andWithIfNotEmpty(phoneNumber?.removeAllWhitespaces(), Patient.phoneNumber)
+                .andWithIfNotEmpty(email?.removeAllWhitespaces()?.toLowerCase(), Patients.email)
+                .andWithIfNotEmpty(phoneNumber?.removeAllWhitespaces(), Patients.phoneNumber)
                 .let { query ->
                     vaccinated?.let {
                         query.and(
-                            if (vaccinated) Patient.vaccination.isNotNull()
-                            else Patient.vaccination.isNull()
+                            if (vaccinated) Patients.vaccination.isNotNull()
+                            else Patients.vaccination.isNull()
                         )
                     } ?: query
                 }
@@ -80,7 +80,7 @@ class PatientService(
             email = changeSet.email?.trim()?.toLowerCase(),
             insuranceCompany = changeSet.insuranceCompany,
             answers = changeSet.answers?.associate { it.questionId to it.value }
-        ).whenFalse { throw entityNotFound<Patient>(Patient::id, patientId) }
+        ).whenFalse { throw entityNotFound<Patients>(Patients::id, patientId) }
     }
 
     /**
@@ -115,9 +115,9 @@ class PatientService(
      * Deletes patient with given ID. Throws exception if patient was not deleted.
      * */
     suspend fun deletePatientById(patientId: UUID) {
-        val deletedCount = patientRepository.deletePatientsBy { Patient.id eq patientId }
+        val deletedCount = patientRepository.deletePatientsBy { Patients.id eq patientId }
         if (deletedCount != 1) {
-            throw entityNotFound<Patient>(Patient::id, patientId)
+            throw entityNotFound<Patients>(Patients::id, patientId)
         }
     }
 

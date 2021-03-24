@@ -1,8 +1,8 @@
 package blue.mild.covid.vaxx.service
 
-import blue.mild.covid.vaxx.dao.model.Patient
 import blue.mild.covid.vaxx.dao.model.PatientDataCorrectnessConfirmation
-import blue.mild.covid.vaxx.dao.model.Vaccination
+import blue.mild.covid.vaxx.dao.model.Patients
+import blue.mild.covid.vaxx.dao.model.Vaccinations
 import blue.mild.covid.vaxx.dto.request.query.SystemStatisticsFilterDtoIn
 import blue.mild.covid.vaxx.dto.response.SystemStatisticsDtoOut
 import org.jetbrains.exposed.sql.and
@@ -26,27 +26,27 @@ class SystemStatisticsService {
         val from = query.from ?: defaultFrom
         val to = query.to ?: defaultTo
 
-        val vaccinatedPatients = Vaccination.select {
-            Vaccination.created.between(from, to)
+        val vaccinatedPatientsCount = Vaccinations.select {
+            Vaccinations.created.between(from, to)
         }.count()
 
-        val patientDataVerified = PatientDataCorrectnessConfirmation.select {
+        val patientDataVerifiedCount = PatientDataCorrectnessConfirmation.select {
             PatientDataCorrectnessConfirmation.created.between(from, to)
         }.count()
 
-        val registrationsCount = Patient.select {
-            Patient.created.between(from, to)
+        val registrationsCount = Patients.select {
+            Patients.created.between(from, to)
         }.count()
 
-        val emailSent = Patient.select {
-            Patient.registrationEmailSent.isNotNull() and (Patient.registrationEmailSent.between(from, to))
+        val emailsSentCount = Patients.select {
+            Patients.registrationEmailSent.isNotNull() and (Patients.registrationEmailSent.between(from, to))
         }.count()
 
         SystemStatisticsDtoOut(
-            vaccinatedPatientsCount = vaccinatedPatients,
-            patientsDataVerifiedCount = patientDataVerified,
+            vaccinatedPatientsCount = vaccinatedPatientsCount,
+            patientsDataVerifiedCount = patientDataVerifiedCount,
             registrationsCount = registrationsCount,
-            emailsSent = emailSent
+            emailsSentCount = emailsSentCount
         )
     }
 }

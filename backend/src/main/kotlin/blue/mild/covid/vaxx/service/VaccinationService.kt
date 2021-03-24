@@ -1,7 +1,7 @@
 package blue.mild.covid.vaxx.service
 
 import blue.mild.covid.vaxx.dao.model.EntityId
-import blue.mild.covid.vaxx.dao.model.Vaccination
+import blue.mild.covid.vaxx.dao.model.Vaccinations
 import blue.mild.covid.vaxx.dao.repository.VaccinationRepository
 import blue.mild.covid.vaxx.dto.internal.ContextAware
 import blue.mild.covid.vaxx.dto.request.VaccinationDtoIn
@@ -16,14 +16,14 @@ class VaccinationService(
      */
     suspend fun getForPatient(patientId: EntityId): VaccinationDetailDtoOut =
         vaccinationRepository.getForPatient(patientId)
-            ?: throw entityNotFound<Vaccination>(Vaccination::patientId, patientId)
+            ?: throw entityNotFound<Vaccinations>(Vaccinations::patientId, patientId)
 
     /**
      * Returns [VaccinationDetailDtoOut] if the vaccination id is found.
      */
     suspend fun get(id: EntityId): VaccinationDetailDtoOut =
         vaccinationRepository.get(id)
-            ?: throw entityNotFound<Vaccination>(Vaccination::id, id)
+            ?: throw entityNotFound<Vaccinations>(Vaccinations::id, id)
 
     /**
      * Creates new vaccination.
@@ -38,10 +38,10 @@ class VaccinationService(
             patientId = vaxx.patientId,
             bodyPart = vaxx.bodyPart,
             vaccinatedOn = vaxx.vaccinatedOn,
-            vaccineSerialNumber = principal.vaccineSerialNumber,
+            vaccineSerialNumber = principal.vaccineSerialNumber.trim(),
             userPerformingVaccination = principal.userId,
             nurseId = principal.nurseId,
-            notes = vaxx.notes
+            notes = vaxx.notes?.trim()
         )
     }
 }

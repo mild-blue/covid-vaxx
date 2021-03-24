@@ -1,9 +1,9 @@
 package blue.mild.covid.vaxx.dao.repository
 
 import blue.mild.covid.vaxx.dao.model.EntityId
-import blue.mild.covid.vaxx.dao.model.User
 import blue.mild.covid.vaxx.dao.model.UserLogins
 import blue.mild.covid.vaxx.dao.model.UserRole
+import blue.mild.covid.vaxx.dao.model.Users
 import org.jetbrains.exposed.sql.ResultRow
 import org.jetbrains.exposed.sql.insert
 import org.jetbrains.exposed.sql.select
@@ -15,11 +15,11 @@ class UserRepository {
      */
     suspend fun <T> viewByEmail(
         email: String,
-        viewBlock: suspend User.(ResultRow) -> T
+        viewBlock: suspend Users.(ResultRow) -> T
     ): T? = newSuspendedTransaction {
-        User.select { User.email eq email }
+        Users.select { Users.email eq email }
             .singleOrNull()
-            ?.let { User.viewBlock(it) }
+            ?.let { Users.viewBlock(it) }
     }
 
     /**
@@ -32,13 +32,13 @@ class UserRepository {
         passwordHash: String,
         role: UserRole
     ): EntityId = newSuspendedTransaction {
-        User.insert {
-            it[User.firstName] = firstName
-            it[User.lastName] = lastName
-            it[User.email] = email
-            it[User.passwordHash] = passwordHash
-            it[User.role] = role
-        }[User.id]
+        Users.insert {
+            it[Users.firstName] = firstName
+            it[Users.lastName] = lastName
+            it[Users.email] = email
+            it[Users.passwordHash] = passwordHash
+            it[Users.role] = role
+        }[Users.id]
     }
 
     /**

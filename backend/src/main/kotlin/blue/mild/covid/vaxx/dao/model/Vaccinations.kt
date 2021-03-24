@@ -3,9 +3,9 @@ package blue.mild.covid.vaxx.dao.model
 import org.jetbrains.exposed.sql.`java-time`.timestamp
 
 /**
- * Administered vaccination of the [Patient].
+ * Administered vaccination of the [Patients].
  */
-object Vaccination : ManagedTable("vaccinations") {
+object Vaccinations : ManagedTable("vaccinations") {
     /**
      * Who was vaccinated.
      */

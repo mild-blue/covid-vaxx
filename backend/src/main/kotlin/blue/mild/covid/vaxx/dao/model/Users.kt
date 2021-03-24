@@ -3,7 +3,7 @@ package blue.mild.covid.vaxx.dao.model
 /**
  * User with login rights to this system.
  */
-object User : PersonnelTable("users") {
+object Users : PersonnelTable("users") {
     /**
      * SCrypt hash of the password.
      */
