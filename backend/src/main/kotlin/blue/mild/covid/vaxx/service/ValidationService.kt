@@ -5,10 +5,12 @@ import blue.mild.covid.vaxx.dto.request.PatientUpdateDtoIn
 import blue.mild.covid.vaxx.error.EmptyStringException
 import blue.mild.covid.vaxx.error.EmptyUpdateException
 import blue.mild.covid.vaxx.error.PropertyValidationException
+import com.google.i18n.phonenumbers.PhoneNumberUtil
 import mu.KLogging
 import pw.forst.tools.katlib.mapToSet
 import java.time.Instant
 import java.time.LocalDate
+
 
 @Suppress("TooManyFunctions") // this can't be split right now
 class ValidationService(private val questionService: QuestionService) {
@@ -38,7 +40,7 @@ class ValidationService(private val questionService: QuestionService) {
         // now check specific cases
         requireValidZipCode(patientRegistrationDto.zipCode)
         requireValidPersonalNumber(patientRegistrationDto.personalNumber)
-        requireValidPhoneNumber(patientRegistrationDto.phoneNumber)
+        requireValidPhoneNumber(patientRegistrationDto.phoneNumber.number, patientRegistrationDto.phoneNumber.countryCode)
         requireValidEmail(patientRegistrationDto.email)
         // check agreements
         requireTrue(
@@ -84,7 +86,7 @@ class ValidationService(private val questionService: QuestionService) {
         // now check specific cases
         changeSet.zipCode?.also(::requireValidZipCode)
         changeSet.personalNumber?.also(::requireValidPersonalNumber)
-        changeSet.phoneNumber?.also(::requireValidPhoneNumber)
+        changeSet.phoneNumber?.also { requireValidPhoneNumber(it.number, it.countryCode) }
         changeSet.email?.also(::requireValidEmail)
         changeSet.vaccinatedOn?.also(::requireValidVaccinatedOn)
 
@@ -112,9 +114,9 @@ class ValidationService(private val questionService: QuestionService) {
      *
      * Throws [PropertyValidationException] if the value is invalid.
      */
-    fun requireValidPhoneNumber(phoneNumber: String) {
-        if (!isPhoneNumberValid(phoneNumber.trim())) {
-            throw PropertyValidationException("phoneNumber", phoneNumber)
+    fun requireValidPhoneNumber(phoneNumber: String, countryCode: String) {
+        if (!isPhoneNumberValid(phoneNumber.trim(), countryCode.trim())) {
+            throw PropertyValidationException("phoneNumber", "($countryCode) $phoneNumber")
         }
     }
 
@@ -180,8 +182,12 @@ class ValidationService(private val questionService: QuestionService) {
         }
     }
 
-    private fun isPhoneNumberValid(phoneNumber: String): Boolean =
-        """^\+\d{12}$""".toRegex() matches phoneNumber
+    @Suppress("EmptyCatchBlock")
+    private fun isPhoneNumberValid(phoneNumber: String, countryCode: String): Boolean = runCatching {
+        val phoneUtil = PhoneNumberUtil.getInstance()
+        val result = phoneUtil.parse(phoneNumber, countryCode)
+        return phoneUtil.isValidNumberForRegion(result, countryCode)
+    }.getOrNull() ?: false
 
     /**
      * Source: https://emailregex.com/
@@ -266,3 +272,4 @@ class ValidationService(private val questionService: QuestionService) {
 
     private fun String.isNumber(): Boolean = this.isNotEmpty() && this.toIntOrNull() != null
 }
+

@@ -10,7 +10,7 @@ data class PatientRegistrationDtoIn(
     val zipCode: Int,
     val district: String,
     val personalNumber: String,
-    val phoneNumber: String,
+    val phoneNumber: PhoneNumberDtoIn,
     val email: String,
     val insuranceCompany: InsuranceCompany,
     val answers: List<AnswerDto>,
