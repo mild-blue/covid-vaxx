@@ -9,7 +9,7 @@ open class IdTable(name: String) : Table(name) {
     /**
      * Primary key.
      */
-    val id = entityId("id")
+    val id = entityId("id").autoGenerate()
 
     override val primaryKey = PrimaryKey(id)
 }

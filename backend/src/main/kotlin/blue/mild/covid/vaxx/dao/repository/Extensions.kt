@@ -12,3 +12,5 @@ fun <T> UpdateStatement.updateIfNotNull(value: T?, column: Column<T>) {
         this[column] = value
     }
 }
+
+

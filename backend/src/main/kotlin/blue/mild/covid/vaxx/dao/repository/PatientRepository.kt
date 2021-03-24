@@ -191,13 +191,13 @@ class PatientRepository(
     )
 
     private fun ResultRow.mapDataCorrect() =
-        if (this.hasValue(PatientDataCorrectnessConfirmation.id)) DataCorrectnessConfirmationDtoOut(
+        if (getOrNull(PatientDataCorrectnessConfirmation.id) != null) DataCorrectnessConfirmationDtoOut(
             id = this[PatientDataCorrectnessConfirmation.id],
             dataAreCorrect = this[PatientDataCorrectnessConfirmation.dataAreCorrect]
         ) else null
 
     private fun ResultRow.mapVaccinated() =
-        if (this.hasValue(Vaccinations.id)) VaccinationDtoOut(
+        if (getOrNull(Vaccinations.id) != null) VaccinationDtoOut(
             id = this[Vaccinations.id],
             vaccinatedOn = this[Vaccinations.vaccinatedOn]
         ) else null

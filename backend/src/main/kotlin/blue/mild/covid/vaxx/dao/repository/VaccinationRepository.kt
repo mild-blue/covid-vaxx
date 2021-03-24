@@ -2,6 +2,7 @@ package blue.mild.covid.vaxx.dao.repository
 
 import blue.mild.covid.vaxx.dao.model.EntityId
 import blue.mild.covid.vaxx.dao.model.Nurses
+import blue.mild.covid.vaxx.dao.model.Patients
 import blue.mild.covid.vaxx.dao.model.Users
 import blue.mild.covid.vaxx.dao.model.VaccinationBodyPart
 import blue.mild.covid.vaxx.dao.model.Vaccinations
@@ -13,6 +14,7 @@ import org.jetbrains.exposed.sql.insert
 import org.jetbrains.exposed.sql.leftJoin
 import org.jetbrains.exposed.sql.select
 import org.jetbrains.exposed.sql.transactions.experimental.newSuspendedTransaction
+import org.jetbrains.exposed.sql.update
 import java.time.Instant
 
 class VaccinationRepository {
@@ -28,7 +30,7 @@ class VaccinationRepository {
         nurseId: EntityId? = null,
         notes: String? = null
     ): EntityId = newSuspendedTransaction {
-        Vaccinations.insert {
+        val id = Vaccinations.insert {
             it[Vaccinations.patientId] = patientId
             it[Vaccinations.bodyPart] = bodyPart
             it[Vaccinations.vaccinatedOn] = vaccinatedOn
@@ -37,6 +39,13 @@ class VaccinationRepository {
             it[Vaccinations.nurseId] = nurseId
             it[Vaccinations.notes] = notes
         }[Vaccinations.id]
+
+        // now set backref
+        Patients.update(
+            where = { Patients.id eq patientId },
+            body = { it[vaccination] = id }
+        )
+        id
     }
 
     /**
@@ -71,7 +80,7 @@ class VaccinationRepository {
                             lastName = it[Users.lastName],
                             email = it[Users.email]
                         ),
-                        nurse = if (it.hasValue(Nurses.id)) PersonnelDtoOut(
+                        nurse = if (it.getOrNull(Nurses.id) != null) PersonnelDtoOut(
                             id = it[Nurses.id],
                             firstName = it[Nurses.firstName],
                             lastName = it[Nurses.lastName],

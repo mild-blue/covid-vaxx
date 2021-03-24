@@ -3,6 +3,7 @@ package blue.mild.covid.vaxx.dao.repository
 import blue.mild.covid.vaxx.dao.model.EntityId
 import blue.mild.covid.vaxx.dao.model.Nurses
 import blue.mild.covid.vaxx.dao.model.PatientDataCorrectnessConfirmation
+import blue.mild.covid.vaxx.dao.model.Patients
 import blue.mild.covid.vaxx.dao.model.Users
 import blue.mild.covid.vaxx.dto.response.DataCorrectnessConfirmationDetailDtoOut
 import blue.mild.covid.vaxx.dto.response.PersonnelDtoOut
@@ -12,6 +13,7 @@ import org.jetbrains.exposed.sql.insert
 import org.jetbrains.exposed.sql.leftJoin
 import org.jetbrains.exposed.sql.select
 import org.jetbrains.exposed.sql.transactions.experimental.newSuspendedTransaction
+import org.jetbrains.exposed.sql.update
 
 class DataCorrectnessRepository {
     /**
@@ -24,13 +26,19 @@ class DataCorrectnessRepository {
         dataAreCorrect: Boolean,
         notes: String? = null
     ): EntityId = newSuspendedTransaction {
-        PatientDataCorrectnessConfirmation.insert {
+        val id = PatientDataCorrectnessConfirmation.insert {
             it[PatientDataCorrectnessConfirmation.patientId] = patientId
             it[PatientDataCorrectnessConfirmation.userPerformedCheck] = userPerformedCheck
             it[PatientDataCorrectnessConfirmation.nurseId] = nurseId
             it[PatientDataCorrectnessConfirmation.dataAreCorrect] = dataAreCorrect
             it[PatientDataCorrectnessConfirmation.notes] = notes
         }[PatientDataCorrectnessConfirmation.id]
+        // now set backref
+        Patients.update(
+            where = { Patients.id eq patientId },
+            body = { it[dataCorrectness] = id }
+        )
+        id
     }
 
     /**
@@ -64,7 +72,7 @@ class DataCorrectnessRepository {
                             lastName = it[Users.lastName],
                             email = it[Users.email]
                         ),
-                        nurse = if (it.hasValue(Nurses.id)) PersonnelDtoOut(
+                        nurse = if (it.getOrNull(Nurses.id) != null) PersonnelDtoOut(
                             id = it[Nurses.id],
                             firstName = it[Nurses.firstName],
                             lastName = it[Nurses.lastName],
