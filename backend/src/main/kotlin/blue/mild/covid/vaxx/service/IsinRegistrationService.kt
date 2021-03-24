@@ -13,6 +13,7 @@ class IsinRegistrationService(
     private val configuration: IsinConfigurationDto,
     private val httpClient: HttpClient,
     private val patientService: PatientService,
+    private val vaccinationService: VaccinationService,
     nThreads: Int = 1
 ) : MedicalRegistrationService, DispatchService<PatientVaccinationDetailDto>(nThreads) {
 
@@ -26,6 +27,8 @@ class IsinRegistrationService(
     }
 
     override suspend fun dispatch(work: PatientVaccinationDetailDto) {
+        // do not forget to store that the export was successful
+        // vaccinationService.exportedToIsin(vaccinationId = work.vaccinationId, storedOn = Instant.now())
         TODO("Not yet implemented")
     }
 }

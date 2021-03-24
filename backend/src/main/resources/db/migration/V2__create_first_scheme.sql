@@ -140,7 +140,8 @@ CREATE TABLE vaccinations
     vaccine_serial_number       VARCHAR(256)     NOT NULL,
     user_performing_vaccination UUID             NOT NULL REFERENCES users (id) ON DELETE RESTRICT,
     nurse_id                    UUID             REFERENCES nurses (id) ON DELETE SET NULL,
-    notes                       TEXT
+    notes                       TEXT,
+    exported_to_isin_on         TIMESTAMPTZ
 );
 
 CREATE TRIGGER tgr_vaccinations_set_created

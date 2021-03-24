@@ -49,6 +49,44 @@ class VaccinationRepository {
     }
 
     /**
+     * Updates vaccination entity with id [vaccinationId].
+     */
+    suspend fun updateVaccination(
+        vaccinationId: EntityId,
+        bodyPart: VaccinationBodyPart? = null,
+        vaccinatedOn: Instant? = null,
+        vaccineSerialNumber: String? = null,
+        userPerformingVaccination: EntityId? = null,
+        nurseId: EntityId? = null,
+        notes: String? = null,
+        exportedToIsinOn: Instant? = null
+    ): Boolean = newSuspendedTransaction {
+        val isUpdateNecessary =
+            bodyPart ?: vaccinatedOn
+            ?: vaccineSerialNumber ?: userPerformingVaccination
+            ?: nurseId ?: notes ?: exportedToIsinOn
+
+        // if so, perform update query
+        val vaccinationUpdated = if (isUpdateNecessary != null) {
+            Vaccinations.update(
+                where = { Vaccinations.id eq vaccinationId },
+                body = { row ->
+                    row.apply {
+                        updateIfNotNull(bodyPart, Vaccinations.bodyPart)
+                        updateIfNotNull(vaccinatedOn, Vaccinations.vaccinatedOn)
+                        updateIfNotNull(vaccineSerialNumber, Vaccinations.vaccineSerialNumber)
+                        updateIfNotNull(userPerformingVaccination, Vaccinations.userPerformingVaccination)
+                        updateIfNotNull(nurseId, Vaccinations.nurseId)
+                        updateIfNotNull(notes, Vaccinations.notes)
+                        updateIfNotNull(exportedToIsinOn, Vaccinations.exportedToIsinOn)
+                    }
+                }
+            )
+        } else 0
+        vaccinationUpdated == 1
+    }
+
+    /**
      * Returns [VaccinationDetailDtoOut] if the patient was vaccinated.
      */
     suspend fun getForPatient(patientId: EntityId): VaccinationDetailDtoOut? =

@@ -7,6 +7,8 @@ import blue.mild.covid.vaxx.dto.internal.ContextAware
 import blue.mild.covid.vaxx.dto.request.VaccinationDtoIn
 import blue.mild.covid.vaxx.dto.response.VaccinationDetailDtoOut
 import blue.mild.covid.vaxx.error.entityNotFound
+import pw.forst.tools.katlib.whenFalse
+import java.time.Instant
 
 class VaccinationService(
     private val vaccinationRepository: VaccinationRepository
@@ -24,6 +26,16 @@ class VaccinationService(
     suspend fun get(id: EntityId): VaccinationDetailDtoOut =
         vaccinationRepository.get(id)
             ?: throw entityNotFound<Vaccinations>(Vaccinations::id, id)
+
+    /**
+     * Register in database that [vaccinationId] was exported to ISIN.
+     */
+    suspend fun exportedToIsin(vaccinationId: EntityId, storedOn: Instant) {
+        vaccinationRepository.updateVaccination(
+            vaccinationId = vaccinationId,
+            exportedToIsinOn = storedOn
+        ).whenFalse { throw entityNotFound<Vaccinations>(Vaccinations::id, vaccinationId) }
+    }
 
     /**
      * Creates new vaccination.

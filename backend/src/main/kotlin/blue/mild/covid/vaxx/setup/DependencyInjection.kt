@@ -92,7 +92,7 @@ fun DI.MainBuilder.registerClasses() {
     bind<CaptchaVerificationService>() with singleton { CaptchaVerificationService(instance(), instance()) }
     bind<DummyRequestVerificationService>() with singleton { DummyRequestVerificationService() }
 
-    bind<IsinRegistrationService>() with singleton { IsinRegistrationService(instance(), instance(), instance()) }
+    bind<IsinRegistrationService>() with singleton { IsinRegistrationService(instance(), instance(), instance(), instance()) }
     bind<DummyMedicalRegistrationService>() with singleton { DummyMedicalRegistrationService() }
 
     // select implementations based on the feature flags

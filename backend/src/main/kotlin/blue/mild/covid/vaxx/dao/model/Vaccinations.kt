@@ -40,4 +40,9 @@ object Vaccinations : ManagedTable("vaccinations") {
      * Optional notes for the performed vaccination.
      */
     val notes = text("notes").nullable()
+
+    /**
+     * When was the vaccination exported to ISIN.
+     */
+    val exportedToIsinOn = timestamp("exported_to_isin_on")
 }
