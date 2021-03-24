@@ -5,7 +5,7 @@ WORKDIR ./frontend
 RUN npm i
 RUN npm run build-prod
 
-FROM adoptopenjdk/openjdk11:alpine AS backend-build
+FROM openjdk:11-slim AS backend-build
 
 ENV PROJECT_ROOT /src
 WORKDIR $PROJECT_ROOT
@@ -26,7 +26,7 @@ COPY backend/ $PROJECT_ROOT
 RUN ./gradlew distTar --no-daemon
 
 # Runtime
-FROM adoptopenjdk/openjdk11:alpine-jre
+FROM openjdk:11-jre-slim
 LABEL description="Mild Blue Covid Vaxx"
 LABEL project="mild-blue:covid-vaxx"
 
