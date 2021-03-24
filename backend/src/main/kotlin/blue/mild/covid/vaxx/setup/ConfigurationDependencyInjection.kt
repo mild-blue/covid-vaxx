@@ -61,7 +61,7 @@ fun DI.MainBuilder.bindConfiguration() {
     bind<JwtConfigurationDto>() with singleton {
         JwtConfigurationDto(
             realm = "Mild Blue Covid Vaxx",
-            issuer = "vaccination.mild.blue",
+            issuer = "ockovani.mild.blue",
             audience = "default",
             jwtExpirationInMinutes =
             // 5 days by default

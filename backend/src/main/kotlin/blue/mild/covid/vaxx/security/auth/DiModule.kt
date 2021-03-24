@@ -17,7 +17,7 @@ fun DI.MainBuilder.registerJwtAuth() {
 
     bind<JwtAuthProvider>() with singleton { JwtAuthProvider() }
 
-    bind<JwtService>() with singleton { JwtService(instance(), instance()) }
+    bind<JwtService>() with singleton { JwtService(instance(), instance(), instance()) }
 
     bind<JWTVerifier>() with singleton { instance<JwtService>().makeJwtVerifier() }
 }

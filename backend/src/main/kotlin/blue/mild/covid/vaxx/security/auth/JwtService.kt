@@ -8,8 +8,11 @@ import com.auth0.jwt.JWTVerifier
 import com.auth0.jwt.algorithms.Algorithm
 import io.ktor.auth.jwt.JWTCredential
 import mu.KLogging
+import pw.forst.tools.katlib.TimeProvider
 import pw.forst.tools.katlib.applyIf
 import pw.forst.tools.katlib.toUuid
+import java.time.Instant
+import java.time.temporal.ChronoUnit
 import java.util.Date
 
 /**
@@ -17,7 +20,8 @@ import java.util.Date
  */
 class JwtService(
     private val algorithm: Algorithm,
-    private val jwtConfiguration: JwtConfigurationDto
+    private val jwtConfiguration: JwtConfigurationDto,
+    private val nowProvider: TimeProvider<Instant>
 ) {
 
     private companion object : KLogging() {
@@ -42,8 +46,8 @@ class JwtService(
         JWT.create()
             .withIssuer(jwtConfiguration.issuer)
             .withAudience(jwtConfiguration.audience)
-            .withExpiresAt(obtainExpirationDate())
             .withIssuedAt(Date())
+            .withExpiresAt(obtainExpirationDate())
             .withSubject(principal.userId.toString())
             .withClaim(ROLE, principal.userRole.name)
             .withClaim(VACCINATION_SERIAL_NUMBER, principal.vaccineSerialNumber.trim())
@@ -69,7 +73,22 @@ class JwtService(
             }
         }.getOrElse { throw InvalidJwtException("Invalid JWT!") }
 
-    @Suppress("MagicNumber") // minutes to milliseconds
+    /**
+     * We issue tokens that are valid to next day at 4AM.
+     *
+     * That is because of the vaccination serial number and selected nurses during the login.
+     * We presume that in the beginning of the day, doctors will need to set another
+     * serial number of the vaccine and maybe another nurse.
+     *
+     * 4AM it is because some people might work over midnight, so to be safe we made it 4AM.
+     */
+    @Suppress("MagicNumber")
     private fun obtainExpirationDate(): Date =
-        Date(System.currentTimeMillis() + jwtConfiguration.jwtExpirationInMinutes * 60_000)
+        nowProvider.now()
+            .plus(1, ChronoUnit.DAYS) // add one day
+            .truncatedTo(ChronoUnit.DAYS) // make it midnight of that day
+            .plus(4, ChronoUnit.HOURS) // make it 4AM of UTC
+            .toEpochMilli() // get the epoch time
+            .let { Date(it) } // and make it to old format that the JWT understands
+
 }
