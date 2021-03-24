@@ -25,6 +25,7 @@ import org.jetbrains.exposed.sql.update
 import pw.forst.tools.katlib.TimeProvider
 import java.time.Instant
 
+@Suppress("LongParameterList") // it's a repository, we're fine with this
 class PatientRepository(
     private val instantTimeProvider: TimeProvider<Instant>
 ) {
@@ -35,8 +36,6 @@ class PatientRepository(
      *
      * Note: use named parameters while using this method.
      */
-    // this can't be refactored as it is builder
-    @Suppress("LongParameterList")
     suspend fun updatePatientChangeSet(
         id: EntityId,
         firstName: String? = null,

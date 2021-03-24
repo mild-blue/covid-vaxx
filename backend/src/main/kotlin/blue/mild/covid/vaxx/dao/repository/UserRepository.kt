@@ -9,6 +9,7 @@ import org.jetbrains.exposed.sql.insert
 import org.jetbrains.exposed.sql.select
 import org.jetbrains.exposed.sql.transactions.experimental.newSuspendedTransaction
 
+@Suppress("LongParameterList") // it's a repository, we're fine with this
 class UserRepository {
     /**
      * Provides view to the entity inside the transaction.

@@ -15,7 +15,9 @@ import org.jetbrains.exposed.sql.select
 import org.jetbrains.exposed.sql.transactions.experimental.newSuspendedTransaction
 import org.jetbrains.exposed.sql.update
 
+@Suppress("LongParameterList") // it's a repository, we're fine with this
 class DataCorrectnessRepository {
+
     /**
      * Creates new data correctness record.
      */

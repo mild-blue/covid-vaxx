@@ -17,6 +17,7 @@ import org.jetbrains.exposed.sql.transactions.experimental.newSuspendedTransacti
 import org.jetbrains.exposed.sql.update
 import java.time.Instant
 
+@Suppress("LongParameterList") // it's a repository, we're fine with this
 class VaccinationRepository {
     /**
      * Creates new vaccination record for given data.

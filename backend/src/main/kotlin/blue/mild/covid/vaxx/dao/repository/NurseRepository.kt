@@ -7,6 +7,7 @@ import org.jetbrains.exposed.sql.insert
 import org.jetbrains.exposed.sql.selectAll
 import org.jetbrains.exposed.sql.transactions.experimental.newSuspendedTransaction
 
+@Suppress("LongParameterList") // it's a repository, we're fine with this
 class NurseRepository {
     /**
      * Returns all nurses in the database.
