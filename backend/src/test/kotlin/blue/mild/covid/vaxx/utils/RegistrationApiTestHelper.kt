@@ -1,8 +1,8 @@
 package blue.mild.covid.vaxx.utils
 
 import blue.mild.covid.vaxx.dao.model.InsuranceCompany
-import blue.mild.covid.vaxx.dto.AnswerDto
-import blue.mild.covid.vaxx.dto.request.CaptchaVerificationDtoIn
+import blue.mild.covid.vaxx.dto.request.query.CaptchaVerificationDtoIn
+import blue.mild.covid.vaxx.dto.response.AnswerDtoOut
 import blue.mild.covid.vaxx.dto.response.QuestionDtoOut
 import blue.mild.covid.vaxx.platform.PatientRegistrationBuilder
 import blue.mild.covid.vaxx.platform.defaultPatientRegistrationBuilder
@@ -18,7 +18,6 @@ import io.ktor.http.HttpStatusCode
 import io.ktor.http.contentType
 import io.ktor.http.isSuccess
 import mu.KLogging
-import org.apache.http.HttpStatus
 import kotlin.random.Random
 
 
@@ -65,7 +64,7 @@ abstract class RegistrationApiTestHelper(
             request = getQuestions()
             require(request.status.isSuccess()) { "Questions request was not successful. ${request.status.description}" }
             val questions = request.receive<List<QuestionDtoOut>>()
-            questions.map { AnswerDto(it.id, Random.nextBoolean()) }
+            questions.map { AnswerDtoOut(it.id, Random.nextBoolean()) }
         }
         // register patient
         request = registerPatient(

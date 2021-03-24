@@ -2,8 +2,8 @@ package blue.mild.covid.vaxx.routes
 
 import blue.mild.covid.vaxx.dao.model.DatabaseSetup
 import blue.mild.covid.vaxx.dao.model.UserRole
-import blue.mild.covid.vaxx.dto.request.SystemStatisticsFilterDtoIn
-import blue.mild.covid.vaxx.dto.response.ApplicationInformationDto
+import blue.mild.covid.vaxx.dto.request.query.SystemStatisticsFilterDtoIn
+import blue.mild.covid.vaxx.dto.response.ApplicationInformationDtoOut
 import blue.mild.covid.vaxx.dto.response.ServiceHealthDtoOut
 import blue.mild.covid.vaxx.dto.response.SystemStatisticsDtoOut
 import blue.mild.covid.vaxx.extensions.di
@@ -26,13 +26,13 @@ import org.kodein.di.instance
  * Registers prometheus data.
  */
 fun NormalOpenAPIRoute.serviceRoutes() {
-    val version by di().instance<ApplicationInformationDto>()
+    val version by di().instance<ApplicationInformationDtoOut>()
     val systemStatisticsService by di().instance<SystemStatisticsService>()
 
     /**
      * Send data about version.
      */
-    route(Routes.version).get<Unit, ApplicationInformationDto>(
+    route(Routes.version).get<Unit, ApplicationInformationDtoOut>(
         info("Returns version of the application.")
     ) { respond(version) }
 

@@ -1,7 +1,7 @@
 package blue.mild.covid.vaxx.service
 
 import blue.mild.covid.vaxx.dao.model.InsuranceCompany
-import blue.mild.covid.vaxx.dto.AnswerDto
+import blue.mild.covid.vaxx.dto.request.AnswerDtoIn
 import blue.mild.covid.vaxx.dto.request.ConfirmationDtoIn
 import blue.mild.covid.vaxx.dto.request.PatientRegistrationDtoIn
 import blue.mild.covid.vaxx.dto.request.PatientUpdateDtoIn
@@ -75,17 +75,6 @@ class ValidationServiceTest {
     }
 
     @Test
-    fun `test vaccinatedOn`() {
-        val instance = instance()
-        // 2021 is after 2020
-        assertDoesNotThrow { instance.requireValidVaccinatedOn(Instant.parse("2021-01-01T00:00:00.00Z")) }
-        // do not accept vaccinated on before 2020
-        assertThrows<PropertyValidationException> {
-            instance.requireValidVaccinatedOn(Instant.parse("2019-01-01T00:00:00.00Z"))
-        }
-    }
-
-    @Test
     fun `test validate registration - confirmation is false`() {
         val instance = instance()
         val registration = validRegistration()
@@ -120,7 +109,7 @@ class ValidationServiceTest {
         )
         val instance = instance(questionService(questions))
         val registration = validRegistration(questions)
-            .copy(answers = listOf(AnswerDto(questions[0].id, true)))
+            .copy(answers = listOf(AnswerDtoIn(questions[0].id, true)))
 
         assertThrows<PropertyValidationException> {
             runBlocking { instance.requireValidRegistration(registration) }
@@ -296,7 +285,7 @@ class ValidationServiceTest {
             phoneNumber = generateValidCzPhoneNumber(),
             email = "john@mild.blue",
             insuranceCompany = InsuranceCompany.ZPMV,
-            answers = questions.map { AnswerDto(it.id, true) },
+            answers = questions.map { AnswerDtoIn(it.id, true) },
             confirmation = ConfirmationDtoIn(
                 healthStateDisclosureConfirmation = true,
                 covid19VaccinationAgreement = true,

@@ -5,6 +5,7 @@ import blue.mild.covid.vaxx.dto.request.LoginDtoIn
 import blue.mild.covid.vaxx.dto.request.UserRegistrationDtoIn
 import blue.mild.covid.vaxx.dto.response.UserLoginResponseDtoOut
 import blue.mild.covid.vaxx.dto.response.UserRegisteredDtoOut
+import blue.mild.covid.vaxx.extensions.asContextAware
 import blue.mild.covid.vaxx.extensions.determineRealIp
 import blue.mild.covid.vaxx.extensions.di
 import blue.mild.covid.vaxx.extensions.request
@@ -37,9 +38,9 @@ fun NormalOpenAPIRoute.userRoutes() {
         post<Unit, UserLoginResponseDtoOut, LoginDtoIn>(
             info("Login endpoint for the registered users such as administrators and doctors.")
         ) { _, loginDto ->
-            logger.info { "Login request for ${loginDto.username} from host ${request.determineRealIp()}." }
+            logger.info { "Login request for ${loginDto.credentials.email} from host ${request.determineRealIp()}." }
 
-            val principal = userService.verifyCredentials(loginDto)
+            val principal = userService.createPrincipal(asContextAware(loginDto))
             respond(jwtService.generateToken(principal))
         }
     }
@@ -51,7 +52,7 @@ fun NormalOpenAPIRoute.userRoutes() {
             ) { _, registration ->
                 val principal = principal()
                 logger.info {
-                    "User registration for ${registration.username} registered by ${principal.userId} from host ${request.determineRealIp()}."
+                    "User registration for ${registration.email} registered by ${principal.userId} from host ${request.determineRealIp()}."
                 }
                 respond(userService.registerUser(registration))
             }

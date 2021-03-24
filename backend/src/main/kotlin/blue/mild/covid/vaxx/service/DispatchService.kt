@@ -24,7 +24,7 @@ abstract class DispatchService<T>(private val nThreads: Int) {
      * Initialize thread pool.
      */
     protected fun initialize() {
-        // create a dispatcher that is used solely for sending the emails
+        // create a dispatcher that is used solely for this dispatch service
         val dispatcher = Executors.newFixedThreadPool(nThreads).asCoroutineDispatcher()
         // create a single coroutine, that will handle all emails
         GlobalScope.launch(dispatcher) {

@@ -1,7 +1,6 @@
 package blue.mild.covid.vaxx.dto.request
 
 import blue.mild.covid.vaxx.dao.model.InsuranceCompany
-import blue.mild.covid.vaxx.dto.AnswerDto
 
 
 data class PatientRegistrationDtoIn(
@@ -13,6 +12,7 @@ data class PatientRegistrationDtoIn(
     val phoneNumber: PhoneNumberDtoIn,
     val email: String,
     val insuranceCompany: InsuranceCompany,
-    val answers: List<AnswerDto>,
+    val indication: String? = null,
+    val answers: List<AnswerDtoIn>,
     val confirmation: ConfirmationDtoIn
 )

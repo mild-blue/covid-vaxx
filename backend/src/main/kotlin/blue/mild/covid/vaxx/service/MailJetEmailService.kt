@@ -1,8 +1,8 @@
 package blue.mild.covid.vaxx.service
 
-import blue.mild.covid.vaxx.dao.model.Patient
-import blue.mild.covid.vaxx.dto.PatientEmailRequestDto
+import blue.mild.covid.vaxx.dao.model.Patients
 import blue.mild.covid.vaxx.dto.config.MailJetConfigurationDto
+import blue.mild.covid.vaxx.dto.internal.PatientEmailRequestDto
 import com.mailjet.client.MailjetClient
 import com.mailjet.client.MailjetRequest
 import com.mailjet.client.resource.Emailv31
@@ -59,7 +59,7 @@ class MailJetEmailService(
             // save information about email sent to the database
             // we want to keep this transaction on this thread, so we don't suspend it
             transaction {
-                Patient.update({ Patient.id eq emailRequest.patientId.toString() }) {
+                Patients.update({ Patients.id eq emailRequest.patientId }) {
                     it[registrationEmailSent] = nowProvider.now()
                 }
             }

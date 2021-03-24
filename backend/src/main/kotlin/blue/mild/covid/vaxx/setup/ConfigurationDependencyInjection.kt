@@ -7,7 +7,7 @@ import blue.mild.covid.vaxx.dto.config.JwtConfigurationDto
 import blue.mild.covid.vaxx.dto.config.MailJetConfigurationDto
 import blue.mild.covid.vaxx.dto.config.RateLimitConfigurationDto
 import blue.mild.covid.vaxx.dto.config.ReCaptchaVerificationConfigurationDto
-import blue.mild.covid.vaxx.dto.response.ApplicationInformationDto
+import blue.mild.covid.vaxx.dto.response.ApplicationInformationDtoOut
 import blue.mild.covid.vaxx.utils.createLogger
 import org.kodein.di.DI
 import org.kodein.di.bind
@@ -52,7 +52,7 @@ fun DI.MainBuilder.bindConfiguration() {
         )
     }
 
-    bind<ApplicationInformationDto>() with singleton { ApplicationInformationDto(loadVersion()) }
+    bind<ApplicationInformationDtoOut>() with singleton { ApplicationInformationDtoOut(loadVersion()) }
 
     bind<String>(EnvVariables.FRONTEND_PATH) with singleton {
         getEnvOrLogDefault(EnvVariables.FRONTEND_PATH, "../frontend/dist/frontend")
