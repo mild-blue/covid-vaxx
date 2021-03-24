@@ -44,5 +44,5 @@ object Vaccinations : ManagedTable("vaccinations") {
     /**
      * When was the vaccination exported to ISIN.
      */
-    val exportedToIsinOn = timestamp("exported_to_isin_on")
+    val exportedToIsinOn = timestamp("exported_to_isin_on").nullable()
 }

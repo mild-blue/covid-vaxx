@@ -4,7 +4,7 @@ import blue.mild.covid.vaxx.dao.model.EntityId
 import blue.mild.covid.vaxx.dao.model.VaccinationBodyPart
 import java.time.Instant
 
-data class PatientVaccinationDetailDto(
+data class StoreVaccinationRequestDto(
     val vaccinationId: EntityId,
     val patientId: EntityId,
     val bodyPart: VaccinationBodyPart,

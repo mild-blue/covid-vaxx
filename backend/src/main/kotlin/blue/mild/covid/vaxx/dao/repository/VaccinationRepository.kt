@@ -124,7 +124,8 @@ class VaccinationRepository {
                             lastName = it[Nurses.lastName],
                             email = it[Nurses.email]
                         ) else null,
-                        notes = it[Vaccinations.notes]
+                        notes = it[Vaccinations.notes],
+                        exportedToIsinOn = it[Vaccinations.exportedToIsinOn]
                     )
                 }
         }
