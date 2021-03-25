@@ -1,10 +1,11 @@
 package blue.mild.covid.vaxx.service
 
 import blue.mild.covid.vaxx.dao.model.InsuranceCompany
-import blue.mild.covid.vaxx.dto.AnswerDto
+import blue.mild.covid.vaxx.dto.request.AnswerDtoIn
 import blue.mild.covid.vaxx.dto.request.ConfirmationDtoIn
 import blue.mild.covid.vaxx.dto.request.PatientRegistrationDtoIn
 import blue.mild.covid.vaxx.dto.request.PatientUpdateDtoIn
+import blue.mild.covid.vaxx.dto.request.PhoneNumberDtoIn
 import blue.mild.covid.vaxx.dto.response.QuestionDtoOut
 import blue.mild.covid.vaxx.error.EmptyStringException
 import blue.mild.covid.vaxx.error.EmptyUpdateException
@@ -21,7 +22,7 @@ import org.junit.jupiter.params.provider.Arguments
 import org.junit.jupiter.params.provider.MethodSource
 import org.junit.jupiter.params.provider.ValueSource
 import java.time.Instant
-import java.util.UUID
+import java.util.*
 import java.util.stream.Stream
 import kotlin.random.Random
 
@@ -74,17 +75,6 @@ class ValidationServiceTest {
     }
 
     @Test
-    fun `test vaccinatedOn`() {
-        val instance = instance()
-        // 2021 is after 2020
-        assertDoesNotThrow { instance.requireValidVaccinatedOn(Instant.parse("2021-01-01T00:00:00.00Z")) }
-        // do not accept vaccinated on before 2020
-        assertThrows<PropertyValidationException> {
-            instance.requireValidVaccinatedOn(Instant.parse("2019-01-01T00:00:00.00Z"))
-        }
-    }
-
-    @Test
     fun `test validate registration - confirmation is false`() {
         val instance = instance()
         val registration = validRegistration()
@@ -119,7 +109,7 @@ class ValidationServiceTest {
         )
         val instance = instance(questionService(questions))
         val registration = validRegistration(questions)
-            .copy(answers = listOf(AnswerDto(questions[0].id, true)))
+            .copy(answers = listOf(AnswerDtoIn(questions[0].id, true)))
 
         assertThrows<PropertyValidationException> {
             runBlocking { instance.requireValidRegistration(registration) }
@@ -260,44 +250,28 @@ class ValidationServiceTest {
 
     @Test
     fun `test validate invalid phone number - wrong length`() {
-        val phoneWithMoreNumbers = "${generateValidPhone()}1"
+        val phoneNumber = generateValidCzPhoneNumber()
+        val phoneWithMoreNumbers = "${phoneNumber.number}1"
         assertThrows<PropertyValidationException> {
-            instance().requireValidPhoneNumber(phoneWithMoreNumbers)
+            instance().requireValidPhoneNumber(phoneWithMoreNumbers, phoneNumber.countryCode)
         }
     }
 
     @Test
     fun `test validate invalid phone number - contains letter`() {
         // as there's zero at least in prefix, this will fail
-        val phoneWithLetter = generateValidPhone().replace('0', 'a')
+        val phoneNumber = generateValidCzPhoneNumber()
+        val phoneWithLetter = phoneNumber.number.replace('0', 'a')
         assertThrows<PropertyValidationException> {
-            instance().requireValidPhoneNumber(phoneWithLetter)
-        }
-    }
-
-    @Test
-    fun `test validate invalid phone number - no prefix`() {
-        val instance = instance()
-        val phoneWithoutPrefix = generateValidPhone().substring(4)
-        assertThrows<PropertyValidationException> {
-            instance.requireValidPhoneNumber(phoneWithoutPrefix)
-        }
-
-        val noPlus = generateValidPhone().substring(1)
-        assertThrows<PropertyValidationException> {
-            instance.requireValidPhoneNumber(noPlus)
-        }
-
-        val letterBeginning = "-${generateValidPhone().substring(1)}"
-        assertThrows<PropertyValidationException> {
-            instance.requireValidPhoneNumber(letterBeginning)
+            instance().requireValidPhoneNumber(phoneWithLetter, phoneNumber.countryCode)
         }
     }
 
     @Test
     fun `test validate correct phone number`() {
         assertDoesNotThrow {
-            instance().requireValidPhoneNumber(generateValidPhone())
+            val phoneNumber = generateValidCzPhoneNumber()
+            instance().requireValidPhoneNumber(phoneNumber.number, phoneNumber.countryCode)
         }
     }
 
@@ -308,10 +282,10 @@ class ValidationServiceTest {
             zipCode = 16000,
             district = "Praha 6",
             personalNumber = generatePersonalNumber(),
-            phoneNumber = generateValidPhone(),
+            phoneNumber = generateValidCzPhoneNumber(),
             email = "john@mild.blue",
             insuranceCompany = InsuranceCompany.ZPMV,
-            answers = questions.map { AnswerDto(it.id, true) },
+            answers = questions.map { AnswerDtoIn(it.id, true) },
             confirmation = ConfirmationDtoIn(
                 healthStateDisclosureConfirmation = true,
                 covid19VaccinationAgreement = true,
@@ -328,6 +302,9 @@ class ValidationServiceTest {
     private fun instance(questionService: QuestionService = questionService()) =
         ValidationService(questionService)
 
-    private fun generateValidPhone() =
-        "+420${(1..9).joinToString("") { Random.nextInt(10).toString() }}"
+    private fun generateValidCzPhoneNumber() = PhoneNumberDtoIn(
+        "+420736 ${(1..6).map { Random.nextInt(0, 10) }.joinToString("")}",
+        "CZ"
+    )
+
 }

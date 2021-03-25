@@ -95,6 +95,9 @@ dependencies {
     implementation("com.mailjet", "mailjet-client", "5.1.1")
     implementation("org.freemarker", "freemarker", "2.3.31")
 
+    // validation
+    implementation("com.googlecode.libphonenumber", "libphonenumber", "8.12.19")
+
     // tests
     testImplementation("io.mockk", "mockk", "1.10.6")
     testImplementation(kotlin("test"))
