@@ -1,5 +1,5 @@
-import { InsuranceCompany } from '@app/model/InsuranceCompany';
-import { AnsweredQuestion } from '@app/model/AnsweredQuestion';
+import {InsuranceCompany} from '@app/model/InsuranceCompany';
+import {AnsweredQuestion} from '@app/model/AnsweredQuestion';
 
 export interface PatientData {
   firstName: string;
@@ -12,7 +12,7 @@ export interface PatientData {
   insuranceCompany?: InsuranceCompany;
   questionnaire: AnsweredQuestion[];
 
-  verifiedOn?: Date;
+  indication?: string;
+  verified?: boolean;
   vaccinatedOn?: Date;
-  isNonDominantHandUsed?: boolean;
 }

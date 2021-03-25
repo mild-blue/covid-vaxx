@@ -1,33 +1,33 @@
-import { HttpParameterCodec } from '@angular/common/http';
+import {HttpParameterCodec} from '@angular/common/http';
 
 export interface ConfigurationParameters {
-    /**
-     *  @deprecated Since 5.0. Use credentials instead
-     */
-    apiKeys?: { [key: string]: string };
-    username?: string;
-    password?: string;
-    /**
-     *  @deprecated Since 5.0. Use credentials instead
-     */
-    accessToken?: string | (() => string);
-    basePath?: string;
-    withCredentials?: boolean;
-    encoder?: HttpParameterCodec;
-    /**
-     * The keys are the names in the securitySchemes section of the OpenAPI
-     * document. They should map to the value used for authentication
-     * minus any standard prefixes such as 'Basic' or 'Bearer'.
-     */
-    credentials?: { [key: string]: string | (() => string | undefined) };
+  /**
+   *  @deprecated Since 5.0. Use credentials instead
+   */
+  apiKeys?: { [key: string]: string };
+  username?: string;
+  password?: string;
+  /**
+   *  @deprecated Since 5.0. Use credentials instead
+   */
+  accessToken?: string | (() => string);
+  basePath?: string;
+  withCredentials?: boolean;
+  encoder?: HttpParameterCodec;
+  /**
+   * The keys are the names in the securitySchemes section of the OpenAPI
+   * document. They should map to the value used for authentication
+   * minus any standard prefixes such as 'Basic' or 'Bearer'.
+   */
+  credentials?: { [key: string]: string | (() => string | undefined) };
 }
 
 export class Configuration {
-    /**
-     *  @deprecated Since 5.0. Use credentials instead
-     */
-    apiKeys?: { [key: string]: string };
-    username?: string;
+  /**
+   *  @deprecated Since 5.0. Use credentials instead
+   */
+  apiKeys?: { [key: string]: string };
+  username?: string;
     password?: string;
     /**
      *  @deprecated Since 5.0. Use credentials instead
@@ -35,13 +35,13 @@ export class Configuration {
     accessToken?: string | (() => string);
     basePath?: string;
     withCredentials?: boolean;
-    encoder?: HttpParameterCodec;
-    /**
-     * The keys are the names in the securitySchemes section of the OpenAPI
-     * document. They should map to the value used for authentication
-     * minus any standard prefixes such as 'Basic' or 'Bearer'.
-     */
-    credentials: { [key: string]: string | (() => string | undefined) };
+  encoder?: HttpParameterCodec;
+  /**
+   * The keys are the names in the securitySchemes section of the OpenAPI
+   * document. They should map to the value used for authentication
+   * minus any standard prefixes such as 'Basic' or 'Bearer'.
+   */
+  credentials: { [key: string]: string | (() => string | undefined) };
 
     constructor(configurationParameters: ConfigurationParameters = {}) {
         this.apiKeys = configurationParameters.apiKeys;
@@ -51,40 +51,40 @@ export class Configuration {
         this.basePath = configurationParameters.basePath;
         this.withCredentials = configurationParameters.withCredentials;
         this.encoder = configurationParameters.encoder;
-        if (configurationParameters.credentials) {
-            this.credentials = configurationParameters.credentials;
-        } else {
-            this.credentials = {};
-        }
+      if (configurationParameters.credentials) {
+        this.credentials = configurationParameters.credentials;
+      } else {
+        this.credentials = {};
+      }
 
         // init default jwtAuth credential
         if (!this.credentials['jwtAuth']) {
             this.credentials['jwtAuth'] = () => {
-                return typeof this.accessToken === 'function'
-                  ? this.accessToken()
-                  : this.accessToken;
+              return typeof this.accessToken === 'function'
+                ? this.accessToken()
+                : this.accessToken;
             };
         }
     }
 
-    /**
-     * Select the correct content-type to use for a request.
-     * Uses {@link Configuration#isJsonMime} to determine the correct content-type.
-     * If no content type is found return the first found type if the contentTypes is not empty
-     * @param contentTypes - the array of content types that are available for selection
-     * @returns the selected content-type or <code>undefined</code> if no selection could be made.
-     */
-    public selectHeaderContentType(contentTypes: string[]): string | undefined {
-        if (contentTypes.length === 0) {
-            return undefined;
-        }
-
-        const type = contentTypes.find((x: string) => this.isJsonMime(x));
-        if (type === undefined) {
-            return contentTypes[0];
-        }
-        return type;
+  /**
+   * Select the correct content-type to use for a request.
+   * Uses {@link Configuration#isJsonMime} to determine the correct content-type.
+   * If no content type is found return the first found type if the contentTypes is not empty
+   * @param contentTypes - the array of content types that are available for selection
+   * @returns the selected content-type or <code>undefined</code> if no selection could be made.
+   */
+  public selectHeaderContentType(contentTypes: string[]): string | undefined {
+    if (contentTypes.length === 0) {
+      return undefined;
     }
+
+    const type = contentTypes.find((x: string) => this.isJsonMime(x));
+    if (type === undefined) {
+      return contentTypes[0];
+    }
+    return type;
+  }
 
     /**
      * Select the correct accept content-type to use for a request.
@@ -122,8 +122,8 @@ export class Configuration {
 
     public lookupCredential(key: string): string | undefined {
         const value = this.credentials[key];
-        return typeof value === 'function'
-          ? value()
-          : value;
+      return typeof value === 'function'
+        ? value()
+        : value;
     }
 }

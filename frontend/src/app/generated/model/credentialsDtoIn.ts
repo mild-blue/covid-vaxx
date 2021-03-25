@@ -11,7 +11,8 @@
  */
 
 
-export interface ApplicationInformationDto {
-  version: string;
+export interface CredentialsDtoIn {
+  email: string;
+  password: string;
 }
 

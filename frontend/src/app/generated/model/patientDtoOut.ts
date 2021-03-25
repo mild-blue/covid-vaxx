@@ -9,24 +9,27 @@
  * https://openapi-generator.tech
  * Do not edit the class manually.
  */
-import { AnswerDto } from './answerDto';
+import {DataCorrectnessConfirmationDtoOut} from './dataCorrectnessConfirmationDtoOut';
+import {VaccinationDtoOut} from './vaccinationDtoOut';
+import {AnswerDtoOut} from './answerDtoOut';
 
 
 export interface PatientDtoOut {
-    answers: Array<AnswerDto>;
-    created: string;
-    district: string;
-    email: string;
-    firstName: string;
-    id: string;
-    insuranceCompany: PatientDtoOutInsuranceCompanyEnum;
-    lastName: string;
-    personalNumber: string;
-    phoneNumber: string;
-    registrationEmailSentOn?: string | null;
-    updated: string;
-    vaccinatedOn?: string | null;
-    zipCode: number;
+  answers: Array<AnswerDtoOut>;
+  dataCorrect?: DataCorrectnessConfirmationDtoOut;
+  district: string;
+  email: string;
+  firstName: string;
+  id: string;
+  indication?: string | null;
+  insuranceCompany: PatientDtoOutInsuranceCompanyEnum;
+  lastName: string;
+  personalNumber: string;
+  phoneNumber: string;
+  registeredOn: string;
+  registrationEmailSentOn?: string | null;
+  vaccinated?: VaccinationDtoOut;
+  zipCode: number;
 }
 export enum PatientDtoOutInsuranceCompanyEnum {
     Vzp = 'VZP',

@@ -18,7 +18,9 @@ export interface UserLoginResponseDtoOut {
 
 export enum UserLoginResponseDtoOutRoleEnum {
   Admin = 'ADMIN',
-  Doctor = 'DOCTOR'
+  Doctor = 'DOCTOR',
+  Nurse = 'NURSE',
+  Receptionist = 'RECEPTIONIST'
 };
 
 

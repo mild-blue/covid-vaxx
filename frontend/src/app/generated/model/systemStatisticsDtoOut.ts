@@ -12,8 +12,9 @@
 
 
 export interface SystemStatisticsDtoOut {
-    emailsSent: number;
-    registrationsCount: number;
-    vaccinatedPatientsCount: number;
+  emailsSentCount: number;
+  patientsDataVerifiedCount: number;
+  registrationsCount: number;
+  vaccinatedPatientsCount: number;
 }
 

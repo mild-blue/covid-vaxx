@@ -1,10 +1,10 @@
-import { Component, OnInit } from '@angular/core';
-import { ActivatedRoute, Router } from '@angular/router';
-import { PatientService } from '@app/services/patient/patient.service';
-import { AlertService } from '@app/services/alert/alert.service';
-import { AdminPatientAbstractComponent } from '@app/pages/admin/abstract/admin-patient-abstract.component';
-import { ConfirmVaccinationComponent } from '@app/components/dialogs/confirm-vaccination/confirm-vaccination.component';
-import { ConfirmPatientDataComponent } from '@app/components/dialogs/confirm-patient-data/confirm-patient-data.component';
+import {Component, OnInit} from '@angular/core';
+import {ActivatedRoute, Router} from '@angular/router';
+import {PatientService} from '@app/services/patient/patient.service';
+import {AlertService} from '@app/services/alert/alert.service';
+import {AdminPatientAbstractComponent} from '@app/pages/admin/abstract/admin-patient-abstract.component';
+import {ConfirmVaccinationComponent} from '@app/components/dialogs/confirm-vaccination/confirm-vaccination.component';
+import {ConfirmPatientDataComponent} from '@app/components/dialogs/confirm-patient-data/confirm-patient-data.component';
 
 @Component({
   selector: 'app-patient-detail',
@@ -41,9 +41,7 @@ export class AdminPatientComponent extends AdminPatientAbstractComponent impleme
       return;
     }
 
-    const now = new Date();
-    now.setUTCHours(0, 0, 0, 0);
-    this.patient.verifiedOn = now;
+    this.patient.verified = true;
 
     try {
       await this._patientService.updatePatient(this.patient);
@@ -57,8 +55,6 @@ export class AdminPatientComponent extends AdminPatientAbstractComponent impleme
     if (!this.patient) {
       return;
     }
-
-    this.patient.isNonDominantHandUsed = isNonDominantHandUsed;
 
     try {
       await this._patientService.confirmVaccination(this.patient.id);

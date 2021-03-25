@@ -9,12 +9,15 @@
  * https://openapi-generator.tech
  * Do not edit the class manually.
  */
-import {CredentialsDtoIn} from './credentialsDtoIn';
+import {PersonnelDtoOut} from './personnelDtoOut';
 
 
-export interface LoginDtoIn {
-  credentials: CredentialsDtoIn;
-  nurseId?: string | null;
-  vaccineSerialNumber: string;
+export interface DataCorrectnessConfirmationDetailDtoOut {
+  checked: string;
+  dataAreCorrect: boolean;
+  doctor: PersonnelDtoOut;
+  id: string;
+  notes?: string | null;
+  nurse?: PersonnelDtoOut;
 }
 

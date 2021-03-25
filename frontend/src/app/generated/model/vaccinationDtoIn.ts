@@ -9,12 +9,20 @@
  * https://openapi-generator.tech
  * Do not edit the class manually.
  */
-import {CredentialsDtoIn} from './credentialsDtoIn';
 
 
-export interface LoginDtoIn {
-  credentials: CredentialsDtoIn;
-  nurseId?: string | null;
-  vaccineSerialNumber: string;
+export interface VaccinationDtoIn {
+  bodyPart: VaccinationDtoInBodyPartEnum;
+  notes?: string | null;
+  patientId: string;
+  vaccinatedOn: string;
 }
+
+export enum VaccinationDtoInBodyPartEnum {
+  DominantHand = 'DOMINANT_HAND',
+  NonDominantHand = 'NON_DOMINANT_HAND',
+  Buttock = 'BUTTOCK'
+};
+
+
 

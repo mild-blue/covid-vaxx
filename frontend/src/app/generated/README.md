@@ -42,8 +42,9 @@ In your project:
 npm link 
 ```
 
-__Note for Windows users:__ The Angular CLI has troubles to use linked npm packages. Please refer to this issue https://github.com/angular/angular-cli/issues/8284 for a solution / workaround.
-Published packages are not effected by this issue.
+__Note for Windows users:__ The Angular CLI has troubles to use linked npm packages. Please refer to this
+issue https://github.com/angular/angular-cli/issues/8284 for a solution / workaround. Published packages are not
+effected by this issue.
 
 
 #### General usage
@@ -123,11 +124,13 @@ export class AppComponent {
 }
 ```
 
-Note: The ApiModule is restricted to being instantiated once app wide. This is to ensure that all services are treated as singletons.
+Note: The ApiModule is restricted to being instantiated once app wide. This is to ensure that all services are treated
+as singletons.
 
 #### Using multiple OpenAPI files / APIs / ApiModules
 
-In order to use multiple `ApiModules` generated from different OpenAPI files, you can create an alias name when importing the modules in order to avoid naming conflicts:
+In order to use multiple `ApiModules` generated from different OpenAPI files, you can create an alias name when
+importing the modules in order to avoid naming conflicts:
 ```
 import { ApiModule } from 'my-api-path';
 import { ApiModule as OtherApiModule } from 'my-other-api-path';
