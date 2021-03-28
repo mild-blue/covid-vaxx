@@ -67,7 +67,7 @@ export class AuthService {
     };
 
     return this._http.post<UserLoginResponseDtoOut>(
-      `${environment.apiUrl}/admin/nurse`,
+      `${environment.apiUrl}/admin/login`,
       body
     ).pipe(
       map((r: UserLoginResponseDtoOut) => {

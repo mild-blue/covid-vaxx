@@ -15,47 +15,55 @@
             </ul>
           </div>
 
-          <form *ngIf="!nurses.length" [formGroup]="loginForm">
-            <mat-form-field>
-              <mat-label>Přihlašovací jméno</mat-label>
-              <input matInput formControlName="username" placeholder="Vaše přihlašovací jméno" required>
-            </mat-form-field>
-            <mat-form-field>
-              <mat-label>Heslo</mat-label>
-              <input matInput formControlName="password" placeholder="Vaše heslo" type="password" required>
-            </mat-form-field>
-            <button (click)="getNurses()"
-                    [disabled]="loginForm.invalid || loading"
-                    color="primary" mat-raised-button>
-              Pokračovat
-              <mat-icon *ngIf="!loading">arrow_right_alt</mat-icon>
-            </button>
-          </form>
+          <div class="form">
+            <form [formGroup]="loginForm" class="login-form" [class.visible]="!nurses.length">
+              <div>
+                <mat-form-field>
+                  <mat-label>Přihlašovací jméno</mat-label>
+                  <input matInput formControlName="username" placeholder="Vaše přihlašovací jméno" required>
+                </mat-form-field>
+                <mat-form-field>
+                  <mat-label>Heslo</mat-label>
+                  <input matInput formControlName="password" placeholder="Vaše heslo" type="password" required>
+                </mat-form-field>
+              </div>
+              <button (click)="getNurses()"
+                      [disabled]="loginForm.invalid || loading"
+                      color="primary" mat-raised-button>
+                Pokračovat
+                <mat-icon *ngIf="!loading">arrow_right_alt</mat-icon>
+              </button>
+            </form>
 
-          <form *ngIf="nurses.length" [formGroup]="nurseForm">
-            <div *ngIf="email" class="user">
-              <span>Přihlášen jako <strong>{{ email }}</strong></span>
-              <button (click)="cancel()" mat-button color="primary">Zrušit</button>
-            </div>
-            <mat-form-field>
-              <mat-label>Číslo šarže vakcíny</mat-label>
-              <input matInput formControlName="vaccine" placeholder="Zadejte číslo šarže vakcíny" required>
-            </mat-form-field>
-            <mat-form-field>
-              <mat-label>Sestra</mat-label>
-              <mat-select formControlName="nurseId" placeholder="Vyberte sestru" required>
-                <mat-option *ngFor="let nurse of nurses" [value]="nurse.id">
-                  {{ nurse.firstName }} {{ nurse.lastName }}
-                </mat-option>
-              </mat-select>
-            </mat-form-field>
-            <button (click)="login()"
-                    [disabled]="nurseForm.invalid || loading"
-                    color="primary" mat-raised-button>
-              Přihlásit
-              <mat-icon *ngIf="!loading">check</mat-icon>
-            </button>
-          </form>
+            <form [formGroup]="nurseForm" class="nurse-form" [class.visible]="nurses.length">
+              <div>
+                <div *ngIf="email" class="user">
+                  <div>
+                    <span>Uživatel:</span> <strong>{{ email }}</strong>
+                  </div>
+                  <button (click)="cancel()" mat-button color="primary">Použít jiného</button>
+                </div>
+                <mat-form-field>
+                  <mat-label>Sestra</mat-label>
+                  <mat-select formControlName="nurseId" [placeholder]="'Vyberte sestru'" required>
+                    <mat-option *ngFor="let nurse of nurses" [value]="nurse.id">
+                      {{ nurse.firstName }} {{ nurse.lastName }}
+                    </mat-option>
+                  </mat-select>
+                </mat-form-field>
+                <mat-form-field>
+                  <mat-label>Číslo šarže vakcíny</mat-label>
+                  <input matInput formControlName="vaccine" placeholder="Zadejte číslo šarže vakcíny" required>
+                </mat-form-field>
+              </div>
+              <button (click)="login()"
+                      [disabled]="nurseForm.invalid || loading"
+                      color="primary" mat-raised-button>
+                Přihlásit
+                <mat-icon *ngIf="!loading">check</mat-icon>
+              </button>
+            </form>
+          </div>
         </mat-card-content>
       </mat-card>
     </div>
