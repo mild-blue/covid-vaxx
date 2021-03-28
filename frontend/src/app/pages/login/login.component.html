@@ -41,7 +41,7 @@
                   <div>
                     <span>Uživatel:</span> <strong>{{ email }}</strong>
                   </div>
-                  <button (click)="cancel()" mat-button color="primary">Použít jiného</button>
+                  <button (click)="cancel()" mat-button color="primary" type="button">Zrušit</button>
                 </div>
                 <mat-form-field>
                   <mat-label>Sestra</mat-label>
@@ -57,6 +57,7 @@
                 </mat-form-field>
               </div>
               <button (click)="login()"
+                      type="submit"
                       [disabled]="nurseForm.invalid || loading"
                       color="primary" mat-raised-button>
                 Přihlásit

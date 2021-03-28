@@ -5,6 +5,7 @@ import { AlertService } from '@app/services/alert/alert.service';
 import { AdminPatientAbstractComponent } from '@app/pages/admin/abstract/admin-patient-abstract.component';
 import { ConfirmVaccinationComponent } from '@app/components/dialogs/confirm-vaccination/confirm-vaccination.component';
 import { ConfirmPatientDataComponent } from '@app/components/dialogs/confirm-patient-data/confirm-patient-data.component';
+import { VaccinationConfirmation } from '@app/model/VaccinationConfirmation';
 
 @Component({
   selector: 'app-patient-detail',
@@ -42,21 +43,21 @@ export class AdminPatientComponent extends AdminPatientAbstractComponent impleme
     }
 
     try {
-      const updatedPatient = await this._patientService.verifyPatient(this.patient, note);
+      await this._patientService.verifyPatient(this.patient, note);
       this._alertService.successDialog('Údaje pacienta byly ověřeny.');
-      Object.assign(this.patient, updatedPatient);
+      this.patient.verified = true;
     } catch (e) {
       this._alertService.error(e.message);
     }
   }
 
-  private async _handleConfirmation(isNonDominantHandUsed: boolean): Promise<void> {
+  private async _handleConfirmation(confirmation: VaccinationConfirmation): Promise<void> {
     if (!this.patient) {
       return;
     }
 
     try {
-      await this._patientService.confirmVaccination(this.patient.id);
+      await this._patientService.confirmVaccination(this.patient.id, confirmation.bodyPart, confirmation.note);
       this._alertService.successDialog('Očkování bylo zaznamenáno.', this.initPatient.bind(this));
     } catch (e) {
       this._alertService.error(e.message);

@@ -47,7 +47,7 @@ export class AlertService {
     this._dialog.open(GdprComponent);
   }
 
-  public confirmDialog(component: ComponentType<AbstractConfirmInterface>, onConfirm: (param: never) => unknown): void {
+  public confirmDialog(component: ComponentType<AbstractConfirmInterface>, onConfirm: (...param: never[]) => unknown): void {
     const dialog = this._dialog.open(component);
     const subscription = dialog.componentInstance.onConfirm.subscribe(onConfirm);
 

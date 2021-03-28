@@ -9,13 +9,23 @@ mat-button-toggle {
     color: $white;
   }
 
+  &-group {
+    margin: 10px 0 30px;
+  }
+
   ::ng-deep .mat-button-toggle-label-content {
     line-height: 36px;
   }
 }
 
 mat-dialog-content {
-  padding: 30px;
+  h3 {
+    margin-bottom: 0;
+  }
+
+  ::ng-deep .mat-form-field-infix {
+    border-top: 0;
+  }
 }
 
 mat-dialog-actions {

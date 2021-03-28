@@ -1,6 +1,9 @@
-import { Component, EventEmitter } from '@angular/core';
+import { Component, EventEmitter, NgZone, ViewChild } from '@angular/core';
 import { AbstractConfirmInterface } from '@app/components/dialogs/abstract-confirm.interface';
 import { BodyPart } from '@app/model/enums/BodyPart';
+import { CdkTextareaAutosize } from '@angular/cdk/text-field';
+import { take } from 'rxjs/operators';
+import { VaccinationConfirmation } from '@app/model/VaccinationConfirmation';
 
 @Component({
   selector: 'app-confirm-vaccination',
@@ -9,13 +12,31 @@ import { BodyPart } from '@app/model/enums/BodyPart';
 })
 export class ConfirmVaccinationComponent implements AbstractConfirmInterface {
 
-  onConfirm: EventEmitter<boolean> = new EventEmitter<boolean>();
+  @ViewChild('autosize') autosize?: CdkTextareaAutosize;
+  onConfirm: EventEmitter<VaccinationConfirmation> = new EventEmitter<VaccinationConfirmation>();
 
-  public bodyPart?: BodyPart = BodyPart.NonDominantHand;
+  public bodyPart: BodyPart = BodyPart.NonDominantHand;
   public bodyParts: string[] = Object.values(BodyPart);
 
+  public note: string = '';
+
+  constructor(private _ngZone: NgZone) {
+  }
+
   confirm(): void {
-    console.log(this.bodyPart);
-    // this.onConfirm.emit(this.isNonDominantHandUsed);
+    this.onConfirm.emit({ bodyPart: this.bodyPart, note: this.note });
+  }
+
+  triggerResize() {
+    if (!this.autosize) {
+      return;
+    }
+
+    // Wait for changes to be applied, then trigger textarea resize.
+    this._ngZone.onStable.pipe(
+      take(1)
+    ).subscribe(
+      () => this.autosize?.resizeToFitContent(true)
+    );
   }
 }

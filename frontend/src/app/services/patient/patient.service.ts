@@ -8,6 +8,7 @@ import { QuestionService } from '@app/services/question/question.service';
 import { PatientDtoOut } from '@app/generated';
 import { PatientData } from '@app/model/PatientData';
 import { fromPatientToRegistrationGenerated, fromPatientToUpdateGenerated } from '@app/parsers/to-generated/patient.parser';
+import { BodyPart } from '@app/model/enums/BodyPart';
 
 @Injectable({
   providedIn: 'root'
@@ -65,20 +66,6 @@ export class PatientService {
     sessionStorage.removeItem(this._sessionStorageKey);
   }
 
-  public async confirmVaccination(id: string): Promise<HttpResponse<unknown>> {
-    const now = new Date();
-
-    // we do not care about time, just about date
-    now.setUTCHours(0, 0, 0, 0);
-
-    return this._http.put<HttpResponse<unknown>>(
-      `${environment.apiUrl}/admin/patient/${id}`,
-      { vaccinatedOn: now.toISOString() }
-    ).pipe(
-      first()
-    ).toPromise();
-  }
-
   public async findPatientById(id: string): Promise<Patient> {
     return this._http.get<PatientDtoOut>(
       `${environment.apiUrl}/admin/patient/${id}`
@@ -97,19 +84,33 @@ export class PatientService {
     ).pipe(first()).toPromise();
   }
 
-  public async verifyPatient(patient: Patient, note: string): Promise<Patient> {
-    return this._http.post<PatientDtoOut>(
+  public async confirmVaccination(id: string, bodyPart: BodyPart, note: string): Promise<HttpResponse<unknown>> {
+    const now = new Date();
+
+    // we do not care about time, just about date
+    now.setUTCHours(0, 0, 0, 0);
+
+    return this._http.post<HttpResponse<unknown>>(
+      `${environment.apiUrl}/admin/vaccination`,
+      {
+        patientId: id,
+        bodyPart: bodyPart.valueOf(),
+        notes: note,
+        vaccinatedOn: now.toISOString()
+      }
+    ).pipe(
+      first()
+    ).toPromise();
+  }
+
+  public async verifyPatient(patient: Patient, note: string): Promise<HttpResponse<unknown>> {
+    return this._http.post<HttpResponse<unknown>>(
       `${environment.apiUrl}/admin/data-correctness`,
       {
         dataAreCorrect: true,
         notes: note,
         patientId: patient.id
       }
-    ).pipe(
-      map(data => {
-        const questions = this._questionService.questions;
-        return parsePatient(data, questions);
-      })
-    ).toPromise();
+    ).pipe(first()).toPromise();
   }
 }

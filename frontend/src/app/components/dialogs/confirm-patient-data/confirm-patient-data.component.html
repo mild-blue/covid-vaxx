@@ -1,17 +1,17 @@
 <div mat-dialog-content>
   <h3>Potrvdit správnost zadaných údajů?</h3>
 
-  <mat-form-field floatLabel="always">
+  <mat-form-field>
     <mat-label>Poznámka</mat-label>
     <textarea matInput
               cdkTextareaAutosize
               placeholder="Zanechte poznámku"
               #autosize="cdkTextareaAutosize"
-              cdkAutosizeMinRows="3"
+              cdkAutosizeMinRows="1"
               cdkAutosizeMaxRows="8"></textarea>
   </mat-form-field>
 </div>
 <mat-dialog-actions class="buttons">
   <button mat-button mat-dialog-close>Ne</button>
-  <button mat-raised-button color="success" mat-dialog-close (click)="confirm()" cdkFocusInitial>Ano</button>
+  <button mat-raised-button color="success" mat-dialog-close (click)="confirm()">Ano</button>
 </mat-dialog-actions>
