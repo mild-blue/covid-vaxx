@@ -1,10 +1,10 @@
-import {Component, OnInit} from '@angular/core';
-import {ActivatedRoute, Router} from '@angular/router';
-import {PatientService} from '@app/services/patient/patient.service';
-import {AlertService} from '@app/services/alert/alert.service';
-import {AdminPatientAbstractComponent} from '@app/pages/admin/abstract/admin-patient-abstract.component';
-import {ConfirmVaccinationComponent} from '@app/components/dialogs/confirm-vaccination/confirm-vaccination.component';
-import {ConfirmPatientDataComponent} from '@app/components/dialogs/confirm-patient-data/confirm-patient-data.component';
+import { Component, OnInit } from '@angular/core';
+import { ActivatedRoute, Router } from '@angular/router';
+import { PatientService } from '@app/services/patient/patient.service';
+import { AlertService } from '@app/services/alert/alert.service';
+import { AdminPatientAbstractComponent } from '@app/pages/admin/abstract/admin-patient-abstract.component';
+import { ConfirmVaccinationComponent } from '@app/components/dialogs/confirm-vaccination/confirm-vaccination.component';
+import { ConfirmPatientDataComponent } from '@app/components/dialogs/confirm-patient-data/confirm-patient-data.component';
 
 @Component({
   selector: 'app-patient-detail',
@@ -36,16 +36,15 @@ export class AdminPatientComponent extends AdminPatientAbstractComponent impleme
     this._alertService.confirmDialog(ConfirmVaccinationComponent, this._handleConfirmation.bind(this));
   }
 
-  private async _handleVerification(): Promise<void> {
+  private async _handleVerification(note: string): Promise<void> {
     if (!this.patient) {
       return;
     }
 
-    this.patient.verified = true;
-
     try {
-      await this._patientService.updatePatient(this.patient);
-      this._alertService.successDialog('Údaje pacienta byly ověřeny.', this.initPatient.bind(this));
+      const updatedPatient = await this._patientService.verifyPatient(this.patient, note);
+      this._alertService.successDialog('Údaje pacienta byly ověřeny.');
+      Object.assign(this.patient, updatedPatient);
     } catch (e) {
       this._alertService.error(e.message);
     }

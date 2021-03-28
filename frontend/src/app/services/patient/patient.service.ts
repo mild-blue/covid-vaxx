@@ -96,4 +96,20 @@ export class PatientService {
       fromPatientToUpdateGenerated(patient)
     ).pipe(first()).toPromise();
   }
+
+  public async verifyPatient(patient: Patient, note: string): Promise<Patient> {
+    return this._http.post<PatientDtoOut>(
+      `${environment.apiUrl}/admin/data-correctness`,
+      {
+        dataAreCorrect: true,
+        notes: note,
+        patientId: patient.id
+      }
+    ).pipe(
+      map(data => {
+        const questions = this._questionService.questions;
+        return parsePatient(data, questions);
+      })
+    ).toPromise();
+  }
 }

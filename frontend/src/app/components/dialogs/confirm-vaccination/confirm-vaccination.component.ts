@@ -12,7 +12,6 @@ export class ConfirmVaccinationComponent implements AbstractConfirmInterface {
   public isNonDominantHandUsed: boolean = false;
 
   confirm(): void {
-    console.log('here');
     this.onConfirm.emit(this.isNonDominantHandUsed);
   }
 }
