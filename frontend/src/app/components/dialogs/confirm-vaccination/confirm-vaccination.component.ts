@@ -1,5 +1,6 @@
 import { Component, EventEmitter } from '@angular/core';
 import { AbstractConfirmInterface } from '@app/components/dialogs/abstract-confirm.interface';
+import { BodyPart } from '@app/model/enums/BodyPart';
 
 @Component({
   selector: 'app-confirm-vaccination',
@@ -9,9 +10,12 @@ import { AbstractConfirmInterface } from '@app/components/dialogs/abstract-confi
 export class ConfirmVaccinationComponent implements AbstractConfirmInterface {
 
   onConfirm: EventEmitter<boolean> = new EventEmitter<boolean>();
-  public isNonDominantHandUsed: boolean = false;
+
+  public bodyPart?: BodyPart = BodyPart.NonDominantHand;
+  public bodyParts: string[] = Object.values(BodyPart);
 
   confirm(): void {
-    this.onConfirm.emit(this.isNonDominantHandUsed);
+    console.log(this.bodyPart);
+    // this.onConfirm.emit(this.isNonDominantHandUsed);
   }
 }

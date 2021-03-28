@@ -1,13 +1,30 @@
 @import "../../../../styles/variables";
 
-.checkbox {
-  border: 1px solid $gray-300;
-  border-radius: 6px;
-  padding: 10px;
-  background: $gray-100;
+mat-button-toggle {
+  min-width: 150px;
+  width: calc(100% / 3);
+
+  &.mat-button-toggle-checked {
+    background-color: $primary;
+    color: $white;
+  }
+
+  ::ng-deep .mat-button-toggle-label-content {
+    line-height: 36px;
+  }
 }
 
-.buttons {
+mat-dialog-content {
+  padding: 30px;
+}
+
+mat-dialog-actions {
   display: flex;
   justify-content: center;
+  border-top: 1px solid $gray-200;
+  margin-top: 20px;
+  margin-left: -24px;
+  margin-right: -24px;
+
+  padding: 15px 24px;
 }
