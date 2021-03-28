@@ -37,7 +37,7 @@ export class PatientService {
     const params = new HttpParams().set('personalNumber', personalNumber.trim());
 
     return this._http.get<PatientDtoOut>(
-      `${environment.apiUrl}/admin/patient/single`,
+      `${environment.apiUrl}/admin/patient`,
       { params }
     ).pipe(
       map(data => {
@@ -71,10 +71,8 @@ export class PatientService {
     // we do not care about time, just about date
     now.setUTCHours(0, 0, 0, 0);
 
-    // TODO: Add isNonDominantHandUsed
-
     return this._http.put<HttpResponse<unknown>>(
-      `${environment.apiUrl}/admin/patient/single/${id}`,
+      `${environment.apiUrl}/admin/patient/${id}`,
       { vaccinatedOn: now.toISOString() }
     ).pipe(
       first()
@@ -83,7 +81,7 @@ export class PatientService {
 
   public async findPatientById(id: string): Promise<Patient> {
     return this._http.get<PatientDtoOut>(
-      `${environment.apiUrl}/admin/patient/single/${id}`
+      `${environment.apiUrl}/admin/patient/${id}`
     ).pipe(
       map(data => {
         const questions = this._questionService.questions;
@@ -94,7 +92,7 @@ export class PatientService {
 
   public async updatePatient(patient: Patient): Promise<HttpResponse<unknown>> {
     return this._http.put<HttpResponse<unknown>>(
-      `${environment.apiUrl}/admin/patient/single/${patient.id}`,
+      `${environment.apiUrl}/admin/patient/${patient.id}`,
       fromPatientToUpdateGenerated(patient)
     ).pipe(first()).toPromise();
   }

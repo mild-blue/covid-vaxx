@@ -57,7 +57,21 @@
         </mat-label>
       </app-form-field>
       <mat-divider></mat-divider>
-      <ng-container *ngIf="showVaccinationDate">
+      <ng-container *ngIf="showExtraFields">
+        <app-form-field>
+          <mat-label>Indikace:</mat-label>
+          <mat-label *ngIf="patientData.indication else unspecified;">
+            {{ patientData.indication }}
+          </mat-label>
+        </app-form-field>
+        <mat-divider></mat-divider>
+        <app-form-field>
+          <mat-label>Ověření údajů proběhlo:</mat-label>
+          <mat-label>
+            <app-chip [value]="!!patientData.verified"></app-chip>
+          </mat-label>
+        </app-form-field>
+        <mat-divider></mat-divider>
         <app-form-field>
           <mat-label>Očkování proběhlo:</mat-label>
           <mat-label>
@@ -85,7 +99,7 @@
             <app-chip [value]="q.answer"></app-chip>
           </mat-label>
         </app-form-field>
-        <mat-divider *ngIf="i < patientData.questionnaire.length - 1"></mat-divider>
+        <mat-divider></mat-divider>
       </ng-container>
     </mat-card-content>
   </mat-card>

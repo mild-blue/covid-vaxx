@@ -9,7 +9,7 @@ import { PatientData } from '@app/model/PatientData';
 export class PatientDataComponent implements OnInit {
 
   @Input() patientData?: PatientData;
-  @Input() showVaccinationDate: boolean = false;
+  @Input() showExtraFields: boolean = false;
 
   constructor() {
   }

@@ -14,7 +14,7 @@
     </button>
   </div>
 
-  <app-patient-data [patientData]="patient" [showVaccinationDate]="true"></app-patient-data>
+  <app-patient-data [patientData]="patient" [showExtraFields]="true"></app-patient-data>
 
   <div *ngIf="patient" class="buttons">
     <button *ngIf="!patient.verified" mat-raised-button (click)="verify()" color="success">
