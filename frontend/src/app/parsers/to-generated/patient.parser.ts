@@ -1,8 +1,8 @@
-import {AnswerDtoOut, PatientRegistrationDtoIn, PatientUpdateDtoIn, PhoneNumberDtoIn} from '../../generated';
-import {fromQuestionToAnswerGenerated} from './question.parser';
-import {fromInsuranceToInsuranceGenerated, fromInsuranceToUpdateInsuranceGenerated} from '@app/parsers/to-generated/insurance.parse';
-import {PatientData} from '@app/model/PatientData';
-import {ParsedNumber, parseNumber} from 'libphonenumber-js';
+import { AnswerDtoOut, PatientRegistrationDtoIn, PatientUpdateDtoIn, PhoneNumberDtoIn } from '../../generated';
+import { fromQuestionToAnswerGenerated } from './question.parser';
+import { fromInsuranceToInsuranceGenerated, fromInsuranceToUpdateInsuranceGenerated } from '@app/parsers/to-generated/insurance.parse';
+import { PatientData } from '@app/model/PatientData';
+import { ParsedNumber, parseNumber } from 'libphonenumber-js';
 
 export const fromPatientToRegistrationGenerated = (patient: PatientData, agreement: boolean, confirmation: boolean, gdpr: boolean): PatientRegistrationDtoIn => {
   return {
@@ -39,10 +39,9 @@ const fromPatientToPartialGenerated = (patient: PatientData): PatientPartialData
 const parsePhoneNumber = (value: string): PhoneNumberDtoIn => {
   const parsed: ParsedNumber = parseNumber(value) as ParsedNumber;
 
-  // TODO
   return {
-    countryCode: '',
-    number: ''
+    countryCode: `${parsed.country}`,
+    number: `${parsed.phone}`
   };
 };
 

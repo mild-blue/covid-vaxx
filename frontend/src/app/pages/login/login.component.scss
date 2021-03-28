@@ -1,20 +1,124 @@
+@import "../../../styles/variables";
+
 main {
   display: flex;
   justify-content: center;
   align-items: center;
 }
 
-form {
-  padding: 20px;
+app-back-button {
+  position: absolute;
+  bottom: 100%;
+}
 
-  button {
+form {
+  min-width: 420px;
+  margin-top: 20px;
+
+  > button {
     margin: 20px auto 0;
     display: block;
   }
 }
 
-:host {
-  flex: 1;
+.content {
+  min-height: 400px;
   display: flex;
   flex-direction: column;
+}
+
+mat-card-content {
+  padding: 20px;
+  flex: 1;
+}
+
+.stepper {
+  ul {
+    display: flex;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+
+  li {
+    flex: 1;
+    position: relative;
+
+    display: flex;
+    justify-content: center;
+    align-content: center;
+
+    &::before {
+      content: '';
+      height: 1px;
+      width: calc(100% - 10px);
+      left: 5px;
+      top: 50%;
+      position: absolute;
+      margin-bottom: -0.5px;
+      background-color: $gray-300;
+    }
+
+    &.active {
+      span {
+        background-color: $primary;
+        color: white;
+      }
+    }
+
+    span {
+      transition: background-color 0.2s ease, color 0.2s ease;
+      background-color: $gray-300;
+      border-radius: 50%;
+      text-align: center;
+
+      display: flex;
+      justify-content: center;
+      align-items: center;
+
+      position: relative;
+      z-index: 1;
+
+      width: 35px;
+      height: 35px;
+      padding-top: 1px;
+
+      font-size: 80%;
+      font-weight: 700;
+      color: $gray-600;
+
+      border: 5px solid #ffffff;
+    }
+  }
+}
+
+.user {
+  padding: 10px 15px;
+  border-radius: 12px;
+  background: rgba($primary, 0.1);
+
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 20px;
+}
+
+.mat-select-panel .mat-option {
+  line-height: 4em;
+  height: 4em;
+}
+
+:host {
+  flex: 1;
+  //min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+::ng-deep footer {
+  padding: 0 !important;
+  position: absolute;
+  bottom: 20px;
+  width: 100%;
+
 }

@@ -7,6 +7,8 @@
   margin: auto;
   padding: 0 15px;
 
+  position: relative;
+
   &--wide {
     max-width: $container-max-width--wide;
   }
