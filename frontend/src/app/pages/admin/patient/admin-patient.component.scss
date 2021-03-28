@@ -1,22 +1,16 @@
 .buttons {
-  margin-top: 3em;
+  margin-top: 30px;
   display: flex;
+  flex-direction: column;
   justify-content: center;
+  align-items: center;
+
+  button + button {
+    margin-top: 20px;
+  }
 
   button {
-    margin: 0 1em;
     flex: 1;
     max-width: 260px;
-  }
-}
-
-.header {
-  display: flex;
-  justify-content: space-between;
-  align-items: flex-end;
-  margin-bottom: 10px;
-
-  h1 {
-    margin-bottom: 0;
   }
 }

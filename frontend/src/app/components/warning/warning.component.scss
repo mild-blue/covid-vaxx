@@ -1,0 +1,8 @@
+@import "../../../styles/variables";
+
+.warning {
+  background: lighten($warning, 45%);
+  color: $warning;
+  margin: 30px auto;
+  text-align: center;
+}

@@ -6,15 +6,13 @@
     Vyhledat jiného pacienta
   </app-back-button>
 
-  <div class="header">
-    <h1 class="mat-h1">Nalezený pacient</h1>
-    <button *ngIf="patient" mat-button [routerLink]="['/admin/edit', patient.id]" color="primary">
-      Editovat údaje pacienta
-      <mat-icon>create</mat-icon>
-    </button>
-  </div>
+  <h1 class="mat-h1">Nalezený pacient</h1>
 
   <app-patient-data [patientData]="patient" [showExtraFields]="true"></app-patient-data>
+
+  <app-warning *ngIf="patient && !patient.verified">
+    Pacient může být naočkován pouze po potvrzení správností zadaných údajů.
+  </app-warning>
 
   <div *ngIf="patient" class="buttons">
     <button *ngIf="!patient.verified" mat-raised-button (click)="verify()" color="success">
@@ -22,9 +20,14 @@
       <mat-icon>check</mat-icon>
     </button>
 
-    <button *ngIf="!patient.vaccinatedOn" mat-raised-button (click)="vaccinate()" color="accent">
+    <button *ngIf="patient.verified && !patient.vaccinatedOn" mat-raised-button (click)="vaccinate()" color="accent">
       Potvrdit proběhlé očkování
       <mat-icon>health_and_safety</mat-icon>
+    </button>
+
+    <button mat-button [routerLink]="['/admin/edit', patient.id]" color="primary">
+      Editovat údaje pacienta
+      <mat-icon>create</mat-icon>
     </button>
   </div>
 </app-container>

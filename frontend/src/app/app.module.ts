@@ -61,6 +61,7 @@ import { PostalCodeValidatorDirective } from './directives/postal-code-validator
 import { ZipCodePipe } from './pipes/zip-code/zip-code.pipe';
 import { PhoneNumberPipe } from './pipes/phone-number/phone-number.pipe';
 import { ConfirmPatientDataComponent } from './components/dialogs/confirm-patient-data/confirm-patient-data.component';
+import { WarningComponent } from './components/warning/warning.component';
 
 registerLocaleData(localeCs);
 
@@ -100,7 +101,8 @@ registerLocaleData(localeCs);
     PostalCodeValidatorDirective,
     ZipCodePipe,
     PhoneNumberPipe,
-    ConfirmPatientDataComponent
+    ConfirmPatientDataComponent,
+    WarningComponent
   ],
   imports: [
     BrowserModule,

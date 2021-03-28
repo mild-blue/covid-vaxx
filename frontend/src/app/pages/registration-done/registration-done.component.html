@@ -21,12 +21,10 @@
     <h2 class="mat-h2">Shrnutí zadaných údajů</h2>
     <app-patient-data [patientData]="patientData"></app-patient-data>
 
-    <mat-card class="warning">
-      <mat-card-content>
-        Pokud vidíte chybu v zadaných údajích, anebo je chcete změnit, kontaktujte nás prosím na <a
-        href="mailto:{{ companyEmail }}?subject=Požadavek na úpravu osobních údajů pacienta r.č. {{ patientData.personalNumber }}">{{ companyEmail }}</a>.
-      </mat-card-content>
-    </mat-card>
+    <app-warning>
+      Pokud vidíte chybu v zadaných údajích, anebo je chcete změnit, kontaktujte nás prosím na <a
+      href="mailto:{{ companyEmail }}?subject=Požadavek na úpravu osobních údajů pacienta r.č. {{ patientData.personalNumber }}">{{ companyEmail }}</a>.
+    </app-warning>
 
     <button color="primary" class="nav-button mt-30" (click)="handleStartAgain()" mat-raised-button>
       Registrovat další osobu
