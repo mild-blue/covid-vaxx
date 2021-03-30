@@ -7,6 +7,7 @@ import { AlertService } from '@app/services/alert/alert.service';
 import { ActivatedRoute, Router } from '@angular/router';
 import { PatientData } from '@app/model/PatientData';
 import { ReCaptchaV3Service } from 'ng-recaptcha';
+import { AnsweredQuestion } from '@app/model/AnsweredQuestion';
 
 @Component({
   selector: 'app-home',
@@ -31,7 +32,11 @@ export class HomeComponent {
               private _patientService: PatientService,
               private _recaptchaV3Service: ReCaptchaV3Service,
               private _alertService: AlertService) {
-    this.patient = this._initPatient();
+    this.patient = HomeComponent._initEmptyPatient(this._questionService.questionsValue);
+
+    this._questionService.questions.subscribe(questions => {
+      this.patient = HomeComponent._initEmptyPatient(questions);
+    });
 
     const personalNumber = this._route.snapshot.paramMap.get('personalNumber');
     if (personalNumber) {
@@ -45,20 +50,6 @@ export class HomeComponent {
     }
     const unanswered = this.patient.questionnaire.filter(q => q.answer === undefined);
     return unanswered.length === 0;
-  }
-
-  private _initPatient(): PatientData {
-    return {
-      firstName: '',
-      lastName: '',
-      personalNumber: '',
-      insuranceCompany: undefined,
-      phoneNumber: '',
-      email: '',
-      zipCode: '',
-      district: '',
-      questionnaire: this._questionService.questions
-    };
   }
 
   public openGdprInfo(): void {
@@ -83,5 +74,22 @@ export class HomeComponent {
     } catch (e) {
       this._alertService.error(e.message);
     }
+  }
+
+  private static _initEmptyPatient(questions: AnsweredQuestion[]): PatientData {
+    const emptyQuestions = [...questions];
+    emptyQuestions.forEach(q => q.answer = undefined);
+
+    return {
+      firstName: '',
+      lastName: '',
+      personalNumber: '',
+      insuranceCompany: undefined,
+      phoneNumber: '',
+      email: '',
+      zipCode: '',
+      district: '',
+      questionnaire: emptyQuestions
+    };
   }
 }

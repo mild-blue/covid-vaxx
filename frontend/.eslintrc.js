@@ -69,18 +69,18 @@ module.exports = {
       {
         'default': [
           'signature',
-          'private-static-field',
-          'protected-static-field',
-          'public-static-field',
-          'public-static-method',
-          'protected-static-method',
-          'private-static-method',
           'private-field',
           'protected-field',
           'public-field',
           'public-constructor',
           'protected-constructor',
-          'private-constructor'
+          'private-constructor',
+          'private-static-field',
+          'protected-static-field',
+          'public-static-field',
+          'public-static-method',
+          'protected-static-method',
+          'private-static-method'
           // getters & setters
           // 'public-method',
           // 'protected-method',

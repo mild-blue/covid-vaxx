@@ -42,7 +42,7 @@ export class PatientService {
       { params }
     ).pipe(
       map(data => {
-        const questions = this._questionService.questions;
+        const questions = this._questionService.questionsValue;
         return parsePatient(data, questions);
       })
     ).toPromise();
@@ -71,7 +71,7 @@ export class PatientService {
       `${environment.apiUrl}/admin/patient/${id}`
     ).pipe(
       map(data => {
-        const questions = this._questionService.questions;
+        const questions = this._questionService.questionsValue;
         return parsePatient(data, questions);
       })
     ).toPromise();
