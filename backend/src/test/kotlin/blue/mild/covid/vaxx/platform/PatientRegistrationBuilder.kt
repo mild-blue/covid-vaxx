@@ -1,6 +1,7 @@
 package blue.mild.covid.vaxx.platform
 
 import blue.mild.covid.vaxx.dto.request.ConfirmationDtoIn
+import blue.mild.covid.vaxx.dto.request.PhoneNumberDtoIn
 import blue.mild.covid.vaxx.util.generatePersonalNumber
 import blue.mild.covid.vaxx.utils.PatientRegistrationDtoInForTests
 import java.util.UUID
@@ -12,9 +13,12 @@ typealias PatientRegistrationBuilder = (answers: Any, insuranceCompany: Any) -> 
 fun defaultPatientRegistrationBuilder(
     firstName: Any? = "[PerformanceTest] - ${UUID.randomUUID()}",
     lastName: Any? = "[PerformanceTest] - ${UUID.randomUUID()}",
+    zipCode: Any? = 16000,
+    district: Any? = "Prague 6",
     personalNumber: Any? = generatePersonalNumber(),
-    phoneNumber: Any? = "+420${(1..9).joinToString("") { Random.nextInt(10).toString() }}",
+    phoneNumber: Any? = PhoneNumberDtoIn(number="601234567", countryCode = "CZ"),
     email: Any? = "${UUID.randomUUID()}@test.com",
+    indication: Any? = "Teacher",
     confirmation: Any? = ConfirmationDtoIn(
         healthStateDisclosureConfirmation = true,
         covid19VaccinationAgreement = true,
@@ -25,9 +29,15 @@ fun defaultPatientRegistrationBuilder(
         PatientRegistrationDtoInForTests(
             firstName = firstName,
             lastName = lastName,
+            zipCode = zipCode,
+            district = district,
             personalNumber = personalNumber,
             phoneNumber = phoneNumber,
             email = email,
-            insuranceCompany, answers, confirmation
+            insuranceCompany = insuranceCompany,
+            indication = indication,
+            answers = answers,
+            confirmation = confirmation,
+
         )
     }

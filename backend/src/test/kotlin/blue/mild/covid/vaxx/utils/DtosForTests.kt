@@ -3,10 +3,13 @@ package blue.mild.covid.vaxx.utils
 data class PatientRegistrationDtoInForTests(
     val firstName: Any?,
     val lastName: Any?,
+    val zipCode: Any?,
+    val district: Any?,
     val personalNumber: Any?,
     val phoneNumber: Any?,
     val email: Any?,
     val insuranceCompany: Any?,
+    val indication: Any?,
     val answers: Any?,
     val confirmation: Any?
 )

@@ -13,7 +13,7 @@ private const val TARGET_HOST = "https://covid-vaxx.stg.mild.blue"
  */
 fun main() {
     listOf(
-        timeTest(),
+//        timeTest(),
         requestsCountTest()
     ).map {
         runBlocking { it.execute() }.also(::logResults)
@@ -32,7 +32,7 @@ private fun requestsCountTest() = RoundsLoadTest(
     targetHost = TARGET_HOST,
     requestTimeoutsSeconds = 60,
     coroutineWorkers = 1,
-    rounds = 1
+    rounds = 100
 )
 
 private fun logResults(results: List<RequestMetric>) {
