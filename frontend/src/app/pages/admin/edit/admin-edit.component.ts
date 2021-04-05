@@ -69,6 +69,7 @@ export class AdminEditComponent extends AdminPatientAbstractComponent implements
       old.insuranceCompany !== current.insuranceCompany ||
       old.zipCode !== current.zipCode ||
       old.district !== current.district ||
+      old.indication !== current.indication ||
       old.vaccinatedOn !== current.vaccinatedOn;
   }
 

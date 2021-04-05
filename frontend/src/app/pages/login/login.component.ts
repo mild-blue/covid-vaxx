@@ -61,8 +61,6 @@ export class LoginComponent {
       (nurses: Nurse[]) => {
         this.email = username.value;
         this.nurses = nurses;
-
-        console.log('nurses', nurses);
       },
       (error: Error) => {
         this._alertService.error(error.message);
@@ -70,8 +68,6 @@ export class LoginComponent {
   }
 
   public login(): void {
-
-    console.log(this.nurseForm.value);
 
     if (this.nurseForm.invalid) {
       return;

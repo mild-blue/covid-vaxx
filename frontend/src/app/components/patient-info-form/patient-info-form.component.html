@@ -57,18 +57,19 @@
         <mat-label>Indikace</mat-label>
         <input [(ngModel)]="patient.indication" name="indication" matInput placeholder="Indikace pacienta (zdravotník, učitel, senior, soc. pracovník)" maxlength="64">
       </mat-form-field>
-      <mat-form-field *ngIf="patient.vaccinatedOn" floatLabel="always">
-        <mat-label>Datum vakcinace</mat-label>
-        <input [matDatepicker]="$any(picker)"
-               [(ngModel)]="patient.vaccinatedOn"
-               [min]="minVaccinationDate"
-               [max]="maxVaccinationDate"
-               (click)="picker.open()"
-               readonly
-               name="vaccinatedOn" matInput>
-        <mat-datepicker-toggle matSuffix [for]="picker"></mat-datepicker-toggle>
-        <mat-datepicker #picker></mat-datepicker>
-      </mat-form-field>
+      <!-- TODO: *Feature* Enable editing vaccinationDate on BE -->
+      <!--            <mat-form-field *ngIf="patient.vaccinatedOn" floatLabel="always">-->
+      <!--              <mat-label>Datum vakcinace</mat-label>-->
+      <!--              <input [matDatepicker]="$any(picker)"-->
+      <!--                     [(ngModel)]="patient.vaccinatedOn"-->
+      <!--                     [min]="minVaccinationDate"-->
+      <!--                     [max]="maxVaccinationDate"-->
+      <!--                     (click)="picker.open()"-->
+      <!--                     readonly-->
+      <!--                     name="vaccinatedOn" matInput>-->
+      <!--              <mat-datepicker-toggle matSuffix [for]="picker"></mat-datepicker-toggle>-->
+      <!--              <mat-datepicker #picker></mat-datepicker>-->
+      <!--            </mat-form-field>-->
     </ng-container>
 
   </mat-card-content>
