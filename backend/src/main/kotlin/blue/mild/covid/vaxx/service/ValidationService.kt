@@ -88,6 +88,7 @@ class ValidationService(private val questionService: QuestionService) {
         ?: changeSet.district ?: changeSet.zipCode
         ?: changeSet.personalNumber ?: changeSet.email
         ?: changeSet.answers?.takeIf { it.isNotEmpty() }
+        ?: changeSet.indication
         ?: throw EmptyUpdateException()
     }
 
