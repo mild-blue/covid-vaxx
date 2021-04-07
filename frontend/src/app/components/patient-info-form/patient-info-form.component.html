@@ -12,7 +12,7 @@
 
     <mat-form-field floatLabel="always" class="has-hint">
       <mat-label>Rodné číslo</mat-label>
-      <input [(ngModel)]="patient.personalNumber" name="personalNumber" matInput personalNumberValidator placeholder="Vaše rodné číslo" required maxlength="11">
+      <input [(ngModel)]="patient.personalNumber" name="personalNumber" matInput appPersonalNumberValidator placeholder="Vaše rodné číslo" required maxlength="11">
       <mat-hint>Rodné číslo ve formátu RRMMDD/ČČČ(Č)</mat-hint>
     </mat-form-field>
 
@@ -23,7 +23,7 @@
 
     <mat-form-field floatLabel="always">
       <mat-label>PSČ</mat-label>
-      <input [(ngModel)]="patient.zipCode" #zipCode="ngModel" (input)="formatZipCode(zipCode)" name="zipCode" matInput postalCodeValidator placeholder="Vaše PSČ" required maxlength="6">
+      <input [(ngModel)]="patient.zipCode" #zipCode="ngModel" (input)="formatZipCode(zipCode)" name="zipCode" matInput appPostalCodeValidator placeholder="Vaše PSČ" required maxlength="6">
     </mat-form-field>
 
     <mat-form-field floatLabel="always">
@@ -36,21 +36,21 @@
     </mat-form-field>
 
     <mat-form-field floatLabel="always">
-      <mat-label>Telefonní číslo</mat-label>
-      <ngx-mat-intl-tel-input [(ngModel)]="patient.phoneNumber"
-                              [preferredCountries]="['cz', 'sk', 'de', 'at', 'pl']"
-                              [enablePlaceholder]="true"
-                              [enableSearch]="false"
-                              [format]="'national'"
-                              [required]="true"
-                              class="ngx-floating"
-                              name="phoneNumber"
-                              inputPlaceholder="Vaše telefonní číslo"></ngx-mat-intl-tel-input>
-    </mat-form-field>
-    <mat-form-field floatLabel="always">
-      <mat-label>E-mail</mat-label>
-      <input [(ngModel)]="patient.email" name="email" matInput placeholder="Váš e-mail" emailValidator required maxlength="64">
-    </mat-form-field>
+        <mat-label>Telefonní číslo</mat-label>
+        <ngx-mat-intl-tel-input [(ngModel)]="patient.phoneNumber"
+                                [preferredCountries]="['cz', 'sk', 'de', 'at', 'pl']"
+                                [enablePlaceholder]="true"
+                                [enableSearch]="false"
+                                [format]="'national'"
+                                [required]="true"
+                                class="ngx-floating"
+                                name="phoneNumber"
+                                inputPlaceholder="Vaše telefonní číslo"></ngx-mat-intl-tel-input>
+      </mat-form-field>
+      <mat-form-field floatLabel="always">
+        <mat-label>E-mail</mat-label>
+        <input [(ngModel)]="patient.email" name="email" matInput placeholder="Váš e-mail" appEmailValidator required maxlength="64">
+      </mat-form-field>
 
     <ng-container *ngIf="showExtraFields">
       <mat-form-field floatLabel="always">

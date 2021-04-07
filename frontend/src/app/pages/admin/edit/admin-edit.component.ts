@@ -1,4 +1,4 @@
-import { Component, KeyValueDiffers, OnInit } from '@angular/core';
+import { Component, DoCheck, KeyValueDiffer, KeyValueDiffers, OnInit } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { PatientService } from '@app/services/patient/patient.service';
 import { AlertService } from '@app/services/alert/alert.service';
@@ -10,7 +10,7 @@ import { Patient } from '@app/model/Patient';
   templateUrl: './admin-edit.component.html',
   styleUrls: ['./admin-edit.component.scss']
 })
-export class AdminEditComponent extends AdminPatientAbstractComponent implements OnInit {
+export class AdminEditComponent extends AdminPatientAbstractComponent implements OnInit, DoCheck {
 
   private _patientBase?: Patient;
 
