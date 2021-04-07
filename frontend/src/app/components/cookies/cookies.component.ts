@@ -8,7 +8,7 @@ import { Component } from '@angular/core';
 export class CookiesComponent {
 
   private _cookiesKey: string = 'cookiesClosed';
-  public show: boolean = localStorage.getItem(this._cookiesKey) === null;
+  public show: boolean = !localStorage.getItem(this._cookiesKey);
 
   public close(): void {
     localStorage.setItem(this._cookiesKey, 'true');

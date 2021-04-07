@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component } from '@angular/core';
 import { Patient } from '@app/model/Patient';
 import { AlertService } from '@app/services/alert/alert.service';
 import { SearchHistoryService } from '@app/services/search-history/search-history.service';
@@ -10,7 +10,7 @@ import { Router } from '@angular/router';
   templateUrl: './admin-search.component.html',
   styleUrls: ['./admin-search.component.scss']
 })
-export class AdminSearchComponent implements OnInit {
+export class AdminSearchComponent {
 
   public personalNumber?: string;
   public patient?: Patient;
@@ -22,9 +22,6 @@ export class AdminSearchComponent implements OnInit {
               private _router: Router,
               private _searchHistoryService: SearchHistoryService,
               private _patientService: PatientService) {
-  }
-
-  ngOnInit(): void {
   }
 
   get searchHistory(): string[] {
