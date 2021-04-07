@@ -32,6 +32,7 @@ const fromPatientToPartialGenerated = (patient: PatientData): PatientPartialData
     phoneNumber: parsePhoneNumber(patient.phoneNumber.trim()),
     zipCode: +patient.zipCode.replace(' ', ''),
     district: patient.district.trim(),
+    indication: patient.indication?.trim(),
     answers: patient.questionnaire.map(fromQuestionToAnswerGenerated)
   };
 };
@@ -52,6 +53,7 @@ interface PatientPartialDataGenerated {
   email: string;
   phoneNumber: PhoneNumberDtoIn;
   district: string;
+  indication?: string;
   zipCode: number;
   answers: AnswerDtoOut[];
 }

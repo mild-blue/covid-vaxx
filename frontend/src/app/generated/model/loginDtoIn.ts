@@ -9,7 +9,7 @@
  * https://openapi-generator.tech
  * Do not edit the class manually.
  */
-import {CredentialsDtoIn} from './credentialsDtoIn';
+import { CredentialsDtoIn } from './credentialsDtoIn';
 
 
 export interface LoginDtoIn {

@@ -1,6 +1,6 @@
-import {ModuleWithProviders, NgModule, Optional, SkipSelf} from '@angular/core';
-import {Configuration} from './configuration';
-import {HttpClient} from '@angular/common/http';
+import { ModuleWithProviders, NgModule, Optional, SkipSelf } from '@angular/core';
+import { Configuration } from './configuration';
+import { HttpClient } from '@angular/common/http';
 
 @NgModule({
   imports: [],
@@ -12,7 +12,7 @@ export class ApiModule {
   public static forRoot(configurationFactory: () => Configuration): ModuleWithProviders<ApiModule> {
     return {
       ngModule: ApiModule,
-      providers: [{provide: Configuration, useFactory: configurationFactory}]
+      providers: [{ provide: Configuration, useFactory: configurationFactory }]
     };
   }
 

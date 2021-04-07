@@ -9,9 +9,9 @@
  * https://openapi-generator.tech
  * Do not edit the class manually.
  */
-import {DataCorrectnessConfirmationDtoOut} from './dataCorrectnessConfirmationDtoOut';
-import {VaccinationDtoOut} from './vaccinationDtoOut';
-import {AnswerDtoOut} from './answerDtoOut';
+import { DataCorrectnessConfirmationDtoOut } from './dataCorrectnessConfirmationDtoOut';
+import { VaccinationDtoOut } from './vaccinationDtoOut';
+import { AnswerDtoOut } from './answerDtoOut';
 
 
 export interface PatientDtoOut {

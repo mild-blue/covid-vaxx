@@ -9,8 +9,8 @@
  * https://openapi-generator.tech
  * Do not edit the class manually.
  */
-import {PhoneNumberDtoIn} from './phoneNumberDtoIn';
-import {AnswerDtoIn} from './answerDtoIn';
+import { PhoneNumberDtoIn } from './phoneNumberDtoIn';
+import { AnswerDtoIn } from './answerDtoIn';
 
 
 export interface PatientUpdateDtoIn {
@@ -18,6 +18,7 @@ export interface PatientUpdateDtoIn {
   district?: string | null;
   email?: string | null;
   firstName?: string | null;
+  indication?: string | null;
   insuranceCompany?: PatientUpdateDtoInInsuranceCompanyEnum | null;
   lastName?: string | null;
   personalNumber?: string | null;

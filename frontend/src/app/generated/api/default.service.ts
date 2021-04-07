@@ -11,10 +11,10 @@
  */
 /* tslint:disable:no-unused-variable member-ordering */
 
-import {Inject, Injectable, Optional} from '@angular/core';
-import {HttpClient, HttpEvent, HttpHeaders, HttpParameterCodec, HttpParams, HttpResponse} from '@angular/common/http';
-import {CustomHttpParameterCodec} from '../encoder';
-import {Observable} from 'rxjs';
+import { Inject, Injectable, Optional } from '@angular/core';
+import { HttpClient, HttpEvent, HttpHeaders, HttpParameterCodec, HttpParams, HttpResponse } from '@angular/common/http';
+import { CustomHttpParameterCodec } from '../encoder';
+import { Observable } from 'rxjs';
 
 import {
   ApplicationInformationDtoOut,
@@ -39,8 +39,8 @@ import {
   VaccinationDtoIn
 } from '../model/models';
 
-import {BASE_PATH} from '../variables';
-import {Configuration} from '../configuration';
+import { BASE_PATH } from '../variables';
+import { Configuration } from '../configuration';
 
 
 @Injectable({
@@ -51,7 +51,7 @@ export class DefaultService {
   protected basePath = 'http://localhost';
   public defaultHeaders = new HttpHeaders();
   public configuration = new Configuration();
-    public encoder: HttpParameterCodec;
+  public encoder: HttpParameterCodec;
 
   constructor(protected httpClient: HttpClient, @Optional() @Inject(BASE_PATH) basePath: string, @Optional() configuration: Configuration) {
     if (configuration) {
@@ -64,24 +64,24 @@ export class DefaultService {
       this.configuration.basePath = basePath;
     }
     this.encoder = this.configuration.encoder || new CustomHttpParameterCodec();
-    }
+  }
 
 
-    private addToHttpParams(httpParams: HttpParams, value: any, key?: string): HttpParams {
-      if (typeof value === "object" && value instanceof Date === false) {
-        httpParams = this.addToHttpParamsRecursive(httpParams, value);
-      } else {
-        httpParams = this.addToHttpParamsRecursive(httpParams, value, key);
-      }
-        return httpParams;
+  private addToHttpParams(httpParams: HttpParams, value: any, key?: string): HttpParams {
+    if (typeof value === 'object' && value instanceof Date === false) {
+      httpParams = this.addToHttpParamsRecursive(httpParams, value);
+    } else {
+      httpParams = this.addToHttpParamsRecursive(httpParams, value, key);
     }
+    return httpParams;
+  }
 
     private addToHttpParamsRecursive(httpParams: HttpParams, value?: any, key?: string): HttpParams {
-        if (value == null) {
-            return httpParams;
-        }
+      if (value == null) {
+        return httpParams;
+      }
 
-      if (typeof value === "object") {
+      if (typeof value === 'object') {
         if (Array.isArray(value)) {
           (value as any[]).forEach(elem => httpParams = this.addToHttpParamsRecursive(httpParams, elem, key));
         } else if (value instanceof Date) {
@@ -89,16 +89,16 @@ export class DefaultService {
             httpParams = httpParams.append(key,
               (value as Date).toISOString().substr(0, 10));
           } else {
-            throw Error("key may not be null if value is Date");
+            throw Error('key may not be null if value is Date');
           }
         } else {
           Object.keys(value).forEach(k => httpParams = this.addToHttpParamsRecursive(
             httpParams, value[k], key != null ? `${key}.${k}` : k));
         }
-        } else if (key != null) {
-            httpParams = httpParams.append(key, value);
-        } else {
-        throw Error("key may not be null if value is not object or array");
+      } else if (key != null) {
+        httpParams = httpParams.append(key, value);
+      } else {
+        throw Error('key may not be null if value is not object or array');
       }
       return httpParams;
     }
@@ -122,33 +122,33 @@ export class DefaultService {
       headers = headers.set('Authorization', 'Bearer ' + credential);
     }
 
-        let httpHeaderAcceptSelected: string | undefined = options && options.httpHeaderAccept;
-        if (httpHeaderAcceptSelected === undefined) {
-            // to determine the Accept header
-            const httpHeaderAccepts: string[] = [
-                'application/json'
-            ];
-            httpHeaderAcceptSelected = this.configuration.selectHeaderAccept(httpHeaderAccepts);
-        }
-        if (httpHeaderAcceptSelected !== undefined) {
-            headers = headers.set('Accept', httpHeaderAcceptSelected);
-        }
+    let httpHeaderAcceptSelected: string | undefined = options && options.httpHeaderAccept;
+    if (httpHeaderAcceptSelected === undefined) {
+      // to determine the Accept header
+      const httpHeaderAccepts: string[] = [
+        'application/json'
+      ];
+      httpHeaderAcceptSelected = this.configuration.selectHeaderAccept(httpHeaderAccepts);
+    }
+    if (httpHeaderAcceptSelected !== undefined) {
+      headers = headers.set('Accept', httpHeaderAcceptSelected);
+    }
 
 
-        let responseType: 'text' | 'json' = 'json';
+    let responseType: 'text' | 'json' = 'json';
     if (httpHeaderAcceptSelected && httpHeaderAcceptSelected.startsWith('text')) {
       responseType = 'text';
     }
 
-        return this.httpClient.get<Array<QuestionDtoOut>>(`${this.configuration.basePath}/api/admin/cache-refresh`,
-          {
-            responseType: <any>responseType,
-            withCredentials: this.configuration.withCredentials,
-            headers: headers,
-            observe: observe,
-            reportProgress: reportProgress
-          }
-        );
+    return this.httpClient.get<Array<QuestionDtoOut>>(`${this.configuration.basePath}/api/admin/cache-refresh`,
+      {
+        responseType: <any>responseType,
+        withCredentials: this.configuration.withCredentials,
+        headers: headers,
+        observe: observe,
+        reportProgress: reportProgress
+      }
+    );
   }
 
   /**
@@ -165,7 +165,7 @@ export class DefaultService {
       throw new Error('Required parameter id was null or undefined when calling apiAdminDataCorrectnessGet.');
     }
 
-    let queryParameters = new HttpParams({encoder: this.encoder});
+    let queryParameters = new HttpParams({ encoder: this.encoder });
     if (id !== undefined && id !== null) {
       queryParameters = this.addToHttpParams(queryParameters,
         <any>id, 'id');
@@ -341,36 +341,36 @@ export class DefaultService {
         'application/json'
       ];
       httpHeaderAcceptSelected = this.configuration.selectHeaderAccept(httpHeaderAccepts);
-        }
-        if (httpHeaderAcceptSelected !== undefined) {
-            headers = headers.set('Accept', httpHeaderAcceptSelected);
-        }
+    }
+    if (httpHeaderAcceptSelected !== undefined) {
+      headers = headers.set('Accept', httpHeaderAcceptSelected);
+    }
 
 
-        // to determine the Content-Type header
-        const consumes: string[] = [
-            'application/json'
-        ];
-        const httpContentTypeSelected: string | undefined = this.configuration.selectHeaderContentType(consumes);
-        if (httpContentTypeSelected !== undefined) {
-            headers = headers.set('Content-Type', httpContentTypeSelected);
-        }
+    // to determine the Content-Type header
+    const consumes: string[] = [
+      'application/json'
+    ];
+    const httpContentTypeSelected: string | undefined = this.configuration.selectHeaderContentType(consumes);
+    if (httpContentTypeSelected !== undefined) {
+      headers = headers.set('Content-Type', httpContentTypeSelected);
+    }
 
-        let responseType: 'text' | 'json' = 'json';
+    let responseType: 'text' | 'json' = 'json';
     if (httpHeaderAcceptSelected && httpHeaderAcceptSelected.startsWith('text')) {
       responseType = 'text';
     }
 
-        return this.httpClient.post<UserLoginResponseDtoOut>(`${this.configuration.basePath}/api/admin/login`,
-          loginDtoIn,
-          {
-            responseType: <any>responseType,
-            withCredentials: this.configuration.withCredentials,
-            headers: headers,
-            observe: observe,
-            reportProgress: reportProgress
-          }
-        );
+    return this.httpClient.post<UserLoginResponseDtoOut>(`${this.configuration.basePath}/api/admin/login`,
+      loginDtoIn,
+      {
+        responseType: <any>responseType,
+        withCredentials: this.configuration.withCredentials,
+        headers: headers,
+        observe: observe,
+        reportProgress: reportProgress
+      }
+    );
   }
 
   /**
@@ -497,7 +497,7 @@ export class DefaultService {
   public apiAdminPatientFilterGet(email?: string, phoneNumber?: string, vaccinated?: boolean, observe?: 'events', reportProgress?: boolean, options?: { httpHeaderAccept?: 'application/json' }): Observable<HttpEvent<Array<PatientDtoOut>>>;
   public apiAdminPatientFilterGet(email?: string, phoneNumber?: string, vaccinated?: boolean, observe: any = 'body', reportProgress: boolean = false, options?: { httpHeaderAccept?: 'application/json' }): Observable<any> {
 
-    let queryParameters = new HttpParams({encoder: this.encoder});
+    let queryParameters = new HttpParams({ encoder: this.encoder });
     if (email !== undefined && email !== null) {
       queryParameters = this.addToHttpParams(queryParameters,
         <any>email, 'email');
@@ -506,16 +506,16 @@ export class DefaultService {
       queryParameters = this.addToHttpParams(queryParameters,
         <any>phoneNumber, 'phoneNumber');
     }
-        if (vaccinated !== undefined && vaccinated !== null) {
-          queryParameters = this.addToHttpParams(queryParameters,
-            <any>vaccinated, 'vaccinated');
-        }
+    if (vaccinated !== undefined && vaccinated !== null) {
+      queryParameters = this.addToHttpParams(queryParameters,
+        <any>vaccinated, 'vaccinated');
+    }
 
-        let headers = this.defaultHeaders;
+    let headers = this.defaultHeaders;
 
-        let credential: string | undefined;
-        // authentication (jwtAuth) required
-        credential = this.configuration.lookupCredential('jwtAuth');
+    let credential: string | undefined;
+    // authentication (jwtAuth) required
+    credential = this.configuration.lookupCredential('jwtAuth');
         if (credential) {
             headers = headers.set('Authorization', 'Bearer ' + credential);
         }
@@ -524,30 +524,30 @@ export class DefaultService {
         if (httpHeaderAcceptSelected === undefined) {
             // to determine the Accept header
             const httpHeaderAccepts: string[] = [
-                'application/json'
+              'application/json'
             ];
-            httpHeaderAcceptSelected = this.configuration.selectHeaderAccept(httpHeaderAccepts);
+          httpHeaderAcceptSelected = this.configuration.selectHeaderAccept(httpHeaderAccepts);
         }
-        if (httpHeaderAcceptSelected !== undefined) {
-            headers = headers.set('Accept', httpHeaderAcceptSelected);
-        }
+    if (httpHeaderAcceptSelected !== undefined) {
+      headers = headers.set('Accept', httpHeaderAcceptSelected);
+    }
 
 
-        let responseType: 'text' | 'json' = 'json';
+    let responseType: 'text' | 'json' = 'json';
     if (httpHeaderAcceptSelected && httpHeaderAcceptSelected.startsWith('text')) {
       responseType = 'text';
     }
 
-        return this.httpClient.get<Array<PatientDtoOut>>(`${this.configuration.basePath}/api/admin/patient/filter`,
-          {
-            params: queryParameters,
-            responseType: <any>responseType,
-            withCredentials: this.configuration.withCredentials,
-            headers: headers,
-            observe: observe,
-            reportProgress: reportProgress
-          }
-        );
+    return this.httpClient.get<Array<PatientDtoOut>>(`${this.configuration.basePath}/api/admin/patient/filter`,
+      {
+        params: queryParameters,
+        responseType: <any>responseType,
+        withCredentials: this.configuration.withCredentials,
+        headers: headers,
+        observe: observe,
+        reportProgress: reportProgress
+      }
+    );
   }
 
   /**
@@ -564,29 +564,29 @@ export class DefaultService {
       throw new Error('Required parameter personalNumber was null or undefined when calling apiAdminPatientGet.');
     }
 
-    let queryParameters = new HttpParams({encoder: this.encoder});
+    let queryParameters = new HttpParams({ encoder: this.encoder });
     if (personalNumber !== undefined && personalNumber !== null) {
       queryParameters = this.addToHttpParams(queryParameters,
         <any>personalNumber, 'personalNumber');
     }
 
-        let headers = this.defaultHeaders;
+    let headers = this.defaultHeaders;
 
-        let credential: string | undefined;
-        // authentication (jwtAuth) required
-        credential = this.configuration.lookupCredential('jwtAuth');
-        if (credential) {
-            headers = headers.set('Authorization', 'Bearer ' + credential);
-        }
+    let credential: string | undefined;
+    // authentication (jwtAuth) required
+    credential = this.configuration.lookupCredential('jwtAuth');
+    if (credential) {
+      headers = headers.set('Authorization', 'Bearer ' + credential);
+    }
 
-        let httpHeaderAcceptSelected: string | undefined = options && options.httpHeaderAccept;
-        if (httpHeaderAcceptSelected === undefined) {
-            // to determine the Accept header
-            const httpHeaderAccepts: string[] = [
-                'application/json'
-            ];
-            httpHeaderAcceptSelected = this.configuration.selectHeaderAccept(httpHeaderAccepts);
-        }
+    let httpHeaderAcceptSelected: string | undefined = options && options.httpHeaderAccept;
+    if (httpHeaderAcceptSelected === undefined) {
+      // to determine the Accept header
+      const httpHeaderAccepts: string[] = [
+        'application/json'
+      ];
+      httpHeaderAcceptSelected = this.configuration.selectHeaderAccept(httpHeaderAccepts);
+    }
     if (httpHeaderAcceptSelected !== undefined) {
       headers = headers.set('Accept', httpHeaderAcceptSelected);
     }
@@ -629,17 +629,17 @@ export class DefaultService {
     // authentication (jwtAuth) required
     credential = this.configuration.lookupCredential('jwtAuth');
     if (credential) {
-            headers = headers.set('Authorization', 'Bearer ' + credential);
-        }
+      headers = headers.set('Authorization', 'Bearer ' + credential);
+    }
 
-        let httpHeaderAcceptSelected: string | undefined = options && options.httpHeaderAccept;
-        if (httpHeaderAcceptSelected === undefined) {
-            // to determine the Accept header
-            const httpHeaderAccepts: string[] = [
-              'application/json'
-            ];
-            httpHeaderAcceptSelected = this.configuration.selectHeaderAccept(httpHeaderAccepts);
-        }
+    let httpHeaderAcceptSelected: string | undefined = options && options.httpHeaderAccept;
+    if (httpHeaderAcceptSelected === undefined) {
+      // to determine the Accept header
+      const httpHeaderAccepts: string[] = [
+        'application/json'
+      ];
+      httpHeaderAcceptSelected = this.configuration.selectHeaderAccept(httpHeaderAccepts);
+    }
     if (httpHeaderAcceptSelected !== undefined) {
       headers = headers.set('Accept', httpHeaderAcceptSelected);
     }
@@ -681,17 +681,17 @@ export class DefaultService {
     // authentication (jwtAuth) required
     credential = this.configuration.lookupCredential('jwtAuth');
     if (credential) {
-            headers = headers.set('Authorization', 'Bearer ' + credential);
-        }
+      headers = headers.set('Authorization', 'Bearer ' + credential);
+    }
 
-        let httpHeaderAcceptSelected: string | undefined = options && options.httpHeaderAccept;
-        if (httpHeaderAcceptSelected === undefined) {
-            // to determine the Accept header
-            const httpHeaderAccepts: string[] = [
-                'application/json'
-            ];
-            httpHeaderAcceptSelected = this.configuration.selectHeaderAccept(httpHeaderAccepts);
-        }
+    let httpHeaderAcceptSelected: string | undefined = options && options.httpHeaderAccept;
+    if (httpHeaderAcceptSelected === undefined) {
+      // to determine the Accept header
+      const httpHeaderAccepts: string[] = [
+        'application/json'
+      ];
+      httpHeaderAcceptSelected = this.configuration.selectHeaderAccept(httpHeaderAccepts);
+    }
     if (httpHeaderAcceptSelected !== undefined) {
       headers = headers.set('Accept', httpHeaderAcceptSelected);
     }
@@ -734,26 +734,26 @@ export class DefaultService {
     // authentication (jwtAuth) required
     credential = this.configuration.lookupCredential('jwtAuth');
     if (credential) {
-            headers = headers.set('Authorization', 'Bearer ' + credential);
-        }
+      headers = headers.set('Authorization', 'Bearer ' + credential);
+    }
 
-        let httpHeaderAcceptSelected: string | undefined = options && options.httpHeaderAccept;
-        if (httpHeaderAcceptSelected === undefined) {
-          // to determine the Accept header
-          const httpHeaderAccepts: string[] = [
-            'application/json'
-          ];
-          httpHeaderAcceptSelected = this.configuration.selectHeaderAccept(httpHeaderAccepts);
-        }
-        if (httpHeaderAcceptSelected !== undefined) {
-            headers = headers.set('Accept', httpHeaderAcceptSelected);
-        }
+    let httpHeaderAcceptSelected: string | undefined = options && options.httpHeaderAccept;
+    if (httpHeaderAcceptSelected === undefined) {
+      // to determine the Accept header
+      const httpHeaderAccepts: string[] = [
+        'application/json'
+      ];
+      httpHeaderAcceptSelected = this.configuration.selectHeaderAccept(httpHeaderAccepts);
+    }
+    if (httpHeaderAcceptSelected !== undefined) {
+      headers = headers.set('Accept', httpHeaderAcceptSelected);
+    }
 
 
-        // to determine the Content-Type header
-        const consumes: string[] = [
-            'application/json'
-        ];
+    // to determine the Content-Type header
+    const consumes: string[] = [
+      'application/json'
+    ];
     const httpContentTypeSelected: string | undefined = this.configuration.selectHeaderContentType(consumes);
     if (httpContentTypeSelected !== undefined) {
       headers = headers.set('Content-Type', httpContentTypeSelected);
@@ -796,43 +796,43 @@ export class DefaultService {
       headers = headers.set('Authorization', 'Bearer ' + credential);
     }
 
-        let httpHeaderAcceptSelected: string | undefined = options && options.httpHeaderAccept;
-        if (httpHeaderAcceptSelected === undefined) {
-            // to determine the Accept header
-            const httpHeaderAccepts: string[] = [
-                'application/json'
-            ];
-            httpHeaderAcceptSelected = this.configuration.selectHeaderAccept(httpHeaderAccepts);
-        }
-        if (httpHeaderAcceptSelected !== undefined) {
+    let httpHeaderAcceptSelected: string | undefined = options && options.httpHeaderAccept;
+    if (httpHeaderAcceptSelected === undefined) {
+      // to determine the Accept header
+      const httpHeaderAccepts: string[] = [
+        'application/json'
+      ];
+      httpHeaderAcceptSelected = this.configuration.selectHeaderAccept(httpHeaderAccepts);
+    }
+    if (httpHeaderAcceptSelected !== undefined) {
             headers = headers.set('Accept', httpHeaderAcceptSelected);
         }
 
 
-        // to determine the Content-Type header
-        const consumes: string[] = [
-            'application/json'
-        ];
-        const httpContentTypeSelected: string | undefined = this.configuration.selectHeaderContentType(consumes);
-        if (httpContentTypeSelected !== undefined) {
-            headers = headers.set('Content-Type', httpContentTypeSelected);
-        }
+    // to determine the Content-Type header
+    const consumes: string[] = [
+      'application/json'
+    ];
+    const httpContentTypeSelected: string | undefined = this.configuration.selectHeaderContentType(consumes);
+    if (httpContentTypeSelected !== undefined) {
+      headers = headers.set('Content-Type', httpContentTypeSelected);
+    }
 
-        let responseType: 'text' | 'json' = 'json';
+    let responseType: 'text' | 'json' = 'json';
     if (httpHeaderAcceptSelected && httpHeaderAcceptSelected.startsWith('text')) {
       responseType = 'text';
     }
 
-        return this.httpClient.post<UserRegisteredDtoOut>(`${this.configuration.basePath}/api/admin/register`,
-          userRegistrationDtoIn,
-          {
-            responseType: <any>responseType,
-            withCredentials: this.configuration.withCredentials,
-            headers: headers,
-            observe: observe,
-            reportProgress: reportProgress
-          }
-        );
+    return this.httpClient.post<UserRegisteredDtoOut>(`${this.configuration.basePath}/api/admin/register`,
+      userRegistrationDtoIn,
+      {
+        responseType: <any>responseType,
+        withCredentials: this.configuration.withCredentials,
+        headers: headers,
+        observe: observe,
+        reportProgress: reportProgress
+      }
+    );
   }
 
   /**
@@ -854,31 +854,31 @@ export class DefaultService {
       headers = headers.set('Authorization', 'Bearer ' + credential);
     }
 
-        let httpHeaderAcceptSelected: string | undefined = options && options.httpHeaderAccept;
-        if (httpHeaderAcceptSelected === undefined) {
-          // to determine the Accept header
-          const httpHeaderAccepts: string[] = [];
-          httpHeaderAcceptSelected = this.configuration.selectHeaderAccept(httpHeaderAccepts);
-        }
-        if (httpHeaderAcceptSelected !== undefined) {
-            headers = headers.set('Accept', httpHeaderAcceptSelected);
-        }
+    let httpHeaderAcceptSelected: string | undefined = options && options.httpHeaderAccept;
+    if (httpHeaderAcceptSelected === undefined) {
+      // to determine the Accept header
+      const httpHeaderAccepts: string[] = [];
+      httpHeaderAcceptSelected = this.configuration.selectHeaderAccept(httpHeaderAccepts);
+    }
+    if (httpHeaderAcceptSelected !== undefined) {
+      headers = headers.set('Accept', httpHeaderAcceptSelected);
+    }
 
 
-        let responseType: 'text' | 'json' = 'json';
+    let responseType: 'text' | 'json' = 'json';
     if (httpHeaderAcceptSelected && httpHeaderAcceptSelected.startsWith('text')) {
       responseType = 'text';
     }
 
-        return this.httpClient.get<any>(`${this.configuration.basePath}/api/admin/self`,
-          {
-            responseType: <any>responseType,
-            withCredentials: this.configuration.withCredentials,
-            headers: headers,
-            observe: observe,
-            reportProgress: reportProgress
-          }
-        );
+    return this.httpClient.get<any>(`${this.configuration.basePath}/api/admin/self`,
+      {
+        responseType: <any>responseType,
+        withCredentials: this.configuration.withCredentials,
+        headers: headers,
+        observe: observe,
+        reportProgress: reportProgress
+      }
+    );
   }
 
   /**
@@ -892,7 +892,7 @@ export class DefaultService {
   public apiAdminStatisticsGet(from?: string, to?: string, observe?: 'events', reportProgress?: boolean, options?: { httpHeaderAccept?: 'application/json' }): Observable<HttpEvent<SystemStatisticsDtoOut>>;
   public apiAdminStatisticsGet(from?: string, to?: string, observe: any = 'body', reportProgress: boolean = false, options?: { httpHeaderAccept?: 'application/json' }): Observable<any> {
 
-    let queryParameters = new HttpParams({encoder: this.encoder});
+    let queryParameters = new HttpParams({ encoder: this.encoder });
     if (from !== undefined && from !== null) {
       queryParameters = this.addToHttpParams(queryParameters,
         <any>from, 'from');
@@ -955,7 +955,7 @@ export class DefaultService {
       throw new Error('Required parameter id was null or undefined when calling apiAdminVaccinationGet.');
     }
 
-    let queryParameters = new HttpParams({encoder: this.encoder});
+    let queryParameters = new HttpParams({ encoder: this.encoder });
     if (id !== undefined && id !== null) {
       queryParameters = this.addToHttpParams(queryParameters,
         <any>id, 'id');
@@ -1088,7 +1088,7 @@ export class DefaultService {
     // to determine the Content-Type header
     const consumes: string[] = [
       'application/json'
-        ];
+    ];
     const httpContentTypeSelected: string | undefined = this.configuration.selectHeaderContentType(consumes);
     if (httpContentTypeSelected !== undefined) {
       headers = headers.set('Content-Type', httpContentTypeSelected);
@@ -1130,7 +1130,7 @@ export class DefaultService {
         'application/json'
       ];
       httpHeaderAcceptSelected = this.configuration.selectHeaderAccept(httpHeaderAccepts);
-        }
+    }
     if (httpHeaderAcceptSelected !== undefined) {
       headers = headers.set('Accept', httpHeaderAcceptSelected);
     }
@@ -1167,7 +1167,7 @@ export class DefaultService {
       throw new Error('Required parameter captcha was null or undefined when calling apiPatientPost.');
     }
 
-    let queryParameters = new HttpParams({encoder: this.encoder});
+    let queryParameters = new HttpParams({ encoder: this.encoder });
     if (captcha !== undefined && captcha !== null) {
       queryParameters = this.addToHttpParams(queryParameters,
         <any>captcha, 'captcha');
@@ -1273,25 +1273,25 @@ export class DefaultService {
       const httpHeaderAccepts: string[] = [];
       httpHeaderAcceptSelected = this.configuration.selectHeaderAccept(httpHeaderAccepts);
     }
-        if (httpHeaderAcceptSelected !== undefined) {
-            headers = headers.set('Accept', httpHeaderAcceptSelected);
-        }
+    if (httpHeaderAcceptSelected !== undefined) {
+      headers = headers.set('Accept', httpHeaderAcceptSelected);
+    }
 
 
-        let responseType: 'text' | 'json' = 'json';
+    let responseType: 'text' | 'json' = 'json';
     if (httpHeaderAcceptSelected && httpHeaderAcceptSelected.startsWith('text')) {
       responseType = 'text';
     }
 
-        return this.httpClient.get<any>(`${this.configuration.basePath}/api/status`,
-          {
-            responseType: <any>responseType,
-            withCredentials: this.configuration.withCredentials,
-            headers: headers,
-            observe: observe,
-            reportProgress: reportProgress
-          }
-        );
+    return this.httpClient.get<any>(`${this.configuration.basePath}/api/status`,
+      {
+        responseType: <any>responseType,
+        withCredentials: this.configuration.withCredentials,
+        headers: headers,
+        observe: observe,
+        reportProgress: reportProgress
+      }
+    );
   }
 
   /**
@@ -1312,26 +1312,26 @@ export class DefaultService {
         'application/json'
       ];
       httpHeaderAcceptSelected = this.configuration.selectHeaderAccept(httpHeaderAccepts);
-        }
-        if (httpHeaderAcceptSelected !== undefined) {
-            headers = headers.set('Accept', httpHeaderAcceptSelected);
-        }
+    }
+    if (httpHeaderAcceptSelected !== undefined) {
+      headers = headers.set('Accept', httpHeaderAcceptSelected);
+    }
 
 
-        let responseType: 'text' | 'json' = 'json';
+    let responseType: 'text' | 'json' = 'json';
     if (httpHeaderAcceptSelected && httpHeaderAcceptSelected.startsWith('text')) {
       responseType = 'text';
     }
 
-        return this.httpClient.get<ServiceHealthDtoOut>(`${this.configuration.basePath}/api/status/health`,
-          {
-            responseType: <any>responseType,
-            withCredentials: this.configuration.withCredentials,
-            headers: headers,
-            observe: observe,
-            reportProgress: reportProgress
-          }
-        );
+    return this.httpClient.get<ServiceHealthDtoOut>(`${this.configuration.basePath}/api/status/health`,
+      {
+        responseType: <any>responseType,
+        withCredentials: this.configuration.withCredentials,
+        headers: headers,
+        observe: observe,
+        reportProgress: reportProgress
+      }
+    );
   }
 
   /**
@@ -1353,7 +1353,7 @@ export class DefaultService {
         'application/json'
       ];
       httpHeaderAcceptSelected = this.configuration.selectHeaderAccept(httpHeaderAccepts);
-        }
+    }
     if (httpHeaderAcceptSelected !== undefined) {
       headers = headers.set('Accept', httpHeaderAcceptSelected);
     }

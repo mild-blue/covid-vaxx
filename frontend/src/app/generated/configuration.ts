@@ -1,4 +1,4 @@
-import {HttpParameterCodec} from '@angular/common/http';
+import { HttpParameterCodec } from '@angular/common/http';
 
 export interface ConfigurationParameters {
   /**
@@ -28,13 +28,13 @@ export class Configuration {
    */
   apiKeys?: { [key: string]: string };
   username?: string;
-    password?: string;
-    /**
-     *  @deprecated Since 5.0. Use credentials instead
-     */
-    accessToken?: string | (() => string);
-    basePath?: string;
-    withCredentials?: boolean;
+  password?: string;
+  /**
+   *  @deprecated Since 5.0. Use credentials instead
+   */
+  accessToken?: string | (() => string);
+  basePath?: string;
+  withCredentials?: boolean;
   encoder?: HttpParameterCodec;
   /**
    * The keys are the names in the securitySchemes section of the OpenAPI
@@ -43,29 +43,29 @@ export class Configuration {
    */
   credentials: { [key: string]: string | (() => string | undefined) };
 
-    constructor(configurationParameters: ConfigurationParameters = {}) {
-        this.apiKeys = configurationParameters.apiKeys;
-        this.username = configurationParameters.username;
-        this.password = configurationParameters.password;
-        this.accessToken = configurationParameters.accessToken;
-        this.basePath = configurationParameters.basePath;
-        this.withCredentials = configurationParameters.withCredentials;
-        this.encoder = configurationParameters.encoder;
-      if (configurationParameters.credentials) {
-        this.credentials = configurationParameters.credentials;
-      } else {
-        this.credentials = {};
-      }
-
-        // init default jwtAuth credential
-        if (!this.credentials['jwtAuth']) {
-            this.credentials['jwtAuth'] = () => {
-              return typeof this.accessToken === 'function'
-                ? this.accessToken()
-                : this.accessToken;
-            };
-        }
+  constructor(configurationParameters: ConfigurationParameters = {}) {
+    this.apiKeys = configurationParameters.apiKeys;
+    this.username = configurationParameters.username;
+    this.password = configurationParameters.password;
+    this.accessToken = configurationParameters.accessToken;
+    this.basePath = configurationParameters.basePath;
+    this.withCredentials = configurationParameters.withCredentials;
+    this.encoder = configurationParameters.encoder;
+    if (configurationParameters.credentials) {
+      this.credentials = configurationParameters.credentials;
+    } else {
+      this.credentials = {};
     }
+
+    // init default jwtAuth credential
+    if (!this.credentials['jwtAuth']) {
+      this.credentials['jwtAuth'] = () => {
+        return typeof this.accessToken === 'function'
+          ? this.accessToken()
+          : this.accessToken;
+      };
+    }
+  }
 
   /**
    * Select the correct content-type to use for a request.
@@ -86,8 +86,8 @@ export class Configuration {
     return type;
   }
 
-    /**
-     * Select the correct accept content-type to use for a request.
+  /**
+   * Select the correct accept content-type to use for a request.
      * Uses {@link Configuration#isJsonMime} to determine the correct accept content-type.
      * If no content type is found return the first found type if the contentTypes is not empty
      * @param accepts - the array of content types that are available for selection.
@@ -121,7 +121,7 @@ export class Configuration {
     }
 
     public lookupCredential(key: string): string | undefined {
-        const value = this.credentials[key];
+      const value = this.credentials[key];
       return typeof value === 'function'
         ? value()
         : value;

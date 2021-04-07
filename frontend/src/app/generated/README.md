@@ -39,12 +39,11 @@ npm link
 
 In your project:
 ```
-npm link 
+npm link
 ```
 
-__Note for Windows users:__ The Angular CLI has troubles to use linked npm packages. Please refer to this
-issue https://github.com/angular/angular-cli/issues/8284 for a solution / workaround. Published packages are not
-effected by this issue.
+__Note for Windows users:__ The Angular CLI has troubles to use linked npm packages. Please refer to this issue https://github.com/angular/angular-cli/issues/8284 for a solution / workaround.
+Published packages are not effected by this issue.
 
 
 #### General usage
@@ -75,7 +74,7 @@ export class AppModule {}
 // configuring providers
 import { ApiModule, Configuration, ConfigurationParameters } from '';
 
-export function apiConfigFactory (): Configuration => {
+export function apiConfigFactory (): Configuration {
   const params: ConfigurationParameters = {
     // set configuration parameters here.
   }
@@ -120,17 +119,15 @@ export class AppModule {}
 import { DefaultApi } from '';
 
 export class AppComponent {
-	 constructor(private apiGateway: DefaultApi) { }
+    constructor(private apiGateway: DefaultApi) { }
 }
 ```
 
-Note: The ApiModule is restricted to being instantiated once app wide. This is to ensure that all services are treated
-as singletons.
+Note: The ApiModule is restricted to being instantiated once app wide. This is to ensure that all services are treated as singletons.
 
 #### Using multiple OpenAPI files / APIs / ApiModules
 
-In order to use multiple `ApiModules` generated from different OpenAPI files, you can create an alias name when
-importing the modules in order to avoid naming conflicts:
+In order to use multiple `ApiModules` generated from different OpenAPI files, you can create an alias name when importing the modules in order to avoid naming conflicts:
 ```
 import { ApiModule } from 'my-api-path';
 import { ApiModule as OtherApiModule } from 'my-other-api-path';
@@ -200,4 +197,4 @@ import { environment } from '../environments/environment';
   bootstrap: [ AppComponent ]
 })
 export class AppModule { }
-```  
+```

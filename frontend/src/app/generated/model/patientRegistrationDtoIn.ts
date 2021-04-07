@@ -9,9 +9,9 @@
  * https://openapi-generator.tech
  * Do not edit the class manually.
  */
-import {PhoneNumberDtoIn} from './phoneNumberDtoIn';
-import {AnswerDtoIn} from './answerDtoIn';
-import {ConfirmationDtoIn} from './confirmationDtoIn';
+import { PhoneNumberDtoIn } from './phoneNumberDtoIn';
+import { AnswerDtoIn } from './answerDtoIn';
+import { ConfirmationDtoIn } from './confirmationDtoIn';
 
 
 export interface PatientRegistrationDtoIn {
