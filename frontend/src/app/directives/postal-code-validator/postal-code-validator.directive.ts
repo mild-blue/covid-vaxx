@@ -2,7 +2,7 @@ import { Directive } from '@angular/core';
 import { AbstractControl, NG_VALIDATORS, ValidationErrors, Validator } from '@angular/forms';
 
 @Directive({
-  selector: '[postalCodeValidator]',
+  selector: '[appPostalCodeValidator]',
   providers: [{ provide: NG_VALIDATORS, useExisting: PostalCodeValidatorDirective, multi: true }]
 })
 export class PostalCodeValidatorDirective implements Validator {
