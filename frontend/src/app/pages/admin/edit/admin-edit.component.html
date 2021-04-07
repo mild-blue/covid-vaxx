@@ -10,7 +10,7 @@
   <ng-container *ngIf="patient">
     <div class="patient-form">
       <form #patientForm="ngForm">
-        <app-patient-info-form [patient]="patient" [showVaccinationDate]="true"></app-patient-info-form>
+        <app-patient-info-form [patient]="patient" [showExtraFields]="true"></app-patient-info-form>
       </form>
       <app-patient-questions-form [patient]="patient"></app-patient-questions-form>
     </div>
@@ -18,7 +18,7 @@
     <div class="buttons">
       <button [routerLink]="['/admin/patient', patient.id]" mat-flat-button>Zrušit</button>
       <button (click)="handleSave()"
-              [disabled]="patientForm.invalid || !(patientInfoChanged || answersChanged())"
+              [disabled]="patientForm.invalid || !patientChanged"
               color="success"
               mat-raised-button>
         Uložit změny

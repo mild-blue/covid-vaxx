@@ -12,7 +12,7 @@ import { PatientData } from '@app/model/PatientData';
 export class PatientInfoFormComponent {
 
   @Input() patient?: PatientData;
-  @Input() showVaccinationDate: boolean = false;
+  @Input() showExtraFields: boolean = false;
 
   public allInsuranceCompanies: string[] = Object.values(InsuranceCompany);
   public minVaccinationDate = new Date('1/1/2020');

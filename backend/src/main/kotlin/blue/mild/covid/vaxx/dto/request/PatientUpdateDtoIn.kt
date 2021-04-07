@@ -11,6 +11,7 @@ data class PatientUpdateDtoIn(
     val personalNumber: String? = null,
     val email: String? = null,
     val insuranceCompany: InsuranceCompany? = null,
+    val indication: String? = null,
     val answers: List<AnswerDtoIn>? = null,
 ) {
     override fun toString(): String =
@@ -23,6 +24,7 @@ data class PatientUpdateDtoIn(
             personalNumber?.let { "personalNumber=$it" },
             email?.let { "email=$it" },
             insuranceCompany?.let { "insuranceCompany=$it" },
+            indication?.let { "indication=$it" },
             answers?.let { answers -> "answers=[${answers.joinToString(", ") { "${it.questionId}: ${it.value}" }}]" },
         ).joinToString(", ", prefix = "update(", postfix = ")")
 }

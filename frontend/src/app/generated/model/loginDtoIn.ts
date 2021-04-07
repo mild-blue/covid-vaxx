@@ -9,10 +9,12 @@
  * https://openapi-generator.tech
  * Do not edit the class manually.
  */
+import { CredentialsDtoIn } from './credentialsDtoIn';
 
 
 export interface LoginDtoIn {
-  password: string;
-  username: string;
+  credentials: CredentialsDtoIn;
+  nurseId?: string | null;
+  vaccineSerialNumber: string;
 }
 

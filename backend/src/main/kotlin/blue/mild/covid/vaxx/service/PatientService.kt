@@ -15,7 +15,7 @@ import org.jetbrains.exposed.sql.Column
 import org.jetbrains.exposed.sql.Op
 import org.jetbrains.exposed.sql.and
 import pw.forst.tools.katlib.whenFalse
-import java.util.*
+import java.util.UUID
 
 class PatientService(
     private val patientRepository: PatientRepository,
@@ -79,6 +79,7 @@ class PatientService(
             personalNumber = changeSet.personalNumber?.let { normalizePersonalNumber(it) },
             email = changeSet.email?.trim()?.toLowerCase(),
             insuranceCompany = changeSet.insuranceCompany,
+            indication = changeSet.indication?.trim(),
             answers = changeSet.answers?.associate { it.questionId to it.value }
         ).whenFalse { throw entityNotFound<Patients>(Patients::id, patientId) }
     }

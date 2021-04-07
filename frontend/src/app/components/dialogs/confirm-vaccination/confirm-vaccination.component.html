@@ -1,7 +1,25 @@
-<div mat-dialog-content>
-  <h3>Potrvdit proběhlé očkování?</h3>
-</div>
-<mat-dialog-actions class="buttons">
-  <button mat-button mat-dialog-close>Ne</button>
-  <button mat-raised-button color="success" mat-dialog-close (click)="confirm()" cdkFocusInitial>Ano</button>
+<mat-dialog-content>
+  <h3>Vyberte místo aplikace očkování</h3>
+  <mat-button-toggle-group [(ngModel)]="bodyPart" name="bodyPart">
+    <mat-button-toggle *ngFor="let part of bodyParts"
+                       [value]="part">{{ part | bodyPart }}</mat-button-toggle>
+  </mat-button-toggle-group>
+
+  <h3>Poznámka</h3>
+  <mat-form-field floatLabel="never">
+    <textarea matInput
+              cdkTextareaAutosize
+              placeholder="Zanechte poznámku"
+              #autosize="cdkTextareaAutosize"
+              cdkAutosizeMinRows="1"
+              cdkAutosizeMaxRows="8"></textarea>
+  </mat-form-field>
+</mat-dialog-content>
+
+<mat-dialog-actions>
+  <button mat-button mat-dialog-close>Zrušit</button>
+  <button mat-raised-button color="success" mat-dialog-close (click)="confirm()">
+    Potvrdit očkování do {{ bodyPart | bodyPartInflected }}
+    <mat-icon>check</mat-icon>
+  </button>
 </mat-dialog-actions>

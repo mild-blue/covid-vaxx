@@ -9,21 +9,23 @@
  * https://openapi-generator.tech
  * Do not edit the class manually.
  */
-import { AnswerDto } from './answerDto';
+import { PhoneNumberDtoIn } from './phoneNumberDtoIn';
+import { AnswerDtoIn } from './answerDtoIn';
 import { ConfirmationDtoIn } from './confirmationDtoIn';
 
 
 export interface PatientRegistrationDtoIn {
-    answers: Array<AnswerDto>;
-    confirmation: ConfirmationDtoIn;
-    district: string;
-    email: string;
-    firstName: string;
-    insuranceCompany: PatientRegistrationDtoInInsuranceCompanyEnum;
-    lastName: string;
-    personalNumber: string;
-    phoneNumber: string;
-    zipCode: number;
+  answers: Array<AnswerDtoIn>;
+  confirmation: ConfirmationDtoIn;
+  district: string;
+  email: string;
+  firstName: string;
+  indication?: string | null;
+  insuranceCompany: PatientRegistrationDtoInInsuranceCompanyEnum;
+  lastName: string;
+  personalNumber: string;
+  phoneNumber: PhoneNumberDtoIn;
+  zipCode: number;
 }
 export enum PatientRegistrationDtoInInsuranceCompanyEnum {
     Vzp = 'VZP',

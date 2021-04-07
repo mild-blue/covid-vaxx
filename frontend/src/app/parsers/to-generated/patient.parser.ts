@@ -1,7 +1,8 @@
-import { AnswerDto, PatientRegistrationDtoIn, PatientUpdateDtoIn } from '../../generated';
+import { AnswerDtoOut, PatientRegistrationDtoIn, PatientUpdateDtoIn, PhoneNumberDtoIn } from '../../generated';
 import { fromQuestionToAnswerGenerated } from './question.parser';
 import { fromInsuranceToInsuranceGenerated, fromInsuranceToUpdateInsuranceGenerated } from '@app/parsers/to-generated/insurance.parse';
 import { PatientData } from '@app/model/PatientData';
+import { ParsedNumber, parseNumber } from 'libphonenumber-js';
 
 export const fromPatientToRegistrationGenerated = (patient: PatientData, agreement: boolean, confirmation: boolean, gdpr: boolean): PatientRegistrationDtoIn => {
   return {
@@ -18,8 +19,7 @@ export const fromPatientToRegistrationGenerated = (patient: PatientData, agreeme
 export const fromPatientToUpdateGenerated = (patient: PatientData): PatientUpdateDtoIn => {
   return {
     ...fromPatientToPartialGenerated(patient),
-    insuranceCompany: fromInsuranceToUpdateInsuranceGenerated(patient.insuranceCompany),
-    vaccinatedOn: patient.vaccinatedOn ? patient.vaccinatedOn.toISOString() : undefined
+    insuranceCompany: fromInsuranceToUpdateInsuranceGenerated(patient.insuranceCompany)
   };
 };
 
@@ -29,10 +29,20 @@ const fromPatientToPartialGenerated = (patient: PatientData): PatientPartialData
     lastName: patient.lastName.trim(),
     personalNumber: patient.personalNumber.trim(),
     email: patient.email.trim(),
-    phoneNumber: patient.phoneNumber.trim(),
+    phoneNumber: parsePhoneNumber(patient.phoneNumber.trim()),
     zipCode: +patient.zipCode.replace(' ', ''),
     district: patient.district.trim(),
+    indication: patient.indication?.trim(),
     answers: patient.questionnaire.map(fromQuestionToAnswerGenerated)
+  };
+};
+
+const parsePhoneNumber = (value: string): PhoneNumberDtoIn => {
+  const parsed: ParsedNumber = parseNumber(value) as ParsedNumber;
+
+  return {
+    countryCode: `${parsed.country}`,
+    number: `${parsed.phone}`
   };
 };
 
@@ -41,8 +51,9 @@ interface PatientPartialDataGenerated {
   lastName: string;
   personalNumber: string;
   email: string;
-  phoneNumber: string;
+  phoneNumber: PhoneNumberDtoIn;
   district: string;
+  indication?: string;
   zipCode: number;
-  answers: AnswerDto[];
+  answers: AnswerDtoOut[];
 }

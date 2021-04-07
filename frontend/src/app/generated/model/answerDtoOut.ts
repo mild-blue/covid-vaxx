@@ -11,7 +11,7 @@
  */
 
 
-export interface AnswerDto {
+export interface AnswerDtoOut {
   questionId: string;
   value: boolean;
 }
