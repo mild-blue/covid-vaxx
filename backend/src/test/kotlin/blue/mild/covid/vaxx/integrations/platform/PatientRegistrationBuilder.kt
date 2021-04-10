@@ -1,8 +1,8 @@
-package blue.mild.covid.vaxx.platform
+package blue.mild.covid.vaxx.integrations.platform
 
 import blue.mild.covid.vaxx.dto.request.ConfirmationDtoIn
-import blue.mild.covid.vaxx.util.generatePersonalNumber
-import blue.mild.covid.vaxx.utils.PatientRegistrationDtoInForTests
+import blue.mild.covid.vaxx.integrations.PatientRegistrationDtoInForTests
+import blue.mild.covid.vaxx.utils.generatePersonalNumber
 import java.util.UUID
 import kotlin.random.Random
 

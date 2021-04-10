@@ -1,11 +1,11 @@
-package blue.mild.covid.vaxx.utils
+package blue.mild.covid.vaxx.integrations
 
 import blue.mild.covid.vaxx.dao.model.InsuranceCompany
 import blue.mild.covid.vaxx.dto.request.query.CaptchaVerificationDtoIn
 import blue.mild.covid.vaxx.dto.response.AnswerDtoOut
 import blue.mild.covid.vaxx.dto.response.QuestionDtoOut
-import blue.mild.covid.vaxx.platform.PatientRegistrationBuilder
-import blue.mild.covid.vaxx.platform.defaultPatientRegistrationBuilder
+import blue.mild.covid.vaxx.integrations.platform.PatientRegistrationBuilder
+import blue.mild.covid.vaxx.integrations.platform.defaultPatientRegistrationBuilder
 import blue.mild.covid.vaxx.routes.Routes
 import com.fasterxml.jackson.databind.JsonNode
 import io.ktor.client.call.receive

@@ -1,9 +1,9 @@
-package blue.mild.covid.vaxx.api
+package blue.mild.covid.vaxx.integrations.api
 
-import blue.mild.covid.vaxx.platform.RequestMetric
-import blue.mild.covid.vaxx.utils.LoginApiTestHelper
-import blue.mild.covid.vaxx.utils.LoginUserDtoInForTest
-import blue.mild.covid.vaxx.utils.WrongObjectDtoInForTest
+import blue.mild.covid.vaxx.integrations.LoginApiTestHelper
+import blue.mild.covid.vaxx.integrations.LoginUserDtoInForTest
+import blue.mild.covid.vaxx.integrations.WrongObjectDtoInForTest
+import blue.mild.covid.vaxx.integrations.platform.RequestMetric
 import io.ktor.http.HttpStatusCode
 import mu.KLogging
 

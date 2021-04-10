@@ -1,6 +1,5 @@
-package blue.mild.covid.vaxx.platform
+package blue.mild.covid.vaxx.integrations.platform
 
-import blue.mild.covid.vaxx.api.RegistrationApiTest
 import blue.mild.covid.vaxx.utils.createLogger
 import kotlinx.coroutines.runBlocking
 

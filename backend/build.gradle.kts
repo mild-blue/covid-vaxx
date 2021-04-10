@@ -105,6 +105,7 @@ dependencies {
     val junitVersion = "5.7.1"
     testImplementation("org.junit.jupiter", "junit-jupiter-api", junitVersion) // junit testing framework
     testImplementation("org.junit.jupiter", "junit-jupiter-params", junitVersion) // generated parameters for tests
+    testImplementation("io.ktor", "ktor-server-test-host", ktorVersion)
     testRuntimeOnly("org.junit.jupiter", "junit-jupiter-engine", junitVersion)
 }
 

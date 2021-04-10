@@ -1,7 +1,7 @@
-package blue.mild.covid.vaxx.utils
+package blue.mild.covid.vaxx.integrations
 
-import blue.mild.covid.vaxx.platform.ClientRequestMetric
-import blue.mild.covid.vaxx.platform.RequestMetric
+import blue.mild.covid.vaxx.integrations.platform.ClientRequestMetric
+import blue.mild.covid.vaxx.integrations.platform.RequestMetric
 import blue.mild.covid.vaxx.routes.Routes
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule
 import io.ktor.client.HttpClient

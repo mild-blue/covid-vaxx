@@ -19,8 +19,7 @@ import blue.mild.covid.vaxx.security.auth.registerJwtAuth
 import blue.mild.covid.vaxx.security.ddos.RateLimiting
 import blue.mild.covid.vaxx.utils.createLogger
 import com.auth0.jwt.JWTVerifier
-import com.fasterxml.jackson.databind.SerializationFeature
-import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule
+import com.fasterxml.jackson.databind.ObjectMapper
 import com.papsign.ktor.openapigen.OpenAPIGen
 import com.papsign.ktor.openapigen.openAPIGen
 import com.papsign.ktor.openapigen.route.apiRouting
@@ -39,12 +38,13 @@ import io.ktor.features.DefaultHeaders
 import io.ktor.features.ForwardedHeaderSupport
 import io.ktor.features.XForwardedHeaderSupport
 import io.ktor.features.callId
+import io.ktor.http.ContentType
 import io.ktor.http.HttpHeaders
 import io.ktor.http.HttpMethod
 import io.ktor.http.content.default
 import io.ktor.http.content.files
 import io.ktor.http.content.static
-import io.ktor.jackson.jackson
+import io.ktor.jackson.JacksonConverter
 import io.ktor.request.header
 import io.ktor.request.httpMethod
 import io.ktor.request.path
@@ -55,6 +55,7 @@ import io.ktor.routing.get
 import io.ktor.routing.routing
 import org.flywaydb.core.Flyway
 import org.kodein.di.instance
+import org.kodein.di.instanceOrNull
 import org.kodein.di.ktor.di
 import org.slf4j.event.Level
 import java.util.UUID
@@ -73,6 +74,13 @@ fun Application.init() {
         registerJwtAuth()
         registerClasses()
     }
+    setupDiAwareApplication()
+}
+
+/**
+ * Application that already has DI context.
+ */
+fun Application.setupDiAwareApplication() {
     // now kodein is running and can be used
     installationLogger.debug { "DI container started." }
     // connect to the database
@@ -120,21 +128,24 @@ private fun Application.connectDatabase() {
 
     require(DatabaseSetup.isConnected()) { "It was not possible to connect to db database!" }
     installationLogger.info { "DB connected." }
-    migrateDatabase(dbConfig)
+    migrateDatabase()
 }
 
 // Migrate database using flyway.
-private fun migrateDatabase(dbConfig: DatabaseConfigurationDto) {
+private fun Application.migrateDatabase() {
     installationLogger.info { "Migrating database." }
-    val migrateResult = Flyway
-        .configure()
-        .dataSource(dbConfig.url, dbConfig.userName, dbConfig.password)
-        .load()
-        .migrate()
+    val shouldMigrate by di().instanceOrNull<Boolean>("should-migrate")
+    // enable migration by default
+    if (shouldMigrate != false) {
+        val flyway by di().instance<Flyway>()
+        val migrateResult = flyway.migrate()
 
-    installationLogger.info {
-        if (migrateResult.migrationsExecuted == 0) "No migrations necessary."
-        else "Applied ${migrateResult.migrationsExecuted} migrations."
+        installationLogger.info {
+            if (migrateResult.migrationsExecuted == 0) "No migrations necessary."
+            else "Applied ${migrateResult.migrationsExecuted} migrations."
+        }
+    } else {
+        installationLogger.warn { "Skipping database migration and verification, this should not be in production!" }
     }
 }
 
@@ -155,13 +166,10 @@ private fun Application.installBasics() {
     install(DefaultHeaders) {
         header(HttpHeaders.Server, "mild-blue")
     }
-    // initialize Jackson
+    val objectMapper by di().instance<ObjectMapper>()
+    // initialize our own configuration for Jackson
     install(ContentNegotiation) {
-        jackson {
-            registerModule(JavaTimeModule())
-            // use ie. 2021-03-15T13:55:39.813985Z instead of 1615842349.47899
-            disable(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS)
-        }
+        register(ContentType.Application.Json, JacksonConverter(objectMapper))
     }
 
     // as we're running behind the proxy, we take remote host from X-Forwarded-From

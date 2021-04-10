@@ -5,6 +5,7 @@ import blue.mild.covid.vaxx.dao.repository.NurseRepository
 import blue.mild.covid.vaxx.dao.repository.PatientRepository
 import blue.mild.covid.vaxx.dao.repository.UserRepository
 import blue.mild.covid.vaxx.dao.repository.VaccinationRepository
+import blue.mild.covid.vaxx.dto.config.DatabaseConfigurationDto
 import blue.mild.covid.vaxx.dto.config.MailJetConfigurationDto
 import blue.mild.covid.vaxx.security.ddos.CaptchaVerificationService
 import blue.mild.covid.vaxx.security.ddos.RequestVerificationService
@@ -24,6 +25,8 @@ import blue.mild.covid.vaxx.service.dummy.DummyMailService
 import blue.mild.covid.vaxx.service.dummy.DummyMedicalRegistrationService
 import blue.mild.covid.vaxx.service.dummy.DummyRequestVerificationService
 import blue.mild.covid.vaxx.utils.createLogger
+import com.fasterxml.jackson.databind.ObjectMapper
+import com.fasterxml.jackson.databind.SerializationFeature
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule
 import com.mailjet.client.ClientOptions
 import com.mailjet.client.MailjetClient
@@ -33,18 +36,36 @@ import io.ktor.client.HttpClient
 import io.ktor.client.engine.apache.Apache
 import io.ktor.client.features.json.JacksonSerializer
 import io.ktor.client.features.json.JsonFeature
+import org.flywaydb.core.Flyway
 import org.kodein.di.DI
 import org.kodein.di.bind
 import org.kodein.di.instance
 import org.kodein.di.singleton
 import pw.forst.tools.katlib.InstantTimeProvider
 import pw.forst.tools.katlib.TimeProvider
+import pw.forst.tools.katlib.jacksonMapper
 import java.time.Instant
 
 /**
  * Register instances that are created only when needed.
  */
 fun DI.MainBuilder.registerClasses() {
+    bind<Flyway>() with singleton {
+        val dbConfig = instance<DatabaseConfigurationDto>()
+        Flyway
+            .configure()
+            .dataSource(dbConfig.url, dbConfig.userName, dbConfig.password)
+            .load()
+    }
+
+    bind<ObjectMapper>() with singleton {
+        jacksonMapper().apply {
+            registerModule(JavaTimeModule())
+            // use ie. 2021-03-15T13:55:39.813985Z instead of 1615842349.47899
+            disable(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS)
+        }
+    }
+
     bind<PatientRepository>() with singleton { PatientRepository(instance()) }
     bind<UserRepository>() with singleton { UserRepository() }
     bind<DataCorrectnessRepository>() with singleton { DataCorrectnessRepository() }

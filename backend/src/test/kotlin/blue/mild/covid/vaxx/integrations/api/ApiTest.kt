@@ -1,6 +1,6 @@
-package blue.mild.covid.vaxx.api
+package blue.mild.covid.vaxx.integrations.api
 
-import blue.mild.covid.vaxx.utils.logResults
+import blue.mild.covid.vaxx.integrations.logResults
 import kotlinx.coroutines.runBlocking
 
 private const val TARGET_HOST = "https://covid-vaxx.stg.mild.blue"

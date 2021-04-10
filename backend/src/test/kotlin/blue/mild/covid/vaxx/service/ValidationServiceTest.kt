@@ -10,7 +10,7 @@ import blue.mild.covid.vaxx.dto.response.QuestionDtoOut
 import blue.mild.covid.vaxx.error.EmptyStringException
 import blue.mild.covid.vaxx.error.EmptyUpdateException
 import blue.mild.covid.vaxx.error.PropertyValidationException
-import blue.mild.covid.vaxx.util.generatePersonalNumber
+import blue.mild.covid.vaxx.utils.generatePersonalNumber
 import io.mockk.coEvery
 import io.mockk.mockk
 import kotlinx.coroutines.runBlocking
@@ -21,8 +21,7 @@ import org.junit.jupiter.params.ParameterizedTest
 import org.junit.jupiter.params.provider.Arguments
 import org.junit.jupiter.params.provider.MethodSource
 import org.junit.jupiter.params.provider.ValueSource
-import java.time.Instant
-import java.util.*
+import java.util.UUID
 import java.util.stream.Stream
 import kotlin.random.Random
 
