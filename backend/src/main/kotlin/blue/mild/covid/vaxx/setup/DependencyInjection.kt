@@ -49,6 +49,7 @@ import java.time.Instant
 /**
  * Register instances that are created only when needed.
  */
+@Suppress("LongMethod") // this is a DI container, that's fine
 fun DI.MainBuilder.registerClasses() {
     bind<Flyway>() with singleton {
         val dbConfig = instance<DatabaseConfigurationDto>()
