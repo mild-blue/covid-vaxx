@@ -11,7 +11,7 @@ import org.kodein.di.instance
 import kotlin.test.assertEquals
 
 
-class ServiceRoutesTest : ServerTestBase(needsDatabase = true) {
+class ServiceRoutesTest : ServerTestBase() {
     @Test
     fun `test status responds ok`() = withTestApplication {
         handleRequest(HttpMethod.Get, Routes.status).run {
