@@ -7,11 +7,21 @@ import io.ktor.http.HttpMethod
 import io.ktor.http.HttpStatusCode
 import io.ktor.server.testing.handleRequest
 import org.junit.jupiter.api.Test
-import org.kodein.di.instance
+import org.kodein.di.DI
+import org.kodein.di.bind
+import org.kodein.di.singleton
 import kotlin.test.assertEquals
 
 
 class ServiceRoutesTest : ServerTestBase() {
+
+    private val versionDto = ApplicationInformationDtoOut("test")
+
+    // an example of overriding the DI container
+    override fun overrideDIContainer() = DI {
+        bind<ApplicationInformationDtoOut>() with singleton { versionDto }
+    }
+
     @Test
     fun `test status responds ok`() = withTestApplication {
         handleRequest(HttpMethod.Get, Routes.status).run {
@@ -21,13 +31,12 @@ class ServiceRoutesTest : ServerTestBase() {
 
     @Test
     fun `test version is correct`() = withTestApplication {
-        val expected by di().instance<ApplicationInformationDtoOut>()
         handleRequest(HttpMethod.Get, Routes.version).run {
             assertEquals(HttpStatusCode.OK, response.status())
-            assertEquals(expected, receive())
+            // expect DTO that was injected directly from this test
+            assertEquals(versionDto, receive())
         }
     }
-
 
     @Test
     fun `test system analytics`() = withTestApplication {

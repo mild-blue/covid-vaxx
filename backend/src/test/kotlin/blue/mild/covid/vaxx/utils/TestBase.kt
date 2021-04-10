@@ -29,7 +29,7 @@ import kotlin.test.assertNotNull
 /**
  * Test base that has access to initialized dependency injection.
  *
- * Use [additionalModules] to inject and override additional dependencies.
+ * Use [overrideDIContainer] to inject and override additional dependencies.
  */
 open class DiAwareTestBase {
     protected val di by lazy {
@@ -41,11 +41,15 @@ open class DiAwareTestBase {
             // disable migration on startup, instead migrate during tests
             bind<Boolean>("should-migrate") with singleton { false }
 
-            additionalModules()?.let { extend(it, allowOverride = true) }
+            overrideDIContainer()?.let { extend(it, allowOverride = true) }
         }
     }
 
-    protected open fun additionalModules(): DI? = null
+    /**
+     * Override this if you want to add additional bindings or if you want to override
+     * some instances from the base DI container.
+     */
+    protected open fun overrideDIContainer(): DI? = null
 }
 
 /**
@@ -100,11 +104,11 @@ open class ServerTestBase(needsDatabase: Boolean = true) : DatabaseTestBase(need
     protected inline fun <reified T> TestApplicationCall.receive(): T =
         assertNotNull(receiveOrNull<T>(), "Received content was null!")
 
-    protected inline fun <reified T> TestApplicationCall.receiveOrNull(): T? =
-        response.content?.let {
-            val mapper by di().instance<ObjectMapper>()
-            mapper.readValue(it)
-        }
+    protected inline fun <reified T> TestApplicationCall.receiveOrNull(): T? {
+        val content = response.content ?: return null
+        val mapper by di().instance<ObjectMapper>()
+        return mapper.readValue(content)
+    }
 
     private val defaultPrincipal = UserPrincipal(
         userId = UUID.fromString("c3858476-3934-4727-82f5-f9d42cea4adb"),
