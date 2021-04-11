@@ -57,6 +57,11 @@ There are basically two options how to run the server, bare-metal and docker. Fo
 However, for both cases you need running database - we usually use the one in [docker-compose.yml](../docker-compose.yml). The credentials
 for inspecting the database are in the [.env](../.env).
 
+Please note, that when you run the application for the first time it does not contain any data. This means that it does not have any user in
+the database and for that reason you won't be able to perform most of the actions. The first user must be created manually in the database -
+this is because we don't want to ship this dummy user to our production environment. There's an SQL insert in the [Test data](#test-user)
+section that you should use to create this first admin user.
+
 #### Bare Metal
 
 You need to have database up & running. For that you should use included [docker-compose.yml](../docker-compose.yml). You need to be in the
