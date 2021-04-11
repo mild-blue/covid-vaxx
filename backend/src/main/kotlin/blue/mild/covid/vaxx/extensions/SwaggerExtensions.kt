@@ -9,12 +9,12 @@ import com.papsign.ktor.openapigen.route.response.OpenAPIPipelineResponseContext
 import io.ktor.features.callId
 import io.ktor.http.HttpStatusCode
 import io.ktor.response.respond
-import org.kodein.di.ktor.di
+import org.kodein.di.ktor.closestDI
 
 /**
  * Simple extension to provide DI container inside Swagger defined routes.
  */
-fun OpenAPIRoute<*>.di() = ktorRoute.di()
+fun OpenAPIRoute<*>.di() = ktorRoute.closestDI()
 
 val OpenAPIPipelineResponseContext<*>.context
     get() = pipeline.context

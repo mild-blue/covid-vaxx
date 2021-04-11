@@ -22,6 +22,7 @@ import org.junit.jupiter.api.BeforeEach
 import org.kodein.di.DI
 import org.kodein.di.bind
 import org.kodein.di.instance
+import org.kodein.di.ktor.closestDI
 import org.kodein.di.ktor.di
 import org.kodein.di.singleton
 import kotlin.test.assertEquals
@@ -34,7 +35,7 @@ import kotlin.test.assertNotNull
  * Use [overrideDIContainer] to inject and override additional dependencies.
  */
 open class DiAwareTestBase {
-    protected val di by lazy {
+    protected val rootDI by lazy {
         DI(allowSilentOverride = true) {
             bindConfiguration()
             registerJwtAuth()
@@ -61,14 +62,14 @@ open class DiAwareTestBase {
  */
 open class DatabaseTestBase(private val shouldSetupDatabase: Boolean = true) : DiAwareTestBase() {
 
-    private val flyway by di.instance<Flyway>()
+    private val flyway by rootDI.instance<Flyway>()
 
     @BeforeEach
     fun beforeEach() {
         if (shouldSetupDatabase) {
             flyway.clean()
             flyway.migrate()
-            populateDatabase(di)
+            populateDatabase(rootDI)
         }
     }
 
@@ -101,19 +102,19 @@ open class ServerTestBase(needsDatabase: Boolean = true) : DatabaseTestBase(need
     protected fun <R> withTestApplication(test: TestApplicationEngine.() -> R) {
         withTestApplication(
             {
-                di { extend(di, allowOverride = true) }
+                di { extend(rootDI, allowOverride = true) }
                 setupDiAwareApplication()
             },
             test
         )
     }
 
-    protected fun TestApplicationEngine.di() = application.di()
+    protected fun TestApplicationEngine.closestDI() = application.closestDI()
 
     protected fun TestApplicationCall.expectStatus(status: HttpStatusCode) = assertEquals(status, response.status())
 
     protected inline fun <reified T> TestApplicationRequest.jsonBody(data: T) {
-        val mapper by di.instance<ObjectMapper>()
+        val mapper by rootDI.instance<ObjectMapper>()
         setBody(mapper.writeValueAsString(data))
         addHeader(HttpHeaders.ContentType, ContentType.Application.Json.toString())
     }
@@ -123,7 +124,7 @@ open class ServerTestBase(needsDatabase: Boolean = true) : DatabaseTestBase(need
 
     protected inline fun <reified T> TestApplicationCall.receiveOrNull(): T? {
         val content = response.content ?: return null
-        val mapper by di().instance<ObjectMapper>()
+        val mapper by closestDI().instance<ObjectMapper>()
         return mapper.readValue(content)
     }
 
@@ -135,7 +136,7 @@ open class ServerTestBase(needsDatabase: Boolean = true) : DatabaseTestBase(need
     )
 
     protected fun TestApplicationRequest.authorize(principal: UserPrincipal = defaultPrincipal) {
-        val jwtService by di.instance<JwtService>()
+        val jwtService by rootDI.instance<JwtService>()
         val token = jwtService.generateToken(principal).token
         addHeader(HttpHeaders.Authorization, "Bearer $token")
     }

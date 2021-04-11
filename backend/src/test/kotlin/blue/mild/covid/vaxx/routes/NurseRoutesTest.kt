@@ -39,7 +39,7 @@ class NurseRoutesTest : ServerTestBase() {
 
     @Test
     fun `nurse should be created only by admin`() = withTestApplication {
-        val nurseRepository by di().instance<NurseRepository>()
+        val nurseRepository by closestDI().instance<NurseRepository>()
         // fetch all nurses to show how one can do that
         val allNursesBeforeCreation = runBlocking { nurseRepository.getAll() }
 

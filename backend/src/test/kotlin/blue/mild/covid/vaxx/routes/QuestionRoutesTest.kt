@@ -34,7 +34,7 @@ class QuestionRoutesTest : ServerTestBase() {
 
     @Test
     fun `cache refresh should update questions cache`() = withTestApplication {
-        val questionService by di().instance<QuestionService>()
+        val questionService by closestDI().instance<QuestionService>()
         // these are all question currently in the cache, that is used to serve all questions
         // at this point of time in this particular test, the cache returns all questions
         // from the database -- the cache and database are in sync
