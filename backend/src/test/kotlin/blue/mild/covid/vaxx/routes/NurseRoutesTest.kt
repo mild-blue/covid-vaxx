@@ -16,11 +16,10 @@ import org.jetbrains.exposed.sql.transactions.transaction
 import org.junit.jupiter.api.Disabled
 import org.junit.jupiter.api.Test
 import org.kodein.di.instance
-import pw.forst.tools.katlib.mapToSet
 import java.util.UUID
 import kotlin.test.assertEquals
-import kotlin.test.assertFalse
 import kotlin.test.assertNotNull
+import kotlin.test.assertTrue
 
 class NurseRoutesTest : ServerTestBase() {
     @Test
@@ -50,7 +49,7 @@ class NurseRoutesTest : ServerTestBase() {
             lastName = "Burnham"
         )
         // verify that the nurse to be created does not exist yet
-        assertFalse { allNursesBeforeCreation.mapToSet { it.email }.contains(nurseToCreate.email) }
+        assertTrue { allNursesBeforeCreation.none { it.email == nurseToCreate.email } }
         // try to create nurse without authorization
         handleRequest(HttpMethod.Put, Routes.nurse) {
             jsonBody(nurseToCreate)

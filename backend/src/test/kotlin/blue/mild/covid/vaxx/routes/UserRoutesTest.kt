@@ -9,10 +9,9 @@ import io.ktor.http.HttpMethod
 import io.ktor.http.HttpStatusCode
 import io.ktor.server.testing.handleRequest
 import org.junit.jupiter.api.Test
-import pw.forst.tools.katlib.mapToSet
 import java.util.UUID
 import kotlin.test.assertEquals
-import kotlin.test.assertFalse
+import kotlin.test.assertTrue
 
 
 class UserRoutesTest : ServerTestBase() {
@@ -41,7 +40,7 @@ class UserRoutesTest : ServerTestBase() {
         // try to login with existing user but with non existing nurse
         val nonExistingNurse = UUID.randomUUID()
         // assert that we indeed created nurse that does not exist
-        assertFalse { DatabaseData.nurses.mapToSet { it.id }.contains(nonExistingNurse) }
+        assertTrue { DatabaseData.nurses.none { it.id == nonExistingNurse } }
         val existingUserNonExistingNurse = LoginDtoIn(
             credentials = CredentialsDtoIn(DatabaseData.admin.email, DatabaseData.admin.password),
             nurseId = nonExistingNurse,
