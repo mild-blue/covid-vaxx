@@ -32,7 +32,7 @@ application {
 repositories {
     mavenCentral()
     maven {
-        // for swagger nad katlib
+        // for swagger and katlib
         url = URI.create("https://jitpack.io")
     }
 
