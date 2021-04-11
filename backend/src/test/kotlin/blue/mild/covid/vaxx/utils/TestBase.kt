@@ -1,6 +1,5 @@
 package blue.mild.covid.vaxx.utils
 
-import blue.mild.covid.vaxx.dao.model.UserRole
 import blue.mild.covid.vaxx.security.auth.JwtService
 import blue.mild.covid.vaxx.security.auth.UserPrincipal
 import blue.mild.covid.vaxx.security.auth.registerJwtAuth
@@ -9,10 +8,13 @@ import blue.mild.covid.vaxx.setup.registerClasses
 import blue.mild.covid.vaxx.setup.setupDiAwareApplication
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.fasterxml.jackson.module.kotlin.readValue
+import io.ktor.http.ContentType
 import io.ktor.http.HttpHeaders
+import io.ktor.http.HttpStatusCode
 import io.ktor.server.testing.TestApplicationCall
 import io.ktor.server.testing.TestApplicationEngine
 import io.ktor.server.testing.TestApplicationRequest
+import io.ktor.server.testing.setBody
 import io.ktor.server.testing.withTestApplication
 import org.flywaydb.core.Flyway
 import org.junit.jupiter.api.AfterEach
@@ -22,7 +24,7 @@ import org.kodein.di.bind
 import org.kodein.di.instance
 import org.kodein.di.ktor.di
 import org.kodein.di.singleton
-import java.util.UUID
+import kotlin.test.assertEquals
 import kotlin.test.assertNotNull
 
 
@@ -66,6 +68,7 @@ open class DatabaseTestBase(private val shouldSetupDatabase: Boolean = true) : D
         if (shouldSetupDatabase) {
             flyway.clean()
             flyway.migrate()
+            populateDatabase(di)
         }
     }
 
@@ -75,6 +78,14 @@ open class DatabaseTestBase(private val shouldSetupDatabase: Boolean = true) : D
             flyway.clean()
         }
     }
+
+    /**
+     * Override this when you need to add additional data before the each test.
+     * This method is called when the database is fully migrated.
+     *
+     * Executed only when [shouldSetupDatabase] is true.
+     */
+    protected open fun populateDatabase(di: DI) {}
 }
 
 /**
@@ -83,23 +94,29 @@ open class DatabaseTestBase(private val shouldSetupDatabase: Boolean = true) : D
  *
  * Use [withTestApplication] to access the server resource.
  *
- * Examples available: https://github.com/ktorio/ktor-documentation/tree/master/codeSnippets/snippets/testable
+ * Examples available: [here](https://github.com/ktorio/ktor-documentation/tree/master/codeSnippets/snippets/testable)
  */
 open class ServerTestBase(needsDatabase: Boolean = true) : DatabaseTestBase(needsDatabase) {
 
     protected fun <R> withTestApplication(test: TestApplicationEngine.() -> R) {
         withTestApplication(
             {
-                di {
-                    extend(di, allowOverride = true)
-                }
+                di { extend(di, allowOverride = true) }
                 setupDiAwareApplication()
             },
             test
         )
     }
 
-    protected fun TestApplicationEngine.di() = this.application.di()
+    protected fun TestApplicationEngine.di() = application.di()
+
+    protected fun TestApplicationCall.expectStatus(status: HttpStatusCode) = assertEquals(status, response.status())
+
+    protected inline fun <reified T> TestApplicationRequest.jsonBody(data: T) {
+        val mapper by di.instance<ObjectMapper>()
+        setBody(mapper.writeValueAsString(data))
+        addHeader(HttpHeaders.ContentType, ContentType.Application.Json.toString())
+    }
 
     protected inline fun <reified T> TestApplicationCall.receive(): T =
         assertNotNull(receiveOrNull<T>(), "Received content was null!")
@@ -111,8 +128,8 @@ open class ServerTestBase(needsDatabase: Boolean = true) : DatabaseTestBase(need
     }
 
     private val defaultPrincipal = UserPrincipal(
-        userId = UUID.fromString("c3858476-3934-4727-82f5-f9d42cea4adb"),
-        userRole = UserRole.ADMIN,
+        userId = DatabaseData.admin.id,
+        userRole = DatabaseData.admin.role,
         vaccineSerialNumber = "",
         nurseId = null
     )

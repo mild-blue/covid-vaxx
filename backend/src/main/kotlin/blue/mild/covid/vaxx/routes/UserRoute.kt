@@ -9,6 +9,7 @@ import blue.mild.covid.vaxx.extensions.asContextAware
 import blue.mild.covid.vaxx.extensions.determineRealIp
 import blue.mild.covid.vaxx.extensions.di
 import blue.mild.covid.vaxx.extensions.request
+import blue.mild.covid.vaxx.extensions.respondWithStatus
 import blue.mild.covid.vaxx.security.auth.JwtService
 import blue.mild.covid.vaxx.security.auth.UserPrincipal
 import blue.mild.covid.vaxx.security.auth.authorizeRoute
@@ -23,7 +24,6 @@ import com.papsign.ktor.openapigen.route.path.normal.post
 import com.papsign.ktor.openapigen.route.response.respond
 import com.papsign.ktor.openapigen.route.route
 import io.ktor.http.HttpStatusCode
-import io.ktor.response.respond
 import org.kodein.di.instance
 
 /**
@@ -64,7 +64,7 @@ fun NormalOpenAPIRoute.userRoutes() {
             get<Unit, Unit, UserPrincipal>(
                 info("Verify that the currently used token is valid. Returns 200 if token is correct, 401 otherwise.")
             ) {
-                request.call.respond(HttpStatusCode.OK)
+                respondWithStatus(HttpStatusCode.OK)
             }
         }
     }

@@ -61,7 +61,7 @@ class UserService(
         login.nurseId?.also { nurseId ->
             newSuspendedTransaction {
                 Nurses.select { Nurses.id eq nurseId }.empty()
-            }.whenTrue { loginFailed(request, userId) { NonExistingNurseException(nurseId) } }
+            }.whenTrue { loginFailed(request, userId, nurseExists = false) { NonExistingNurseException(nurseId) } }
         }
 
         // finally build principal
@@ -86,6 +86,7 @@ class UserService(
     private suspend inline fun loginFailed(
         request: ContextAware<LoginDtoIn>,
         userId: EntityId?,
+        nurseExists: Boolean = true,
         exception: () -> AuthorizationException
     ): Nothing {
         logger.warn { "Login failed for user ${request.payload.credentials.email}." }
@@ -96,7 +97,7 @@ class UserService(
                 remoteHost = request.remoteHost,
                 callId = request.callId,
                 vaccineSerialNumber = request.payload.vaccineSerialNumber.trim(),
-                nurseId = request.payload.nurseId
+                nurseId = if (nurseExists) request.payload.nurseId else null
             )
         }
         throw exception()

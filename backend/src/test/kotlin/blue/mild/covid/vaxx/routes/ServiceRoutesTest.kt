@@ -23,30 +23,30 @@ class ServiceRoutesTest : ServerTestBase() {
     }
 
     @Test
-    fun `test status responds ok`() = withTestApplication {
+    fun `status should respond with ok`() = withTestApplication {
         handleRequest(HttpMethod.Get, Routes.status).run {
-            assertEquals(HttpStatusCode.OK, response.status())
+            expectStatus(HttpStatusCode.OK)
         }
     }
 
     @Test
-    fun `test version is correct`() = withTestApplication {
+    fun `version should respond with correct version`() = withTestApplication {
         handleRequest(HttpMethod.Get, Routes.version).run {
-            assertEquals(HttpStatusCode.OK, response.status())
+            expectStatus(HttpStatusCode.OK)
             // expect DTO that was injected directly from this test
             assertEquals(versionDto, receive())
         }
     }
 
     @Test
-    fun `test system analytics`() = withTestApplication {
+    fun `system analytics should respond with correct data`() = withTestApplication {
         handleRequest(HttpMethod.Get, Routes.systemStatistics).run {
-            assertEquals(HttpStatusCode.Unauthorized, response.status())
+            expectStatus(HttpStatusCode.Unauthorized)
         }
 
         val expected = SystemStatisticsDtoOut(0, 0, 0, 0)
         handleRequest(HttpMethod.Get, Routes.systemStatistics) { authorize() }.run {
-            assertEquals(HttpStatusCode.OK, response.status())
+            expectStatus(HttpStatusCode.OK)
             assertEquals(expected, receive())
         }
     }
