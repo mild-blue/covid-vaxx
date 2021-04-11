@@ -11,12 +11,30 @@ on:
       - master
 
 jobs:
-  check:
+  run_tests:
     runs-on: ubuntu-20.04
+    timeout-minutes: 30
     # disable run if the PR is draft (as our CLI creates PR as draft once the issue is in progress)
     if: github.event.pull_request.draft == false
+    # use container to run the code as we need to use postgres
+    container: adoptopenjdk/openjdk11:alpine
+    # enable postgres
+    services:
+      postgres:
+        image: postgres:13
+        env:
+          POSTGRES_PASSWORD: postgres
+    # and run the pipeline
     steps:
       - uses: actions/checkout@v2
+
+      # override template environment variables
+      - name: Setup Environment Variables
+        run: |
+          echo "POSTGRES_HOST=postgres:5432" >> $GITHUB_ENV
+          echo "POSTGRES_DB=postgres"  >> $GITHUB_ENV
+          echo "POSTGRES_USER=postgres" >> $GITHUB_ENV
+          echo "POSTGRES_PASSWORD=postgres" >> $GITHUB_ENV
 
       - name: Setup JDK
         uses: actions/setup-java@v1

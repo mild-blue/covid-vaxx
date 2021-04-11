@@ -1,0 +1,10 @@
+version: '3.8'
+services:
+  db:
+    image: postgres:13
+    environment:
+      - POSTGRES_USER=mildblue
+      - POSTGRES_PASSWORD=mildblue-password
+      - POSTGRES_DB=covid-vaxx
+    ports:
+      - 5432:5432

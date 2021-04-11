@@ -1,4 +1,4 @@
-package blue.mild.covid.vaxx.util
+package blue.mild.covid.vaxx.utils
 
 /**
  * Generates valid personal number.
@@ -24,3 +24,4 @@ private fun generateWithLeadingZero(from: Int, to: Int): String {
     val missingZeroes = charCount - num.length
     return "0".repeat(missingZeroes) + num
 }
+

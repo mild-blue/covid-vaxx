@@ -1,4 +1,4 @@
-package blue.mild.covid.vaxx.utils
+package blue.mild.covid.vaxx.integrations
 
 import blue.mild.covid.vaxx.routes.Routes
 import com.fasterxml.jackson.databind.JsonNode

@@ -1,4 +1,4 @@
-package blue.mild.covid.vaxx.platform
+package blue.mild.covid.vaxx.integrations.platform
 
 import io.ktor.client.HttpClient
 import io.ktor.client.features.HttpClientFeature

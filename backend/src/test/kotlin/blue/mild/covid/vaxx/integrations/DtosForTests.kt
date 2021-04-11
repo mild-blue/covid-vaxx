@@ -1,4 +1,4 @@
-package blue.mild.covid.vaxx.utils
+package blue.mild.covid.vaxx.integrations
 
 data class PatientRegistrationDtoInForTests(
     val firstName: Any?,

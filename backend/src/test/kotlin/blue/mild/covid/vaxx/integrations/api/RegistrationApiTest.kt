@@ -1,11 +1,11 @@
-package blue.mild.covid.vaxx.api
+package blue.mild.covid.vaxx.integrations.api
 
-import blue.mild.covid.vaxx.platform.RequestMetric
-import blue.mild.covid.vaxx.platform.defaultPatientRegistrationBuilder
-import blue.mild.covid.vaxx.utils.AnswerDtoInForTest
-import blue.mild.covid.vaxx.utils.ConfirmationDtoInForTest
-import blue.mild.covid.vaxx.utils.RegistrationApiTestHelper
-import blue.mild.covid.vaxx.utils.WrongObjectDtoInForTest
+import blue.mild.covid.vaxx.integrations.AnswerDtoInForTest
+import blue.mild.covid.vaxx.integrations.ConfirmationDtoInForTest
+import blue.mild.covid.vaxx.integrations.RegistrationApiTestHelper
+import blue.mild.covid.vaxx.integrations.WrongObjectDtoInForTest
+import blue.mild.covid.vaxx.integrations.platform.RequestMetric
+import blue.mild.covid.vaxx.integrations.platform.defaultPatientRegistrationBuilder
 import io.ktor.http.HttpStatusCode
 import mu.KLogging
 import java.util.UUID

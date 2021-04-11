@@ -29,22 +29,14 @@ class JsonLoggingLayout : LayoutBase<ILoggingEvent>() {
             "logger" to event.loggerName.takeLastWhile { it != '.' }, // take only names without packages
             "level" to event.level.levelStr.replace("\$Companion", "") // delete static companion from name
         )
-
-        finalMap.includeMdc(event, CALL_ID)
-        finalMap.includeMdc(event, REMOTE_HOST)
-        finalMap.includeMdc(event, PATH)
-        finalMap.includeMdc(event, AMAZON_TRACE)
-
+        // include all MDCs
+        event.mdcPropertyMap.forEach { (key, entry) -> finalMap[key] = entry }
         // if this was an exception, include necessary data
         if (event.throwableProxy != null) {
             finalMap["exception"] = exception(event.throwableProxy)
         }
 
         return createJson(finalMap) + CoreConstants.LINE_SEPARATOR
-    }
-
-    private fun MutableMap<String, Any>.includeMdc(event: ILoggingEvent, mdcKey: String, mapKey: String = mdcKey) {
-        event.mdcPropertyMap[mdcKey]?.also { mdcValue -> this[mapKey] = mdcValue }
     }
 
     private fun exception(proxy: IThrowableProxy) = mapOf(
@@ -56,4 +48,3 @@ class JsonLoggingLayout : LayoutBase<ILoggingEvent>() {
     private fun formatTime(event: ILoggingEvent): String =
         dateTimeFormatter.format(Instant.ofEpochMilli(event.timeStamp))
 }
-

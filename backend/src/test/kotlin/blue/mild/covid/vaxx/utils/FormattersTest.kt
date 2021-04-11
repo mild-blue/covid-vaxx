@@ -1,8 +1,6 @@
-package blue.mild.covid.vaxx.util
+package blue.mild.covid.vaxx.utils
 
 import blue.mild.covid.vaxx.dto.request.PhoneNumberDtoIn
-import blue.mild.covid.vaxx.utils.formatPhoneNumber
-import blue.mild.covid.vaxx.utils.removeAllWhitespaces
 import org.junit.jupiter.api.Test
 import kotlin.test.assertEquals
 
