@@ -24,7 +24,7 @@ contact [Lukas Forst](mailto:lukas@mild.blue).
 * We use standard implementation of authorization from Ktor.
 * We use JWTs for request authentication, and we sign them with HMAC256.
 * We use Role Based Authorization when we need to distinguish between roles -
-  see [RoleBasedAuthorization](src/main/kotlin/blue/mild/covid/vaxx/security/auth/RoleBasedAuthorization.kt). based
+  see [RoleBasedAuthorization](src/main/kotlin/blue/mild/covid/vaxx/security/auth/RoleBasedAuthorization.kt) - based
   on [this article](https://www.ximedes.com/2020-09-17/role-based-authorization-in-ktor/) with modifications for OpenAPI Generator.
 * We use [reCaptcha](https://developers.google.com/recaptcha/docs/v3) to verify the patients registrations.
 * We have simple rate limiting built to the Ktor - [Limiter](src/main/kotlin/blue/mild/covid/vaxx/security/ddos/LinearRateLimiter.kt)
@@ -104,7 +104,7 @@ information.
 * Classic unit testing without database and server -
   [ValidationServiceTest.kt](src/test/kotlin/blue/mild/covid/vaxx/service/ValidationServiceTest.kt) - it even has some nifty features like
   parameters testing and mocking.
-* Simple integration tests that requiring database and starting the server
+* Simple integration tests that require database and starting the server
   [ServiceRoutesTest.kt](src/test/kotlin/blue/mild/covid/vaxx/routes/ServiceRoutesTest.kt).
 
 ## Application Configuration
