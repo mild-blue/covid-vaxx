@@ -70,7 +70,7 @@ directory `backend` in order for commands to work.
 1. To start the database run `make db` - or `docker-compose -f ../docker-compose.yml up -d db` if you don't have Make.
 2. Now when the database is running, execute `./gradlew run`
 3. The application is now up & running on [localhost:8080](http://localhost:8080) *(open this address in the browser)* - if you installed
-   the frontend as well, you should see the complete app. If not, you can test all backend endpoints using [Swagger UI](https://swagger.io/)
+   the frontend as well, you should see the complete app (you should either set the working directory to `backend` or set env variable `FRONTEND_PATH` properly). If not, you can test all backend endpoints using [Swagger UI](https://swagger.io/)
    that is running on [localhost:8080/swagger-ui](http://localhost:8080/swagger-ui).
 4. To stop the running database, run `make stop-db` or `docker-compose -f ../docker-compose.yml stop db`.
 
