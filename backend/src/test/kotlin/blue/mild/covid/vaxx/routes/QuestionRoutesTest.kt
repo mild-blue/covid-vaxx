@@ -27,6 +27,7 @@ class QuestionRoutesTest : ServerTestBase() {
 
         // very similar test is for example InsuranceCompanyRoutesTest where we call the endpoint and check
         // that the returned data (and the HTTP status code) are the data we expect
+
         // you can see how to fetch questions from database in the following test
 
         // once the test is created, delete @Disabled annotation
@@ -34,13 +35,13 @@ class QuestionRoutesTest : ServerTestBase() {
 
     @Test
     fun `cache refresh should update questions cache`() = withTestApplication {
-        val questionService by di().instance<QuestionService>()
+        val questionService by closestDI().instance<QuestionService>()
         // these are all question currently in the cache, that is used to serve all questions
         // at this point of time in this particular test, the cache returns all questions
         // from the database -- the cache and database are in sync
         val allQuestions = runBlocking { questionService.getCachedQuestions() }
 
-        // now we broke the synchronization between the cache and the database
+        // now we break the synchronization between the cache and the database
         val newQuestionId = transaction {
             Questions.insert {
                 it[placeholder] = "mood"

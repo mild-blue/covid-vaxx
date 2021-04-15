@@ -56,6 +56,7 @@ import io.ktor.routing.routing
 import org.flywaydb.core.Flyway
 import org.kodein.di.instance
 import org.kodein.di.instanceOrNull
+import org.kodein.di.ktor.closestDI
 import org.kodein.di.ktor.di
 import org.slf4j.event.Level
 import java.util.UUID
@@ -92,7 +93,7 @@ fun Application.setupDiAwareApplication() {
 }
 
 private fun Application.installRouting() {
-    val staticContentPath by di().instance<String>(EnvVariables.FRONTEND_PATH)
+    val staticContentPath by closestDI().instance<String>(EnvVariables.FRONTEND_PATH)
     routing {
         // configure static routes to serve frontend
         static {
@@ -121,7 +122,7 @@ private fun Application.installRouting() {
 
 // Connect bot to the database.
 private fun Application.connectDatabase() {
-    val dbConfig by di().instance<DatabaseConfigurationDto>()
+    val dbConfig by closestDI().instance<DatabaseConfigurationDto>()
 
     installationLogger.info { "Connecting to the DB" }
     DatabaseSetup.connect(dbConfig)
@@ -134,10 +135,10 @@ private fun Application.connectDatabase() {
 // Migrate database using flyway.
 private fun Application.migrateDatabase() {
     installationLogger.info { "Migrating database." }
-    val shouldMigrate by di().instanceOrNull<Boolean>("should-migrate")
+    val shouldMigrate by closestDI().instanceOrNull<Boolean>("should-migrate")
     // enable migration by default
     if (shouldMigrate != false) {
-        val flyway by di().instance<Flyway>()
+        val flyway by closestDI().instance<Flyway>()
         val migrateResult = flyway.migrate()
 
         installationLogger.info {
@@ -166,7 +167,7 @@ private fun Application.installBasics() {
     install(DefaultHeaders) {
         header(HttpHeaders.Server, "mild-blue")
     }
-    val objectMapper by di().instance<ObjectMapper>()
+    val objectMapper by closestDI().instance<ObjectMapper>()
     // initialize our own configuration for Jackson
     install(ContentNegotiation) {
         register(ContentType.Application.Json, JacksonConverter(objectMapper))
@@ -180,7 +181,7 @@ private fun Application.installBasics() {
 // Allow CORS.
 private fun Application.setupCors() {
     // enable CORS if necessary
-    val corsHosts by di().instance<CorsConfigurationDto>()
+    val corsHosts by closestDI().instance<CorsConfigurationDto>()
     val allowAndExpose: CORS.Configuration.(String) -> Unit = { headerName ->
         header(headerName)
         exposeHeader(headerName)
@@ -209,9 +210,9 @@ private fun Application.setupCors() {
 
 // Install authentication.
 private fun Application.installAuthentication() {
-    val jwtConfigurationDto by di().instance<JwtConfigurationDto>()
-    val jwtVerifier by di().instance<JWTVerifier>()
-    val jwtService by di().instance<JwtService>()
+    val jwtConfigurationDto by closestDI().instance<JwtConfigurationDto>()
+    val jwtVerifier by closestDI().instance<JWTVerifier>()
+    val jwtService by closestDI().instance<JwtService>()
     // Ktor default JWT authentication
     install(Authentication) {
         jwt {
@@ -226,7 +227,7 @@ private fun Application.installAuthentication() {
 
 // Install swagger features.
 private fun Application.installSwagger() {
-    val enableSwagger by di().instance<Boolean>(EnvVariables.ENABLE_SWAGGER)
+    val enableSwagger by closestDI().instance<Boolean>(EnvVariables.ENABLE_SWAGGER)
 
     // install swagger
     install(OpenAPIGen) {
@@ -300,7 +301,7 @@ private fun Application.installMonitoring() {
 
 // Install rate limiting to prevent DDoS.
 private fun Application.installRateLimiting() {
-    val configuration by di().instance<RateLimitConfigurationDto>()
+    val configuration by closestDI().instance<RateLimitConfigurationDto>()
     if (configuration.enableRateLimiting) {
         install(RateLimiting) {
             limit = configuration.rateLimit

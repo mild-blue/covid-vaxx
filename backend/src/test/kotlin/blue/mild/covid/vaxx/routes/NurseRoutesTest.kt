@@ -28,18 +28,19 @@ class NurseRoutesTest : ServerTestBase() {
         TODO("implement this test for file NurseRoutes.kt")
         // verify two cases:
         // 1. when user submits correct credentials, server should respond with all nurses in the database
-        // 2. with invalid credentials, in that case server should respond with status 401
+        // 2. in case of invalid credentials, the server should respond with status 401
 
         // very similar test is for example UserRoutesTest, where we try to log in and then check
-        // what status code server returned
-        // how to get all nurses can be seen in the next test
+        // what status code the server returned
 
-        // once the test is created, delete @Disabled annotation
+        // check the next test case to see how to get all nurses
+
+        // once the test is created, delete @Disabled annotation and this TODO comments
     }
 
     @Test
     fun `nurse should be created only by admin`() = withTestApplication {
-        val nurseRepository by di().instance<NurseRepository>()
+        val nurseRepository by closestDI().instance<NurseRepository>()
         // fetch all nurses to show how one can do that
         val allNursesBeforeCreation = runBlocking { nurseRepository.getAll() }
 
