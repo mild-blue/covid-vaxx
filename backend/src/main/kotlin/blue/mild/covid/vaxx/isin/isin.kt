@@ -25,66 +25,72 @@ import java.security.KeyStore
 
 
 private val logger = createLogger("HttpClientConfiguration")
-private val publicRoot = "https://apidoc.uzis.cz/api/v1/"
-private val testRoot = "https://apitest.uzis.cz/api/v1/"
-private val productionRoot = "https://api.uzis.cz/api/v1/"
-private val root = productionRoot
-private val urlCiselnik = "ciselniky/Nacti/AplikacniCesty"
-
+private val publicRoot = "https://apidoc.uzis.cz/api/v1"
+private val testRoot = "https://apitest.uzis.cz/api/v1"
+private val productionRoot = "https://api.uzis.cz/api/v1"
+private val pcz = "000"
+private val NrzpCislo = "184070832"
+private val userIdentification = "?pcz=$pcz&pracovnikNrzpCislo=$NrzpCislo"
+private val pracovnik = Pracovnik(pcz = pcz, pracovnikNrzpCislo = NrzpCislo)
+private val root = publicRoot
 
 private val urlVytvorNeboZmenVakcinaci = "vakcinace/VytvorNeboZmenVakcinaci"
+private val urlVytvorNeboZmenDavku = "vakcinace/VytvorNeboZmenDavku"
 private val urlZmenStavVakcinace = "vakcinace/ZmenStavVakcinace"
 private val urlVakcinace = "vakcinace/NacistVakcinaciDleId"
 private val urlNactiPracovniky = "nrzp/NactiPracovniky"
+private val urlAktualizujKontaktniUdajePacienta = "pacienti/AktualizujKontaktniUdajePacienta"
+private val urlNajdiPacienta = "pacienti/VyhledatDleJmenoPrijmeniRc"
 
 private val vytvorVakcinaci = VytvorNeboZmenVakcinaci(
-        pacientId = "1",
-        typOckovaniKod = "1",
-        indikace = listOf("1"),
-        pracovnik = Pracovnik("1")
+    pacientId = "1",
+    typOckovaniKod = "1",
+    indikace = listOf("1"),
+    pracovnik = pracovnik
 )
 
 private val configuration = KeyStoreConfiguration(
-        storePass = "",
-        storePath = "/home/honza/Desktop/rgu_ws_44797362.pfx",
-        storeType = "JKS",
-        keyPass = ""
+    storePass = "",
+    storePath = "/home/honza/Desktop/rgu_ws_44797362.pfx",
+    storeType = "JKS",
+    keyPass = ""
 )
 
 /**
  * Prepares HTTP Client with given keystore.
  */
 fun client(
-        config: KeyStoreConfiguration
+    config: KeyStoreConfiguration
 ) =
-        HttpClient(Apache) {
-            install(JsonFeature) {
-                serializer = JacksonSerializer()
-            }
+    HttpClient(Apache) {
+        install(JsonFeature) {
+            serializer = JacksonSerializer()
+        }
 
-            install(Logging) {
-                logger = Logger.TRACE
-                level = LogLevel.ALL
-            }
+        install(Logging) {
+            logger = Logger.TRACE
+            level = LogLevel.ALL
+        }
 
 //            configureCertificates(config)
-        }
+    }
+
 
 /**
  * Tries to read and create key store.
  */
 private fun readStore(config: KeyStoreConfiguration): KeyStore? =
-        runCatching {
-            File(config.storePath).inputStream().use {
-                KeyStore.getInstance(config.storeType).apply {
-                    load(it, config.storePass.toCharArray())
-                }
+    runCatching {
+        File(config.storePath).inputStream().use {
+            KeyStore.getInstance(config.storeType).apply {
+                load(it, config.storePass.toCharArray())
             }
-        }.onFailure {
-            logger.error(it) { "It was not possible to load key store!" }
-        }.onSuccess {
-            logger.debug { "KeyStore loaded." }
-        }.getOrNull()
+        }
+    }.onFailure {
+        logger.error(it) { "It was not possible to load key store!" }
+    }.onSuccess {
+        logger.debug { "KeyStore loaded." }
+    }.getOrNull()
 
 
 /**
@@ -94,10 +100,10 @@ private fun HttpClientConfig<ApacheEngineConfig>.configureCertificates(config: K
     engine {
         customizeClient {
             setSSLContext(
-                    SSLContextBuilder
-                            .create()
-                            .loadKeyMaterial(readStore(config), config.keyPass.toCharArray())
-                            .build()
+                SSLContextBuilder
+                    .create()
+                    .loadKeyMaterial(readStore(config), config.keyPass.toCharArray())
+                    .build()
             )
         }
     }
@@ -123,35 +129,61 @@ private val Logger.Companion.TRACE: Logger
         }
     }
 
-suspend fun vytvorVakcinaci(isinClient: HttpClient, data: VytvorNeboZmenVakcinaci): HttpResponse {
-    val requestUrl = "$root$urlVytvorNeboZmenVakcinaci"
-    return isinClient.post<HttpResponse>(requestUrl) { // should be disabled
+private fun createIsinURL(requestUrl: String, baseUrl: String = root, parameters: List<Any> = listOf()): String {
+    val parametersUrl = parameters.map { it.toString() }.joinToString(separator = "/")
+    return "$baseUrl/$requestUrl/$parametersUrl$userIdentification"
+}
+
+suspend fun getUrl(isinClient: HttpClient, url: String): JsonNode {
+    return isinClient.get<HttpResponse>(url).receive<JsonNode>()
+}
+
+suspend fun postUrlData(
+    isinClient: HttpClient,
+    url: String,
+    data: Any = {}
+): JsonNode {
+
+    return isinClient.post<HttpResponse>(url) {
         contentType(ContentType.Application.Json)
         accept(ContentType.Application.Json)
         body = data
-    }
+    }.receive<JsonNode>()
 }
 
-suspend fun uzavriVakcinaci(isinClient: HttpClient,
-                            idVakcinace: Int,
-                            pcz: String): HttpResponse {
-    val requestUrl = "$root$urlZmenStavVakcinace/$idVakcinace/Indikovano/?pcz=$pcz&pracovnikNrzpCislo=184070832"
-    return isinClient.post<HttpResponse>(requestUrl) {
-        contentType(ContentType.Application.Json)
-        accept(ContentType.Application.
-        Json)
-        body = {}
-    }
+suspend fun getPatientId(isinClient: HttpClient, jmeno: String, prijmeni: String, rodneCislo: String): String? {
+    val url = createIsinURL(urlNajdiPacienta, parameters = listOf(jmeno, prijmeni, rodneCislo))
+    val response = getUrl(isinClient, url)
+    return response.get("pacient").get("id").textValue()
 }
 
-suspend fun getUrl(isinClient: HttpClient, url: String = urlNactiPracovniky): HttpResponse {
-    val requestUrl = "$root$url"
-    return isinClient.get<HttpResponse>(requestUrl)
+suspend fun aktualizujKontaktniUdajePacienta(isinClient: HttpClient, data: AktualizujPacienta): JsonNode {
+    val url = createIsinURL(urlAktualizujKontaktniUdajePacienta)
+    return postUrlData(isinClient, url, data)
 }
 
-suspend fun getVakcinace(isinClient: HttpClient, id: Int, pcz: String): HttpResponse {
-    val requestUrl = "$root$urlVakcinace/$id?pcz=$pcz&pracovnikRodneCislo=415915954"
-    return isinClient.get<HttpResponse>(requestUrl)
+suspend fun vytvorVakcinaci(isinClient: HttpClient, data: VytvorNeboZmenVakcinaci): String? {
+    val url = createIsinURL(urlVytvorNeboZmenVakcinaci)
+    val response = postUrlData(isinClient, url, data)
+    return response.get("id").textValue()
+}
+
+
+suspend fun vytvorDavku(isinClient: HttpClient, data: VytvorNeboZmenDavku): JsonNode {
+    val url = createIsinURL(urlVytvorNeboZmenDavku)
+    return postUrlData(isinClient, url, data)
+}
+
+
+suspend fun uzavriVakcinaci(isinClient: HttpClient, idVakcinace: String): JsonNode {
+    val url = createIsinURL(urlZmenStavVakcinace, parameters = listOf(idVakcinace, "Ukoncene"))
+    return postUrlData(isinClient, url)
+}
+
+suspend fun getDavkyVakcinace(isinClient: HttpClient, id: String): JsonNode {
+    val url = createIsinURL(urlVakcinace, parameters = listOf(id))
+    val response = getUrl(isinClient, url)
+    return response.get("davky")
 }
 
 fun main() {
@@ -159,24 +191,33 @@ fun main() {
 
         val isinClient = client(configuration)
 
-        val response = getUrl(isinClient)
-        print(response.receive<JsonNode>())
+        val id = getPatientId(isinClient, "Jan", "Kubant", "9002030015")!!
 
-//        val response = getUrl(isinClient,"pacienti/VyhledatMePacienty?cisloPojistence=9002030015&pracovnikRodneCislo=415915954&pcz=000")
-//        print(response.receive<JsonNode>())
-
-
-//        val response = getUrl(isinClient,"vakcinace/NacistMojeOckovani/4-1-2021/12-31-2021?pcz=000&pracovnikNrzpCislo=1")
-//        print(response.receive<JsonNode>())
-
-//        val responseCiselnik = getVakcinace(isinClient, 1000, "000")
-//        print(responseCiselnik.receive<JsonNode>())
-
-//        val responseVytvor = vytvorVakcinaci(isinClient, vytvorVakcinaci)
-//        print(responseVytvor.receive<JsonNode>())
-//
-//        val responseUzavri = uzavriVakcinaci(isinClient, 1, "000")
-//        print(responseUzavri.receive<JsonNode>())
+        aktualizujKontaktniUdajePacienta(
+            isinClient, AktualizujPacienta(
+                idPacienta = id,
+                kontaktniEmail = "test@test.cz",
+                kontaktniMobilniTelefon = "123456789",
+                pracovnik = Pracovnik(pcz = pcz, pracovnikNrzpCislo = NrzpCislo)
+            )
+        )
+        val vakcinaceId = (vytvorVakcinaci(isinClient, vytvorVakcinaci) ?: "fix_for_test")
+            ?: throw IllegalArgumentException("Vaccination creation failed, no vaccitaion id was returned")
+        vytvorDavku(
+            isinClient, VytvorNeboZmenDavku(
+                datumVakcinace = "2020-12-10T00:00:00",
+                vakcinaceId = vakcinaceId,
+                ockovaciLatkaKod = "kod",
+                sarze = "sarze",
+                expirace = "2020-12-10T00:00:00",
+                pracovnik = pracovnik,
+                mistoAplikaceKod = "dr",
+                stav = "Ukoncene"
+            )
+        )
+        val vysledneDavky = getDavkyVakcinace(isinClient, vakcinaceId)
+        println("Pocet davek ${vysledneDavky.size()}")
+        println(vysledneDavky)
     }
 
 }
