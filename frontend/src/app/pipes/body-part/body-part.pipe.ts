@@ -10,9 +10,9 @@ export class BodyPartPipe implements PipeTransform {
     if (value === BodyPart.Buttock.valueOf()) {
       return 'Hýždě';
     } else if (value === BodyPart.DominantHand.valueOf()) {
-      return 'Dominantní ruka';
+      return 'Dominantní paže';
     } else if (value === BodyPart.NonDominantHand.valueOf()) {
-      return 'Nedominantní ruka';
+      return 'Nedominantní paže';
     }
 
     return value;
