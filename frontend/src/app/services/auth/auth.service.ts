@@ -4,7 +4,7 @@ import { environment } from '@environments/environment';
 import { BehaviorSubject, Observable } from 'rxjs';
 import { HttpClient } from '@angular/common/http';
 import { Router } from '@angular/router';
-import * as jwt_decode from 'jwt-decode';
+import jwt_decode from 'jwt-decode';
 import { DecodedToken, User, UserRole } from '@app/model/User';
 import { CredentialsDtoIn, LoginDtoIn, PersonnelDtoOut, UserLoginResponseDtoOut } from '@app/generated';
 import { parseNurse } from '@app/parsers/nurse.parser';
