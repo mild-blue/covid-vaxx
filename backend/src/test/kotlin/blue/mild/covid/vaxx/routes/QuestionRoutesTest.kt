@@ -20,17 +20,14 @@ import kotlin.test.assertTrue
 
 class QuestionRoutesTest : ServerTestBase() {
     @Test
-    @Disabled
     fun `server should return all questions from the database`() = withTestApplication {
-        TODO("implement this test for file QuestionRoutes.kt")
-        // verify that calling Routes.questions endpoint returns all questions from the database
+        val questionService by closestDI().instance<QuestionService>()
 
-        // very similar test is for example InsuranceCompanyRoutesTest where we call the endpoint and check
-        // that the returned data (and the HTTP status code) are the data we expect
-
-        // you can see how to fetch questions from database in the following test
-
-        // once the test is created, delete @Disabled annotation
+        val allQuestions = runBlocking { questionService.getCachedQuestions() }
+        handleRequest(HttpMethod.Get, Routes.questions).run {
+            expectStatus(HttpStatusCode.OK)
+            assertEquals(allQuestions, receive())
+        }
     }
 
     @Test
