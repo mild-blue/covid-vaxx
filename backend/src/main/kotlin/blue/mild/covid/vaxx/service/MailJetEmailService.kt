@@ -12,7 +12,7 @@ import org.jetbrains.exposed.sql.transactions.transaction
 import org.jetbrains.exposed.sql.update
 import org.json.JSONArray
 import org.json.JSONObject
-import pw.forst.tools.katlib.TimeProvider
+import pw.forst.katlib.TimeProvider
 import java.io.StringWriter
 import java.time.Instant
 import freemarker.template.Configuration as FreemarkerConfiguration

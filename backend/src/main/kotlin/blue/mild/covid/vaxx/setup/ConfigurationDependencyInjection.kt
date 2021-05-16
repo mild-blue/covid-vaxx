@@ -12,8 +12,8 @@ import blue.mild.covid.vaxx.utils.createLogger
 import org.kodein.di.DI
 import org.kodein.di.bind
 import org.kodein.di.singleton
-import pw.forst.tools.katlib.getEnv
-import pw.forst.tools.katlib.whenNull
+import pw.forst.katlib.getEnv
+import pw.forst.katlib.whenNull
 import java.io.File
 import java.time.Duration
 import java.util.UUID

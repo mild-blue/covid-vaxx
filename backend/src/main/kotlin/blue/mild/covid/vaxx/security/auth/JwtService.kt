@@ -8,8 +8,8 @@ import com.auth0.jwt.JWTVerifier
 import com.auth0.jwt.algorithms.Algorithm
 import io.ktor.auth.jwt.JWTCredential
 import mu.KLogging
-import pw.forst.tools.katlib.applyIf
-import pw.forst.tools.katlib.toUuid
+import pw.forst.katlib.applyIf
+import pw.forst.katlib.toUuid
 import java.util.Date
 
 /**

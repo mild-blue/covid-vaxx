@@ -32,14 +32,14 @@ application {
 repositories {
     mavenCentral()
     maven {
-        // for swagger and katlib
+        // for swagger
         url = URI.create("https://jitpack.io")
     }
 }
 
 dependencies {
     // extension functions
-    implementation("com.github.LukasForst", "katlib", "1.2.1")
+    implementation("pw.forst", "katlib", "2.0.1")
 
     // Ktor server dependencies
     val ktorVersion = "1.5.4"

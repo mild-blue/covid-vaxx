@@ -1,8 +1,8 @@
 package blue.mild.covid.vaxx.security.ddos
 
 import kotlinx.coroutines.sync.Mutex
-import pw.forst.tools.katlib.InstantTimeProvider
-import pw.forst.tools.katlib.TimeProvider
+import pw.forst.katlib.InstantTimeProvider
+import pw.forst.katlib.TimeProvider
 import java.time.Duration
 import java.time.Instant
 import java.util.concurrent.ConcurrentHashMap
