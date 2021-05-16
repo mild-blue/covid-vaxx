@@ -2,11 +2,11 @@ import java.net.URI
 
 
 plugins {
-    kotlin("jvm") version "1.4.32"
+    kotlin("jvm") version "1.5.0"
     application
     distribution
     id("net.nemerosa.versioning") version "2.14.0"
-    id("io.gitlab.arturbosch.detekt") version "1.16.0"
+    id("io.gitlab.arturbosch.detekt") version "1.17.0"
 }
 
 group = "blue.mild.covid.vaxx"
@@ -35,10 +35,6 @@ repositories {
         // for swagger and katlib
         url = URI.create("https://jitpack.io")
     }
-
-    // unfortunately we need to keep it here
-    // until Detekt fully migrates see https://github.com/detekt/detekt/pull/3455
-    jcenter()
 }
 
 dependencies {
@@ -46,7 +42,7 @@ dependencies {
     implementation("com.github.LukasForst", "katlib", "1.2.1")
 
     // Ktor server dependencies
-    val ktorVersion = "1.5.3"
+    val ktorVersion = "1.5.4"
     implementation("io.ktor", "ktor-server-core", ktorVersion)
     implementation("io.ktor", "ktor-server-netty", ktorVersion)
     implementation("io.ktor", "ktor-jackson", ktorVersion)
@@ -72,7 +68,7 @@ dependencies {
     implementation("io.ktor", "ktor-client-logging-jvm", ktorVersion)
 
     // Jackson JSON
-    val jacksonVersion = "2.12.2"
+    val jacksonVersion = "2.12.3"
     implementation("com.fasterxml.jackson.core", "jackson-databind", jacksonVersion)
     implementation("com.fasterxml.jackson.module", "jackson-module-kotlin", jacksonVersion)
     implementation("com.fasterxml.jackson.datatype", "jackson-datatype-jsr310", jacksonVersion)
@@ -92,23 +88,23 @@ dependencies {
     implementation("org.kodein.di", "kodein-di-framework-ktor-server-jvm", kodeinVersion)
 
     // database
-    implementation("org.postgresql", "postgresql", "42.2.19")
+    implementation("org.postgresql", "postgresql", "42.2.20")
 
-    val exposedVersion = "0.30.1"
+    val exposedVersion = "0.31.1"
     implementation("org.jetbrains.exposed", "exposed-core", exposedVersion)
     implementation("org.jetbrains.exposed", "exposed-dao", exposedVersion)
     implementation("org.jetbrains.exposed", "exposed-jdbc", exposedVersion)
     implementation("org.jetbrains.exposed", "exposed-java-time", exposedVersion)
 
     // database migrations from the code
-    implementation("org.flywaydb", "flyway-core", "7.7.3")
+    implementation("org.flywaydb", "flyway-core", "7.9.0")
 
     // sending emails
     implementation("com.mailjet", "mailjet-client", "5.1.1")
     implementation("org.freemarker", "freemarker", "2.3.31")
 
     // validation
-    implementation("com.googlecode.libphonenumber", "libphonenumber", "8.12.21")
+    implementation("com.googlecode.libphonenumber", "libphonenumber", "8.12.23")
 
     // tests
     testImplementation("io.mockk", "mockk", "1.11.0")

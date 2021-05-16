@@ -16,6 +16,7 @@ open class RegistrationApiTest(
 
     private companion object : KLogging()
 
+    @Suppress("LongMethod") // fine here
     override suspend fun execute(): List<RequestMetric> {
 
         runPatientRegistrationWithBuilder {}
