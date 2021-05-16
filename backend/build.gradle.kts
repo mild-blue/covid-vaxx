@@ -40,6 +40,7 @@ repositories {
 dependencies {
     // extension functions
     implementation("pw.forst", "katlib", "2.0.1")
+    implementation("org.jetbrains.kotlin", "kotlin-reflect", "1.5.0")
 
     // Ktor server dependencies
     val ktorVersion = "1.5.4"
