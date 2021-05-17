@@ -2,7 +2,7 @@ package blue.mild.covid.vaxx.dao.model
 
 import org.jetbrains.exposed.sql.Column
 import org.jetbrains.exposed.sql.Table
-import java.util.UUID
+import java.util.*
 
 /**
  * Represents format for IDs.
@@ -33,3 +33,8 @@ fun Table.patientReference(name: String = "patient_id"): Column<EntityId> = enti
  * Reference to [Questions.id].
  */
 fun Table.questionReference(name: String = "question_id"): Column<EntityId> = entityId(name) references Questions.id
+
+/**
+ * Reference to [Locations.id].
+ */
+fun Table.locationReference(name: String = "location_id"): Column<EntityId> = entityId(name) references Locations.id

@@ -1,0 +1,134 @@
+package blue.mild.covid.vaxx.dao.repository
+
+import blue.mild.covid.vaxx.dao.model.EntityId
+import blue.mild.covid.vaxx.dao.model.Locations
+import blue.mild.covid.vaxx.dao.model.Patients
+import blue.mild.covid.vaxx.dao.model.VaccinationSlots
+import blue.mild.covid.vaxx.dto.response.LocationDtoOut
+import blue.mild.covid.vaxx.dto.response.VaccinationSlotDtoOut
+import org.jetbrains.exposed.sql.Op
+import org.jetbrains.exposed.sql.ResultRow
+import org.jetbrains.exposed.sql.SqlExpressionBuilder
+import org.jetbrains.exposed.sql.deleteWhere
+import org.jetbrains.exposed.sql.insert
+import org.jetbrains.exposed.sql.leftJoin
+import org.jetbrains.exposed.sql.select
+import org.jetbrains.exposed.sql.selectAll
+import org.jetbrains.exposed.sql.transactions.experimental.newSuspendedTransaction
+import org.jetbrains.exposed.sql.update
+
+@Suppress("LongParameterList") // it's a repository, we're fine with this
+class LocationRepository {
+
+    /**
+     * Updates location entity with given id. Change set of the given properties
+     * is applied to the entity.
+     *
+     * Note: use named parameters while using this method.
+     */
+    suspend fun updateLocationChangeSet(
+        id: EntityId,
+        address: String? = null,
+        zipCode: Int? = null,
+        district: String? = null,
+        phoneNumber: String? = null,
+        email: String? = null,
+        note: String? = null,
+    ): Boolean = newSuspendedTransaction {
+        // check if any property is not null
+        val isLocationEntityUpdateNecessary =
+            address
+            ?: district ?: zipCode
+            ?: phoneNumber ?: email
+            ?: note
+        // if so, perform update query
+        val locationUpdated = if (isLocationEntityUpdateNecessary != null) {
+            Locations.update(
+                where = { Locations.id eq id },
+                body = { row ->
+                    row.apply {
+                        updateIfNotNull(address, Locations.address)
+                        updateIfNotNull(zipCode, Locations.zipCode)
+                        updateIfNotNull(district, Locations.district)
+                        updateIfNotNull(phoneNumber, Locations.phoneNumber)
+                        updateIfNotNull(email, Patients.email)
+                        updateIfNotNull(note, Locations.note)
+                    }
+                }
+            )
+        } else 0
+        // indicate that patient was updated if patient entity was updated OR at least one answer was updated
+        locationUpdated > 0
+    }
+
+    /**
+     * Gets and maps locations by given where clause.
+     *
+     * If no clause is given, it returns and maps whole database.
+     */
+    suspend fun getAndMapLocationsBy(
+        where: (SqlExpressionBuilder.() -> Op<Boolean>)? = null
+    ): List<LocationDtoOut> = newSuspendedTransaction { getAndMapLocations(where) }
+
+    /**
+     * Saves the given data to the database as a new location record.
+     *
+     * Note: use named parameters while using this method.
+     */
+    // this can't be refactored as it is builder
+    @Suppress("LongParameterList")
+    suspend fun saveLocation(
+        address: String,
+        zipCode: Int,
+        district: String,
+        phoneNumber: String? = null,
+        email: String? = null,
+        note: String? = null,
+    ): EntityId = newSuspendedTransaction {
+        Locations.insert {
+            it[Locations.address] = address
+            it[Locations.zipCode] = zipCode
+            it[Locations.district] = district
+            it[Locations.phoneNumber] = phoneNumber
+            it[Locations.email] = email
+            it[Locations.note] = note
+        }[Locations.id]
+    }
+
+    /**
+     * Deletes patient entity by given [where]. Returns number of deleted entities.
+     */
+    suspend fun deleteLocationsBy(where: (SqlExpressionBuilder.() -> Op<Boolean>)): Int =
+        newSuspendedTransaction { Locations.deleteWhere(op = where) }
+
+
+    private fun getAndMapLocations(where: (SqlExpressionBuilder.() -> Op<Boolean>)? = null) =
+        Patients
+            .leftJoin(VaccinationSlots, { id }, { locationId })
+            .let { if (where != null) it.select(where) else it.selectAll() }
+            .toList() // eager fetch all data from the database
+            .let { data ->
+                val slots = data.groupBy({ it[Locations.id] }, { it.mapSlots() })
+                data.distinctBy { it[Locations.id] }
+                    .map { mapLocation(it, slots.getValue(it[Locations.id])) }
+            }
+
+    private fun mapLocation(row: ResultRow, slots: List<VaccinationSlotDtoOut>) = LocationDtoOut(
+        id = row[Locations.id],
+        address = row[Locations.address],
+        zipCode = row[Locations.zipCode],
+        district = row[Locations.district],
+        phoneNumber = row[Locations.phoneNumber],
+        email = row[Locations.email],
+        note = row[Locations.note],
+        slots = slots
+    )
+
+    private fun ResultRow.mapSlots() = VaccinationSlotDtoOut(
+        slotId = this[VaccinationSlots.id],
+        locationId = this[VaccinationSlots.locationId],
+        patientId = this[VaccinationSlots.patientId],
+        from = this[VaccinationSlots.from],
+        to = this[VaccinationSlots.to]
+    )
+}
