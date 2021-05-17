@@ -22,7 +22,7 @@ import org.jetbrains.exposed.sql.select
 import org.jetbrains.exposed.sql.selectAll
 import org.jetbrains.exposed.sql.transactions.experimental.newSuspendedTransaction
 import org.jetbrains.exposed.sql.update
-import pw.forst.tools.katlib.TimeProvider
+import pw.forst.katlib.TimeProvider
 import java.time.Instant
 
 @Suppress("LongParameterList") // it's a repository, we're fine with this

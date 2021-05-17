@@ -35,17 +35,15 @@ import kotlin.test.assertNotNull
  * Use [overrideDIContainer] to inject and override additional dependencies.
  */
 open class DiAwareTestBase {
-    protected val rootDI by lazy {
-        DI(allowSilentOverride = true) {
-            bindConfiguration()
-            registerJwtAuth()
-            registerClasses()
+    protected val rootDI = DI(allowSilentOverride = true) {
+        bindConfiguration()
+        registerJwtAuth()
+        registerClasses()
 
-            // disable migration on startup, instead migrate during tests
-            bind<Boolean>("should-migrate") with singleton { false }
+        // disable migration on startup, instead migrate during tests
+        bind<Boolean>("should-migrate") with singleton { false }
 
-            overrideDIContainer()?.let { extend(it, allowOverride = true) }
-        }
+        overrideDIContainer()?.let { extend(it, allowOverride = true) }
     }
 
     /**
@@ -99,6 +97,9 @@ open class DatabaseTestBase(private val shouldSetupDatabase: Boolean = true) : D
  */
 open class ServerTestBase(needsDatabase: Boolean = true) : DatabaseTestBase(needsDatabase) {
 
+    protected val mapper by rootDI.instance<ObjectMapper>()
+    protected val jwtService by rootDI.instance<JwtService>()
+
     protected fun <R> withTestApplication(test: TestApplicationEngine.() -> R) {
         withTestApplication(
             {
@@ -114,7 +115,6 @@ open class ServerTestBase(needsDatabase: Boolean = true) : DatabaseTestBase(need
     protected fun TestApplicationCall.expectStatus(status: HttpStatusCode) = assertEquals(status, response.status())
 
     protected inline fun <reified T> TestApplicationRequest.jsonBody(data: T) {
-        val mapper by rootDI.instance<ObjectMapper>()
         setBody(mapper.writeValueAsString(data))
         addHeader(HttpHeaders.ContentType, ContentType.Application.Json.toString())
     }
@@ -124,7 +124,6 @@ open class ServerTestBase(needsDatabase: Boolean = true) : DatabaseTestBase(need
 
     protected inline fun <reified T> TestApplicationCall.receiveOrNull(): T? {
         val content = response.content ?: return null
-        val mapper by closestDI().instance<ObjectMapper>()
         return mapper.readValue(content)
     }
 
@@ -136,7 +135,6 @@ open class ServerTestBase(needsDatabase: Boolean = true) : DatabaseTestBase(need
     )
 
     protected fun TestApplicationRequest.authorize(principal: UserPrincipal = defaultPrincipal) {
-        val jwtService by rootDI.instance<JwtService>()
         val token = jwtService.generateToken(principal).token
         addHeader(HttpHeaders.Authorization, "Bearer $token")
     }

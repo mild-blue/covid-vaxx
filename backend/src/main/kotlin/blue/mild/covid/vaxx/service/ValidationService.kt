@@ -7,7 +7,7 @@ import blue.mild.covid.vaxx.error.EmptyUpdateException
 import blue.mild.covid.vaxx.error.PropertyValidationException
 import com.google.i18n.phonenumbers.PhoneNumberUtil
 import mu.KLogging
-import pw.forst.tools.katlib.mapToSet
+import pw.forst.katlib.mapToSet
 import java.time.LocalDate
 
 

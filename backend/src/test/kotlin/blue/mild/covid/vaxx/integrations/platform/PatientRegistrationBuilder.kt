@@ -8,7 +8,7 @@ import kotlin.random.Random
 
 typealias PatientRegistrationBuilder = (answers: Any, insuranceCompany: Any) -> PatientRegistrationDtoInForTests
 
-
+@Suppress("LongParameterList") // builder
 fun defaultPatientRegistrationBuilder(
     firstName: Any? = "[PerformanceTest] - ${UUID.randomUUID()}",
     lastName: Any? = "[PerformanceTest] - ${UUID.randomUUID()}",

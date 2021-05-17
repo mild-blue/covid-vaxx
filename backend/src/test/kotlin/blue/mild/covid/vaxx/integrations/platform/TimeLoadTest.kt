@@ -4,7 +4,7 @@ import blue.mild.covid.vaxx.integrations.RegistrationApiTestHelper
 import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.launch
 import mu.KLogging
-import pw.forst.tools.katlib.InstantTimeProvider
+import pw.forst.katlib.InstantTimeProvider
 import java.time.Instant
 
 class TimeLoadTest(

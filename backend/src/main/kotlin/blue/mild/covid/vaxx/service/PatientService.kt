@@ -14,7 +14,8 @@ import mu.KLogging
 import org.jetbrains.exposed.sql.Column
 import org.jetbrains.exposed.sql.Op
 import org.jetbrains.exposed.sql.and
-import pw.forst.tools.katlib.whenFalse
+import pw.forst.katlib.whenFalse
+import java.util.Locale
 import java.util.UUID
 
 class PatientService(
@@ -51,7 +52,7 @@ class PatientService(
     ): List<PatientDtoOut> =
         patientRepository.getAndMapPatientsBy {
             Op.TRUE
-                .andWithIfNotEmpty(email?.removeAllWhitespaces()?.toLowerCase(), Patients.email)
+                .andWithIfNotEmpty(email?.removeAllWhitespaces()?.lowercase(Locale.getDefault()), Patients.email)
                 .andWithIfNotEmpty(phoneNumber?.removeAllWhitespaces(), Patients.phoneNumber)
                 .let { query ->
                     vaccinated?.let {
@@ -77,7 +78,7 @@ class PatientService(
             district = changeSet.district?.trim(),
             phoneNumber = changeSet.phoneNumber?.formatPhoneNumber(),
             personalNumber = changeSet.personalNumber?.let { normalizePersonalNumber(it) },
-            email = changeSet.email?.trim()?.toLowerCase(),
+            email = changeSet.email?.trim()?.lowercase(Locale.getDefault()),
             insuranceCompany = changeSet.insuranceCompany,
             indication = changeSet.indication?.trim(),
             answers = changeSet.answers?.associate { it.questionId to it.value }
@@ -102,7 +103,7 @@ class PatientService(
             district = registration.district.trim(),
             phoneNumber = registration.phoneNumber.formatPhoneNumber(),
             personalNumber = normalizePersonalNumber(registration.personalNumber),
-            email = registration.email.trim().toLowerCase(),
+            email = registration.email.trim().lowercase(Locale.getDefault()),
             insuranceCompany = registration.insuranceCompany,
             indication = registration.indication?.trim(),
             remoteHost = registrationDto.remoteHost,

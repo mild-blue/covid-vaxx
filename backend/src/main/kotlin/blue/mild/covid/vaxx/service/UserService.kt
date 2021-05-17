@@ -14,8 +14,9 @@ import blue.mild.covid.vaxx.security.auth.UserPrincipal
 import mu.KLogging
 import org.jetbrains.exposed.sql.select
 import org.jetbrains.exposed.sql.transactions.experimental.newSuspendedTransaction
-import pw.forst.tools.katlib.whenFalse
-import pw.forst.tools.katlib.whenTrue
+import pw.forst.katlib.whenFalse
+import pw.forst.katlib.whenTrue
+import java.util.Locale
 
 class UserService(
     private val userRepository: UserRepository,
@@ -31,7 +32,7 @@ class UserService(
      * Throws [CredentialsMismatchException] if they do not.
      */
     suspend fun verifyCredentials(email: String, password: String) {
-        val passwordHash = userRepository.viewByEmail(email.trim().toLowerCase()) {
+        val passwordHash = userRepository.viewByEmail(email.trim().lowercase(Locale.getDefault())) {
             it[passwordHash]
         } ?: throw CredentialsMismatchException()
 
@@ -47,7 +48,7 @@ class UserService(
         val login = request.payload
         val credentials = login.credentials
         // verify existing user
-        val (userId, passwordHash, role) = userRepository.viewByEmail(credentials.email.trim().toLowerCase()) {
+        val (userId, passwordHash, role) = userRepository.viewByEmail(credentials.email.trim().lowercase(Locale.getDefault())) {
             Triple(it[id], it[passwordHash], it[role])
         } ?: loginFailed(request, null) { CredentialsMismatchException() }
 

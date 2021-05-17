@@ -41,9 +41,9 @@ import org.kodein.di.DI
 import org.kodein.di.bind
 import org.kodein.di.instance
 import org.kodein.di.singleton
-import pw.forst.tools.katlib.InstantTimeProvider
-import pw.forst.tools.katlib.TimeProvider
-import pw.forst.tools.katlib.jacksonMapper
+import pw.forst.katlib.InstantTimeProvider
+import pw.forst.katlib.TimeProvider
+import pw.forst.katlib.jacksonMapper
 import java.time.Instant
 
 /**
