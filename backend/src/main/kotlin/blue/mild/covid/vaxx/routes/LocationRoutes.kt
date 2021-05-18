@@ -2,9 +2,13 @@ package blue.mild.covid.vaxx.routes
 
 import blue.mild.covid.vaxx.dao.model.EntityId
 import blue.mild.covid.vaxx.dao.model.UserRole
+import blue.mild.covid.vaxx.dao.model.VaccinationSlots.locationId
+import blue.mild.covid.vaxx.dto.request.CreateVaccinationSlotsDtoIn
 import blue.mild.covid.vaxx.dto.request.LocationDtoIn
 import blue.mild.covid.vaxx.dto.request.query.LocationIdDtoIn
 import blue.mild.covid.vaxx.dto.response.LocationDtoOut
+import blue.mild.covid.vaxx.dto.response.OK
+import blue.mild.covid.vaxx.dto.response.Ok
 import blue.mild.covid.vaxx.extensions.determineRealIp
 import blue.mild.covid.vaxx.extensions.di
 import blue.mild.covid.vaxx.extensions.request
@@ -52,11 +56,40 @@ fun NormalOpenAPIRoute.locationRoutes() {
     }
 
     authorizeRoute {
-        route(Routes.userLoginVerification) {
-            get<Unit, Unit, UserPrincipal>(
+        route(Routes.locationsSlots) {
+            get<LocationIdDtoIn, Unit, UserPrincipal>(
                 info("Verify that the currently used token is valid. Returns 200 if token is correct, 401 otherwise.")
-            ) {
+            ) { (locationId) ->
+                logger.info {
+                    "Get slots for location ${locationId} from host ${request.determineRealIp()}."
+                }
                 respondWithStatus(HttpStatusCode.OK)
+            }
+
+            /*
+            // MartinLlama - When tests are executed then when calling POST .../locations/{id}/slots returns 404
+            post<LocationIdDtoIn, Ok, /*EntityId, */CreateVaccinationSlotsDtoIn, UserPrincipal>(
+                info("Add new slots for location.")
+            ) { locationId, createSlots ->
+                val principal = principal()
+                logger.info {
+                    "For location ${locationId} adding slots ${createSlots} registered by ${principal.userId} from host ${request.determineRealIp()}."
+                }
+                // respond(locationService.addLocation(location))
+                respond(OK)
+            }
+            */
+
+            // MartinLLama - When tests are executed then locationId is not extracted
+            post<Unit, Ok, /*EntityId, */CreateVaccinationSlotsDtoIn, UserPrincipal>(
+                info("Add new slots for location.")
+            ) { _, createSlots ->
+                val principal = principal()
+                logger.info {
+                    "For location ${locationId} adding slots ${createSlots} registered by ${principal.userId} from host ${request.determineRealIp()}."
+                }
+                // respond(locationService.addLocation(location))
+                respond(OK)
             }
         }
     }
