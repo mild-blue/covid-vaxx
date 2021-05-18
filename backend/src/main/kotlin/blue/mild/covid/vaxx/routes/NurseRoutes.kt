@@ -38,6 +38,7 @@ fun NormalOpenAPIRoute.nurseRoutes() {
 
     authorizeRoute(requireOneOf = setOf(UserRole.ADMIN)) {
         route(Routes.nurse) {
+            // RESTFUL: This should be PUT
             put<Unit, Ok, NurseCreationDtoIn, UserPrincipal>(
                 info("Creates nurse entity.")
             ) { _, request ->

@@ -4,9 +4,12 @@ import blue.mild.covid.vaxx.dao.model.EntityId
 import blue.mild.covid.vaxx.dao.model.Locations
 import blue.mild.covid.vaxx.dao.model.Patients
 import blue.mild.covid.vaxx.dao.repository.LocationRepository
+import blue.mild.covid.vaxx.dto.request.LocationDtoIn
 import blue.mild.covid.vaxx.dto.response.LocationDtoOut
 import blue.mild.covid.vaxx.error.entityNotFound
+import blue.mild.covid.vaxx.utils.formatPhoneNumber
 import mu.KLogging
+import java.util.*
 
 class LocationService(
     private val locationRepository: LocationRepository,
@@ -45,33 +48,24 @@ class LocationService(
 //        ).whenFalse { throw entityNotFound<Patients>(Patients::id, patientId) }
 //    }
 //
-//    /**
-//     * Saves patient to the database and return its id.
-//     */
-//    suspend fun savePatient(registrationDto: ContextAware<PatientRegistrationDtoIn>): EntityId {
-//        val registration = registrationDto.payload
-//        logger.debug { "Registering patient ${registration.email}." }
-//
-//        logger.debug { "Registration validation." }
-//        validationService.requireValidRegistration(registration)
-//
-//        logger.debug { "Saving registration." }
-//        return patientRepository.savePatient(
-//            firstName = registration.firstName.trim(),
-//            lastName = registration.lastName.trim(),
-//            zipCode = registration.zipCode,
-//            district = registration.district.trim(),
-//            phoneNumber = registration.phoneNumber.formatPhoneNumber(),
-//            personalNumber = normalizePersonalNumber(registration.personalNumber),
-//            email = registration.email.trim().lowercase(Locale.getDefault()),
-//            insuranceCompany = registration.insuranceCompany,
-//            indication = registration.indication?.trim(),
-//            remoteHost = registrationDto.remoteHost,
-//            answers = registration.answers.associate { it.questionId to it.value }
-//        ).also { patientId ->
-//            logger.debug { "Patient ${registration.email} saved under id $patientId." }
-//        }
-//    }
+    /**
+     * Saves patient to the database and return its id.
+     */
+    suspend fun addLocation(location: LocationDtoIn): EntityId {
+        logger.debug { "Adding location ${location.address}, ${location.zipCode}." }
+
+        logger.debug { "Saving location." }
+        return locationRepository.saveLocation(
+            address = location.address.trim(),
+            zipCode = location.zipCode,
+            district = location.district.trim(),
+            phoneNumber = location.phoneNumber?.formatPhoneNumber(),
+            email = location.email?.trim()?.lowercase(Locale.getDefault()),
+            note = location.note?.trim()
+        ).also { locationId ->
+            logger.debug { "Location ${location.address} saved under id $locationId." }
+        }
+    }
 //
 //    /**
 //     * Deletes patient with given ID. Throws exception if patient was not deleted.
