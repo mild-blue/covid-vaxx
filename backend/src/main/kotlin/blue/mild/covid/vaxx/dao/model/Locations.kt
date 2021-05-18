@@ -1,7 +1,5 @@
 package blue.mild.covid.vaxx.dao.model
 
-import org.jetbrains.exposed.sql.`java-time`.timestamp
-
 object Locations : ManagedTable("locations") {
     /**
      * Address
@@ -33,7 +31,7 @@ object Locations : ManagedTable("locations") {
     /**
      * Indication about patient - ie. chronic disease or teacher.
      */
-    val note = varchar("note", DatabaseTypeLength.DEFAULT_STRING).nullable()
+    val notes = text("notes").nullable()
 
 
 }

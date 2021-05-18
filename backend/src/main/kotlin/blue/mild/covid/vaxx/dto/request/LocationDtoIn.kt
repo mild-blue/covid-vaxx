@@ -6,5 +6,5 @@ data class LocationDtoIn(
     val district: String,
     val phoneNumber: PhoneNumberDtoIn? = null,
     val email: String? = null,
-    val note: String? = null
+    val notes: String? = null
 )

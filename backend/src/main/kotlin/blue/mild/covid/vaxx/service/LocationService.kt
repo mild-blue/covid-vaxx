@@ -2,7 +2,6 @@ package blue.mild.covid.vaxx.service
 
 import blue.mild.covid.vaxx.dao.model.EntityId
 import blue.mild.covid.vaxx.dao.model.Locations
-import blue.mild.covid.vaxx.dao.model.Patients
 import blue.mild.covid.vaxx.dao.repository.LocationRepository
 import blue.mild.covid.vaxx.dto.request.LocationDtoIn
 import blue.mild.covid.vaxx.dto.response.LocationDtoOut
@@ -25,7 +24,7 @@ class LocationService(
     suspend fun getLocationById(locationId: EntityId): LocationDtoOut =
         locationRepository.getAndMapLocationsBy { Locations.id eq locationId }
             .singleOrNull()
-            ?.withSortedSlots() ?: throw entityNotFound<Patients>(Locations::id, locationId)
+            ?.withSortedSlots() ?: throw entityNotFound<Locations>(Locations::id, locationId)
 
 //    /**
 //     * Updates patient with given change set.
@@ -61,7 +60,7 @@ class LocationService(
             district = location.district.trim(),
             phoneNumber = location.phoneNumber?.formatPhoneNumber(),
             email = location.email?.trim()?.lowercase(Locale.getDefault()),
-            note = location.note?.trim()
+            notes = location.notes?.trim()
         ).also { locationId ->
             logger.debug { "Location ${location.address} saved under id $locationId." }
         }

@@ -20,9 +20,9 @@ class LocationRoutesTest : ServerTestBase() {
             address = "Foo Street 1",
             zipCode = 16000,
             district = "Dejvice",
-            phoneNumber = PhoneNumberDtoIn("724123456", "CZ"),
+            phoneNumber = PhoneNumberDtoIn("+420724123456", "CZ"),
             email = "location-1@test.com",
-            note = "location-1 - note"
+            notes = "location-1 - note"
         )
         handleRequest(HttpMethod.Post, Routes.locations) {
             authorize()
@@ -31,7 +31,7 @@ class LocationRoutesTest : ServerTestBase() {
             expectStatus(HttpStatusCode.OK)
             val responseP = receive<EntityId>()
 
-            handleRequest(HttpMethod.Post, Routes.locations + "/${responseP}") {
+            handleRequest(HttpMethod.Get, Routes.locations + "/${responseP}") {
                 authorize()
             }.run {
                 expectStatus(HttpStatusCode.OK)
@@ -39,9 +39,10 @@ class LocationRoutesTest : ServerTestBase() {
                 assertEquals(location.address, response.address)
                 assertEquals(location.zipCode, response.zipCode)
                 assertEquals(location.district, response.district)
-                assertEquals(location.phoneNumber?.toString(), response.phoneNumber)
+                // MartinLlama: Figure out how to compare phone numbers
+                assertEquals(location.phoneNumber?.number, response.phoneNumber)
                 assertEquals(location.email, response.email)
-                assertEquals(location.note, response.note)
+                assertEquals(location.notes, response.notes)
                 assertEquals(responseP, response.id)
             }
 

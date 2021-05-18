@@ -6,6 +6,7 @@ import blue.mild.covid.vaxx.dao.model.Patients
 import blue.mild.covid.vaxx.dao.model.VaccinationSlots
 import blue.mild.covid.vaxx.dto.response.LocationDtoOut
 import blue.mild.covid.vaxx.dto.response.VaccinationSlotDtoOut
+import blue.mild.covid.vaxx.utils.createLogger
 import org.jetbrains.exposed.sql.Op
 import org.jetbrains.exposed.sql.ResultRow
 import org.jetbrains.exposed.sql.SqlExpressionBuilder
@@ -19,6 +20,7 @@ import org.jetbrains.exposed.sql.update
 
 @Suppress("LongParameterList") // it's a repository, we're fine with this
 class LocationRepository {
+    val logger = createLogger("LocationRepository")
 
     /**
      * Updates location entity with given id. Change set of the given properties
@@ -33,14 +35,14 @@ class LocationRepository {
         district: String? = null,
         phoneNumber: String? = null,
         email: String? = null,
-        note: String? = null,
+        notes: String? = null,
     ): Boolean = newSuspendedTransaction {
         // check if any property is not null
         val isLocationEntityUpdateNecessary =
             address
             ?: district ?: zipCode
             ?: phoneNumber ?: email
-            ?: note
+            ?: notes
         // if so, perform update query
         val locationUpdated = if (isLocationEntityUpdateNecessary != null) {
             Locations.update(
@@ -52,7 +54,7 @@ class LocationRepository {
                         updateIfNotNull(district, Locations.district)
                         updateIfNotNull(phoneNumber, Locations.phoneNumber)
                         updateIfNotNull(email, Patients.email)
-                        updateIfNotNull(note, Locations.note)
+                        updateIfNotNull(notes, Locations.notes)
                     }
                 }
             )
@@ -83,7 +85,7 @@ class LocationRepository {
         district: String,
         phoneNumber: String? = null,
         email: String? = null,
-        note: String? = null,
+        notes: String? = null,
     ): EntityId = newSuspendedTransaction {
         Locations.insert {
             it[Locations.address] = address
@@ -91,7 +93,7 @@ class LocationRepository {
             it[Locations.district] = district
             it[Locations.phoneNumber] = phoneNumber
             it[Locations.email] = email
-            it[Locations.note] = note
+            it[Locations.notes] = notes
         }[Locations.id]
     }
 
@@ -103,14 +105,18 @@ class LocationRepository {
 
 
     private fun getAndMapLocations(where: (SqlExpressionBuilder.() -> Op<Boolean>)? = null) =
-        Patients
+        Locations
             .leftJoin(VaccinationSlots, { id }, { locationId })
             .let { if (where != null) it.select(where) else it.selectAll() }
             .toList() // eager fetch all data from the database
             .let { data ->
-                val slots = data.groupBy({ it[Locations.id] }, { it.mapSlots() })
+                logger.info(data.toString())
+                // MartinLlama - this is outer join, so slots are there only for some locations
+                // I want to have slots equal to empty list or null if there are no slots
+                // I have to hack it by using containsKey
+                val slots = data.filter { it[VaccinationSlots.id] != null }.groupBy({ it[Locations.id] }, { it.mapSlots() })
                 data.distinctBy { it[Locations.id] }
-                    .map { mapLocation(it, slots.getValue(it[Locations.id])) }
+                    .map { mapLocation(it, if (slots.containsKey(it[Locations.id])) slots.getValue(it[Locations.id]) else ArrayList()) }
             }
 
     private fun mapLocation(row: ResultRow, slots: List<VaccinationSlotDtoOut>) = LocationDtoOut(
@@ -120,7 +126,7 @@ class LocationRepository {
         district = row[Locations.district],
         phoneNumber = row[Locations.phoneNumber],
         email = row[Locations.email],
-        note = row[Locations.note],
+        notes = row[Locations.notes],
         slots = slots
     )
 
