@@ -10,7 +10,6 @@ import io.ktor.http.HttpStatusCode
 import io.ktor.server.testing.handleRequest
 import org.junit.jupiter.api.Test
 import kotlin.test.assertEquals
-import kotlin.test.assertNotNull
 
 
 class LocationRoutesTest : ServerTestBase() {
@@ -30,9 +29,9 @@ class LocationRoutesTest : ServerTestBase() {
             jsonBody(location)
         }.run {
             expectStatus(HttpStatusCode.OK)
-            val response = receive<EntityId>()
+            val responseP = receive<EntityId>()
 
-            handleRequest(HttpMethod.Post, Routes.locations + "/${response}") {
+            handleRequest(HttpMethod.Post, Routes.locations + "/${responseP}") {
                 authorize()
             }.run {
                 expectStatus(HttpStatusCode.OK)
@@ -43,7 +42,7 @@ class LocationRoutesTest : ServerTestBase() {
                 assertEquals(location.phoneNumber?.toString(), response.phoneNumber)
                 assertEquals(location.email, response.email)
                 assertEquals(location.note, response.note)
-                assertNotNull(response.id)
+                assertEquals(responseP, response.id)
             }
 
 
