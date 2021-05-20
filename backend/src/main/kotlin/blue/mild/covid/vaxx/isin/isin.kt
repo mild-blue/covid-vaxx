@@ -98,14 +98,6 @@ private val pracovnik = Pracovnik(nrzpCislo= iPracovnik.cislo, rodneCislo = iPra
 
 private val userIdentification = "?pcz=${pracovnik.pcz}&pracovnikNrzpCislo=${pracovnik.nrzpCislo}"
 
-
-private val vytvorVakcinaci = VytvorNeboZmenVakcinaci(
-    pacientId = pacient.rodneCislo,
-    typOckovaniKod = "1",
-    indikace = listOf("1"),
-    pracovnik = pracovnik
-)
-
 private val configuration = KeyStoreConfiguration(
     storePass = getEnv("ISIN_STORE_PASS") ?: "",
     storePath = getEnv("ISIN_STORE_PATH") ?: "/home/honza/Desktop/rgu_ws_44797362.pfx",
@@ -299,6 +291,7 @@ fun main() {
             ?: throw IllegalArgumentException("Vaccination creation failed, no vaccitaion id was returned")
 
         println("vakcinaceId: ${vakcinaceId}")
+
         // datum vakcinace musi byt v minulosti
         vytvorDavku(
             isinClient, VytvorNeboZmenDavku(
@@ -309,12 +302,29 @@ fun main() {
                 expirace = "2021-05-12T00:00:00",
                 pracovnik = pracovnik,
                 mistoAplikaceKod = "NP",
+                stav = "Probihajici"
+            )
+        )
+        val vysledneDavky1 = getDavkyVakcinace(isinClient, vakcinaceId)
+        println("Pocet davek ${vysledneDavky1.size()}")
+        println(vysledneDavky1)
+
+        // datum vakcinace musi byt v minulosti
+        vytvorDavku(
+            isinClient, VytvorNeboZmenDavku(
+                datumVakcinace = "2021-05-11T00:00:00",
+                vakcinaceId = vakcinaceId,
+                ockovaciLatkaKod = "CO01",
+                sarze = "J1234",
+                expirace = "2021-05-13T00:00:00",
+                pracovnik = pracovnik,
+                mistoAplikaceKod = "NP",
                 stav = "Ukoncene"
             )
         )
-        val vysledneDavky = getDavkyVakcinace(isinClient, vakcinaceId)
-        println("Pocet davek ${vysledneDavky.size()}")
-        println(vysledneDavky)
+        val vysledneDavky2 = getDavkyVakcinace(isinClient, vakcinaceId)
+        println("Pocet davek ${vysledneDavky2.size()}")
+        println(vysledneDavky2)
     }
 
 }
