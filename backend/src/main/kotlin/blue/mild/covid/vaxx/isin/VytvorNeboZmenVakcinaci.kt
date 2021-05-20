@@ -16,10 +16,16 @@ data class VytvorNeboZmenVakcinaci(
 
 
 data class Pracovnik(
+        // Todle bylo pracovnikNrzpCislo,
+        // zmenil jsem to podle /api/v1/pacienti/AktualizujKontaktniUdajePacienta
+        val nrzpCislo: String,
+
+        // todle jsem pridal
+        // /api/v1/pacienti/AktualizujKontaktniUdajePacienta
+        val rodneCislo: String,
 
         val pcz: String,
 
-        val pracovnikNrzpCislo: String
 
 )
 

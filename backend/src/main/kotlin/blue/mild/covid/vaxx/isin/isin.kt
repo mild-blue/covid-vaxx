@@ -20,9 +20,18 @@ import io.ktor.http.ContentType
 import io.ktor.http.contentType
 import kotlinx.coroutines.runBlocking
 import org.apache.http.ssl.SSLContextBuilder
+import pw.forst.katlib.getEnv
 import java.io.File
 import java.security.KeyStore
 
+enum class IsinEnvironment {
+    PUBLIC,
+    TEST,
+    PRODUCTION,
+}
+
+// configure which environment should be used
+private val useEnvironment = IsinEnvironment.TEST
 
 private val logger = createLogger("HttpClientConfiguration")
 private val publicRoot = "https://apidoc.uzis.cz/api/v1"
@@ -31,9 +40,8 @@ private val productionRoot = "https://api.uzis.cz/api/v1"
 private val pcz = "000"
 private val NrzpCislo = "184070832"
 private val userIdentification = "?pcz=$pcz&pracovnikNrzpCislo=$NrzpCislo"
-private val pracovnik = Pracovnik(pcz = pcz, pracovnikNrzpCislo = NrzpCislo)
-private val root = publicRoot
-
+// rodne cislo pracovnika je z PDFka
+private val pracovnik = Pracovnik(pcz = pcz, nrzpCislo = NrzpCislo, rodneCislo = "9910190015")
 private val urlVytvorNeboZmenVakcinaci = "vakcinace/VytvorNeboZmenVakcinaci"
 private val urlVytvorNeboZmenDavku = "vakcinace/VytvorNeboZmenDavku"
 private val urlZmenStavVakcinace = "vakcinace/ZmenStavVakcinace"
@@ -41,6 +49,28 @@ private val urlVakcinace = "vakcinace/NacistVakcinaciDleId"
 private val urlNactiPracovniky = "nrzp/NactiPracovniky"
 private val urlAktualizujKontaktniUdajePacienta = "pacienti/AktualizujKontaktniUdajePacienta"
 private val urlNajdiPacienta = "pacienti/VyhledatDleJmenoPrijmeniRc"
+
+
+private val roots = mapOf(
+    IsinEnvironment.PUBLIC to publicRoot,
+    IsinEnvironment.TEST to testRoot,
+    IsinEnvironment.PRODUCTION to productionRoot,
+)
+
+// Dummy classes to wrap data around
+data class InputPacient(
+    val jmeno: String,
+    val prijmeni: String,
+    val rodneCislo: String
+)
+private val patients = mapOf(
+    IsinEnvironment.PUBLIC to InputPacient("Jan", "Kubant", "9002030015"),
+    IsinEnvironment.TEST to InputPacient("VICTOR", "BUDIUC", "8208258201"),
+    IsinEnvironment.PRODUCTION to InputPacient("Jan", "Kubant", "9002030015"),
+)
+
+private val root = roots.getValue(useEnvironment)
+private val pacient = patients.getValue(useEnvironment)
 
 private val vytvorVakcinaci = VytvorNeboZmenVakcinaci(
     pacientId = "1",
@@ -50,10 +80,10 @@ private val vytvorVakcinaci = VytvorNeboZmenVakcinaci(
 )
 
 private val configuration = KeyStoreConfiguration(
-    storePass = "",
-    storePath = "/home/honza/Desktop/rgu_ws_44797362.pfx",
-    storeType = "JKS",
-    keyPass = ""
+    storePass = getEnv("ISIN_STORE_PASS") ?: "",
+    storePath = getEnv("ISIN_STORE_PATH") ?: "/home/honza/Desktop/rgu_ws_44797362.pfx",
+    storeType = getEnv("ISIN_STORE_TYPE") ?: "JKS",
+    keyPass = getEnv("ISIN_KEY_PASS") ?: ""
 )
 
 /**
@@ -72,7 +102,9 @@ fun client(
             level = LogLevel.ALL
         }
 
-//            configureCertificates(config)
+        if (useEnvironment != IsinEnvironment.PUBLIC) {
+            configureCertificates(config)
+        }
     }
 
 
@@ -187,18 +219,21 @@ suspend fun getDavkyVakcinace(isinClient: HttpClient, id: String): JsonNode {
 }
 
 fun main() {
+    println("Using environment: ${useEnvironment} => ${root}; ${pacient}")
+
     runBlocking {
 
         val isinClient = client(configuration)
 
-        val id = getPatientId(isinClient, "Jan", "Kubant", "9002030015")!!
+        val id = getPatientId(isinClient, pacient.jmeno, pacient.prijmeni, pacient.rodneCislo)!!
 
+        // pracovnik bez rodneho cisla se vymlel, pracovnik s RC od pacienta vraci 404
         aktualizujKontaktniUdajePacienta(
             isinClient, AktualizujPacienta(
                 idPacienta = id,
                 kontaktniEmail = "test@test.cz",
                 kontaktniMobilniTelefon = "123456789",
-                pracovnik = Pracovnik(pcz = pcz, pracovnikNrzpCislo = NrzpCislo)
+                pracovnik = pracovnik
             )
         )
         val vakcinaceId = (vytvorVakcinaci(isinClient, vytvorVakcinaci) ?: "fix_for_test")
