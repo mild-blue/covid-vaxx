@@ -11,7 +11,9 @@ data class VytvorNeboZmenVakcinaci(
 
         val indikace: List<String>,
 
-        val pracovnik: Pracovnik
+        val pracovnik: Pracovnik,
+
+        val indikaceJina: String? = null,
 )
 
 

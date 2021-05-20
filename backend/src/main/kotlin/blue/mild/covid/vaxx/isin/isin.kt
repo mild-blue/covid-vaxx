@@ -37,16 +37,19 @@ private val logger = createLogger("HttpClientConfiguration")
 private val publicRoot = "https://apidoc.uzis.cz/api/v1"
 private val testRoot = "https://apitest.uzis.cz/api/v1"
 private val productionRoot = "https://api.uzis.cz/api/v1"
+
+// 000 je pro polikliniky - neni to placeholder
+// https://nrpzs.uzis.cz/detail-66375-clinicum-a-s.html#fndtn-detail_uzis
 private val pcz = "000"
 private val NrzpCislo = "184070832"
-private val userIdentification = "?pcz=$pcz&pracovnikNrzpCislo=$NrzpCislo"
 // rodne cislo pracovnika je z PDFka
-private val pracovnik = Pracovnik(pcz = pcz, nrzpCislo = NrzpCislo, rodneCislo = "9910190015")
+private val pracovnikO = Pracovnik(pcz = pcz, nrzpCislo = NrzpCislo, rodneCislo = "9910190015")
 private val urlVytvorNeboZmenVakcinaci = "vakcinace/VytvorNeboZmenVakcinaci"
 private val urlVytvorNeboZmenDavku = "vakcinace/VytvorNeboZmenDavku"
 private val urlZmenStavVakcinace = "vakcinace/ZmenStavVakcinace"
 private val urlVakcinace = "vakcinace/NacistVakcinaciDleId"
 private val urlNactiPracovniky = "nrzp/NactiPracovniky"
+private val urlNactiPracovnika = "nrzp/NactiPracovnika"
 private val urlAktualizujKontaktniUdajePacienta = "pacienti/AktualizujKontaktniUdajePacienta"
 private val urlNajdiPacienta = "pacienti/VyhledatDleJmenoPrijmeniRc"
 
@@ -57,7 +60,7 @@ private val roots = mapOf(
     IsinEnvironment.PRODUCTION to productionRoot,
 )
 
-// Dummy classes to wrap data around
+// Dummy class to wrap data around pacient
 data class InputPacient(
     val jmeno: String,
     val prijmeni: String,
@@ -69,11 +72,35 @@ private val patients = mapOf(
     IsinEnvironment.PRODUCTION to InputPacient("Jan", "Kubant", "9002030015"),
 )
 
+// Dummy class to wrap data around paracovnik
+data class InputPracovnik(
+    val cislo: String,
+    val jmeno: String,
+    val prijmeni: String,
+    val datumNarozeni: String,
+    val rodneCislo: String,
+    val pcz: String,
+)
+private val workers = mapOf(
+    // Public - hardcoded one
+    IsinEnvironment.PUBLIC to InputPracovnik(pracovnikO.nrzpCislo, "", "", datumNarozeni = "", rodneCislo = pracovnikO.rodneCislo, pcz=pcz),
+    // Test is one worker received by nactiPracovniky
+    IsinEnvironment.TEST to InputPracovnik("172319367", "Jmeno2", "Prijmeni26", "1924-05-10T00:00:00", "245510064", pcz),
+    // Prod - hardcoded one
+    IsinEnvironment.PRODUCTION to InputPracovnik(pracovnikO.nrzpCislo, "", "", datumNarozeni = "", rodneCislo = pracovnikO.rodneCislo, pcz),
+)
+
 private val root = roots.getValue(useEnvironment)
 private val pacient = patients.getValue(useEnvironment)
+private val iPracovnik = workers.getValue(useEnvironment)
+private val pracovnik = Pracovnik(nrzpCislo= iPracovnik.cislo, rodneCislo = iPracovnik.rodneCislo, pcz = iPracovnik.pcz)
+
+
+private val userIdentification = "?pcz=${pracovnik.pcz}&pracovnikNrzpCislo=${pracovnik.nrzpCislo}"
+
 
 private val vytvorVakcinaci = VytvorNeboZmenVakcinaci(
-    pacientId = "1",
+    pacientId = pacient.rodneCislo,
     typOckovaniKod = "1",
     indikace = listOf("1"),
     pracovnik = pracovnik
@@ -161,9 +188,9 @@ private val Logger.Companion.TRACE: Logger
         }
     }
 
-private fun createIsinURL(requestUrl: String, baseUrl: String = root, parameters: List<Any> = listOf()): String {
+private fun createIsinURL(requestUrl: String, baseUrl: String = root, parameters: List<Any> = listOf(), includeIdentification: Boolean = true): String {
     val parametersUrl = parameters.map { it.toString() }.joinToString(separator = "/")
-    return "$baseUrl/$requestUrl/$parametersUrl$userIdentification"
+    return "$baseUrl/$requestUrl/$parametersUrl${if (includeIdentification) userIdentification else ""}"
 }
 
 suspend fun getUrl(isinClient: HttpClient, url: String): JsonNode {
@@ -218,6 +245,16 @@ suspend fun getDavkyVakcinace(isinClient: HttpClient, id: String): JsonNode {
     return response.get("davky")
 }
 
+suspend fun nactiPracovnika(isinClient: HttpClient, pracovnikCislo: String): JsonNode {
+    val url = "${createIsinURL(urlNactiPracovnika, includeIdentification = false)}?pracovnikCislo=${pracovnikCislo}"
+    return getUrl(isinClient, url)
+}
+
+suspend fun nactiPracovniky(isinClient: HttpClient): JsonNode {
+    val url = createIsinURL(urlNactiPracovniky)
+    return getUrl(isinClient, url)
+}
+
 fun main() {
     println("Using environment: ${useEnvironment} => ${root}; ${pacient}")
 
@@ -225,28 +262,53 @@ fun main() {
 
         val isinClient = client(configuration)
 
-        val id = getPatientId(isinClient, pacient.jmeno, pacient.prijmeni, pacient.rodneCislo)!!
+        val idPacienta = getPatientId(isinClient, pacient.jmeno, pacient.prijmeni, pacient.rodneCislo)!!
+
+        // I have hardcoded one pracovnik in configuration
+        // nactiPracovniky(isinClient)
+
+        val loadedPracovnik = nactiPracovnika(isinClient, pracovnik.nrzpCislo)
 
         // pracovnik bez rodneho cisla se vymlel, pracovnik s RC od pacienta vraci 404
+        /*
+        // MartinLLama It always fails on 404, lets skip this
         aktualizujKontaktniUdajePacienta(
             isinClient, AktualizujPacienta(
-                idPacienta = id,
+                idPacienta = idPacienta,
                 kontaktniEmail = "test@test.cz",
                 kontaktniMobilniTelefon = "123456789",
                 pracovnik = pracovnik
             )
         )
-        val vakcinaceId = (vytvorVakcinaci(isinClient, vytvorVakcinaci) ?: "fix_for_test")
+        */
+
+        // typOckovaniKod a indikace - copy-paste z prikladu
+        val vakcinaceId = (
+                vytvorVakcinaci(
+                    isinClient,
+                    VytvorNeboZmenVakcinaci(
+                        pacientId = idPacienta,
+                        typOckovaniKod = "CO19",
+                        indikace=listOf("C03", "J01"),
+                        pracovnik = pracovnik,
+                        // {"errors":[{"fieldName":"IndikaceJina","message":"Jiná popis je povinné pole"}]}
+                        // podle dokumentace to neni povinny parametr
+                        indikaceJina = "Nejaky nahodny duvod - ma to byt"
+                    )
+                ) ?: "fix_for_test")
             ?: throw IllegalArgumentException("Vaccination creation failed, no vaccitaion id was returned")
+
+        println("vakcinaceId: ${vakcinaceId}")
+        // datum vakcinace musi byt v minulosti
         vytvorDavku(
             isinClient, VytvorNeboZmenDavku(
-                datumVakcinace = "2020-12-10T00:00:00",
+                datumVakcinace = "2021-05-10T00:00:00",
                 vakcinaceId = vakcinaceId,
-                ockovaciLatkaKod = "kod",
-                sarze = "sarze",
-                expirace = "2020-12-10T00:00:00",
+                ockovaciLatkaKod = "CO01",
+                sarze = "J1234",
+                expirace = "2021-05-12T00:00:00",
                 pracovnik = pracovnik,
-                mistoAplikaceKod = "dr",
+                mistoAplikaceKod = "NP",
                 stav = "Ukoncene"
             )
         )
