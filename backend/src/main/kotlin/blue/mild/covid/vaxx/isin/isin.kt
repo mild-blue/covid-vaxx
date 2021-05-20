@@ -7,6 +7,8 @@ import io.ktor.client.HttpClientConfig
 import io.ktor.client.call.receive
 import io.ktor.client.engine.apache.Apache
 import io.ktor.client.engine.apache.ApacheEngineConfig
+import io.ktor.client.features.ClientRequestException
+import io.ktor.client.features.ServerResponseException
 import io.ktor.client.features.json.JacksonSerializer
 import io.ktor.client.features.json.JsonFeature
 import io.ktor.client.features.logging.LogLevel
@@ -34,24 +36,26 @@ enum class IsinEnvironment {
 private val useEnvironment = IsinEnvironment.TEST
 
 private val logger = createLogger("HttpClientConfiguration")
-private val publicRoot = "https://apidoc.uzis.cz/api/v1"
-private val testRoot = "https://apitest.uzis.cz/api/v1"
-private val productionRoot = "https://api.uzis.cz/api/v1"
+private const val publicRoot = "https://apidoc.uzis.cz/api/v1"
+private const val testRoot = "https://apitest.uzis.cz/api/v1"
+private const val productionRoot = "https://api.uzis.cz/api/v1"
 
 // 000 je pro polikliniky - neni to placeholder
 // https://nrpzs.uzis.cz/detail-66375-clinicum-a-s.html#fndtn-detail_uzis
-private val pcz = "000"
-private val NrzpCislo = "184070832"
+private const val pcz = "000"
+private const val NrzpCislo = "184070832"
 // rodne cislo pracovnika je z PDFka
 private val pracovnikO = Pracovnik(pcz = pcz, nrzpCislo = NrzpCislo, rodneCislo = "9910190015")
-private val urlVytvorNeboZmenVakcinaci = "vakcinace/VytvorNeboZmenVakcinaci"
-private val urlVytvorNeboZmenDavku = "vakcinace/VytvorNeboZmenDavku"
-private val urlZmenStavVakcinace = "vakcinace/ZmenStavVakcinace"
-private val urlVakcinace = "vakcinace/NacistVakcinaciDleId"
-private val urlNactiPracovniky = "nrzp/NactiPracovniky"
-private val urlNactiPracovnika = "nrzp/NactiPracovnika"
-private val urlAktualizujKontaktniUdajePacienta = "pacienti/AktualizujKontaktniUdajePacienta"
-private val urlNajdiPacienta = "pacienti/VyhledatDleJmenoPrijmeniRc"
+private const val urlVytvorNeboZmenVakcinaci = "vakcinace/VytvorNeboZmenVakcinaci"
+private const val urlVytvorNeboZmenDavku = "vakcinace/VytvorNeboZmenDavku"
+private const val urlZmenStavVakcinace = "vakcinace/ZmenStavVakcinace"
+private const val urlVakcinaceDleId = "vakcinace/NacistVakcinaciDleId"
+private const val urlVakcinacePacienta = "vakcinace/NacistVakcinacePacienta"
+private const val urlVakcinaceSeznamRegistraciARezervaci = "vakcinace/SeznamRegistraciARezervaci"
+private const val urlNactiPracovniky = "nrzp/NactiPracovniky"
+private const val urlNactiPracovnika = "nrzp/NactiPracovnika"
+private const val urlAktualizujKontaktniUdajePacienta = "pacienti/AktualizujKontaktniUdajePacienta"
+private const val urlNajdiPacienta = "pacienti/VyhledatDleJmenoPrijmeniRc"
 
 
 private val roots = mapOf(
@@ -231,10 +235,20 @@ suspend fun uzavriVakcinaci(isinClient: HttpClient, idVakcinace: String): JsonNo
     return postUrlData(isinClient, url)
 }
 
-suspend fun getDavkyVakcinace(isinClient: HttpClient, id: String): JsonNode {
-    val url = createIsinURL(urlVakcinace, parameters = listOf(id))
+suspend fun getVakcinaceDleId(isinClient: HttpClient, idVakcinace: String): JsonNode {
+    val url = createIsinURL(urlVakcinaceDleId, parameters = listOf(idVakcinace))
     val response = getUrl(isinClient, url)
     return response.get("davky")
+}
+
+suspend fun getVakcinaceDlePacienta(isinClient: HttpClient, idPacient: String): JsonNode {
+    val url = createIsinURL(urlVakcinacePacienta, parameters = listOf(idPacient))
+    return getUrl(isinClient, url)
+}
+
+suspend fun getVakcinaceSeznamRegistraciARezervaci(isinClient: HttpClient, idPacient: String): JsonNode {
+    val url = createIsinURL(urlVakcinaceSeznamRegistraciARezervaci, parameters = listOf(idPacient))
+    return getUrl(isinClient, url)
 }
 
 suspend fun nactiPracovnika(isinClient: HttpClient, pracovnikCislo: String): JsonNode {
@@ -262,17 +276,39 @@ fun main() {
         val loadedPracovnik = nactiPracovnika(isinClient, pracovnik.nrzpCislo)
 
         // pracovnik bez rodneho cisla se vymlel, pracovnik s RC od pacienta vraci 404
-        /*
-        // MartinLLama It always fails on 404, lets skip this
-        aktualizujKontaktniUdajePacienta(
-            isinClient, AktualizujPacienta(
-                idPacienta = idPacienta,
-                kontaktniEmail = "test@test.cz",
-                kontaktniMobilniTelefon = "123456789",
-                pracovnik = pracovnik
+
+        try {
+            aktualizujKontaktniUdajePacienta(
+                isinClient, AktualizujPacienta(
+                    idPacienta = idPacienta,
+                    kontaktniEmail = "test@test.cz",
+                    kontaktniMobilniTelefon = "123456789",
+                    pracovnik = pracovnik
+                )
             )
-        )
-        */
+        } catch (e: ServerResponseException) {
+            println(e)
+        } catch (e: ClientRequestException) {
+            println(e)
+        }
+
+        try {
+            val vakcinace = getVakcinaceDlePacienta(isinClient, idPacienta)
+            println(vakcinace.toPrettyString())
+        } catch (e: ServerResponseException) {
+            println(e)
+        } catch (e: ClientRequestException) {
+            println(e)
+        }
+
+        try {
+            val seznam = getVakcinaceSeznamRegistraciARezervaci(isinClient, idPacienta)
+            println(seznam.toPrettyString())
+        } catch (e: ServerResponseException) {
+            println(e)
+        } catch (e: ClientRequestException) {
+            println(e)
+        }
 
         // typOckovaniKod a indikace - copy-paste z prikladu
         val vakcinaceId = (
@@ -293,7 +329,7 @@ fun main() {
         println("vakcinaceId: ${vakcinaceId}")
 
         // datum vakcinace musi byt v minulosti
-        vytvorDavku(
+        val vytvor1 = vytvorDavku(
             isinClient, VytvorNeboZmenDavku(
                 datumVakcinace = "2021-05-10T00:00:00",
                 vakcinaceId = vakcinaceId,
@@ -305,12 +341,13 @@ fun main() {
                 stav = "Probihajici"
             )
         )
-        val vysledneDavky1 = getDavkyVakcinace(isinClient, vakcinaceId)
+        println(vytvor1.toPrettyString())
+        val vysledneDavky1 = getVakcinaceDleId(isinClient, vakcinaceId)
         println("Pocet davek ${vysledneDavky1.size()}")
         println(vysledneDavky1)
 
         // datum vakcinace musi byt v minulosti
-        vytvorDavku(
+        val vytvor2 = vytvorDavku(
             isinClient, VytvorNeboZmenDavku(
                 datumVakcinace = "2021-05-11T00:00:00",
                 vakcinaceId = vakcinaceId,
@@ -322,7 +359,9 @@ fun main() {
                 stav = "Ukoncene"
             )
         )
-        val vysledneDavky2 = getDavkyVakcinace(isinClient, vakcinaceId)
+        println(vytvor2.toPrettyString())
+
+        val vysledneDavky2 = getVakcinaceDleId(isinClient, vakcinaceId)
         println("Pocet davek ${vysledneDavky2.size()}")
         println(vysledneDavky2)
     }
