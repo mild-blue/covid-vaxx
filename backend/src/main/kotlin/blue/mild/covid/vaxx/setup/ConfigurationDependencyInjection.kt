@@ -7,13 +7,13 @@ import blue.mild.covid.vaxx.dto.config.JwtConfigurationDto
 import blue.mild.covid.vaxx.dto.config.MailJetConfigurationDto
 import blue.mild.covid.vaxx.dto.config.RateLimitConfigurationDto
 import blue.mild.covid.vaxx.dto.config.ReCaptchaVerificationConfigurationDto
-import blue.mild.covid.vaxx.dto.response.ApplicationInformationDto
+import blue.mild.covid.vaxx.dto.response.ApplicationInformationDtoOut
 import blue.mild.covid.vaxx.utils.createLogger
 import org.kodein.di.DI
 import org.kodein.di.bind
 import org.kodein.di.singleton
-import pw.forst.tools.katlib.getEnv
-import pw.forst.tools.katlib.whenNull
+import pw.forst.katlib.getEnv
+import pw.forst.katlib.whenNull
 import java.io.File
 import java.time.Duration
 import java.util.UUID
@@ -47,12 +47,12 @@ fun DI.MainBuilder.bindConfiguration() {
             apiKey = requireEnv(EnvVariables.MAIL_JET_API_KEY),
             apiSecret = requireEnv(EnvVariables.MAIL_JET_API_SECRET),
             emailFrom = getEnvOrLogDefault(EnvVariables.MAIL_ADDRESS_FROM, "ockovani@mild.blue"),
-            nameFrom = getEnvOrLogDefault(EnvVariables.NAME_FROM, "Registrace Očkování"),
-            subject = getEnvOrLogDefault(EnvVariables.SUBJECT, "Detaily k registraci na Očkování")
+            nameFrom = getEnvOrLogDefault(EnvVariables.MAIL_FROM, "Registrace Očkování"),
+            subject = getEnvOrLogDefault(EnvVariables.MAIL_SUBJECT, "Detaily k registraci na očkování")
         )
     }
 
-    bind<ApplicationInformationDto>() with singleton { ApplicationInformationDto(loadVersion()) }
+    bind<ApplicationInformationDtoOut>() with singleton { ApplicationInformationDtoOut(loadVersion()) }
 
     bind<String>(EnvVariables.FRONTEND_PATH) with singleton {
         getEnvOrLogDefault(EnvVariables.FRONTEND_PATH, "../frontend/dist/frontend")
@@ -85,11 +85,12 @@ fun DI.MainBuilder.bindConfiguration() {
     }
 
     bind<CorsConfigurationDto>() with singleton {
-        val hosts = getEnvOrLogDefault(EnvVariables.CORS_ALLOWED_HOSTS, "http://localhost:4200")
-            .split(",")
-            .map { it.trim() }
-
-        val enableCors = getEnvOrLogDefault(EnvVariables.ENABLE_CORS, "${hosts.isNotEmpty()}").toBoolean()
+        val enableCors = getEnvOrLogDefault(EnvVariables.ENABLE_CORS, "true").toBoolean()
+        val hosts = if (enableCors) {
+            getEnvOrLogDefault(EnvVariables.CORS_ALLOWED_HOSTS, "http://localhost:4200")
+                .split(",")
+                .map { it.trim() }
+        } else emptyList()
         CorsConfigurationDto(enableCors, hosts)
     }
 

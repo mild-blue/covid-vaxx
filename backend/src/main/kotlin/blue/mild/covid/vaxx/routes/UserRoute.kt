@@ -5,9 +5,11 @@ import blue.mild.covid.vaxx.dto.request.LoginDtoIn
 import blue.mild.covid.vaxx.dto.request.UserRegistrationDtoIn
 import blue.mild.covid.vaxx.dto.response.UserLoginResponseDtoOut
 import blue.mild.covid.vaxx.dto.response.UserRegisteredDtoOut
+import blue.mild.covid.vaxx.extensions.asContextAware
 import blue.mild.covid.vaxx.extensions.determineRealIp
 import blue.mild.covid.vaxx.extensions.di
 import blue.mild.covid.vaxx.extensions.request
+import blue.mild.covid.vaxx.extensions.respondWithStatus
 import blue.mild.covid.vaxx.security.auth.JwtService
 import blue.mild.covid.vaxx.security.auth.UserPrincipal
 import blue.mild.covid.vaxx.security.auth.authorizeRoute
@@ -22,7 +24,6 @@ import com.papsign.ktor.openapigen.route.path.normal.post
 import com.papsign.ktor.openapigen.route.response.respond
 import com.papsign.ktor.openapigen.route.route
 import io.ktor.http.HttpStatusCode
-import io.ktor.response.respond
 import org.kodein.di.instance
 
 /**
@@ -37,9 +38,9 @@ fun NormalOpenAPIRoute.userRoutes() {
         post<Unit, UserLoginResponseDtoOut, LoginDtoIn>(
             info("Login endpoint for the registered users such as administrators and doctors.")
         ) { _, loginDto ->
-            logger.info { "Login request for ${loginDto.username} from host ${request.determineRealIp()}." }
+            logger.info { "Login request for ${loginDto.credentials.email} from host ${request.determineRealIp()}." }
 
-            val principal = userService.verifyCredentials(loginDto)
+            val principal = userService.createPrincipal(asContextAware(loginDto))
             respond(jwtService.generateToken(principal))
         }
     }
@@ -51,7 +52,7 @@ fun NormalOpenAPIRoute.userRoutes() {
             ) { _, registration ->
                 val principal = principal()
                 logger.info {
-                    "User registration for ${registration.username} registered by ${principal.userId} from host ${request.determineRealIp()}."
+                    "User registration for ${registration.email} registered by ${principal.userId} from host ${request.determineRealIp()}."
                 }
                 respond(userService.registerUser(registration))
             }
@@ -63,7 +64,7 @@ fun NormalOpenAPIRoute.userRoutes() {
             get<Unit, Unit, UserPrincipal>(
                 info("Verify that the currently used token is valid. Returns 200 if token is correct, 401 otherwise.")
             ) {
-                request.call.respond(HttpStatusCode.OK)
+                respondWithStatus(HttpStatusCode.OK)
             }
         }
     }

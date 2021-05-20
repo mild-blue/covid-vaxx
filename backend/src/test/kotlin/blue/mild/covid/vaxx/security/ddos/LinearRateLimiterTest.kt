@@ -4,7 +4,7 @@ import io.mockk.every
 import io.mockk.mockk
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
-import pw.forst.tools.katlib.TimeProvider
+import pw.forst.katlib.TimeProvider
 import java.time.Duration
 import java.time.Instant
 import java.util.UUID

@@ -8,7 +8,7 @@ import io.ktor.request.header
  * Determine real IP address of the request call from the proxy headers.
  */
 fun ApplicationRequest.determineRealIp() =
-    forwardedForHeader() ?: realIpHeader() ?: origin.remoteHost
+    realIpHeader() ?: forwardedForHeader() ?: origin.remoteHost
 
 private fun ApplicationRequest.realIpHeader(): String? =
     header("x-real-ip")

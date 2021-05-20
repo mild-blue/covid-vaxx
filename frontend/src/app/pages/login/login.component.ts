@@ -1,9 +1,10 @@
 import { Component } from '@angular/core';
-import { AbstractControl, FormBuilder, FormGroup, Validators } from '@angular/forms';
+import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
 import { AuthService } from '@app/services/auth/auth.service';
 import { finalize, first } from 'rxjs/operators';
 import { AlertService } from '@app/services/alert/alert.service';
+import { Nurse } from '@app/model/Nurse';
 
 @Component({
   selector: 'app-login',
@@ -13,8 +14,12 @@ import { AlertService } from '@app/services/alert/alert.service';
 export class LoginComponent {
 
   public loginForm: FormGroup;
+  public nurseForm: FormGroup;
+
   public loading: boolean = false;
-  public submitted: boolean = false;
+
+  public email?: string;
+  public nurses: Nurse[] = [];
 
   constructor(private _formBuilder: FormBuilder,
               private _router: Router,
@@ -24,20 +29,55 @@ export class LoginComponent {
       username: ['', Validators.required],
       password: ['', Validators.required]
     });
+
+    this.nurseForm = this._formBuilder.group({
+      nurseId: ['', Validators.required],
+      vaccine: ['', Validators.required]
+    });
   }
 
-  public onSubmit(): void {
+  public cancel(): void {
+    this.loginForm.reset();
+    this.nurseForm.reset();
+    this.nurses = [];
+    this.email = '';
+  }
 
-    this.submitted = true;
+  public getNurses(): void {
 
     if (this.loginForm.invalid) {
       return;
     }
 
     this.loading = true;
-    const { username, password } = this.f;
+    const { username, password } = this.loginForm.controls;
 
-    this._authService.login(username.value, password.value)
+    this._authService.getNurses(username.value, password.value)
+    .pipe(
+      first(),
+      finalize(() => this.loading = false)
+    )
+    .subscribe(
+      (nurses: Nurse[]) => {
+        this.email = username.value;
+        this.nurses = nurses;
+      },
+      (error: Error) => {
+        this._alertService.error(error.message);
+      });
+  }
+
+  public login(): void {
+
+    if (this.nurseForm.invalid) {
+      return;
+    }
+
+    this.loading = true;
+    const { username, password } = this.loginForm.controls;
+    const { nurseId, vaccine } = this.nurseForm.controls;
+
+    this._authService.login(username.value, password.value, vaccine.value, nurseId.value)
     .pipe(
       first(),
       finalize(() => this.loading = false)
@@ -49,9 +89,5 @@ export class LoginComponent {
       (error: Error) => {
         this._alertService.error(error.message);
       });
-  }
-
-  get f(): { [key: string]: AbstractControl; } {
-    return this.loginForm.controls;
   }
 }

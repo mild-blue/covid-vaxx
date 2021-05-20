@@ -17,17 +17,26 @@ import { CustomHttpParameterCodec } from '../encoder';
 import { Observable } from 'rxjs';
 
 import {
-    ApplicationInformationDto,
-    InsuranceCompanyDetailsDtoOut,
-    LoginDtoIn,
-    PatientDtoOut,
-    PatientRegistrationDtoIn,
-    PatientUpdateDtoIn,
-    QuestionDtoOut,
-    ServiceHealthDtoOut,
-    UserLoginResponseDtoOut,
-    UserRegisteredDtoOut,
-    UserRegistrationDtoIn
+  ApplicationInformationDtoOut,
+  CredentialsDtoIn,
+  DataCorrectnessConfirmationDetailDtoOut,
+  DataCorrectnessDtoIn,
+  InsuranceCompanyDetailsDtoOut,
+  LoginDtoIn,
+  NurseCreationDtoIn,
+  Ok,
+  PatientDtoOut,
+  PatientRegistrationDtoIn,
+  PatientUpdateDtoIn,
+  PersonnelDtoOut,
+  QuestionDtoOut,
+  ServiceHealthDtoOut,
+  SystemStatisticsDtoOut,
+  UserLoginResponseDtoOut,
+  UserRegisteredDtoOut,
+  UserRegistrationDtoIn,
+  VaccinationDetailDtoOut,
+  VaccinationDtoIn
 } from '../model/models';
 
 import { BASE_PATH } from '../variables';
@@ -35,80 +44,478 @@ import { Configuration } from '../configuration';
 
 
 @Injectable({
-    providedIn: 'root'
+  providedIn: 'root'
 })
 export class DefaultService {
 
-    protected basePath = 'http://localhost';
-    public defaultHeaders = new HttpHeaders();
-    public configuration = new Configuration();
-    public encoder: HttpParameterCodec;
+  protected basePath = 'http://localhost';
+  public defaultHeaders = new HttpHeaders();
+  public configuration = new Configuration();
+  public encoder: HttpParameterCodec;
 
-    constructor(protected httpClient: HttpClient, @Optional() @Inject(BASE_PATH) basePath: string, @Optional() configuration: Configuration) {
-        if (configuration) {
-            this.configuration = configuration;
-        }
-        if (typeof this.configuration.basePath !== 'string') {
-            if (typeof basePath !== 'string') {
-                basePath = this.basePath;
-            }
-            this.configuration.basePath = basePath;
-        }
-        this.encoder = this.configuration.encoder || new CustomHttpParameterCodec();
+  constructor(protected httpClient: HttpClient, @Optional() @Inject(BASE_PATH) basePath: string, @Optional() configuration: Configuration) {
+    if (configuration) {
+      this.configuration = configuration;
     }
-
-
-    private addToHttpParams(httpParams: HttpParams, value: any, key?: string): HttpParams {
-        if (typeof value === 'object' && value instanceof Date === false) {
-            httpParams = this.addToHttpParamsRecursive(httpParams, value);
-        } else {
-            httpParams = this.addToHttpParamsRecursive(httpParams, value, key);
-        }
-        return httpParams;
+    if (typeof this.configuration.basePath !== 'string') {
+      if (typeof basePath !== 'string') {
+        basePath = this.basePath;
+      }
+      this.configuration.basePath = basePath;
     }
+    this.encoder = this.configuration.encoder || new CustomHttpParameterCodec();
+  }
+
+
+  private addToHttpParams(httpParams: HttpParams, value: any, key?: string): HttpParams {
+    if (typeof value === 'object' && value instanceof Date === false) {
+      httpParams = this.addToHttpParamsRecursive(httpParams, value);
+    } else {
+      httpParams = this.addToHttpParamsRecursive(httpParams, value, key);
+    }
+    return httpParams;
+  }
 
     private addToHttpParamsRecursive(httpParams: HttpParams, value?: any, key?: string): HttpParams {
-        if (value == null) {
-            return httpParams;
-        }
-
-        if (typeof value === 'object') {
-            if (Array.isArray(value)) {
-                (value as any[]).forEach(elem => httpParams = this.addToHttpParamsRecursive(httpParams, elem, key));
-            } else if (value instanceof Date) {
-                if (key != null) {
-                    httpParams = httpParams.append(key,
-                      (value as Date).toISOString().substr(0, 10));
-                } else {
-                    throw Error('key may not be null if value is Date');
-                }
-            } else {
-                Object.keys(value).forEach(k => httpParams = this.addToHttpParamsRecursive(
-                  httpParams, value[k], key != null ? `${key}.${k}` : k));
-            }
-        } else if (key != null) {
-            httpParams = httpParams.append(key, value);
-        } else {
-            throw Error('key may not be null if value is not object or array');
-        }
+      if (value == null) {
         return httpParams;
+      }
+
+      if (typeof value === 'object') {
+        if (Array.isArray(value)) {
+          (value as any[]).forEach(elem => httpParams = this.addToHttpParamsRecursive(httpParams, elem, key));
+        } else if (value instanceof Date) {
+          if (key != null) {
+            httpParams = httpParams.append(key,
+              (value as Date).toISOString().substr(0, 10));
+          } else {
+            throw Error('key may not be null if value is Date');
+          }
+        } else {
+          Object.keys(value).forEach(k => httpParams = this.addToHttpParamsRecursive(
+            httpParams, value[k], key != null ? `${key}.${k}` : k));
+        }
+      } else if (key != null) {
+        httpParams = httpParams.append(key, value);
+      } else {
+        throw Error('key may not be null if value is not object or array');
+      }
+      return httpParams;
     }
 
-    /**
-     * Returns all questions and refreshes in-memory cache.
-     * @param observe set whether or not to return the data Observable as the body, response or events. defaults to returning the body.
-     * @param reportProgress flag to report request and response progress.
-     */
-    public apiAdminCacheRefreshGet(observe?: 'body', reportProgress?: boolean, options?: { httpHeaderAccept?: 'application/json' }): Observable<Array<QuestionDtoOut>>;
-    public apiAdminCacheRefreshGet(observe?: 'response', reportProgress?: boolean, options?: { httpHeaderAccept?: 'application/json' }): Observable<HttpResponse<Array<QuestionDtoOut>>>;
-    public apiAdminCacheRefreshGet(observe?: 'events', reportProgress?: boolean, options?: { httpHeaderAccept?: 'application/json' }): Observable<HttpEvent<Array<QuestionDtoOut>>>;
-    public apiAdminCacheRefreshGet(observe: any = 'body', reportProgress: boolean = false, options?: { httpHeaderAccept?: 'application/json' }): Observable<any> {
+  /**
+   * Returns all questions and refreshes in-memory cache.
+   * @param observe set whether or not to return the data Observable as the body, response or events. defaults to returning the body.
+   * @param reportProgress flag to report request and response progress.
+   */
+  public apiAdminCacheRefreshGet(observe?: 'body', reportProgress?: boolean, options?: { httpHeaderAccept?: 'application/json' }): Observable<Array<QuestionDtoOut>>;
+  public apiAdminCacheRefreshGet(observe?: 'response', reportProgress?: boolean, options?: { httpHeaderAccept?: 'application/json' }): Observable<HttpResponse<Array<QuestionDtoOut>>>;
+  public apiAdminCacheRefreshGet(observe?: 'events', reportProgress?: boolean, options?: { httpHeaderAccept?: 'application/json' }): Observable<HttpEvent<Array<QuestionDtoOut>>>;
+  public apiAdminCacheRefreshGet(observe: any = 'body', reportProgress: boolean = false, options?: { httpHeaderAccept?: 'application/json' }): Observable<any> {
 
-        let headers = this.defaultHeaders;
+    let headers = this.defaultHeaders;
 
-        let credential: string | undefined;
-        // authentication (jwtAuth) required
-        credential = this.configuration.lookupCredential('jwtAuth');
+    let credential: string | undefined;
+    // authentication (jwtAuth) required
+    credential = this.configuration.lookupCredential('jwtAuth');
+    if (credential) {
+      headers = headers.set('Authorization', 'Bearer ' + credential);
+    }
+
+    let httpHeaderAcceptSelected: string | undefined = options && options.httpHeaderAccept;
+    if (httpHeaderAcceptSelected === undefined) {
+      // to determine the Accept header
+      const httpHeaderAccepts: string[] = [
+        'application/json'
+      ];
+      httpHeaderAcceptSelected = this.configuration.selectHeaderAccept(httpHeaderAccepts);
+    }
+    if (httpHeaderAcceptSelected !== undefined) {
+      headers = headers.set('Accept', httpHeaderAcceptSelected);
+    }
+
+
+    let responseType: 'text' | 'json' = 'json';
+    if (httpHeaderAcceptSelected && httpHeaderAcceptSelected.startsWith('text')) {
+      responseType = 'text';
+    }
+
+    return this.httpClient.get<Array<QuestionDtoOut>>(`${this.configuration.basePath}/api/admin/cache-refresh`,
+      {
+        responseType: <any>responseType,
+        withCredentials: this.configuration.withCredentials,
+        headers: headers,
+        observe: observe,
+        reportProgress: reportProgress
+      }
+    );
+  }
+
+  /**
+   * Get detail about data correctness check for given patient ID.
+   * @param id Patients ID
+   * @param observe set whether or not to return the data Observable as the body, response or events. defaults to returning the body.
+   * @param reportProgress flag to report request and response progress.
+   */
+  public apiAdminDataCorrectnessGet(id: string, observe?: 'body', reportProgress?: boolean, options?: { httpHeaderAccept?: 'application/json' }): Observable<DataCorrectnessConfirmationDetailDtoOut>;
+  public apiAdminDataCorrectnessGet(id: string, observe?: 'response', reportProgress?: boolean, options?: { httpHeaderAccept?: 'application/json' }): Observable<HttpResponse<DataCorrectnessConfirmationDetailDtoOut>>;
+  public apiAdminDataCorrectnessGet(id: string, observe?: 'events', reportProgress?: boolean, options?: { httpHeaderAccept?: 'application/json' }): Observable<HttpEvent<DataCorrectnessConfirmationDetailDtoOut>>;
+  public apiAdminDataCorrectnessGet(id: string, observe: any = 'body', reportProgress: boolean = false, options?: { httpHeaderAccept?: 'application/json' }): Observable<any> {
+    if (id === null || id === undefined) {
+      throw new Error('Required parameter id was null or undefined when calling apiAdminDataCorrectnessGet.');
+    }
+
+    let queryParameters = new HttpParams({ encoder: this.encoder });
+    if (id !== undefined && id !== null) {
+      queryParameters = this.addToHttpParams(queryParameters,
+        <any>id, 'id');
+    }
+
+    let headers = this.defaultHeaders;
+
+    let credential: string | undefined;
+    // authentication (jwtAuth) required
+    credential = this.configuration.lookupCredential('jwtAuth');
+    if (credential) {
+      headers = headers.set('Authorization', 'Bearer ' + credential);
+    }
+
+    let httpHeaderAcceptSelected: string | undefined = options && options.httpHeaderAccept;
+    if (httpHeaderAcceptSelected === undefined) {
+      // to determine the Accept header
+      const httpHeaderAccepts: string[] = [
+        'application/json'
+      ];
+      httpHeaderAcceptSelected = this.configuration.selectHeaderAccept(httpHeaderAccepts);
+    }
+    if (httpHeaderAcceptSelected !== undefined) {
+      headers = headers.set('Accept', httpHeaderAcceptSelected);
+    }
+
+
+    let responseType: 'text' | 'json' = 'json';
+    if (httpHeaderAcceptSelected && httpHeaderAcceptSelected.startsWith('text')) {
+      responseType = 'text';
+    }
+
+    return this.httpClient.get<DataCorrectnessConfirmationDetailDtoOut>(`${this.configuration.basePath}/api/admin/data-correctness`,
+      {
+        params: queryParameters,
+        responseType: <any>responseType,
+        withCredentials: this.configuration.withCredentials,
+        headers: headers,
+        observe: observe,
+        reportProgress: reportProgress
+      }
+    );
+  }
+
+  /**
+   * Get detail about data correctness check for given data ID.
+   * @param id Data correctness confirmation ID
+   * @param observe set whether or not to return the data Observable as the body, response or events. defaults to returning the body.
+   * @param reportProgress flag to report request and response progress.
+   */
+  public apiAdminDataCorrectnessIdGet(id: string, observe?: 'body', reportProgress?: boolean, options?: { httpHeaderAccept?: 'application/json' }): Observable<DataCorrectnessConfirmationDetailDtoOut>;
+  public apiAdminDataCorrectnessIdGet(id: string, observe?: 'response', reportProgress?: boolean, options?: { httpHeaderAccept?: 'application/json' }): Observable<HttpResponse<DataCorrectnessConfirmationDetailDtoOut>>;
+  public apiAdminDataCorrectnessIdGet(id: string, observe?: 'events', reportProgress?: boolean, options?: { httpHeaderAccept?: 'application/json' }): Observable<HttpEvent<DataCorrectnessConfirmationDetailDtoOut>>;
+  public apiAdminDataCorrectnessIdGet(id: string, observe: any = 'body', reportProgress: boolean = false, options?: { httpHeaderAccept?: 'application/json' }): Observable<any> {
+    if (id === null || id === undefined) {
+      throw new Error('Required parameter id was null or undefined when calling apiAdminDataCorrectnessIdGet.');
+    }
+
+    let headers = this.defaultHeaders;
+
+    let credential: string | undefined;
+    // authentication (jwtAuth) required
+    credential = this.configuration.lookupCredential('jwtAuth');
+    if (credential) {
+      headers = headers.set('Authorization', 'Bearer ' + credential);
+    }
+
+    let httpHeaderAcceptSelected: string | undefined = options && options.httpHeaderAccept;
+    if (httpHeaderAcceptSelected === undefined) {
+      // to determine the Accept header
+      const httpHeaderAccepts: string[] = [
+        'application/json'
+      ];
+      httpHeaderAcceptSelected = this.configuration.selectHeaderAccept(httpHeaderAccepts);
+    }
+    if (httpHeaderAcceptSelected !== undefined) {
+      headers = headers.set('Accept', httpHeaderAcceptSelected);
+    }
+
+
+    let responseType: 'text' | 'json' = 'json';
+    if (httpHeaderAcceptSelected && httpHeaderAcceptSelected.startsWith('text')) {
+      responseType = 'text';
+    }
+
+    return this.httpClient.get<DataCorrectnessConfirmationDetailDtoOut>(`${this.configuration.basePath}/api/admin/data-correctness/${encodeURIComponent(String(id))}`,
+      {
+        responseType: <any>responseType,
+        withCredentials: this.configuration.withCredentials,
+        headers: headers,
+        observe: observe,
+        reportProgress: reportProgress
+      }
+    );
+  }
+
+  /**
+   * Register that the data about patient are correct. Requires DOCTOR role.
+   * @param dataCorrectnessDtoIn
+   * @param observe set whether or not to return the data Observable as the body, response or events. defaults to returning the body.
+   * @param reportProgress flag to report request and response progress.
+   */
+  public apiAdminDataCorrectnessPost(dataCorrectnessDtoIn?: DataCorrectnessDtoIn, observe?: 'body', reportProgress?: boolean, options?: { httpHeaderAccept?: 'application/json' }): Observable<DataCorrectnessConfirmationDetailDtoOut>;
+  public apiAdminDataCorrectnessPost(dataCorrectnessDtoIn?: DataCorrectnessDtoIn, observe?: 'response', reportProgress?: boolean, options?: { httpHeaderAccept?: 'application/json' }): Observable<HttpResponse<DataCorrectnessConfirmationDetailDtoOut>>;
+  public apiAdminDataCorrectnessPost(dataCorrectnessDtoIn?: DataCorrectnessDtoIn, observe?: 'events', reportProgress?: boolean, options?: { httpHeaderAccept?: 'application/json' }): Observable<HttpEvent<DataCorrectnessConfirmationDetailDtoOut>>;
+  public apiAdminDataCorrectnessPost(dataCorrectnessDtoIn?: DataCorrectnessDtoIn, observe: any = 'body', reportProgress: boolean = false, options?: { httpHeaderAccept?: 'application/json' }): Observable<any> {
+
+    let headers = this.defaultHeaders;
+
+    let credential: string | undefined;
+    // authentication (jwtAuth) required
+    credential = this.configuration.lookupCredential('jwtAuth');
+    if (credential) {
+      headers = headers.set('Authorization', 'Bearer ' + credential);
+    }
+
+    let httpHeaderAcceptSelected: string | undefined = options && options.httpHeaderAccept;
+    if (httpHeaderAcceptSelected === undefined) {
+      // to determine the Accept header
+      const httpHeaderAccepts: string[] = [
+        'application/json'
+      ];
+      httpHeaderAcceptSelected = this.configuration.selectHeaderAccept(httpHeaderAccepts);
+    }
+    if (httpHeaderAcceptSelected !== undefined) {
+      headers = headers.set('Accept', httpHeaderAcceptSelected);
+    }
+
+
+    // to determine the Content-Type header
+    const consumes: string[] = [
+      'application/json'
+    ];
+    const httpContentTypeSelected: string | undefined = this.configuration.selectHeaderContentType(consumes);
+    if (httpContentTypeSelected !== undefined) {
+      headers = headers.set('Content-Type', httpContentTypeSelected);
+    }
+
+    let responseType: 'text' | 'json' = 'json';
+    if (httpHeaderAcceptSelected && httpHeaderAcceptSelected.startsWith('text')) {
+      responseType = 'text';
+    }
+
+    return this.httpClient.post<DataCorrectnessConfirmationDetailDtoOut>(`${this.configuration.basePath}/api/admin/data-correctness`,
+      dataCorrectnessDtoIn,
+      {
+        responseType: <any>responseType,
+        withCredentials: this.configuration.withCredentials,
+        headers: headers,
+        observe: observe,
+        reportProgress: reportProgress
+      }
+    );
+  }
+
+  /**
+   * Login endpoint for the registered users such as administrators and doctors.
+   * @param loginDtoIn
+   * @param observe set whether or not to return the data Observable as the body, response or events. defaults to returning the body.
+   * @param reportProgress flag to report request and response progress.
+   */
+  public apiAdminLoginPost(loginDtoIn?: LoginDtoIn, observe?: 'body', reportProgress?: boolean, options?: { httpHeaderAccept?: 'application/json' }): Observable<UserLoginResponseDtoOut>;
+  public apiAdminLoginPost(loginDtoIn?: LoginDtoIn, observe?: 'response', reportProgress?: boolean, options?: { httpHeaderAccept?: 'application/json' }): Observable<HttpResponse<UserLoginResponseDtoOut>>;
+  public apiAdminLoginPost(loginDtoIn?: LoginDtoIn, observe?: 'events', reportProgress?: boolean, options?: { httpHeaderAccept?: 'application/json' }): Observable<HttpEvent<UserLoginResponseDtoOut>>;
+  public apiAdminLoginPost(loginDtoIn?: LoginDtoIn, observe: any = 'body', reportProgress: boolean = false, options?: { httpHeaderAccept?: 'application/json' }): Observable<any> {
+
+    let headers = this.defaultHeaders;
+
+    let httpHeaderAcceptSelected: string | undefined = options && options.httpHeaderAccept;
+    if (httpHeaderAcceptSelected === undefined) {
+      // to determine the Accept header
+      const httpHeaderAccepts: string[] = [
+        'application/json'
+      ];
+      httpHeaderAcceptSelected = this.configuration.selectHeaderAccept(httpHeaderAccepts);
+    }
+    if (httpHeaderAcceptSelected !== undefined) {
+      headers = headers.set('Accept', httpHeaderAcceptSelected);
+    }
+
+
+    // to determine the Content-Type header
+    const consumes: string[] = [
+      'application/json'
+    ];
+    const httpContentTypeSelected: string | undefined = this.configuration.selectHeaderContentType(consumes);
+    if (httpContentTypeSelected !== undefined) {
+      headers = headers.set('Content-Type', httpContentTypeSelected);
+    }
+
+    let responseType: 'text' | 'json' = 'json';
+    if (httpHeaderAcceptSelected && httpHeaderAcceptSelected.startsWith('text')) {
+      responseType = 'text';
+    }
+
+    return this.httpClient.post<UserLoginResponseDtoOut>(`${this.configuration.basePath}/api/admin/login`,
+      loginDtoIn,
+      {
+        responseType: <any>responseType,
+        withCredentials: this.configuration.withCredentials,
+        headers: headers,
+        observe: observe,
+        reportProgress: reportProgress
+      }
+    );
+  }
+
+  /**
+   * If the given user exist, returns all current nurses in the database.
+   * @param credentialsDtoIn
+   * @param observe set whether or not to return the data Observable as the body, response or events. defaults to returning the body.
+   * @param reportProgress flag to report request and response progress.
+   */
+  public apiAdminNursePost(credentialsDtoIn?: CredentialsDtoIn, observe?: 'body', reportProgress?: boolean, options?: { httpHeaderAccept?: 'application/json' }): Observable<Array<PersonnelDtoOut>>;
+  public apiAdminNursePost(credentialsDtoIn?: CredentialsDtoIn, observe?: 'response', reportProgress?: boolean, options?: { httpHeaderAccept?: 'application/json' }): Observable<HttpResponse<Array<PersonnelDtoOut>>>;
+  public apiAdminNursePost(credentialsDtoIn?: CredentialsDtoIn, observe?: 'events', reportProgress?: boolean, options?: { httpHeaderAccept?: 'application/json' }): Observable<HttpEvent<Array<PersonnelDtoOut>>>;
+  public apiAdminNursePost(credentialsDtoIn?: CredentialsDtoIn, observe: any = 'body', reportProgress: boolean = false, options?: { httpHeaderAccept?: 'application/json' }): Observable<any> {
+
+    let headers = this.defaultHeaders;
+
+    let httpHeaderAcceptSelected: string | undefined = options && options.httpHeaderAccept;
+    if (httpHeaderAcceptSelected === undefined) {
+      // to determine the Accept header
+      const httpHeaderAccepts: string[] = [
+        'application/json'
+      ];
+      httpHeaderAcceptSelected = this.configuration.selectHeaderAccept(httpHeaderAccepts);
+    }
+    if (httpHeaderAcceptSelected !== undefined) {
+      headers = headers.set('Accept', httpHeaderAcceptSelected);
+    }
+
+
+    // to determine the Content-Type header
+    const consumes: string[] = [
+      'application/json'
+    ];
+    const httpContentTypeSelected: string | undefined = this.configuration.selectHeaderContentType(consumes);
+    if (httpContentTypeSelected !== undefined) {
+      headers = headers.set('Content-Type', httpContentTypeSelected);
+    }
+
+    let responseType: 'text' | 'json' = 'json';
+    if (httpHeaderAcceptSelected && httpHeaderAcceptSelected.startsWith('text')) {
+      responseType = 'text';
+    }
+
+    return this.httpClient.post<Array<PersonnelDtoOut>>(`${this.configuration.basePath}/api/admin/nurse`,
+      credentialsDtoIn,
+      {
+        responseType: <any>responseType,
+        withCredentials: this.configuration.withCredentials,
+        headers: headers,
+        observe: observe,
+        reportProgress: reportProgress
+      }
+    );
+  }
+
+  /**
+   * Creates nurse entity.
+   * @param nurseCreationDtoIn
+   * @param observe set whether or not to return the data Observable as the body, response or events. defaults to returning the body.
+   * @param reportProgress flag to report request and response progress.
+   */
+  public apiAdminNursePut(nurseCreationDtoIn?: NurseCreationDtoIn, observe?: 'body', reportProgress?: boolean, options?: { httpHeaderAccept?: 'application/json' }): Observable<Ok>;
+  public apiAdminNursePut(nurseCreationDtoIn?: NurseCreationDtoIn, observe?: 'response', reportProgress?: boolean, options?: { httpHeaderAccept?: 'application/json' }): Observable<HttpResponse<Ok>>;
+  public apiAdminNursePut(nurseCreationDtoIn?: NurseCreationDtoIn, observe?: 'events', reportProgress?: boolean, options?: { httpHeaderAccept?: 'application/json' }): Observable<HttpEvent<Ok>>;
+  public apiAdminNursePut(nurseCreationDtoIn?: NurseCreationDtoIn, observe: any = 'body', reportProgress: boolean = false, options?: { httpHeaderAccept?: 'application/json' }): Observable<any> {
+
+    let headers = this.defaultHeaders;
+
+    let credential: string | undefined;
+    // authentication (jwtAuth) required
+    credential = this.configuration.lookupCredential('jwtAuth');
+    if (credential) {
+      headers = headers.set('Authorization', 'Bearer ' + credential);
+    }
+
+    let httpHeaderAcceptSelected: string | undefined = options && options.httpHeaderAccept;
+    if (httpHeaderAcceptSelected === undefined) {
+      // to determine the Accept header
+      const httpHeaderAccepts: string[] = [
+        'application/json'
+      ];
+      httpHeaderAcceptSelected = this.configuration.selectHeaderAccept(httpHeaderAccepts);
+    }
+    if (httpHeaderAcceptSelected !== undefined) {
+      headers = headers.set('Accept', httpHeaderAcceptSelected);
+    }
+
+
+    // to determine the Content-Type header
+    const consumes: string[] = [
+      'application/json'
+    ];
+    const httpContentTypeSelected: string | undefined = this.configuration.selectHeaderContentType(consumes);
+    if (httpContentTypeSelected !== undefined) {
+      headers = headers.set('Content-Type', httpContentTypeSelected);
+    }
+
+    let responseType: 'text' | 'json' = 'json';
+    if (httpHeaderAcceptSelected && httpHeaderAcceptSelected.startsWith('text')) {
+      responseType = 'text';
+    }
+
+    return this.httpClient.put<Ok>(`${this.configuration.basePath}/api/admin/nurse`,
+      nurseCreationDtoIn,
+      {
+        responseType: <any>responseType,
+        withCredentials: this.configuration.withCredentials,
+        headers: headers,
+        observe: observe,
+        reportProgress: reportProgress
+      }
+    );
+  }
+
+  /**
+   * Get patient the parameters. Filters by and clause. Empty parameters return all patients.
+   * @param email Filter by email.
+   * @param phoneNumber Filter by phone number.
+   * @param vaccinated Filter by the fact if the patient was vaccinated or not.
+   * @param observe set whether or not to return the data Observable as the body, response or events. defaults to returning the body.
+   * @param reportProgress flag to report request and response progress.
+   */
+  public apiAdminPatientFilterGet(email?: string, phoneNumber?: string, vaccinated?: boolean, observe?: 'body', reportProgress?: boolean, options?: { httpHeaderAccept?: 'application/json' }): Observable<Array<PatientDtoOut>>;
+  public apiAdminPatientFilterGet(email?: string, phoneNumber?: string, vaccinated?: boolean, observe?: 'response', reportProgress?: boolean, options?: { httpHeaderAccept?: 'application/json' }): Observable<HttpResponse<Array<PatientDtoOut>>>;
+  public apiAdminPatientFilterGet(email?: string, phoneNumber?: string, vaccinated?: boolean, observe?: 'events', reportProgress?: boolean, options?: { httpHeaderAccept?: 'application/json' }): Observable<HttpEvent<Array<PatientDtoOut>>>;
+  public apiAdminPatientFilterGet(email?: string, phoneNumber?: string, vaccinated?: boolean, observe: any = 'body', reportProgress: boolean = false, options?: { httpHeaderAccept?: 'application/json' }): Observable<any> {
+
+    let queryParameters = new HttpParams({ encoder: this.encoder });
+    if (email !== undefined && email !== null) {
+      queryParameters = this.addToHttpParams(queryParameters,
+        <any>email, 'email');
+    }
+    if (phoneNumber !== undefined && phoneNumber !== null) {
+      queryParameters = this.addToHttpParams(queryParameters,
+        <any>phoneNumber, 'phoneNumber');
+    }
+    if (vaccinated !== undefined && vaccinated !== null) {
+      queryParameters = this.addToHttpParams(queryParameters,
+        <any>vaccinated, 'vaccinated');
+    }
+
+    let headers = this.defaultHeaders;
+
+    let credential: string | undefined;
+    // authentication (jwtAuth) required
+    credential = this.configuration.lookupCredential('jwtAuth');
         if (credential) {
             headers = headers.set('Authorization', 'Bearer ' + credential);
         }
@@ -117,737 +524,855 @@ export class DefaultService {
         if (httpHeaderAcceptSelected === undefined) {
             // to determine the Accept header
             const httpHeaderAccepts: string[] = [
-                'application/json'
+              'application/json'
             ];
-            httpHeaderAcceptSelected = this.configuration.selectHeaderAccept(httpHeaderAccepts);
+          httpHeaderAcceptSelected = this.configuration.selectHeaderAccept(httpHeaderAccepts);
         }
-        if (httpHeaderAcceptSelected !== undefined) {
+    if (httpHeaderAcceptSelected !== undefined) {
+      headers = headers.set('Accept', httpHeaderAcceptSelected);
+    }
+
+
+    let responseType: 'text' | 'json' = 'json';
+    if (httpHeaderAcceptSelected && httpHeaderAcceptSelected.startsWith('text')) {
+      responseType = 'text';
+    }
+
+    return this.httpClient.get<Array<PatientDtoOut>>(`${this.configuration.basePath}/api/admin/patient/filter`,
+      {
+        params: queryParameters,
+        responseType: <any>responseType,
+        withCredentials: this.configuration.withCredentials,
+        headers: headers,
+        observe: observe,
+        reportProgress: reportProgress
+      }
+    );
+  }
+
+  /**
+   * Get patient by personal number.
+   * @param personalNumber Patient personal number
+   * @param observe set whether or not to return the data Observable as the body, response or events. defaults to returning the body.
+   * @param reportProgress flag to report request and response progress.
+   */
+  public apiAdminPatientGet(personalNumber: string, observe?: 'body', reportProgress?: boolean, options?: { httpHeaderAccept?: 'application/json' }): Observable<PatientDtoOut>;
+  public apiAdminPatientGet(personalNumber: string, observe?: 'response', reportProgress?: boolean, options?: { httpHeaderAccept?: 'application/json' }): Observable<HttpResponse<PatientDtoOut>>;
+  public apiAdminPatientGet(personalNumber: string, observe?: 'events', reportProgress?: boolean, options?: { httpHeaderAccept?: 'application/json' }): Observable<HttpEvent<PatientDtoOut>>;
+  public apiAdminPatientGet(personalNumber: string, observe: any = 'body', reportProgress: boolean = false, options?: { httpHeaderAccept?: 'application/json' }): Observable<any> {
+    if (personalNumber === null || personalNumber === undefined) {
+      throw new Error('Required parameter personalNumber was null or undefined when calling apiAdminPatientGet.');
+    }
+
+    let queryParameters = new HttpParams({ encoder: this.encoder });
+    if (personalNumber !== undefined && personalNumber !== null) {
+      queryParameters = this.addToHttpParams(queryParameters,
+        <any>personalNumber, 'personalNumber');
+    }
+
+    let headers = this.defaultHeaders;
+
+    let credential: string | undefined;
+    // authentication (jwtAuth) required
+    credential = this.configuration.lookupCredential('jwtAuth');
+    if (credential) {
+      headers = headers.set('Authorization', 'Bearer ' + credential);
+    }
+
+    let httpHeaderAcceptSelected: string | undefined = options && options.httpHeaderAccept;
+    if (httpHeaderAcceptSelected === undefined) {
+      // to determine the Accept header
+      const httpHeaderAccepts: string[] = [
+        'application/json'
+      ];
+      httpHeaderAcceptSelected = this.configuration.selectHeaderAccept(httpHeaderAccepts);
+    }
+    if (httpHeaderAcceptSelected !== undefined) {
+      headers = headers.set('Accept', httpHeaderAcceptSelected);
+    }
+
+
+    let responseType: 'text' | 'json' = 'json';
+    if (httpHeaderAcceptSelected && httpHeaderAcceptSelected.startsWith('text')) {
+      responseType = 'text';
+    }
+
+    return this.httpClient.get<PatientDtoOut>(`${this.configuration.basePath}/api/admin/patient`,
+      {
+        params: queryParameters,
+        responseType: <any>responseType,
+        withCredentials: this.configuration.withCredentials,
+        headers: headers,
+        observe: observe,
+        reportProgress: reportProgress
+      }
+    );
+  }
+
+  /**
+   * Delete user by ID.
+   * @param id Patient ID
+   * @param observe set whether or not to return the data Observable as the body, response or events. defaults to returning the body.
+   * @param reportProgress flag to report request and response progress.
+   */
+  public apiAdminPatientIdDelete(id: string, observe?: 'body', reportProgress?: boolean, options?: { httpHeaderAccept?: 'application/json' }): Observable<Ok>;
+  public apiAdminPatientIdDelete(id: string, observe?: 'response', reportProgress?: boolean, options?: { httpHeaderAccept?: 'application/json' }): Observable<HttpResponse<Ok>>;
+  public apiAdminPatientIdDelete(id: string, observe?: 'events', reportProgress?: boolean, options?: { httpHeaderAccept?: 'application/json' }): Observable<HttpEvent<Ok>>;
+  public apiAdminPatientIdDelete(id: string, observe: any = 'body', reportProgress: boolean = false, options?: { httpHeaderAccept?: 'application/json' }): Observable<any> {
+    if (id === null || id === undefined) {
+      throw new Error('Required parameter id was null or undefined when calling apiAdminPatientIdDelete.');
+    }
+
+    let headers = this.defaultHeaders;
+
+    let credential: string | undefined;
+    // authentication (jwtAuth) required
+    credential = this.configuration.lookupCredential('jwtAuth');
+    if (credential) {
+      headers = headers.set('Authorization', 'Bearer ' + credential);
+    }
+
+    let httpHeaderAcceptSelected: string | undefined = options && options.httpHeaderAccept;
+    if (httpHeaderAcceptSelected === undefined) {
+      // to determine the Accept header
+      const httpHeaderAccepts: string[] = [
+        'application/json'
+      ];
+      httpHeaderAcceptSelected = this.configuration.selectHeaderAccept(httpHeaderAccepts);
+    }
+    if (httpHeaderAcceptSelected !== undefined) {
+      headers = headers.set('Accept', httpHeaderAcceptSelected);
+    }
+
+
+    let responseType: 'text' | 'json' = 'json';
+    if (httpHeaderAcceptSelected && httpHeaderAcceptSelected.startsWith('text')) {
+      responseType = 'text';
+    }
+
+    return this.httpClient.delete<Ok>(`${this.configuration.basePath}/api/admin/patient/${encodeURIComponent(String(id))}`,
+      {
+        responseType: <any>responseType,
+        withCredentials: this.configuration.withCredentials,
+        headers: headers,
+        observe: observe,
+        reportProgress: reportProgress
+      }
+    );
+  }
+
+  /**
+   * Get patient by ID.
+   * @param id Patient ID
+   * @param observe set whether or not to return the data Observable as the body, response or events. defaults to returning the body.
+   * @param reportProgress flag to report request and response progress.
+   */
+  public apiAdminPatientIdGet(id: string, observe?: 'body', reportProgress?: boolean, options?: { httpHeaderAccept?: 'application/json' }): Observable<PatientDtoOut>;
+  public apiAdminPatientIdGet(id: string, observe?: 'response', reportProgress?: boolean, options?: { httpHeaderAccept?: 'application/json' }): Observable<HttpResponse<PatientDtoOut>>;
+  public apiAdminPatientIdGet(id: string, observe?: 'events', reportProgress?: boolean, options?: { httpHeaderAccept?: 'application/json' }): Observable<HttpEvent<PatientDtoOut>>;
+  public apiAdminPatientIdGet(id: string, observe: any = 'body', reportProgress: boolean = false, options?: { httpHeaderAccept?: 'application/json' }): Observable<any> {
+    if (id === null || id === undefined) {
+      throw new Error('Required parameter id was null or undefined when calling apiAdminPatientIdGet.');
+    }
+
+    let headers = this.defaultHeaders;
+
+    let credential: string | undefined;
+    // authentication (jwtAuth) required
+    credential = this.configuration.lookupCredential('jwtAuth');
+    if (credential) {
+      headers = headers.set('Authorization', 'Bearer ' + credential);
+    }
+
+    let httpHeaderAcceptSelected: string | undefined = options && options.httpHeaderAccept;
+    if (httpHeaderAcceptSelected === undefined) {
+      // to determine the Accept header
+      const httpHeaderAccepts: string[] = [
+        'application/json'
+      ];
+      httpHeaderAcceptSelected = this.configuration.selectHeaderAccept(httpHeaderAccepts);
+    }
+    if (httpHeaderAcceptSelected !== undefined) {
+      headers = headers.set('Accept', httpHeaderAcceptSelected);
+    }
+
+
+    let responseType: 'text' | 'json' = 'json';
+    if (httpHeaderAcceptSelected && httpHeaderAcceptSelected.startsWith('text')) {
+      responseType = 'text';
+    }
+
+    return this.httpClient.get<PatientDtoOut>(`${this.configuration.basePath}/api/admin/patient/${encodeURIComponent(String(id))}`,
+      {
+        responseType: <any>responseType,
+        withCredentials: this.configuration.withCredentials,
+        headers: headers,
+        observe: observe,
+        reportProgress: reportProgress
+      }
+    );
+  }
+
+  /**
+   * Updates patient with given change set - note you should send just the values that changed and not whole entity.
+   * @param id Patient ID
+   * @param patientUpdateDtoIn
+   * @param observe set whether or not to return the data Observable as the body, response or events. defaults to returning the body.
+   * @param reportProgress flag to report request and response progress.
+   */
+  public apiAdminPatientIdPut(id: string, patientUpdateDtoIn?: PatientUpdateDtoIn, observe?: 'body', reportProgress?: boolean, options?: { httpHeaderAccept?: 'application/json' }): Observable<PatientDtoOut>;
+  public apiAdminPatientIdPut(id: string, patientUpdateDtoIn?: PatientUpdateDtoIn, observe?: 'response', reportProgress?: boolean, options?: { httpHeaderAccept?: 'application/json' }): Observable<HttpResponse<PatientDtoOut>>;
+  public apiAdminPatientIdPut(id: string, patientUpdateDtoIn?: PatientUpdateDtoIn, observe?: 'events', reportProgress?: boolean, options?: { httpHeaderAccept?: 'application/json' }): Observable<HttpEvent<PatientDtoOut>>;
+  public apiAdminPatientIdPut(id: string, patientUpdateDtoIn?: PatientUpdateDtoIn, observe: any = 'body', reportProgress: boolean = false, options?: { httpHeaderAccept?: 'application/json' }): Observable<any> {
+    if (id === null || id === undefined) {
+      throw new Error('Required parameter id was null or undefined when calling apiAdminPatientIdPut.');
+    }
+
+    let headers = this.defaultHeaders;
+
+    let credential: string | undefined;
+    // authentication (jwtAuth) required
+    credential = this.configuration.lookupCredential('jwtAuth');
+    if (credential) {
+      headers = headers.set('Authorization', 'Bearer ' + credential);
+    }
+
+    let httpHeaderAcceptSelected: string | undefined = options && options.httpHeaderAccept;
+    if (httpHeaderAcceptSelected === undefined) {
+      // to determine the Accept header
+      const httpHeaderAccepts: string[] = [
+        'application/json'
+      ];
+      httpHeaderAcceptSelected = this.configuration.selectHeaderAccept(httpHeaderAccepts);
+    }
+    if (httpHeaderAcceptSelected !== undefined) {
+      headers = headers.set('Accept', httpHeaderAcceptSelected);
+    }
+
+
+    // to determine the Content-Type header
+    const consumes: string[] = [
+      'application/json'
+    ];
+    const httpContentTypeSelected: string | undefined = this.configuration.selectHeaderContentType(consumes);
+    if (httpContentTypeSelected !== undefined) {
+      headers = headers.set('Content-Type', httpContentTypeSelected);
+    }
+
+    let responseType: 'text' | 'json' = 'json';
+    if (httpHeaderAcceptSelected && httpHeaderAcceptSelected.startsWith('text')) {
+      responseType = 'text';
+    }
+
+    return this.httpClient.put<PatientDtoOut>(`${this.configuration.basePath}/api/admin/patient/${encodeURIComponent(String(id))}`,
+      patientUpdateDtoIn,
+      {
+        responseType: <any>responseType,
+        withCredentials: this.configuration.withCredentials,
+        headers: headers,
+        observe: observe,
+        reportProgress: reportProgress
+      }
+    );
+  }
+
+  /**
+   * Register new user of the system.
+   * @param userRegistrationDtoIn
+   * @param observe set whether or not to return the data Observable as the body, response or events. defaults to returning the body.
+   * @param reportProgress flag to report request and response progress.
+   */
+  public apiAdminRegisterPost(userRegistrationDtoIn?: UserRegistrationDtoIn, observe?: 'body', reportProgress?: boolean, options?: { httpHeaderAccept?: 'application/json' }): Observable<UserRegisteredDtoOut>;
+  public apiAdminRegisterPost(userRegistrationDtoIn?: UserRegistrationDtoIn, observe?: 'response', reportProgress?: boolean, options?: { httpHeaderAccept?: 'application/json' }): Observable<HttpResponse<UserRegisteredDtoOut>>;
+  public apiAdminRegisterPost(userRegistrationDtoIn?: UserRegistrationDtoIn, observe?: 'events', reportProgress?: boolean, options?: { httpHeaderAccept?: 'application/json' }): Observable<HttpEvent<UserRegisteredDtoOut>>;
+  public apiAdminRegisterPost(userRegistrationDtoIn?: UserRegistrationDtoIn, observe: any = 'body', reportProgress: boolean = false, options?: { httpHeaderAccept?: 'application/json' }): Observable<any> {
+
+    let headers = this.defaultHeaders;
+
+    let credential: string | undefined;
+    // authentication (jwtAuth) required
+    credential = this.configuration.lookupCredential('jwtAuth');
+    if (credential) {
+      headers = headers.set('Authorization', 'Bearer ' + credential);
+    }
+
+    let httpHeaderAcceptSelected: string | undefined = options && options.httpHeaderAccept;
+    if (httpHeaderAcceptSelected === undefined) {
+      // to determine the Accept header
+      const httpHeaderAccepts: string[] = [
+        'application/json'
+      ];
+      httpHeaderAcceptSelected = this.configuration.selectHeaderAccept(httpHeaderAccepts);
+    }
+    if (httpHeaderAcceptSelected !== undefined) {
             headers = headers.set('Accept', httpHeaderAcceptSelected);
         }
 
 
-        let responseType: 'text' | 'json' = 'json';
-        if (httpHeaderAcceptSelected && httpHeaderAcceptSelected.startsWith('text')) {
-            responseType = 'text';
-        }
-
-        return this.httpClient.get<Array<QuestionDtoOut>>(`${this.configuration.basePath}/api/admin/cache-refresh`,
-          {
-              responseType: <any>responseType,
-              withCredentials: this.configuration.withCredentials,
-              headers: headers,
-              observe: observe,
-              reportProgress: reportProgress
-          }
-        );
+    // to determine the Content-Type header
+    const consumes: string[] = [
+      'application/json'
+    ];
+    const httpContentTypeSelected: string | undefined = this.configuration.selectHeaderContentType(consumes);
+    if (httpContentTypeSelected !== undefined) {
+      headers = headers.set('Content-Type', httpContentTypeSelected);
     }
 
-    /**
-     * Login endpoint for the registered users such as administrators and doctors.
-     * @param loginDtoIn
-     * @param observe set whether or not to return the data Observable as the body, response or events. defaults to returning the body.
-     * @param reportProgress flag to report request and response progress.
-     */
-    public apiAdminLoginPost(loginDtoIn?: LoginDtoIn, observe?: 'body', reportProgress?: boolean, options?: { httpHeaderAccept?: 'application/json' }): Observable<UserLoginResponseDtoOut>;
-    public apiAdminLoginPost(loginDtoIn?: LoginDtoIn, observe?: 'response', reportProgress?: boolean, options?: { httpHeaderAccept?: 'application/json' }): Observable<HttpResponse<UserLoginResponseDtoOut>>;
-    public apiAdminLoginPost(loginDtoIn?: LoginDtoIn, observe?: 'events', reportProgress?: boolean, options?: { httpHeaderAccept?: 'application/json' }): Observable<HttpEvent<UserLoginResponseDtoOut>>;
-    public apiAdminLoginPost(loginDtoIn?: LoginDtoIn, observe: any = 'body', reportProgress: boolean = false, options?: { httpHeaderAccept?: 'application/json' }): Observable<any> {
-
-        let headers = this.defaultHeaders;
-
-        let httpHeaderAcceptSelected: string | undefined = options && options.httpHeaderAccept;
-        if (httpHeaderAcceptSelected === undefined) {
-            // to determine the Accept header
-            const httpHeaderAccepts: string[] = [
-                'application/json'
-            ];
-            httpHeaderAcceptSelected = this.configuration.selectHeaderAccept(httpHeaderAccepts);
-        }
-        if (httpHeaderAcceptSelected !== undefined) {
-            headers = headers.set('Accept', httpHeaderAcceptSelected);
-        }
-
-
-        // to determine the Content-Type header
-        const consumes: string[] = [
-            'application/json'
-        ];
-        const httpContentTypeSelected: string | undefined = this.configuration.selectHeaderContentType(consumes);
-        if (httpContentTypeSelected !== undefined) {
-            headers = headers.set('Content-Type', httpContentTypeSelected);
-        }
-
-        let responseType: 'text' | 'json' = 'json';
-        if (httpHeaderAcceptSelected && httpHeaderAcceptSelected.startsWith('text')) {
-            responseType = 'text';
-        }
-
-        return this.httpClient.post<UserLoginResponseDtoOut>(`${this.configuration.basePath}/api/admin/login`,
-          loginDtoIn,
-          {
-              responseType: <any>responseType,
-              withCredentials: this.configuration.withCredentials,
-              headers: headers,
-              observe: observe,
-              reportProgress: reportProgress
-          }
-        );
+    let responseType: 'text' | 'json' = 'json';
+    if (httpHeaderAcceptSelected && httpHeaderAcceptSelected.startsWith('text')) {
+      responseType = 'text';
     }
 
-    /**
-     * Get patient the parameters. Filters by and clause. Empty parameters return all patients.
-     * @param email Filter by email.
-     * @param phoneNumber Filter by phone number.
-     * @param vaccinated Filter by the fact if the patient was vaccinated or not.
-     * @param observe set whether or not to return the data Observable as the body, response or events. defaults to returning the body.
-     * @param reportProgress flag to report request and response progress.
-     */
-    public apiAdminPatientFilterGet(email?: string, phoneNumber?: string, vaccinated?: boolean, observe?: 'body', reportProgress?: boolean, options?: { httpHeaderAccept?: 'application/json' }): Observable<Array<PatientDtoOut>>;
-    public apiAdminPatientFilterGet(email?: string, phoneNumber?: string, vaccinated?: boolean, observe?: 'response', reportProgress?: boolean, options?: { httpHeaderAccept?: 'application/json' }): Observable<HttpResponse<Array<PatientDtoOut>>>;
-    public apiAdminPatientFilterGet(email?: string, phoneNumber?: string, vaccinated?: boolean, observe?: 'events', reportProgress?: boolean, options?: { httpHeaderAccept?: 'application/json' }): Observable<HttpEvent<Array<PatientDtoOut>>>;
-    public apiAdminPatientFilterGet(email?: string, phoneNumber?: string, vaccinated?: boolean, observe: any = 'body', reportProgress: boolean = false, options?: { httpHeaderAccept?: 'application/json' }): Observable<any> {
+    return this.httpClient.post<UserRegisteredDtoOut>(`${this.configuration.basePath}/api/admin/register`,
+      userRegistrationDtoIn,
+      {
+        responseType: <any>responseType,
+        withCredentials: this.configuration.withCredentials,
+        headers: headers,
+        observe: observe,
+        reportProgress: reportProgress
+      }
+    );
+  }
 
-        let queryParameters = new HttpParams({ encoder: this.encoder });
-        if (email !== undefined && email !== null) {
-            queryParameters = this.addToHttpParams(queryParameters,
-              <any>email, 'email');
-        }
-        if (phoneNumber !== undefined && phoneNumber !== null) {
-            queryParameters = this.addToHttpParams(queryParameters,
-              <any>phoneNumber, 'phoneNumber');
-        }
-        if (vaccinated !== undefined && vaccinated !== null) {
-            queryParameters = this.addToHttpParams(queryParameters,
-              <any>vaccinated, 'vaccinated');
-        }
+  /**
+   * Verify that the currently used token is valid. Returns 200 if token is correct, 401 otherwise.
+   * @param observe set whether or not to return the data Observable as the body, response or events. defaults to returning the body.
+   * @param reportProgress flag to report request and response progress.
+   */
+  public apiAdminSelfGet(observe?: 'body', reportProgress?: boolean, options?: { httpHeaderAccept?: undefined }): Observable<any>;
+  public apiAdminSelfGet(observe?: 'response', reportProgress?: boolean, options?: { httpHeaderAccept?: undefined }): Observable<HttpResponse<any>>;
+  public apiAdminSelfGet(observe?: 'events', reportProgress?: boolean, options?: { httpHeaderAccept?: undefined }): Observable<HttpEvent<any>>;
+  public apiAdminSelfGet(observe: any = 'body', reportProgress: boolean = false, options?: { httpHeaderAccept?: undefined }): Observable<any> {
 
-        let headers = this.defaultHeaders;
+    let headers = this.defaultHeaders;
 
-        let credential: string | undefined;
-        // authentication (jwtAuth) required
-        credential = this.configuration.lookupCredential('jwtAuth');
-        if (credential) {
-            headers = headers.set('Authorization', 'Bearer ' + credential);
-        }
-
-        let httpHeaderAcceptSelected: string | undefined = options && options.httpHeaderAccept;
-        if (httpHeaderAcceptSelected === undefined) {
-            // to determine the Accept header
-            const httpHeaderAccepts: string[] = [
-                'application/json'
-            ];
-            httpHeaderAcceptSelected = this.configuration.selectHeaderAccept(httpHeaderAccepts);
-        }
-        if (httpHeaderAcceptSelected !== undefined) {
-            headers = headers.set('Accept', httpHeaderAcceptSelected);
-        }
-
-
-        let responseType: 'text' | 'json' = 'json';
-        if (httpHeaderAcceptSelected && httpHeaderAcceptSelected.startsWith('text')) {
-            responseType = 'text';
-        }
-
-        return this.httpClient.get<Array<PatientDtoOut>>(`${this.configuration.basePath}/api/admin/patient/filter`,
-          {
-              params: queryParameters,
-              responseType: <any>responseType,
-              withCredentials: this.configuration.withCredentials,
-              headers: headers,
-              observe: observe,
-              reportProgress: reportProgress
-          }
-        );
+    let credential: string | undefined;
+    // authentication (jwtAuth) required
+    credential = this.configuration.lookupCredential('jwtAuth');
+    if (credential) {
+      headers = headers.set('Authorization', 'Bearer ' + credential);
     }
 
-    /**
-     * Get patient by personal number.
-     * @param personalNumber Patient personal number
-     * @param observe set whether or not to return the data Observable as the body, response or events. defaults to returning the body.
-     * @param reportProgress flag to report request and response progress.
-     */
-    public apiAdminPatientSingleGet(personalNumber: string, observe?: 'body', reportProgress?: boolean, options?: { httpHeaderAccept?: 'application/json' }): Observable<PatientDtoOut>;
-    public apiAdminPatientSingleGet(personalNumber: string, observe?: 'response', reportProgress?: boolean, options?: { httpHeaderAccept?: 'application/json' }): Observable<HttpResponse<PatientDtoOut>>;
-    public apiAdminPatientSingleGet(personalNumber: string, observe?: 'events', reportProgress?: boolean, options?: { httpHeaderAccept?: 'application/json' }): Observable<HttpEvent<PatientDtoOut>>;
-    public apiAdminPatientSingleGet(personalNumber: string, observe: any = 'body', reportProgress: boolean = false, options?: { httpHeaderAccept?: 'application/json' }): Observable<any> {
-        if (personalNumber === null || personalNumber === undefined) {
-            throw new Error('Required parameter personalNumber was null or undefined when calling apiAdminPatientSingleGet.');
-        }
-
-        let queryParameters = new HttpParams({ encoder: this.encoder });
-        if (personalNumber !== undefined && personalNumber !== null) {
-            queryParameters = this.addToHttpParams(queryParameters,
-              <any>personalNumber, 'personalNumber');
-        }
-
-        let headers = this.defaultHeaders;
-
-        let credential: string | undefined;
-        // authentication (jwtAuth) required
-        credential = this.configuration.lookupCredential('jwtAuth');
-        if (credential) {
-            headers = headers.set('Authorization', 'Bearer ' + credential);
-        }
-
-        let httpHeaderAcceptSelected: string | undefined = options && options.httpHeaderAccept;
-        if (httpHeaderAcceptSelected === undefined) {
-            // to determine the Accept header
-            const httpHeaderAccepts: string[] = [
-                'application/json'
-            ];
-            httpHeaderAcceptSelected = this.configuration.selectHeaderAccept(httpHeaderAccepts);
-        }
-        if (httpHeaderAcceptSelected !== undefined) {
-            headers = headers.set('Accept', httpHeaderAcceptSelected);
-        }
-
-
-        let responseType: 'text' | 'json' = 'json';
-        if (httpHeaderAcceptSelected && httpHeaderAcceptSelected.startsWith('text')) {
-            responseType = 'text';
-        }
-
-        return this.httpClient.get<PatientDtoOut>(`${this.configuration.basePath}/api/admin/patient/single`,
-          {
-              params: queryParameters,
-              responseType: <any>responseType,
-              withCredentials: this.configuration.withCredentials,
-              headers: headers,
-              observe: observe,
-              reportProgress: reportProgress
-          }
-        );
+    let httpHeaderAcceptSelected: string | undefined = options && options.httpHeaderAccept;
+    if (httpHeaderAcceptSelected === undefined) {
+      // to determine the Accept header
+      const httpHeaderAccepts: string[] = [];
+      httpHeaderAcceptSelected = this.configuration.selectHeaderAccept(httpHeaderAccepts);
+    }
+    if (httpHeaderAcceptSelected !== undefined) {
+      headers = headers.set('Accept', httpHeaderAcceptSelected);
     }
 
-    /**
-     * Delete user by ID.
-     * @param id Patient ID
-     * @param observe set whether or not to return the data Observable as the body, response or events. defaults to returning the body.
-     * @param reportProgress flag to report request and response progress.
-     */
-    public apiAdminPatientSingleIdDelete(id: string, observe?: 'body', reportProgress?: boolean, options?: { httpHeaderAccept?: undefined }): Observable<any>;
-    public apiAdminPatientSingleIdDelete(id: string, observe?: 'response', reportProgress?: boolean, options?: { httpHeaderAccept?: undefined }): Observable<HttpResponse<any>>;
-    public apiAdminPatientSingleIdDelete(id: string, observe?: 'events', reportProgress?: boolean, options?: { httpHeaderAccept?: undefined }): Observable<HttpEvent<any>>;
-    public apiAdminPatientSingleIdDelete(id: string, observe: any = 'body', reportProgress: boolean = false, options?: { httpHeaderAccept?: undefined }): Observable<any> {
-        if (id === null || id === undefined) {
-            throw new Error('Required parameter id was null or undefined when calling apiAdminPatientSingleIdDelete.');
-        }
 
-        let headers = this.defaultHeaders;
-
-        let credential: string | undefined;
-        // authentication (jwtAuth) required
-        credential = this.configuration.lookupCredential('jwtAuth');
-        if (credential) {
-            headers = headers.set('Authorization', 'Bearer ' + credential);
-        }
-
-        let httpHeaderAcceptSelected: string | undefined = options && options.httpHeaderAccept;
-        if (httpHeaderAcceptSelected === undefined) {
-            // to determine the Accept header
-            const httpHeaderAccepts: string[] = [
-            ];
-            httpHeaderAcceptSelected = this.configuration.selectHeaderAccept(httpHeaderAccepts);
-        }
-        if (httpHeaderAcceptSelected !== undefined) {
-            headers = headers.set('Accept', httpHeaderAcceptSelected);
-        }
-
-
-        let responseType: 'text' | 'json' = 'json';
-        if (httpHeaderAcceptSelected && httpHeaderAcceptSelected.startsWith('text')) {
-            responseType = 'text';
-        }
-
-        return this.httpClient.delete<any>(`${this.configuration.basePath}/api/admin/patient/single/${encodeURIComponent(String(id))}`,
-          {
-              responseType: <any>responseType,
-              withCredentials: this.configuration.withCredentials,
-              headers: headers,
-              observe: observe,
-              reportProgress: reportProgress
-          }
-        );
+    let responseType: 'text' | 'json' = 'json';
+    if (httpHeaderAcceptSelected && httpHeaderAcceptSelected.startsWith('text')) {
+      responseType = 'text';
     }
 
-    /**
-     * Get user by ID.
-     * @param id Patient ID
-     * @param observe set whether or not to return the data Observable as the body, response or events. defaults to returning the body.
-     * @param reportProgress flag to report request and response progress.
-     */
-    public apiAdminPatientSingleIdGet(id: string, observe?: 'body', reportProgress?: boolean, options?: { httpHeaderAccept?: 'application/json' }): Observable<PatientDtoOut>;
-    public apiAdminPatientSingleIdGet(id: string, observe?: 'response', reportProgress?: boolean, options?: { httpHeaderAccept?: 'application/json' }): Observable<HttpResponse<PatientDtoOut>>;
-    public apiAdminPatientSingleIdGet(id: string, observe?: 'events', reportProgress?: boolean, options?: { httpHeaderAccept?: 'application/json' }): Observable<HttpEvent<PatientDtoOut>>;
-    public apiAdminPatientSingleIdGet(id: string, observe: any = 'body', reportProgress: boolean = false, options?: { httpHeaderAccept?: 'application/json' }): Observable<any> {
-        if (id === null || id === undefined) {
-            throw new Error('Required parameter id was null or undefined when calling apiAdminPatientSingleIdGet.');
-        }
+    return this.httpClient.get<any>(`${this.configuration.basePath}/api/admin/self`,
+      {
+        responseType: <any>responseType,
+        withCredentials: this.configuration.withCredentials,
+        headers: headers,
+        observe: observe,
+        reportProgress: reportProgress
+      }
+    );
+  }
 
-        let headers = this.defaultHeaders;
+  /**
+   * @param from Date FROM which should system provide statistics.
+   * @param to Date TO which should system provide statistics.
+   * @param observe set whether or not to return the data Observable as the body, response or events. defaults to returning the body.
+   * @param reportProgress flag to report request and response progress.
+   */
+  public apiAdminStatisticsGet(from?: string, to?: string, observe?: 'body', reportProgress?: boolean, options?: { httpHeaderAccept?: 'application/json' }): Observable<SystemStatisticsDtoOut>;
+  public apiAdminStatisticsGet(from?: string, to?: string, observe?: 'response', reportProgress?: boolean, options?: { httpHeaderAccept?: 'application/json' }): Observable<HttpResponse<SystemStatisticsDtoOut>>;
+  public apiAdminStatisticsGet(from?: string, to?: string, observe?: 'events', reportProgress?: boolean, options?: { httpHeaderAccept?: 'application/json' }): Observable<HttpEvent<SystemStatisticsDtoOut>>;
+  public apiAdminStatisticsGet(from?: string, to?: string, observe: any = 'body', reportProgress: boolean = false, options?: { httpHeaderAccept?: 'application/json' }): Observable<any> {
 
-        let credential: string | undefined;
-        // authentication (jwtAuth) required
-        credential = this.configuration.lookupCredential('jwtAuth');
-        if (credential) {
-            headers = headers.set('Authorization', 'Bearer ' + credential);
-        }
-
-        let httpHeaderAcceptSelected: string | undefined = options && options.httpHeaderAccept;
-        if (httpHeaderAcceptSelected === undefined) {
-            // to determine the Accept header
-            const httpHeaderAccepts: string[] = [
-                'application/json'
-            ];
-            httpHeaderAcceptSelected = this.configuration.selectHeaderAccept(httpHeaderAccepts);
-        }
-        if (httpHeaderAcceptSelected !== undefined) {
-            headers = headers.set('Accept', httpHeaderAcceptSelected);
-        }
-
-
-        let responseType: 'text' | 'json' = 'json';
-        if (httpHeaderAcceptSelected && httpHeaderAcceptSelected.startsWith('text')) {
-            responseType = 'text';
-        }
-
-        return this.httpClient.get<PatientDtoOut>(`${this.configuration.basePath}/api/admin/patient/single/${encodeURIComponent(String(id))}`,
-          {
-              responseType: <any>responseType,
-              withCredentials: this.configuration.withCredentials,
-              headers: headers,
-              observe: observe,
-              reportProgress: reportProgress
-          }
-        );
+    let queryParameters = new HttpParams({ encoder: this.encoder });
+    if (from !== undefined && from !== null) {
+      queryParameters = this.addToHttpParams(queryParameters,
+        <any>from, 'from');
+    }
+    if (to !== undefined && to !== null) {
+      queryParameters = this.addToHttpParams(queryParameters,
+        <any>to, 'to');
     }
 
-    /**
-     * Updates patient with given change set - note you should send just the values that changed and not whole entity.
-     * @param id Patient ID
-     * @param patientUpdateDtoIn
-     * @param observe set whether or not to return the data Observable as the body, response or events. defaults to returning the body.
-     * @param reportProgress flag to report request and response progress.
-     */
-    public apiAdminPatientSingleIdPut(id: string, patientUpdateDtoIn?: PatientUpdateDtoIn, observe?: 'body', reportProgress?: boolean, options?: { httpHeaderAccept?: undefined }): Observable<any>;
-    public apiAdminPatientSingleIdPut(id: string, patientUpdateDtoIn?: PatientUpdateDtoIn, observe?: 'response', reportProgress?: boolean, options?: { httpHeaderAccept?: undefined }): Observable<HttpResponse<any>>;
-    public apiAdminPatientSingleIdPut(id: string, patientUpdateDtoIn?: PatientUpdateDtoIn, observe?: 'events', reportProgress?: boolean, options?: { httpHeaderAccept?: undefined }): Observable<HttpEvent<any>>;
-    public apiAdminPatientSingleIdPut(id: string, patientUpdateDtoIn?: PatientUpdateDtoIn, observe: any = 'body', reportProgress: boolean = false, options?: { httpHeaderAccept?: undefined }): Observable<any> {
-        if (id === null || id === undefined) {
-            throw new Error('Required parameter id was null or undefined when calling apiAdminPatientSingleIdPut.');
-        }
+    let headers = this.defaultHeaders;
 
-        let headers = this.defaultHeaders;
-
-        let credential: string | undefined;
-        // authentication (jwtAuth) required
-        credential = this.configuration.lookupCredential('jwtAuth');
-        if (credential) {
-            headers = headers.set('Authorization', 'Bearer ' + credential);
-        }
-
-        let httpHeaderAcceptSelected: string | undefined = options && options.httpHeaderAccept;
-        if (httpHeaderAcceptSelected === undefined) {
-            // to determine the Accept header
-            const httpHeaderAccepts: string[] = [];
-            httpHeaderAcceptSelected = this.configuration.selectHeaderAccept(httpHeaderAccepts);
-        }
-        if (httpHeaderAcceptSelected !== undefined) {
-            headers = headers.set('Accept', httpHeaderAcceptSelected);
-        }
-
-
-        // to determine the Content-Type header
-        const consumes: string[] = [
-            'application/json'
-        ];
-        const httpContentTypeSelected: string | undefined = this.configuration.selectHeaderContentType(consumes);
-        if (httpContentTypeSelected !== undefined) {
-            headers = headers.set('Content-Type', httpContentTypeSelected);
-        }
-
-        let responseType: 'text' | 'json' = 'json';
-        if (httpHeaderAcceptSelected && httpHeaderAcceptSelected.startsWith('text')) {
-            responseType = 'text';
-        }
-
-        return this.httpClient.put<any>(`${this.configuration.basePath}/api/admin/patient/single/${encodeURIComponent(String(id))}`,
-          patientUpdateDtoIn,
-          {
-              responseType: <any>responseType,
-              withCredentials: this.configuration.withCredentials,
-              headers: headers,
-              observe: observe,
-              reportProgress: reportProgress
-          }
-        );
+    let credential: string | undefined;
+    // authentication (jwtAuth) required
+    credential = this.configuration.lookupCredential('jwtAuth');
+    if (credential) {
+      headers = headers.set('Authorization', 'Bearer ' + credential);
     }
 
-    /**
-     * Register new user of the system.
-     * @param userRegistrationDtoIn
-     * @param observe set whether or not to return the data Observable as the body, response or events. defaults to returning the body.
-     * @param reportProgress flag to report request and response progress.
-     */
-    public apiAdminRegisterPost(userRegistrationDtoIn?: UserRegistrationDtoIn, observe?: 'body', reportProgress?: boolean, options?: { httpHeaderAccept?: 'application/json' }): Observable<UserRegisteredDtoOut>;
-    public apiAdminRegisterPost(userRegistrationDtoIn?: UserRegistrationDtoIn, observe?: 'response', reportProgress?: boolean, options?: { httpHeaderAccept?: 'application/json' }): Observable<HttpResponse<UserRegisteredDtoOut>>;
-    public apiAdminRegisterPost(userRegistrationDtoIn?: UserRegistrationDtoIn, observe?: 'events', reportProgress?: boolean, options?: { httpHeaderAccept?: 'application/json' }): Observable<HttpEvent<UserRegisteredDtoOut>>;
-    public apiAdminRegisterPost(userRegistrationDtoIn?: UserRegistrationDtoIn, observe: any = 'body', reportProgress: boolean = false, options?: { httpHeaderAccept?: 'application/json' }): Observable<any> {
-
-        let headers = this.defaultHeaders;
-
-        let credential: string | undefined;
-        // authentication (jwtAuth) required
-        credential = this.configuration.lookupCredential('jwtAuth');
-        if (credential) {
-            headers = headers.set('Authorization', 'Bearer ' + credential);
-        }
-
-        let httpHeaderAcceptSelected: string | undefined = options && options.httpHeaderAccept;
-        if (httpHeaderAcceptSelected === undefined) {
-            // to determine the Accept header
-            const httpHeaderAccepts: string[] = [
-                'application/json'
-            ];
-            httpHeaderAcceptSelected = this.configuration.selectHeaderAccept(httpHeaderAccepts);
-        }
-        if (httpHeaderAcceptSelected !== undefined) {
-            headers = headers.set('Accept', httpHeaderAcceptSelected);
-        }
-
-
-        // to determine the Content-Type header
-        const consumes: string[] = [
-            'application/json'
-        ];
-        const httpContentTypeSelected: string | undefined = this.configuration.selectHeaderContentType(consumes);
-        if (httpContentTypeSelected !== undefined) {
-            headers = headers.set('Content-Type', httpContentTypeSelected);
-        }
-
-        let responseType: 'text' | 'json' = 'json';
-        if (httpHeaderAcceptSelected && httpHeaderAcceptSelected.startsWith('text')) {
-            responseType = 'text';
-        }
-
-        return this.httpClient.post<UserRegisteredDtoOut>(`${this.configuration.basePath}/api/admin/register`,
-          userRegistrationDtoIn,
-          {
-              responseType: <any>responseType,
-              withCredentials: this.configuration.withCredentials,
-              headers: headers,
-              observe: observe,
-              reportProgress: reportProgress
-          }
-        );
+    let httpHeaderAcceptSelected: string | undefined = options && options.httpHeaderAccept;
+    if (httpHeaderAcceptSelected === undefined) {
+      // to determine the Accept header
+      const httpHeaderAccepts: string[] = [
+        'application/json'
+      ];
+      httpHeaderAcceptSelected = this.configuration.selectHeaderAccept(httpHeaderAccepts);
+    }
+    if (httpHeaderAcceptSelected !== undefined) {
+      headers = headers.set('Accept', httpHeaderAcceptSelected);
     }
 
-    /**
-     * Verify that the currently used token is valid. Returns 200 if token is correct, 401 otherwise.
-     * @param observe set whether or not to return the data Observable as the body, response or events. defaults to returning the body.
-     * @param reportProgress flag to report request and response progress.
-     */
-    public apiAdminSelfGet(observe?: 'body', reportProgress?: boolean, options?: { httpHeaderAccept?: undefined }): Observable<any>;
-    public apiAdminSelfGet(observe?: 'response', reportProgress?: boolean, options?: { httpHeaderAccept?: undefined }): Observable<HttpResponse<any>>;
-    public apiAdminSelfGet(observe?: 'events', reportProgress?: boolean, options?: { httpHeaderAccept?: undefined }): Observable<HttpEvent<any>>;
-    public apiAdminSelfGet(observe: any = 'body', reportProgress: boolean = false, options?: { httpHeaderAccept?: undefined }): Observable<any> {
 
-        let headers = this.defaultHeaders;
-
-        let credential: string | undefined;
-        // authentication (jwtAuth) required
-        credential = this.configuration.lookupCredential('jwtAuth');
-        if (credential) {
-            headers = headers.set('Authorization', 'Bearer ' + credential);
-        }
-
-        let httpHeaderAcceptSelected: string | undefined = options && options.httpHeaderAccept;
-        if (httpHeaderAcceptSelected === undefined) {
-            // to determine the Accept header
-            const httpHeaderAccepts: string[] = [];
-            httpHeaderAcceptSelected = this.configuration.selectHeaderAccept(httpHeaderAccepts);
-        }
-        if (httpHeaderAcceptSelected !== undefined) {
-            headers = headers.set('Accept', httpHeaderAcceptSelected);
-        }
-
-
-        let responseType: 'text' | 'json' = 'json';
-        if (httpHeaderAcceptSelected && httpHeaderAcceptSelected.startsWith('text')) {
-            responseType = 'text';
-        }
-
-        return this.httpClient.get<any>(`${this.configuration.basePath}/api/admin/self`,
-          {
-              responseType: <any>responseType,
-              withCredentials: this.configuration.withCredentials,
-              headers: headers,
-              observe: observe,
-              reportProgress: reportProgress
-          }
-        );
+    let responseType: 'text' | 'json' = 'json';
+    if (httpHeaderAcceptSelected && httpHeaderAcceptSelected.startsWith('text')) {
+      responseType = 'text';
     }
 
-    /**
-     * Returns list of all available insurance companies.
-     * @param observe set whether or not to return the data Observable as the body, response or events. defaults to returning the body.
-     * @param reportProgress flag to report request and response progress.
-     */
-    public apiInsuranceCompaniesGet(observe?: 'body', reportProgress?: boolean, options?: { httpHeaderAccept?: 'application/json' }): Observable<Array<InsuranceCompanyDetailsDtoOut>>;
-    public apiInsuranceCompaniesGet(observe?: 'response', reportProgress?: boolean, options?: { httpHeaderAccept?: 'application/json' }): Observable<HttpResponse<Array<InsuranceCompanyDetailsDtoOut>>>;
-    public apiInsuranceCompaniesGet(observe?: 'events', reportProgress?: boolean, options?: { httpHeaderAccept?: 'application/json' }): Observable<HttpEvent<Array<InsuranceCompanyDetailsDtoOut>>>;
-    public apiInsuranceCompaniesGet(observe: any = 'body', reportProgress: boolean = false, options?: { httpHeaderAccept?: 'application/json' }): Observable<any> {
+    return this.httpClient.get<SystemStatisticsDtoOut>(`${this.configuration.basePath}/api/admin/statistics`,
+      {
+        params: queryParameters,
+        responseType: <any>responseType,
+        withCredentials: this.configuration.withCredentials,
+        headers: headers,
+        observe: observe,
+        reportProgress: reportProgress
+      }
+    );
+  }
 
-        let headers = this.defaultHeaders;
-
-        let httpHeaderAcceptSelected: string | undefined = options && options.httpHeaderAccept;
-        if (httpHeaderAcceptSelected === undefined) {
-            // to determine the Accept header
-            const httpHeaderAccepts: string[] = [
-                'application/json'
-            ];
-            httpHeaderAcceptSelected = this.configuration.selectHeaderAccept(httpHeaderAccepts);
-        }
-        if (httpHeaderAcceptSelected !== undefined) {
-            headers = headers.set('Accept', httpHeaderAcceptSelected);
-        }
-
-
-        let responseType: 'text' | 'json' = 'json';
-        if (httpHeaderAcceptSelected && httpHeaderAcceptSelected.startsWith('text')) {
-            responseType = 'text';
-        }
-
-        return this.httpClient.get<Array<InsuranceCompanyDetailsDtoOut>>(`${this.configuration.basePath}/api/insurance-companies`,
-          {
-              responseType: <any>responseType,
-              withCredentials: this.configuration.withCredentials,
-              headers: headers,
-              observe: observe,
-              reportProgress: reportProgress
-          }
-        );
+  /**
+   * Get vaccination detail for given patient ID.
+   * @param id Patients ID
+   * @param observe set whether or not to return the data Observable as the body, response or events. defaults to returning the body.
+   * @param reportProgress flag to report request and response progress.
+   */
+  public apiAdminVaccinationGet(id: string, observe?: 'body', reportProgress?: boolean, options?: { httpHeaderAccept?: 'application/json' }): Observable<VaccinationDetailDtoOut>;
+  public apiAdminVaccinationGet(id: string, observe?: 'response', reportProgress?: boolean, options?: { httpHeaderAccept?: 'application/json' }): Observable<HttpResponse<VaccinationDetailDtoOut>>;
+  public apiAdminVaccinationGet(id: string, observe?: 'events', reportProgress?: boolean, options?: { httpHeaderAccept?: 'application/json' }): Observable<HttpEvent<VaccinationDetailDtoOut>>;
+  public apiAdminVaccinationGet(id: string, observe: any = 'body', reportProgress: boolean = false, options?: { httpHeaderAccept?: 'application/json' }): Observable<any> {
+    if (id === null || id === undefined) {
+      throw new Error('Required parameter id was null or undefined when calling apiAdminVaccinationGet.');
     }
 
-    /**
-     * Save patient registration to the database.
-     * @param captcha Token from the Google Captcha.
-     * @param patientRegistrationDtoIn
-     * @param observe set whether or not to return the data Observable as the body, response or events. defaults to returning the body.
-     * @param reportProgress flag to report request and response progress.
-     */
-    public apiPatientPost(captcha: string, patientRegistrationDtoIn?: PatientRegistrationDtoIn, observe?: 'body', reportProgress?: boolean, options?: { httpHeaderAccept?: undefined }): Observable<any>;
-    public apiPatientPost(captcha: string, patientRegistrationDtoIn?: PatientRegistrationDtoIn, observe?: 'response', reportProgress?: boolean, options?: { httpHeaderAccept?: undefined }): Observable<HttpResponse<any>>;
-    public apiPatientPost(captcha: string, patientRegistrationDtoIn?: PatientRegistrationDtoIn, observe?: 'events', reportProgress?: boolean, options?: { httpHeaderAccept?: undefined }): Observable<HttpEvent<any>>;
-    public apiPatientPost(captcha: string, patientRegistrationDtoIn?: PatientRegistrationDtoIn, observe: any = 'body', reportProgress: boolean = false, options?: { httpHeaderAccept?: undefined }): Observable<any> {
-        if (captcha === null || captcha === undefined) {
-            throw new Error('Required parameter captcha was null or undefined when calling apiPatientPost.');
-        }
-
-        let queryParameters = new HttpParams({ encoder: this.encoder });
-        if (captcha !== undefined && captcha !== null) {
-            queryParameters = this.addToHttpParams(queryParameters,
-              <any>captcha, 'captcha');
-        }
-
-        let headers = this.defaultHeaders;
-
-        let httpHeaderAcceptSelected: string | undefined = options && options.httpHeaderAccept;
-        if (httpHeaderAcceptSelected === undefined) {
-            // to determine the Accept header
-            const httpHeaderAccepts: string[] = [];
-            httpHeaderAcceptSelected = this.configuration.selectHeaderAccept(httpHeaderAccepts);
-        }
-        if (httpHeaderAcceptSelected !== undefined) {
-            headers = headers.set('Accept', httpHeaderAcceptSelected);
-        }
-
-
-        // to determine the Content-Type header
-        const consumes: string[] = [
-            'application/json'
-        ];
-        const httpContentTypeSelected: string | undefined = this.configuration.selectHeaderContentType(consumes);
-        if (httpContentTypeSelected !== undefined) {
-            headers = headers.set('Content-Type', httpContentTypeSelected);
-        }
-
-        let responseType: 'text' | 'json' = 'json';
-        if (httpHeaderAcceptSelected && httpHeaderAcceptSelected.startsWith('text')) {
-            responseType = 'text';
-        }
-
-        return this.httpClient.post<any>(`${this.configuration.basePath}/api/patient`,
-          patientRegistrationDtoIn,
-          {
-              params: queryParameters,
-              responseType: <any>responseType,
-              withCredentials: this.configuration.withCredentials,
-              headers: headers,
-              observe: observe,
-              reportProgress: reportProgress
-          }
-        );
+    let queryParameters = new HttpParams({ encoder: this.encoder });
+    if (id !== undefined && id !== null) {
+      queryParameters = this.addToHttpParams(queryParameters,
+        <any>id, 'id');
     }
 
-    /**
-     * Returns all questions that patient needs to answer.
-     * @param observe set whether or not to return the data Observable as the body, response or events. defaults to returning the body.
-     * @param reportProgress flag to report request and response progress.
-     */
-    public apiQuestionsGet(observe?: 'body', reportProgress?: boolean, options?: { httpHeaderAccept?: 'application/json' }): Observable<Array<QuestionDtoOut>>;
-    public apiQuestionsGet(observe?: 'response', reportProgress?: boolean, options?: { httpHeaderAccept?: 'application/json' }): Observable<HttpResponse<Array<QuestionDtoOut>>>;
-    public apiQuestionsGet(observe?: 'events', reportProgress?: boolean, options?: { httpHeaderAccept?: 'application/json' }): Observable<HttpEvent<Array<QuestionDtoOut>>>;
-    public apiQuestionsGet(observe: any = 'body', reportProgress: boolean = false, options?: { httpHeaderAccept?: 'application/json' }): Observable<any> {
+    let headers = this.defaultHeaders;
 
-        let headers = this.defaultHeaders;
-
-        let httpHeaderAcceptSelected: string | undefined = options && options.httpHeaderAccept;
-        if (httpHeaderAcceptSelected === undefined) {
-            // to determine the Accept header
-            const httpHeaderAccepts: string[] = [
-                'application/json'
-            ];
-            httpHeaderAcceptSelected = this.configuration.selectHeaderAccept(httpHeaderAccepts);
-        }
-        if (httpHeaderAcceptSelected !== undefined) {
-            headers = headers.set('Accept', httpHeaderAcceptSelected);
-        }
-
-
-        let responseType: 'text' | 'json' = 'json';
-        if (httpHeaderAcceptSelected && httpHeaderAcceptSelected.startsWith('text')) {
-            responseType = 'text';
-        }
-
-        return this.httpClient.get<Array<QuestionDtoOut>>(`${this.configuration.basePath}/api/questions`,
-          {
-              responseType: <any>responseType,
-              withCredentials: this.configuration.withCredentials,
-              headers: headers,
-              observe: observe,
-              reportProgress: reportProgress
-          }
-        );
+    let credential: string | undefined;
+    // authentication (jwtAuth) required
+    credential = this.configuration.lookupCredential('jwtAuth');
+    if (credential) {
+      headers = headers.set('Authorization', 'Bearer ' + credential);
     }
 
-    /**
-     * @param observe set whether or not to return the data Observable as the body, response or events. defaults to returning the body.
-     * @param reportProgress flag to report request and response progress.
-     */
-    public apiStatusGet(observe?: 'body', reportProgress?: boolean, options?: { httpHeaderAccept?: undefined }): Observable<any>;
-    public apiStatusGet(observe?: 'response', reportProgress?: boolean, options?: { httpHeaderAccept?: undefined }): Observable<HttpResponse<any>>;
-    public apiStatusGet(observe?: 'events', reportProgress?: boolean, options?: { httpHeaderAccept?: undefined }): Observable<HttpEvent<any>>;
-    public apiStatusGet(observe: any = 'body', reportProgress: boolean = false, options?: { httpHeaderAccept?: undefined }): Observable<any> {
-
-        let headers = this.defaultHeaders;
-
-        let httpHeaderAcceptSelected: string | undefined = options && options.httpHeaderAccept;
-        if (httpHeaderAcceptSelected === undefined) {
-            // to determine the Accept header
-            const httpHeaderAccepts: string[] = [];
-            httpHeaderAcceptSelected = this.configuration.selectHeaderAccept(httpHeaderAccepts);
-        }
-        if (httpHeaderAcceptSelected !== undefined) {
-            headers = headers.set('Accept', httpHeaderAcceptSelected);
-        }
-
-
-        let responseType: 'text' | 'json' = 'json';
-        if (httpHeaderAcceptSelected && httpHeaderAcceptSelected.startsWith('text')) {
-            responseType = 'text';
-        }
-
-        return this.httpClient.get<any>(`${this.configuration.basePath}/api/status`,
-          {
-              responseType: <any>responseType,
-              withCredentials: this.configuration.withCredentials,
-              headers: headers,
-              observe: observe,
-              reportProgress: reportProgress
-          }
-        );
+    let httpHeaderAcceptSelected: string | undefined = options && options.httpHeaderAccept;
+    if (httpHeaderAcceptSelected === undefined) {
+      // to determine the Accept header
+      const httpHeaderAccepts: string[] = [
+        'application/json'
+      ];
+      httpHeaderAcceptSelected = this.configuration.selectHeaderAccept(httpHeaderAccepts);
+    }
+    if (httpHeaderAcceptSelected !== undefined) {
+      headers = headers.set('Accept', httpHeaderAcceptSelected);
     }
 
-    /**
-     * @param observe set whether or not to return the data Observable as the body, response or events. defaults to returning the body.
-     * @param reportProgress flag to report request and response progress.
-     */
-    public apiStatusHealthGet(observe?: 'body', reportProgress?: boolean, options?: { httpHeaderAccept?: 'application/json' }): Observable<ServiceHealthDtoOut>;
-    public apiStatusHealthGet(observe?: 'response', reportProgress?: boolean, options?: { httpHeaderAccept?: 'application/json' }): Observable<HttpResponse<ServiceHealthDtoOut>>;
-    public apiStatusHealthGet(observe?: 'events', reportProgress?: boolean, options?: { httpHeaderAccept?: 'application/json' }): Observable<HttpEvent<ServiceHealthDtoOut>>;
-    public apiStatusHealthGet(observe: any = 'body', reportProgress: boolean = false, options?: { httpHeaderAccept?: 'application/json' }): Observable<any> {
 
-        let headers = this.defaultHeaders;
-
-        let httpHeaderAcceptSelected: string | undefined = options && options.httpHeaderAccept;
-        if (httpHeaderAcceptSelected === undefined) {
-            // to determine the Accept header
-            const httpHeaderAccepts: string[] = [
-                'application/json'
-            ];
-            httpHeaderAcceptSelected = this.configuration.selectHeaderAccept(httpHeaderAccepts);
-        }
-        if (httpHeaderAcceptSelected !== undefined) {
-            headers = headers.set('Accept', httpHeaderAcceptSelected);
-        }
-
-
-        let responseType: 'text' | 'json' = 'json';
-        if (httpHeaderAcceptSelected && httpHeaderAcceptSelected.startsWith('text')) {
-            responseType = 'text';
-        }
-
-        return this.httpClient.get<ServiceHealthDtoOut>(`${this.configuration.basePath}/api/status/health`,
-          {
-              responseType: <any>responseType,
-              withCredentials: this.configuration.withCredentials,
-              headers: headers,
-              observe: observe,
-              reportProgress: reportProgress
-          }
-        );
+    let responseType: 'text' | 'json' = 'json';
+    if (httpHeaderAcceptSelected && httpHeaderAcceptSelected.startsWith('text')) {
+      responseType = 'text';
     }
 
-    /**
-     * Returns version of the application.
-     * @param observe set whether or not to return the data Observable as the body, response or events. defaults to returning the body.
-     * @param reportProgress flag to report request and response progress.
-     */
-    public apiVersionGet(observe?: 'body', reportProgress?: boolean, options?: { httpHeaderAccept?: 'application/json' }): Observable<ApplicationInformationDto>;
-    public apiVersionGet(observe?: 'response', reportProgress?: boolean, options?: { httpHeaderAccept?: 'application/json' }): Observable<HttpResponse<ApplicationInformationDto>>;
-    public apiVersionGet(observe?: 'events', reportProgress?: boolean, options?: { httpHeaderAccept?: 'application/json' }): Observable<HttpEvent<ApplicationInformationDto>>;
-    public apiVersionGet(observe: any = 'body', reportProgress: boolean = false, options?: { httpHeaderAccept?: 'application/json' }): Observable<any> {
+    return this.httpClient.get<VaccinationDetailDtoOut>(`${this.configuration.basePath}/api/admin/vaccination`,
+      {
+        params: queryParameters,
+        responseType: <any>responseType,
+        withCredentials: this.configuration.withCredentials,
+        headers: headers,
+        observe: observe,
+        reportProgress: reportProgress
+      }
+    );
+  }
 
-        let headers = this.defaultHeaders;
-
-        let httpHeaderAcceptSelected: string | undefined = options && options.httpHeaderAccept;
-        if (httpHeaderAcceptSelected === undefined) {
-            // to determine the Accept header
-            const httpHeaderAccepts: string[] = [
-                'application/json'
-            ];
-            httpHeaderAcceptSelected = this.configuration.selectHeaderAccept(httpHeaderAccepts);
-        }
-        if (httpHeaderAcceptSelected !== undefined) {
-            headers = headers.set('Accept', httpHeaderAcceptSelected);
-        }
-
-
-        let responseType: 'text' | 'json' = 'json';
-        if (httpHeaderAcceptSelected && httpHeaderAcceptSelected.startsWith('text')) {
-            responseType = 'text';
-        }
-
-        return this.httpClient.get<ApplicationInformationDto>(`${this.configuration.basePath}/api/version`,
-          {
-              responseType: <any>responseType,
-              withCredentials: this.configuration.withCredentials,
-              headers: headers,
-              observe: observe,
-              reportProgress: reportProgress
-          }
-        );
+  /**
+   * Get vaccination detail by given vaccination id.
+   * @param id Vaccine ID
+   * @param observe set whether or not to return the data Observable as the body, response or events. defaults to returning the body.
+   * @param reportProgress flag to report request and response progress.
+   */
+  public apiAdminVaccinationIdGet(id: string, observe?: 'body', reportProgress?: boolean, options?: { httpHeaderAccept?: 'application/json' }): Observable<VaccinationDetailDtoOut>;
+  public apiAdminVaccinationIdGet(id: string, observe?: 'response', reportProgress?: boolean, options?: { httpHeaderAccept?: 'application/json' }): Observable<HttpResponse<VaccinationDetailDtoOut>>;
+  public apiAdminVaccinationIdGet(id: string, observe?: 'events', reportProgress?: boolean, options?: { httpHeaderAccept?: 'application/json' }): Observable<HttpEvent<VaccinationDetailDtoOut>>;
+  public apiAdminVaccinationIdGet(id: string, observe: any = 'body', reportProgress: boolean = false, options?: { httpHeaderAccept?: 'application/json' }): Observable<any> {
+    if (id === null || id === undefined) {
+      throw new Error('Required parameter id was null or undefined when calling apiAdminVaccinationIdGet.');
     }
+
+    let headers = this.defaultHeaders;
+
+    let credential: string | undefined;
+    // authentication (jwtAuth) required
+    credential = this.configuration.lookupCredential('jwtAuth');
+    if (credential) {
+      headers = headers.set('Authorization', 'Bearer ' + credential);
+    }
+
+    let httpHeaderAcceptSelected: string | undefined = options && options.httpHeaderAccept;
+    if (httpHeaderAcceptSelected === undefined) {
+      // to determine the Accept header
+      const httpHeaderAccepts: string[] = [
+        'application/json'
+      ];
+      httpHeaderAcceptSelected = this.configuration.selectHeaderAccept(httpHeaderAccepts);
+    }
+    if (httpHeaderAcceptSelected !== undefined) {
+      headers = headers.set('Accept', httpHeaderAcceptSelected);
+    }
+
+
+    let responseType: 'text' | 'json' = 'json';
+    if (httpHeaderAcceptSelected && httpHeaderAcceptSelected.startsWith('text')) {
+      responseType = 'text';
+    }
+
+    return this.httpClient.get<VaccinationDetailDtoOut>(`${this.configuration.basePath}/api/admin/vaccination/${encodeURIComponent(String(id))}`,
+      {
+        responseType: <any>responseType,
+        withCredentials: this.configuration.withCredentials,
+        headers: headers,
+        observe: observe,
+        reportProgress: reportProgress
+      }
+    );
+  }
+
+  /**
+   * Register that the patient was vaccinated. Returns vaccination detail.
+   * @param vaccinationDtoIn
+   * @param observe set whether or not to return the data Observable as the body, response or events. defaults to returning the body.
+   * @param reportProgress flag to report request and response progress.
+   */
+  public apiAdminVaccinationPost(vaccinationDtoIn?: VaccinationDtoIn, observe?: 'body', reportProgress?: boolean, options?: { httpHeaderAccept?: 'application/json' }): Observable<VaccinationDetailDtoOut>;
+  public apiAdminVaccinationPost(vaccinationDtoIn?: VaccinationDtoIn, observe?: 'response', reportProgress?: boolean, options?: { httpHeaderAccept?: 'application/json' }): Observable<HttpResponse<VaccinationDetailDtoOut>>;
+  public apiAdminVaccinationPost(vaccinationDtoIn?: VaccinationDtoIn, observe?: 'events', reportProgress?: boolean, options?: { httpHeaderAccept?: 'application/json' }): Observable<HttpEvent<VaccinationDetailDtoOut>>;
+  public apiAdminVaccinationPost(vaccinationDtoIn?: VaccinationDtoIn, observe: any = 'body', reportProgress: boolean = false, options?: { httpHeaderAccept?: 'application/json' }): Observable<any> {
+
+    let headers = this.defaultHeaders;
+
+    let credential: string | undefined;
+    // authentication (jwtAuth) required
+    credential = this.configuration.lookupCredential('jwtAuth');
+    if (credential) {
+      headers = headers.set('Authorization', 'Bearer ' + credential);
+    }
+
+    let httpHeaderAcceptSelected: string | undefined = options && options.httpHeaderAccept;
+    if (httpHeaderAcceptSelected === undefined) {
+      // to determine the Accept header
+      const httpHeaderAccepts: string[] = [
+        'application/json'
+      ];
+      httpHeaderAcceptSelected = this.configuration.selectHeaderAccept(httpHeaderAccepts);
+    }
+    if (httpHeaderAcceptSelected !== undefined) {
+      headers = headers.set('Accept', httpHeaderAcceptSelected);
+    }
+
+
+    // to determine the Content-Type header
+    const consumes: string[] = [
+      'application/json'
+    ];
+    const httpContentTypeSelected: string | undefined = this.configuration.selectHeaderContentType(consumes);
+    if (httpContentTypeSelected !== undefined) {
+      headers = headers.set('Content-Type', httpContentTypeSelected);
+    }
+
+    let responseType: 'text' | 'json' = 'json';
+    if (httpHeaderAcceptSelected && httpHeaderAcceptSelected.startsWith('text')) {
+      responseType = 'text';
+    }
+
+    return this.httpClient.post<VaccinationDetailDtoOut>(`${this.configuration.basePath}/api/admin/vaccination`,
+      vaccinationDtoIn,
+      {
+        responseType: <any>responseType,
+        withCredentials: this.configuration.withCredentials,
+        headers: headers,
+        observe: observe,
+        reportProgress: reportProgress
+      }
+    );
+  }
+
+  /**
+   * Returns list of all available insurance companies.
+   * @param observe set whether or not to return the data Observable as the body, response or events. defaults to returning the body.
+   * @param reportProgress flag to report request and response progress.
+   */
+  public apiInsuranceCompaniesGet(observe?: 'body', reportProgress?: boolean, options?: { httpHeaderAccept?: 'application/json' }): Observable<Array<InsuranceCompanyDetailsDtoOut>>;
+  public apiInsuranceCompaniesGet(observe?: 'response', reportProgress?: boolean, options?: { httpHeaderAccept?: 'application/json' }): Observable<HttpResponse<Array<InsuranceCompanyDetailsDtoOut>>>;
+  public apiInsuranceCompaniesGet(observe?: 'events', reportProgress?: boolean, options?: { httpHeaderAccept?: 'application/json' }): Observable<HttpEvent<Array<InsuranceCompanyDetailsDtoOut>>>;
+  public apiInsuranceCompaniesGet(observe: any = 'body', reportProgress: boolean = false, options?: { httpHeaderAccept?: 'application/json' }): Observable<any> {
+
+    let headers = this.defaultHeaders;
+
+    let httpHeaderAcceptSelected: string | undefined = options && options.httpHeaderAccept;
+    if (httpHeaderAcceptSelected === undefined) {
+      // to determine the Accept header
+      const httpHeaderAccepts: string[] = [
+        'application/json'
+      ];
+      httpHeaderAcceptSelected = this.configuration.selectHeaderAccept(httpHeaderAccepts);
+    }
+    if (httpHeaderAcceptSelected !== undefined) {
+      headers = headers.set('Accept', httpHeaderAcceptSelected);
+    }
+
+
+    let responseType: 'text' | 'json' = 'json';
+    if (httpHeaderAcceptSelected && httpHeaderAcceptSelected.startsWith('text')) {
+      responseType = 'text';
+    }
+
+    return this.httpClient.get<Array<InsuranceCompanyDetailsDtoOut>>(`${this.configuration.basePath}/api/insurance-companies`,
+      {
+        responseType: <any>responseType,
+        withCredentials: this.configuration.withCredentials,
+        headers: headers,
+        observe: observe,
+        reportProgress: reportProgress
+      }
+    );
+  }
+
+  /**
+   * Save patient registration to the database.
+   * @param captcha Token from the Google Captcha.
+   * @param patientRegistrationDtoIn
+   * @param observe set whether or not to return the data Observable as the body, response or events. defaults to returning the body.
+   * @param reportProgress flag to report request and response progress.
+   */
+  public apiPatientPost(captcha: string, patientRegistrationDtoIn?: PatientRegistrationDtoIn, observe?: 'body', reportProgress?: boolean, options?: { httpHeaderAccept?: 'application/json' }): Observable<Ok>;
+  public apiPatientPost(captcha: string, patientRegistrationDtoIn?: PatientRegistrationDtoIn, observe?: 'response', reportProgress?: boolean, options?: { httpHeaderAccept?: 'application/json' }): Observable<HttpResponse<Ok>>;
+  public apiPatientPost(captcha: string, patientRegistrationDtoIn?: PatientRegistrationDtoIn, observe?: 'events', reportProgress?: boolean, options?: { httpHeaderAccept?: 'application/json' }): Observable<HttpEvent<Ok>>;
+  public apiPatientPost(captcha: string, patientRegistrationDtoIn?: PatientRegistrationDtoIn, observe: any = 'body', reportProgress: boolean = false, options?: { httpHeaderAccept?: 'application/json' }): Observable<any> {
+    if (captcha === null || captcha === undefined) {
+      throw new Error('Required parameter captcha was null or undefined when calling apiPatientPost.');
+    }
+
+    let queryParameters = new HttpParams({ encoder: this.encoder });
+    if (captcha !== undefined && captcha !== null) {
+      queryParameters = this.addToHttpParams(queryParameters,
+        <any>captcha, 'captcha');
+    }
+
+    let headers = this.defaultHeaders;
+
+    let httpHeaderAcceptSelected: string | undefined = options && options.httpHeaderAccept;
+    if (httpHeaderAcceptSelected === undefined) {
+      // to determine the Accept header
+      const httpHeaderAccepts: string[] = [
+        'application/json'
+      ];
+      httpHeaderAcceptSelected = this.configuration.selectHeaderAccept(httpHeaderAccepts);
+    }
+    if (httpHeaderAcceptSelected !== undefined) {
+      headers = headers.set('Accept', httpHeaderAcceptSelected);
+    }
+
+
+    // to determine the Content-Type header
+    const consumes: string[] = [
+      'application/json'
+    ];
+    const httpContentTypeSelected: string | undefined = this.configuration.selectHeaderContentType(consumes);
+    if (httpContentTypeSelected !== undefined) {
+      headers = headers.set('Content-Type', httpContentTypeSelected);
+    }
+
+    let responseType: 'text' | 'json' = 'json';
+    if (httpHeaderAcceptSelected && httpHeaderAcceptSelected.startsWith('text')) {
+      responseType = 'text';
+    }
+
+    return this.httpClient.post<Ok>(`${this.configuration.basePath}/api/patient`,
+      patientRegistrationDtoIn,
+      {
+        params: queryParameters,
+        responseType: <any>responseType,
+        withCredentials: this.configuration.withCredentials,
+        headers: headers,
+        observe: observe,
+        reportProgress: reportProgress
+      }
+    );
+  }
+
+  /**
+   * Returns all questions that patient needs to answer.
+   * @param observe set whether or not to return the data Observable as the body, response or events. defaults to returning the body.
+   * @param reportProgress flag to report request and response progress.
+   */
+  public apiQuestionsGet(observe?: 'body', reportProgress?: boolean, options?: { httpHeaderAccept?: 'application/json' }): Observable<Array<QuestionDtoOut>>;
+  public apiQuestionsGet(observe?: 'response', reportProgress?: boolean, options?: { httpHeaderAccept?: 'application/json' }): Observable<HttpResponse<Array<QuestionDtoOut>>>;
+  public apiQuestionsGet(observe?: 'events', reportProgress?: boolean, options?: { httpHeaderAccept?: 'application/json' }): Observable<HttpEvent<Array<QuestionDtoOut>>>;
+  public apiQuestionsGet(observe: any = 'body', reportProgress: boolean = false, options?: { httpHeaderAccept?: 'application/json' }): Observable<any> {
+
+    let headers = this.defaultHeaders;
+
+    let httpHeaderAcceptSelected: string | undefined = options && options.httpHeaderAccept;
+    if (httpHeaderAcceptSelected === undefined) {
+      // to determine the Accept header
+      const httpHeaderAccepts: string[] = [
+        'application/json'
+      ];
+      httpHeaderAcceptSelected = this.configuration.selectHeaderAccept(httpHeaderAccepts);
+    }
+    if (httpHeaderAcceptSelected !== undefined) {
+      headers = headers.set('Accept', httpHeaderAcceptSelected);
+    }
+
+
+    let responseType: 'text' | 'json' = 'json';
+    if (httpHeaderAcceptSelected && httpHeaderAcceptSelected.startsWith('text')) {
+      responseType = 'text';
+    }
+
+    return this.httpClient.get<Array<QuestionDtoOut>>(`${this.configuration.basePath}/api/questions`,
+      {
+        responseType: <any>responseType,
+        withCredentials: this.configuration.withCredentials,
+        headers: headers,
+        observe: observe,
+        reportProgress: reportProgress
+      }
+    );
+  }
+
+  /**
+   * @param observe set whether or not to return the data Observable as the body, response or events. defaults to returning the body.
+   * @param reportProgress flag to report request and response progress.
+   */
+  public apiStatusGet(observe?: 'body', reportProgress?: boolean, options?: { httpHeaderAccept?: undefined }): Observable<any>;
+  public apiStatusGet(observe?: 'response', reportProgress?: boolean, options?: { httpHeaderAccept?: undefined }): Observable<HttpResponse<any>>;
+  public apiStatusGet(observe?: 'events', reportProgress?: boolean, options?: { httpHeaderAccept?: undefined }): Observable<HttpEvent<any>>;
+  public apiStatusGet(observe: any = 'body', reportProgress: boolean = false, options?: { httpHeaderAccept?: undefined }): Observable<any> {
+
+    let headers = this.defaultHeaders;
+
+    let httpHeaderAcceptSelected: string | undefined = options && options.httpHeaderAccept;
+    if (httpHeaderAcceptSelected === undefined) {
+      // to determine the Accept header
+      const httpHeaderAccepts: string[] = [];
+      httpHeaderAcceptSelected = this.configuration.selectHeaderAccept(httpHeaderAccepts);
+    }
+    if (httpHeaderAcceptSelected !== undefined) {
+      headers = headers.set('Accept', httpHeaderAcceptSelected);
+    }
+
+
+    let responseType: 'text' | 'json' = 'json';
+    if (httpHeaderAcceptSelected && httpHeaderAcceptSelected.startsWith('text')) {
+      responseType = 'text';
+    }
+
+    return this.httpClient.get<any>(`${this.configuration.basePath}/api/status`,
+      {
+        responseType: <any>responseType,
+        withCredentials: this.configuration.withCredentials,
+        headers: headers,
+        observe: observe,
+        reportProgress: reportProgress
+      }
+    );
+  }
+
+  /**
+   * @param observe set whether or not to return the data Observable as the body, response or events. defaults to returning the body.
+   * @param reportProgress flag to report request and response progress.
+   */
+  public apiStatusHealthGet(observe?: 'body', reportProgress?: boolean, options?: { httpHeaderAccept?: 'application/json' }): Observable<ServiceHealthDtoOut>;
+  public apiStatusHealthGet(observe?: 'response', reportProgress?: boolean, options?: { httpHeaderAccept?: 'application/json' }): Observable<HttpResponse<ServiceHealthDtoOut>>;
+  public apiStatusHealthGet(observe?: 'events', reportProgress?: boolean, options?: { httpHeaderAccept?: 'application/json' }): Observable<HttpEvent<ServiceHealthDtoOut>>;
+  public apiStatusHealthGet(observe: any = 'body', reportProgress: boolean = false, options?: { httpHeaderAccept?: 'application/json' }): Observable<any> {
+
+    let headers = this.defaultHeaders;
+
+    let httpHeaderAcceptSelected: string | undefined = options && options.httpHeaderAccept;
+    if (httpHeaderAcceptSelected === undefined) {
+      // to determine the Accept header
+      const httpHeaderAccepts: string[] = [
+        'application/json'
+      ];
+      httpHeaderAcceptSelected = this.configuration.selectHeaderAccept(httpHeaderAccepts);
+    }
+    if (httpHeaderAcceptSelected !== undefined) {
+      headers = headers.set('Accept', httpHeaderAcceptSelected);
+    }
+
+
+    let responseType: 'text' | 'json' = 'json';
+    if (httpHeaderAcceptSelected && httpHeaderAcceptSelected.startsWith('text')) {
+      responseType = 'text';
+    }
+
+    return this.httpClient.get<ServiceHealthDtoOut>(`${this.configuration.basePath}/api/status/health`,
+      {
+        responseType: <any>responseType,
+        withCredentials: this.configuration.withCredentials,
+        headers: headers,
+        observe: observe,
+        reportProgress: reportProgress
+      }
+    );
+  }
+
+  /**
+   * Returns version of the application.
+   * @param observe set whether or not to return the data Observable as the body, response or events. defaults to returning the body.
+   * @param reportProgress flag to report request and response progress.
+   */
+  public apiVersionGet(observe?: 'body', reportProgress?: boolean, options?: { httpHeaderAccept?: 'application/json' }): Observable<ApplicationInformationDtoOut>;
+  public apiVersionGet(observe?: 'response', reportProgress?: boolean, options?: { httpHeaderAccept?: 'application/json' }): Observable<HttpResponse<ApplicationInformationDtoOut>>;
+  public apiVersionGet(observe?: 'events', reportProgress?: boolean, options?: { httpHeaderAccept?: 'application/json' }): Observable<HttpEvent<ApplicationInformationDtoOut>>;
+  public apiVersionGet(observe: any = 'body', reportProgress: boolean = false, options?: { httpHeaderAccept?: 'application/json' }): Observable<any> {
+
+    let headers = this.defaultHeaders;
+
+    let httpHeaderAcceptSelected: string | undefined = options && options.httpHeaderAccept;
+    if (httpHeaderAcceptSelected === undefined) {
+      // to determine the Accept header
+      const httpHeaderAccepts: string[] = [
+        'application/json'
+      ];
+      httpHeaderAcceptSelected = this.configuration.selectHeaderAccept(httpHeaderAccepts);
+    }
+    if (httpHeaderAcceptSelected !== undefined) {
+      headers = headers.set('Accept', httpHeaderAcceptSelected);
+    }
+
+
+    let responseType: 'text' | 'json' = 'json';
+    if (httpHeaderAcceptSelected && httpHeaderAcceptSelected.startsWith('text')) {
+      responseType = 'text';
+    }
+
+    return this.httpClient.get<ApplicationInformationDtoOut>(`${this.configuration.basePath}/api/version`,
+      {
+        responseType: <any>responseType,
+        withCredentials: this.configuration.withCredentials,
+        headers: headers,
+        observe: observe,
+        reportProgress: reportProgress
+      }
+    );
+  }
 
 }

@@ -3,7 +3,7 @@ import { HttpClient } from '@angular/common/http';
 import { environment } from '@environments/environment';
 import { first, map } from 'rxjs/operators';
 import { parseQuestion } from '@app/parsers/question.parser';
-import { BehaviorSubject } from 'rxjs';
+import { BehaviorSubject, Observable } from 'rxjs';
 import { QuestionDtoOut } from '@app/generated';
 import { AnsweredQuestion } from '@app/model/AnsweredQuestion';
 
@@ -14,12 +14,13 @@ export class QuestionService {
 
   private _questionKey = 'questions';
   private _questionsSubject: BehaviorSubject<AnsweredQuestion[]> = new BehaviorSubject<AnsweredQuestion[]>([]);
+  public questions: Observable<AnsweredQuestion[]> = this._questionsSubject.asObservable();
 
   constructor(private _http: HttpClient) {
     this._initQuestions();
   }
 
-  get questions(): AnsweredQuestion[] {
+  get questionsValue(): AnsweredQuestion[] {
     return this._questionsSubject.value;
   }
 

@@ -2,11 +2,11 @@ import java.net.URI
 
 
 plugins {
-    kotlin("jvm") version "1.4.31"
+    kotlin("jvm") version "1.5.0"
     application
     distribution
     id("net.nemerosa.versioning") version "2.14.0"
-    id("io.gitlab.arturbosch.detekt").version("1.16.0")
+    id("io.gitlab.arturbosch.detekt") version "1.17.0"
 }
 
 group = "blue.mild.covid.vaxx"
@@ -16,7 +16,7 @@ val mClass = "blue.mild.covid.vaxx.MainKt"
 
 buildscript {
     repositories {
-        jcenter()
+        mavenCentral()
     }
 }
 
@@ -25,13 +25,12 @@ detekt {
     parallel = true
 }
 
-
 application {
     mainClass.set(mClass)
 }
 
 repositories {
-    jcenter()
+    mavenCentral()
     maven {
         // for swagger
         url = URI.create("https://jitpack.io")
@@ -40,18 +39,28 @@ repositories {
 
 dependencies {
     // extension functions
-    implementation("pw.forst.tools", "katlib", "1.2.1")
+    implementation("pw.forst", "katlib", "2.0.1")
+    implementation("org.jetbrains.kotlin", "kotlin-reflect", "1.5.0")
 
     // Ktor server dependencies
-    val ktorVersion = "1.5.2"
+    val ktorVersion = "1.5.4"
     implementation("io.ktor", "ktor-server-core", ktorVersion)
     implementation("io.ktor", "ktor-server-netty", ktorVersion)
     implementation("io.ktor", "ktor-jackson", ktorVersion)
-    implementation("io.ktor", "ktor-websockets", ktorVersion)
     implementation("io.ktor", "ktor-auth", ktorVersion)
     implementation("io.ktor", "ktor-auth-jwt", ktorVersion)
+
+    // these two are here because OpenAPI generator needs then
+    // however, we don't use them directly
+    implementation("io.ktor", "ktor-metrics", ktorVersion)
+    implementation("io.ktor", "ktor-server-sessions", ktorVersion)
+
     // ktor swagger
-    implementation("com.github.papsign", "Ktor-OpenAPI-Generator", "0.2-beta.15")
+    implementation("com.github.papsign", "Ktor-OpenAPI-Generator", "0.2-beta.16") {
+        // exclude obsolete libraries from the generator
+        exclude("io.ktor", "ktor-metrics")
+        exclude("io.ktor", "ktor-server-sessions")
+    }
 
     // Ktor client dependencies
     implementation("io.ktor", "ktor-client-json", ktorVersion)
@@ -60,13 +69,13 @@ dependencies {
     implementation("io.ktor", "ktor-client-logging-jvm", ktorVersion)
 
     // Jackson JSON
-    val jacksonVersion = "2.12.1"
+    val jacksonVersion = "2.12.3"
     implementation("com.fasterxml.jackson.core", "jackson-databind", jacksonVersion)
     implementation("com.fasterxml.jackson.module", "jackson-module-kotlin", jacksonVersion)
     implementation("com.fasterxml.jackson.datatype", "jackson-datatype-jsr310", jacksonVersion)
 
     // logging
-    implementation("io.github.microutils", "kotlin-logging", "2.0.4")
+    implementation("io.github.microutils", "kotlin-logging", "2.0.6")
     implementation("ch.qos.logback", "logback-classic", "1.2.3")
     // if-else in logback.xml
     implementation("org.codehaus.janino", "janino", "3.1.3")
@@ -75,34 +84,49 @@ dependencies {
     implementation("com.lambdaworks", "scrypt", "1.4.0")
 
     // DI
-    val kodeinVersion = "7.4.0"
+    val kodeinVersion = "7.5.0"
     implementation("org.kodein.di", "kodein-di-jvm", kodeinVersion)
     implementation("org.kodein.di", "kodein-di-framework-ktor-server-jvm", kodeinVersion)
 
     // database
-    implementation("org.postgresql", "postgresql", "42.2.19")
+    implementation("org.postgresql", "postgresql", "42.2.20")
 
-    val exposedVersion = "0.29.1"
+    val exposedVersion = "0.31.1"
     implementation("org.jetbrains.exposed", "exposed-core", exposedVersion)
     implementation("org.jetbrains.exposed", "exposed-dao", exposedVersion)
     implementation("org.jetbrains.exposed", "exposed-jdbc", exposedVersion)
     implementation("org.jetbrains.exposed", "exposed-java-time", exposedVersion)
 
     // database migrations from the code
-    implementation("org.flywaydb", "flyway-core", "7.6.0")
+    implementation("org.flywaydb", "flyway-core", "7.9.0")
 
     // sending emails
     implementation("com.mailjet", "mailjet-client", "5.1.1")
     implementation("org.freemarker", "freemarker", "2.3.31")
 
+    // validation
+    implementation("com.googlecode.libphonenumber", "libphonenumber", "8.12.23")
+
     // tests
-    testImplementation("io.mockk", "mockk", "1.10.6")
+    testImplementation("io.mockk", "mockk", "1.11.0")
     testImplementation(kotlin("test"))
     testImplementation(kotlin("test-junit5"))
     val junitVersion = "5.7.1"
     testImplementation("org.junit.jupiter", "junit-jupiter-api", junitVersion) // junit testing framework
     testImplementation("org.junit.jupiter", "junit-jupiter-params", junitVersion) // generated parameters for tests
+    testImplementation("io.ktor", "ktor-server-test-host", ktorVersion)
     testRuntimeOnly("org.junit.jupiter", "junit-jupiter-engine", junitVersion)
+}
+
+// because sometimes has Idea problems to link the main module to test module
+kotlin {
+    sourceSets["main"].apply {
+        kotlin.srcDir("src/main/kotlin")
+    }
+
+    sourceSets["test"].apply {
+        kotlin.srcDir("src/test/kotlin")
+    }
 }
 
 tasks {

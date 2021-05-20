@@ -1,20 +1,157 @@
+@import "../../../styles/variables";
+
 main {
   display: flex;
   justify-content: center;
   align-items: center;
 }
 
-form {
-  padding: 20px;
+app-back-button {
+  position: absolute;
+  bottom: 100%;
+}
 
-  button {
-    margin: 20px auto 0;
-    display: block;
+.content {
+  min-height: 400px;
+  display: flex;
+  flex-direction: column;
+}
+
+mat-card-content {
+  padding: 20px;
+  flex: 1;
+}
+
+.form {
+  min-width: 420px;
+  min-height: 265px;
+  position: relative;
+  overflow: hidden;
+
+  form {
+    transition: left 0.2s ease-in-out, right 0.2s ease-in-out;
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+
+    > div {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+    }
+
+    > button {
+      margin: 20px auto 0;
+      display: block;
+    }
+
+    &.login-form {
+      left: -100%;
+
+      &.visible {
+        left: 0;
+      }
+    }
+
+    &.nurse-form {
+      right: -100%;
+
+      &.visible {
+        right: 0;
+      }
+    }
   }
+}
+
+.stepper {
+  ul {
+    display: flex;
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+
+  li {
+    flex: 1;
+    position: relative;
+
+    display: flex;
+    justify-content: center;
+    align-content: center;
+
+    &::before {
+      content: '';
+      height: 1px;
+      width: calc(100% - 20px);
+      left: 10px;
+      top: 50%;
+      position: absolute;
+      margin-bottom: -0.5px;
+      background-color: $gray-300;
+    }
+
+    &.active {
+      span {
+        background-color: $primary;
+        color: white;
+      }
+    }
+
+    span {
+      transition: background-color 0.2s ease, color 0.2s ease;
+      background-color: $gray-300;
+      border-radius: 50%;
+      text-align: center;
+
+      display: flex;
+      justify-content: center;
+      align-items: center;
+
+      position: relative;
+      z-index: 1;
+
+      width: 50px;
+      height: 50px;
+      padding-top: 1px;
+
+      font-size: 80%;
+      font-weight: 700;
+      color: $gray-600;
+
+      border: 10px solid #ffffff;
+    }
+  }
+}
+
+.user {
+  margin-top: 20px;
+  padding: 10px 15px;
+  border-radius: 12px;
+  background: rgba($primary, 0.1);
+
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 20px;
+
+  span {
+    opacity: 0.5;
+    margin-right: 10px;
+  }
+}
+
+.mat-select-panel .mat-option {
+  line-height: 4em;
+  height: 4em;
 }
 
 :host {
   flex: 1;
+  min-height: 100vh;
   display: flex;
   flex-direction: column;
 }

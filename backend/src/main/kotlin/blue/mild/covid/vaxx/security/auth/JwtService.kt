@@ -8,7 +8,8 @@ import com.auth0.jwt.JWTVerifier
 import com.auth0.jwt.algorithms.Algorithm
 import io.ktor.auth.jwt.JWTCredential
 import mu.KLogging
-import pw.forst.tools.katlib.toUuid
+import pw.forst.katlib.applyIf
+import pw.forst.katlib.toUuid
 import java.util.Date
 
 /**
@@ -21,6 +22,8 @@ class JwtService(
 
     private companion object : KLogging() {
         const val ROLE = "role"
+        const val NURSE = "nurse"
+        const val VACCINATION_SERIAL_NUMBER = "vaxxserial"
     }
 
     /**
@@ -43,6 +46,10 @@ class JwtService(
             .withIssuedAt(Date())
             .withSubject(principal.userId.toString())
             .withClaim(ROLE, principal.userRole.name)
+            .withClaim(VACCINATION_SERIAL_NUMBER, principal.vaccineSerialNumber.trim())
+            .applyIf(principal.nurseId != null) {
+                withClaim(NURSE, principal.nurseId.toString())
+            }
             .sign(algorithm).let {
                 UserLoginResponseDtoOut(it, principal.userRole)
             }
@@ -55,7 +62,9 @@ class JwtService(
             with(credential.payload) {
                 UserPrincipal(
                     userId = subject.toUuid(),
-                    userRole = UserRole.valueOf(claims.getValue(ROLE).asString())
+                    userRole = UserRole.valueOf(claims.getValue(ROLE).asString()),
+                    nurseId = claims[NURSE]?.takeIf { !it.isNull }?.asString()?.toUuid(),
+                    vaccineSerialNumber = claims.getValue(VACCINATION_SERIAL_NUMBER).asString()
                 )
             }
         }.getOrElse { throw InvalidJwtException("Invalid JWT!") }

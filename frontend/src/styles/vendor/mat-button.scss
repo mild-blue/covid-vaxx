@@ -5,10 +5,16 @@
     font-size: 16px;
     height: 18px;
   }
+}
 
-  &.mat-success {
+.mat-success {
+  &.mat-raised-button {
     background-color: $success;
     color: $white;
+  }
+
+  &.mat-button {
+    color: $success;
   }
 }
 

@@ -7,7 +7,7 @@ const womanMonthAddition = 50;
 const unprobableMonthAddition = 20;
 
 @Directive({
-  selector: '[personalNumberValidator]',
+  selector: '[appPersonalNumberValidator]',
   providers: [{ provide: NG_VALIDATORS, useExisting: PersonalNumberValidatorDirective, multi: true }]
 })
 export class PersonalNumberValidatorDirective implements Validator {

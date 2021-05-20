@@ -12,14 +12,18 @@
 
 
 export interface UserRegistrationDtoIn {
+  email: string;
+  firstName: string;
+  lastName: string;
   password: string;
   role: UserRegistrationDtoInRoleEnum;
-  username: string;
 }
 
 export enum UserRegistrationDtoInRoleEnum {
   Admin = 'ADMIN',
-  Doctor = 'DOCTOR'
+  Doctor = 'DOCTOR',
+  Nurse = 'NURSE',
+  Receptionist = 'RECEPTIONIST'
 };
 
 

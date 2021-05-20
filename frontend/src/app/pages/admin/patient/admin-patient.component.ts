@@ -3,6 +3,9 @@ import { ActivatedRoute, Router } from '@angular/router';
 import { PatientService } from '@app/services/patient/patient.service';
 import { AlertService } from '@app/services/alert/alert.service';
 import { AdminPatientAbstractComponent } from '@app/pages/admin/abstract/admin-patient-abstract.component';
+import { ConfirmVaccinationComponent } from '@app/components/dialogs/confirm-vaccination/confirm-vaccination.component';
+import { ConfirmPatientDataComponent } from '@app/components/dialogs/confirm-patient-data/confirm-patient-data.component';
+import { VaccinationConfirmation } from '@app/model/VaccinationConfirmation';
 
 @Component({
   selector: 'app-patient-detail',
@@ -26,18 +29,36 @@ export class AdminPatientComponent extends AdminPatientAbstractComponent impleme
     this._router.navigate(['admin']);
   }
 
-  public vaccinate(): void {
-    this._alertService.confirmVaccinateDialog(this._handleConfirmation.bind(this));
+  public verify(): void {
+    this._alertService.confirmDialog(ConfirmPatientDataComponent, this._handleVerification.bind(this));
   }
 
-  private async _handleConfirmation(): Promise<void> {
+  public vaccinate(): void {
+    this._alertService.confirmDialog(ConfirmVaccinationComponent, this._handleConfirmation.bind(this));
+  }
+
+  private async _handleVerification(note: string): Promise<void> {
     if (!this.patient) {
       return;
     }
 
     try {
-      await this._patientService.confirmVaccination(this.patient.id);
-      this._alertService.successDialog('Očkování bylo zaznamenáno', this.initPatient.bind(this));
+      await this._patientService.verifyPatient(this.patient, note);
+      this._alertService.successDialog('Údaje pacienta byly ověřeny.');
+      this.patient.verified = true;
+    } catch (e) {
+      this._alertService.error(e.message);
+    }
+  }
+
+  private async _handleConfirmation(confirmation: VaccinationConfirmation): Promise<void> {
+    if (!this.patient) {
+      return;
+    }
+
+    try {
+      await this._patientService.confirmVaccination(this.patient.id, confirmation.bodyPart, confirmation.note);
+      this._alertService.successDialog('Očkování bylo zaznamenáno.', this.initPatient.bind(this));
     } catch (e) {
       this._alertService.error(e.message);
     }

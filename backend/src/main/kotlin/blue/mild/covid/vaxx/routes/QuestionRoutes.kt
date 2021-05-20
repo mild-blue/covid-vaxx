@@ -22,13 +22,13 @@ import org.kodein.di.instance
 fun NormalOpenAPIRoute.questionRoutes() {
     val logger = createLogger("QuestionRoutes")
 
-    val service by di().instance<QuestionService>()
+    val questionService by di().instance<QuestionService>()
 
     route(Routes.questions) {
         get<Unit, List<QuestionDtoOut>>(
             info("Returns all questions that patient needs to answer.")
         ) {
-            respond(service.getCachedQuestions())
+            respond(questionService.getCachedQuestions())
         }
     }
 
@@ -39,7 +39,7 @@ fun NormalOpenAPIRoute.questionRoutes() {
             ) {
                 val principal = principal()
                 logger.info { "Cache refresh request administrated by ${principal.userId}." }
-                respond(service.refreshCache())
+                respond(questionService.refreshCache())
             }
         }
     }

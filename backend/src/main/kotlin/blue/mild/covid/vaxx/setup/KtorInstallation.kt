@@ -7,6 +7,7 @@ import blue.mild.covid.vaxx.dto.config.JwtConfigurationDto
 import blue.mild.covid.vaxx.dto.config.RateLimitConfigurationDto
 import blue.mild.covid.vaxx.error.installExceptionHandling
 import blue.mild.covid.vaxx.extensions.determineRealIp
+import blue.mild.covid.vaxx.monitoring.AMAZON_TRACE
 import blue.mild.covid.vaxx.monitoring.CALL_ID
 import blue.mild.covid.vaxx.monitoring.PATH
 import blue.mild.covid.vaxx.monitoring.REMOTE_HOST
@@ -18,8 +19,7 @@ import blue.mild.covid.vaxx.security.auth.registerJwtAuth
 import blue.mild.covid.vaxx.security.ddos.RateLimiting
 import blue.mild.covid.vaxx.utils.createLogger
 import com.auth0.jwt.JWTVerifier
-import com.fasterxml.jackson.databind.SerializationFeature
-import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule
+import com.fasterxml.jackson.databind.ObjectMapper
 import com.papsign.ktor.openapigen.OpenAPIGen
 import com.papsign.ktor.openapigen.openAPIGen
 import com.papsign.ktor.openapigen.route.apiRouting
@@ -38,12 +38,14 @@ import io.ktor.features.DefaultHeaders
 import io.ktor.features.ForwardedHeaderSupport
 import io.ktor.features.XForwardedHeaderSupport
 import io.ktor.features.callId
+import io.ktor.http.ContentType
 import io.ktor.http.HttpHeaders
 import io.ktor.http.HttpMethod
 import io.ktor.http.content.default
 import io.ktor.http.content.files
 import io.ktor.http.content.static
-import io.ktor.jackson.jackson
+import io.ktor.jackson.JacksonConverter
+import io.ktor.request.header
 import io.ktor.request.httpMethod
 import io.ktor.request.path
 import io.ktor.request.uri
@@ -53,6 +55,8 @@ import io.ktor.routing.get
 import io.ktor.routing.routing
 import org.flywaydb.core.Flyway
 import org.kodein.di.instance
+import org.kodein.di.instanceOrNull
+import org.kodein.di.ktor.closestDI
 import org.kodein.di.ktor.di
 import org.slf4j.event.Level
 import java.util.UUID
@@ -71,6 +75,13 @@ fun Application.init() {
         registerJwtAuth()
         registerClasses()
     }
+    setupDiAwareApplication()
+}
+
+/**
+ * Application that already has DI context.
+ */
+fun Application.setupDiAwareApplication() {
     // now kodein is running and can be used
     installationLogger.debug { "DI container started." }
     // connect to the database
@@ -82,7 +93,7 @@ fun Application.init() {
 }
 
 private fun Application.installRouting() {
-    val staticContentPath by di().instance<String>(EnvVariables.FRONTEND_PATH)
+    val staticContentPath by closestDI().instance<String>(EnvVariables.FRONTEND_PATH)
     routing {
         // configure static routes to serve frontend
         static {
@@ -111,28 +122,31 @@ private fun Application.installRouting() {
 
 // Connect bot to the database.
 private fun Application.connectDatabase() {
-    val dbConfig by di().instance<DatabaseConfigurationDto>()
+    val dbConfig by closestDI().instance<DatabaseConfigurationDto>()
 
     installationLogger.info { "Connecting to the DB" }
     DatabaseSetup.connect(dbConfig)
 
     require(DatabaseSetup.isConnected()) { "It was not possible to connect to db database!" }
     installationLogger.info { "DB connected." }
-    migrateDatabase(dbConfig)
+    migrateDatabase()
 }
 
 // Migrate database using flyway.
-private fun migrateDatabase(dbConfig: DatabaseConfigurationDto) {
+private fun Application.migrateDatabase() {
     installationLogger.info { "Migrating database." }
-    val migrateResult = Flyway
-        .configure()
-        .dataSource(dbConfig.url, dbConfig.userName, dbConfig.password)
-        .load()
-        .migrate()
+    val shouldMigrate by closestDI().instanceOrNull<Boolean>("should-migrate")
+    // enable migration by default
+    if (shouldMigrate != false) {
+        val flyway by closestDI().instance<Flyway>()
+        val migrateResult = flyway.migrate()
 
-    installationLogger.info {
-        if (migrateResult.migrationsExecuted == 0) "No migrations necessary."
-        else "Applied ${migrateResult.migrationsExecuted} migrations."
+        installationLogger.info {
+            if (migrateResult.migrationsExecuted == 0) "No migrations necessary."
+            else "Applied ${migrateResult.migrationsExecuted} migrations."
+        }
+    } else {
+        installationLogger.warn { "Skipping database migration and verification, this should not be in production!" }
     }
 }
 
@@ -153,13 +167,10 @@ private fun Application.installBasics() {
     install(DefaultHeaders) {
         header(HttpHeaders.Server, "mild-blue")
     }
-    // initialize Jackson
+    val objectMapper by closestDI().instance<ObjectMapper>()
+    // initialize our own configuration for Jackson
     install(ContentNegotiation) {
-        jackson {
-            registerModule(JavaTimeModule())
-            // use ie. 2021-03-15T13:55:39.813985Z instead of 1615842349.47899
-            disable(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS)
-        }
+        register(ContentType.Application.Json, JacksonConverter(objectMapper))
     }
 
     // as we're running behind the proxy, we take remote host from X-Forwarded-From
@@ -170,7 +181,7 @@ private fun Application.installBasics() {
 // Allow CORS.
 private fun Application.setupCors() {
     // enable CORS if necessary
-    val corsHosts by di().instance<CorsConfigurationDto>()
+    val corsHosts by closestDI().instance<CorsConfigurationDto>()
     val allowAndExpose: CORS.Configuration.(String) -> Unit = { headerName ->
         header(headerName)
         exposeHeader(headerName)
@@ -199,9 +210,9 @@ private fun Application.setupCors() {
 
 // Install authentication.
 private fun Application.installAuthentication() {
-    val jwtConfigurationDto by di().instance<JwtConfigurationDto>()
-    val jwtVerifier by di().instance<JWTVerifier>()
-    val jwtService by di().instance<JwtService>()
+    val jwtConfigurationDto by closestDI().instance<JwtConfigurationDto>()
+    val jwtVerifier by closestDI().instance<JWTVerifier>()
+    val jwtService by closestDI().instance<JwtService>()
     // Ktor default JWT authentication
     install(Authentication) {
         jwt {
@@ -216,7 +227,7 @@ private fun Application.installAuthentication() {
 
 // Install swagger features.
 private fun Application.installSwagger() {
-    val enableSwagger by di().instance<Boolean>(EnvVariables.ENABLE_SWAGGER)
+    val enableSwagger by closestDI().instance<Boolean>(EnvVariables.ENABLE_SWAGGER)
 
     // install swagger
     install(OpenAPIGen) {
@@ -260,6 +271,10 @@ private fun Application.installMonitoring() {
         mdc(CALL_ID) { it.callId }
         mdc(REMOTE_HOST) { it.request.determineRealIp() }
         mdc(PATH) { "${it.request.httpMethod.value} ${it.request.path()}" }
+        // see https://docs.aws.amazon.com/elasticloadbalancing/latest/application/load-balancer-request-tracing.html
+        mdc(AMAZON_TRACE) { call ->
+            call.request.header("X-Amzn-Trace-Id")
+        }
 
         val ignoredPaths = setOf(Routes.status, Routes.statusHealth)
         val ignoredMethods = setOf(HttpMethod.Options, HttpMethod.Head)
@@ -286,14 +301,16 @@ private fun Application.installMonitoring() {
 
 // Install rate limiting to prevent DDoS.
 private fun Application.installRateLimiting() {
-    val configuration by di().instance<RateLimitConfigurationDto>()
+    val configuration by closestDI().instance<RateLimitConfigurationDto>()
     if (configuration.enableRateLimiting) {
         install(RateLimiting) {
             limit = configuration.rateLimit
             resetTime = configuration.rateLimitDuration
             keyExtraction = { call.request.determineRealIp() }
             requestExclusion = {
-                it.httpMethod == HttpMethod.Options || it.uri.endsWith(Routes.status)
+                it.httpMethod == HttpMethod.Options
+                        || it.uri.endsWith(Routes.status)
+                        || it.uri.endsWith(Routes.statusHealth)
             }
         }
     }

@@ -5,7 +5,7 @@ import blue.mild.covid.vaxx.setup.init
 import io.ktor.application.Application
 import io.ktor.server.engine.embeddedServer
 import io.ktor.server.netty.Netty
-import pw.forst.tools.katlib.getEnv
+import pw.forst.katlib.getEnv
 
 
 fun main() {
