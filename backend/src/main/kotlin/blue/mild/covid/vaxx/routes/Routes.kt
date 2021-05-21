@@ -23,6 +23,8 @@ object Routes {
     val locations = adminRoute("locations")
     val locationsSlots = adminRoute("locations/{id}/slots")
 
+    val vaccinationSlots = adminRoute("vaccination-slots")
+
     val adminSectionPatient = adminRoute("patient")
     val vaccination = adminRoute("vaccination")
     val nurse = adminRoute("nurse")

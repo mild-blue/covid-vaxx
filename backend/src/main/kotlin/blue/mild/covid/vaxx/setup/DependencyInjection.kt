@@ -23,6 +23,7 @@ import blue.mild.covid.vaxx.service.QuestionService
 import blue.mild.covid.vaxx.service.SystemStatisticsService
 import blue.mild.covid.vaxx.service.UserService
 import blue.mild.covid.vaxx.service.VaccinationService
+import blue.mild.covid.vaxx.service.VaccinationSlotService
 import blue.mild.covid.vaxx.service.ValidationService
 import blue.mild.covid.vaxx.service.dummy.DummyMailService
 import blue.mild.covid.vaxx.service.dummy.DummyMedicalRegistrationService
@@ -84,6 +85,7 @@ fun DI.MainBuilder.registerClasses() {
     bind<QuestionService>() with singleton { QuestionService() }
     bind<ValidationService>() with singleton { ValidationService(instance()) }
     bind<LocationService>() with singleton { LocationService(instance()) }
+    bind<VaccinationSlotService>() with singleton { VaccinationSlotService(instance(), instance()) }
     bind<PatientService>() with singleton { PatientService(instance(), instance()) }
     bind<UserService>() with singleton { UserService(instance(), instance()) }
     bind<VaccinationService>() with singleton { VaccinationService(instance()) }
