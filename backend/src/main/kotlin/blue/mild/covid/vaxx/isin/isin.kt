@@ -1,3 +1,4 @@
+@file:Suppress("TooManyFunctions")
 package blue.mild.covid.vaxx.isin
 
 import blue.mild.covid.vaxx.utils.createLogger
@@ -36,32 +37,32 @@ enum class IsinEnvironment {
 private val useEnvironment = IsinEnvironment.TEST
 
 private val logger = createLogger("HttpClientConfiguration")
-private const val publicRoot = "https://apidoc.uzis.cz/api/v1"
-private const val testRoot = "https://apitest.uzis.cz/api/v1"
-private const val productionRoot = "https://api.uzis.cz/api/v1"
+private const val PUBLIC_ROOT = "https://apidoc.uzis.cz/api/v1"
+private const val TEST_ROOT = "https://apitest.uzis.cz/api/v1"
+private const val PRODUCTION_ROOT = "https://api.uzis.cz/api/v1"
 
 // 000 je pro polikliniky - neni to placeholder
 // https://nrpzs.uzis.cz/detail-66375-clinicum-a-s.html#fndtn-detail_uzis
-private const val pcz = "000"
-private const val NrzpCislo = "184070832"
+private const val PCZ = "000"
+private const val NRZP_CISLO = "184070832"
 // rodne cislo pracovnika je z PDFka
-private val pracovnikO = Pracovnik(pcz = pcz, nrzpCislo = NrzpCislo, rodneCislo = "9910190015")
-private const val urlVytvorNeboZmenVakcinaci = "vakcinace/VytvorNeboZmenVakcinaci"
-private const val urlVytvorNeboZmenDavku = "vakcinace/VytvorNeboZmenDavku"
-private const val urlZmenStavVakcinace = "vakcinace/ZmenStavVakcinace"
-private const val urlVakcinaceDleId = "vakcinace/NacistVakcinaciDleId"
-private const val urlVakcinacePacienta = "vakcinace/NacistVakcinacePacienta"
-private const val urlVakcinaceSeznamRegistraciARezervaci = "vakcinace/SeznamRegistraciARezervaci"
-private const val urlNactiPracovniky = "nrzp/NactiPracovniky"
-private const val urlNactiPracovnika = "nrzp/NactiPracovnika"
-private const val urlAktualizujKontaktniUdajePacienta = "pacienti/AktualizujKontaktniUdajePacienta"
-private const val urlNajdiPacienta = "pacienti/VyhledatDleJmenoPrijmeniRc"
+private val pracovnikO = Pracovnik(pcz = PCZ, nrzpCislo = NRZP_CISLO, rodneCislo = "9910190015")
+private const val URL_VYTVOR_NEBO_ZMEN_VAKCINACI = "vakcinace/VytvorNeboZmenVakcinaci"
+private const val URL_VYTVOR_NEBO_ZMEN_DAVKU = "vakcinace/VytvorNeboZmenDavku"
+private const val URL_ZMEN_STAV_VAKCINACE = "vakcinace/ZmenStavVakcinace"
+private const val URL_VAKCINACE_DLE_ID = "vakcinace/NacistVakcinaciDleId"
+private const val URL_VAKCINACE_PACIENTA = "vakcinace/NacistVakcinacePacienta"
+private const val URL_VAKCINACE_SEZNAM_REGISTRACI_A_REZERVACI = "vakcinace/SeznamRegistraciARezervaci"
+private const val URL_NACTI_PRACOVNIKY = "nrzp/NactiPracovniky"
+private const val URL_NACTI_PRACOVNIKA = "nrzp/NactiPracovnika"
+private const val URL_AKTUALIZUJ_KONTAKTNI_UDAJE_PACIENTA = "pacienti/AktualizujKontaktniUdajePacienta"
+private const val URL_NAJDI_PACIENTA = "pacienti/VyhledatDleJmenoPrijmeniRc"
 
 
 private val roots = mapOf(
-    IsinEnvironment.PUBLIC to publicRoot,
-    IsinEnvironment.TEST to testRoot,
-    IsinEnvironment.PRODUCTION to productionRoot,
+    IsinEnvironment.PUBLIC to PUBLIC_ROOT,
+    IsinEnvironment.TEST to TEST_ROOT,
+    IsinEnvironment.PRODUCTION to PRODUCTION_ROOT,
 )
 
 // Dummy class to wrap data around pacient
@@ -87,11 +88,11 @@ data class InputPracovnik(
 )
 private val workers = mapOf(
     // Public - hardcoded one
-    IsinEnvironment.PUBLIC to InputPracovnik(pracovnikO.nrzpCislo, "", "", datumNarozeni = "", rodneCislo = pracovnikO.rodneCislo, pcz=pcz),
+    IsinEnvironment.PUBLIC to InputPracovnik(pracovnikO.nrzpCislo, "", "", datumNarozeni = "", rodneCislo = pracovnikO.rodneCislo, pcz=PCZ),
     // Test is one worker received by nactiPracovniky
-    IsinEnvironment.TEST to InputPracovnik("172319367", "Jmeno2", "Prijmeni26", "1924-05-10T00:00:00", "245510064", pcz),
+    IsinEnvironment.TEST to InputPracovnik("172319367", "Jmeno2", "Prijmeni26", "1924-05-10T00:00:00", "245510064", PCZ),
     // Prod - hardcoded one
-    IsinEnvironment.PRODUCTION to InputPracovnik(pracovnikO.nrzpCislo, "", "", datumNarozeni = "", rodneCislo = pracovnikO.rodneCislo, pcz),
+    IsinEnvironment.PRODUCTION to InputPracovnik(pracovnikO.nrzpCislo, "", "", datumNarozeni = "", rodneCislo = pracovnikO.rodneCislo, PCZ),
 )
 
 private val root = roots.getValue(useEnvironment)
@@ -163,16 +164,16 @@ private fun HttpClientConfig<ApacheEngineConfig>.configureCertificates(config: K
         }
     }
 }
-
-/**
- * Debug logger for HTTP requests.
- */
-private val Logger.Companion.DEBUG: Logger
-    get() = object : Logger, org.slf4j.Logger by createLogger("HttpCallsLogging") {
-        override fun log(message: String) {
-            debug(message)
-        }
-    }
+//
+///**
+// * Debug logger for HTTP requests.
+// */
+//private val Logger.Companion.DEBUG: Logger
+//    get() = object : Logger, org.slf4j.Logger by createLogger("HttpCallsLogging") {
+//        override fun log(message: String) {
+//            debug(message)
+//        }
+//    }
 
 /**
  * Trace logger for HTTP Requests.
@@ -207,62 +208,63 @@ suspend fun postUrlData(
 }
 
 suspend fun getPatientId(isinClient: HttpClient, jmeno: String, prijmeni: String, rodneCislo: String): String? {
-    val url = createIsinURL(urlNajdiPacienta, parameters = listOf(jmeno, prijmeni, rodneCislo))
+    val url = createIsinURL(URL_NAJDI_PACIENTA, parameters = listOf(jmeno, prijmeni, rodneCislo))
     val response = getUrl(isinClient, url)
     return response.get("pacient").get("id").textValue()
 }
 
 suspend fun aktualizujKontaktniUdajePacienta(isinClient: HttpClient, data: AktualizujPacienta): JsonNode {
-    val url = createIsinURL(urlAktualizujKontaktniUdajePacienta)
+    val url = createIsinURL(URL_AKTUALIZUJ_KONTAKTNI_UDAJE_PACIENTA)
     return postUrlData(isinClient, url, data)
 }
 
 suspend fun vytvorVakcinaci(isinClient: HttpClient, data: VytvorNeboZmenVakcinaci): String? {
-    val url = createIsinURL(urlVytvorNeboZmenVakcinaci)
+    val url = createIsinURL(URL_VYTVOR_NEBO_ZMEN_VAKCINACI)
     val response = postUrlData(isinClient, url, data)
     return response.get("id").textValue()
 }
 
 
 suspend fun vytvorDavku(isinClient: HttpClient, data: VytvorNeboZmenDavku): JsonNode {
-    val url = createIsinURL(urlVytvorNeboZmenDavku)
+    val url = createIsinURL(URL_VYTVOR_NEBO_ZMEN_DAVKU)
     return postUrlData(isinClient, url, data)
 }
 
 
 suspend fun uzavriVakcinaci(isinClient: HttpClient, idVakcinace: String): JsonNode {
-    val url = createIsinURL(urlZmenStavVakcinace, parameters = listOf(idVakcinace, "Ukoncene"))
+    val url = createIsinURL(URL_ZMEN_STAV_VAKCINACE, parameters = listOf(idVakcinace, "Ukoncene"))
     return postUrlData(isinClient, url)
 }
 
 suspend fun getVakcinaceDleId(isinClient: HttpClient, idVakcinace: String): JsonNode {
-    val url = createIsinURL(urlVakcinaceDleId, parameters = listOf(idVakcinace))
+    val url = createIsinURL(URL_VAKCINACE_DLE_ID, parameters = listOf(idVakcinace))
     val response = getUrl(isinClient, url)
     return response.get("davky")
 }
 
 suspend fun getVakcinaceDlePacienta(isinClient: HttpClient, idPacient: String): JsonNode {
-    val url = createIsinURL(urlVakcinacePacienta, parameters = listOf(idPacient))
+    val url = createIsinURL(URL_VAKCINACE_PACIENTA, parameters = listOf(idPacient))
     return getUrl(isinClient, url)
 }
 
 suspend fun getVakcinaceSeznamRegistraciARezervaci(isinClient: HttpClient, idPacient: String): JsonNode {
-    val url = createIsinURL(urlVakcinaceSeznamRegistraciARezervaci, parameters = listOf(idPacient))
+    val url = createIsinURL(URL_VAKCINACE_SEZNAM_REGISTRACI_A_REZERVACI, parameters = listOf(idPacient))
     return getUrl(isinClient, url)
 }
 
 suspend fun nactiPracovnika(isinClient: HttpClient, pracovnikCislo: String): JsonNode {
-    val url = "${createIsinURL(urlNactiPracovnika, includeIdentification = false)}?pracovnikCislo=${pracovnikCislo}"
+    val url = "${createIsinURL(URL_NACTI_PRACOVNIKA, includeIdentification = false)}?pracovnikCislo=${pracovnikCislo}"
     return getUrl(isinClient, url)
 }
 
 suspend fun nactiPracovniky(isinClient: HttpClient): JsonNode {
-    val url = createIsinURL(urlNactiPracovniky)
+    val url = createIsinURL(URL_NACTI_PRACOVNIKY)
     return getUrl(isinClient, url)
 }
 
+@Suppress("LongMethod")
 fun main() {
-    println("Using environment: ${useEnvironment} => ${root}; ${pacient}")
+    println("Using environment: ${useEnvironment} => ${root}; ${pacient}; ${pracovnik}")
 
     runBlocking {
 
@@ -274,11 +276,12 @@ fun main() {
         // nactiPracovniky(isinClient)
 
         val loadedPracovnik = nactiPracovnika(isinClient, pracovnik.nrzpCislo)
+        println(loadedPracovnik.toPrettyString())
 
         // pracovnik bez rodneho cisla se vymlel, pracovnik s RC od pacienta vraci 404
 
         try {
-            aktualizujKontaktniUdajePacienta(
+            val aktualizace = aktualizujKontaktniUdajePacienta(
                 isinClient, AktualizujPacienta(
                     idPacienta = idPacienta,
                     kontaktniEmail = "test@test.cz",
@@ -286,6 +289,7 @@ fun main() {
                     pracovnik = pracovnik
                 )
             )
+            println(aktualizace.toPrettyString())
         } catch (e: ServerResponseException) {
             println(e)
         } catch (e: ClientRequestException) {
@@ -294,6 +298,7 @@ fun main() {
 
         try {
             val vakcinace = getVakcinaceDlePacienta(isinClient, idPacienta)
+            println("Pocet vakcinaci: ${vakcinace.size()}")
             println(vakcinace.toPrettyString())
         } catch (e: ServerResponseException) {
             println(e)
@@ -303,6 +308,7 @@ fun main() {
 
         try {
             val seznam = getVakcinaceSeznamRegistraciARezervaci(isinClient, idPacienta)
+            println("SeznamRegistraciARezervaci: ${seznam.size()}")
             println(seznam.toPrettyString())
         } catch (e: ServerResponseException) {
             println(e)
