@@ -3,6 +3,8 @@ package blue.mild.covid.vaxx.routes
 import blue.mild.covid.vaxx.dao.model.EntityId
 import blue.mild.covid.vaxx.dao.model.UserRole
 import blue.mild.covid.vaxx.dto.request.CreateVaccinationSlotsDtoIn
+import blue.mild.covid.vaxx.dto.request.query.MultipleVaccinationSlotsQueryDtoOut
+import blue.mild.covid.vaxx.dto.response.VaccinationSlotDtoOut
 import blue.mild.covid.vaxx.extensions.determineRealIp
 import blue.mild.covid.vaxx.extensions.di
 import blue.mild.covid.vaxx.extensions.request
@@ -11,12 +13,14 @@ import blue.mild.covid.vaxx.security.auth.authorizeRoute
 import blue.mild.covid.vaxx.service.VaccinationSlotService
 import blue.mild.covid.vaxx.utils.createLogger
 import com.papsign.ktor.openapigen.route.info
+import com.papsign.ktor.openapigen.route.path.auth.get
 import com.papsign.ktor.openapigen.route.path.auth.post
 import com.papsign.ktor.openapigen.route.path.auth.principal
 import com.papsign.ktor.openapigen.route.path.normal.NormalOpenAPIRoute
 import com.papsign.ktor.openapigen.route.response.respond
 import com.papsign.ktor.openapigen.route.route
 import org.kodein.di.instance
+import java.time.Instant
 
 /**
  * Routes associated with the user logins and authorizations.
@@ -36,6 +40,27 @@ fun NormalOpenAPIRoute.vaccinationSlotRoutes() {
                     "For location ${location} adding slots ${createSlots} by ${principal.userId} from host ${request.determineRealIp()}."
                 }
                 respond(vaccinationSlotService.addSlots(createSlots))
+            }
+
+            route("filter") {
+                get<MultipleVaccinationSlotsQueryDtoOut, List<VaccinationSlotDtoOut>, UserPrincipal>(
+                    info("Get patient the parameters. Filters by and clause. Empty parameters return all patients.")
+                ) { slotsQuery ->
+                    val principal = principal()
+                    logger.info { "User ${principal.userId} search query: $slotsQuery." }
+
+                    val slots = vaccinationSlotService.getSlotsByConjunctionOf(
+                        locationId = slotsQuery.locationId,
+                        from = Instant.ofEpochMilli(slotsQuery?.fromMillis ?: 0),
+                        to = Instant.ofEpochMilli(slotsQuery?.toMillis ?: Instant.now().toEpochMilli()),
+                        onlyFree = slotsQuery.onlyFree ?: true,
+                    )
+
+                    logger.info { "Found ${slots.size} records." }
+                    logger.debug { "Returning patients: ${slots.joinToString(", ") { it.id.toString() }}." }
+
+                    respond(slots)
+                }
             }
         }
     }

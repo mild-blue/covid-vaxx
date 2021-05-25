@@ -7,5 +7,5 @@ data class CreateVaccinationSlotsDtoIn(
     val locationId: EntityId? = null,
     val from: Instant,
     val to: Instant,
-    val durationSec: Int
+    val durationMillis: Long
 )

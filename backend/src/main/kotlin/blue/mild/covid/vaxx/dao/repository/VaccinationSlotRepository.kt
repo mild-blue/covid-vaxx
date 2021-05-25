@@ -3,7 +3,11 @@ package blue.mild.covid.vaxx.dao.repository
 import blue.mild.covid.vaxx.dao.model.EntityId
 import blue.mild.covid.vaxx.dao.model.VaccinationSlots
 import blue.mild.covid.vaxx.dao.model.Vaccinations
+import blue.mild.covid.vaxx.dto.response.VaccinationSlotDtoOut
+import org.jetbrains.exposed.sql.Op
+import org.jetbrains.exposed.sql.SqlExpressionBuilder
 import org.jetbrains.exposed.sql.insert
+import org.jetbrains.exposed.sql.select
 import org.jetbrains.exposed.sql.transactions.experimental.newSuspendedTransaction
 import org.jetbrains.exposed.sql.update
 import java.time.Instant
@@ -24,7 +28,7 @@ class VaccinationSlotRepository {
             it[VaccinationSlots.locationId] = locationId
             it[VaccinationSlots.from] = from
             it[VaccinationSlots.to] = to
-        }[Vaccinations.id]
+        }[VaccinationSlots.id]
     }
 
     /**
@@ -58,20 +62,21 @@ class VaccinationSlotRepository {
         vaccinationUpdated == 1
     }
 
-//    private suspend fun get(where: SqlExpressionBuilder.() -> Op<Boolean>) =
-//        newSuspendedTransaction {
-//            VaccinationSlots
-//                .select(where)
-//                .singleOrNull()
-//                ?.let {
-//                    VaccinationSlotDtoOut(
-//                        slotId = it[VaccinationSlots.id],
-//                        locationId = it[VaccinationSlots.locationId],
-//                        patientId = it[VaccinationSlots.patientId],
-//                        from = it[VaccinationSlots.from],
-//                        to = it[VaccinationSlots.to]
-//                    )
-//                }
-//        }
+    suspend fun get(where: SqlExpressionBuilder.() -> Op<Boolean>) =
+        newSuspendedTransaction {
+            VaccinationSlots
+                .select(where)
+                ?.let {
+                    data -> data.map {
+                        VaccinationSlotDtoOut(
+                            id = it[VaccinationSlots.id],
+                            locationId = it[VaccinationSlots.locationId],
+                            patientId = it[VaccinationSlots.patientId],
+                            from = it[VaccinationSlots.from],
+                            to = it[VaccinationSlots.to]
+                        )
+                    }
+                }
+        }
 
 }

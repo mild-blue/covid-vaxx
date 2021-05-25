@@ -131,7 +131,7 @@ class LocationRepository {
     )
 
     private fun ResultRow.mapSlots() = VaccinationSlotDtoOut(
-        slotId = this[VaccinationSlots.id],
+        id = this[VaccinationSlots.id],
         locationId = this[VaccinationSlots.locationId],
         patientId = this[VaccinationSlots.patientId],
         from = this[VaccinationSlots.from],
