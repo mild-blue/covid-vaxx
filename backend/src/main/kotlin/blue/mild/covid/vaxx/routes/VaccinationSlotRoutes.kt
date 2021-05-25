@@ -3,6 +3,7 @@ package blue.mild.covid.vaxx.routes
 import blue.mild.covid.vaxx.dao.model.EntityId
 import blue.mild.covid.vaxx.dao.model.UserRole
 import blue.mild.covid.vaxx.dto.request.CreateVaccinationSlotsDtoIn
+import blue.mild.covid.vaxx.dto.request.PatientVaccinationSlotSelectionDtoIn
 import blue.mild.covid.vaxx.dto.request.query.MultipleVaccinationSlotsQueryDtoOut
 import blue.mild.covid.vaxx.dto.response.VaccinationSlotDtoOut
 import blue.mild.covid.vaxx.extensions.determineRealIp
@@ -20,7 +21,6 @@ import com.papsign.ktor.openapigen.route.path.normal.NormalOpenAPIRoute
 import com.papsign.ktor.openapigen.route.response.respond
 import com.papsign.ktor.openapigen.route.route
 import org.kodein.di.instance
-import java.time.Instant
 
 /**
  * Routes associated with the user logins and authorizations.
@@ -50,16 +50,37 @@ fun NormalOpenAPIRoute.vaccinationSlotRoutes() {
                     logger.info { "User ${principal.userId} search query: $slotsQuery." }
 
                     val slots = vaccinationSlotService.getSlotsByConjunctionOf(
+                        id = slotsQuery.id,
                         locationId = slotsQuery.locationId,
-                        from = Instant.ofEpochMilli(slotsQuery?.fromMillis ?: 0),
-                        to = Instant.ofEpochMilli(slotsQuery?.toMillis ?: Instant.now().toEpochMilli()),
-                        onlyFree = slotsQuery.onlyFree ?: true,
+                        fromMillis = slotsQuery?.fromMillis,
+                        toMillis = slotsQuery?.toMillis,
+                        status = slotsQuery.status,
                     )
 
                     logger.info { "Found ${slots.size} records." }
-                    logger.debug { "Returning patients: ${slots.joinToString(", ") { it.id.toString() }}." }
+                    logger.debug { "Returning slots: ${slots.joinToString(", ") { it.id.toString() }}." }
 
                     respond(slots)
+                }
+
+                post<MultipleVaccinationSlotsQueryDtoOut, VaccinationSlotDtoOut, PatientVaccinationSlotSelectionDtoIn, UserPrincipal>(
+                    info("Get patient the parameters. Filters by and clause. Empty parameters return all patients.")
+                ) { slotsQuery, patientDtoIn ->
+                    val principal = principal()
+                    logger.info { "User ${principal.userId} reserves query: $slotsQuery for ${patientDtoIn}."}
+
+                    val slot = vaccinationSlotService.updateSlot(
+                        id = slotsQuery.id,
+                        locationId = slotsQuery.locationId,
+                        fromMillis = slotsQuery?.fromMillis,
+                        toMillis = slotsQuery?.toMillis,
+                        status = slotsQuery.status,
+                        patientId = patientDtoIn.patientId,
+                    )
+
+                    logger.info { "Updated ${slot} record." }
+
+                    respond(slot)
                 }
             }
         }

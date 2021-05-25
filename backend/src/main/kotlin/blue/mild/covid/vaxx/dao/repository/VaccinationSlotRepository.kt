@@ -2,7 +2,6 @@ package blue.mild.covid.vaxx.dao.repository
 
 import blue.mild.covid.vaxx.dao.model.EntityId
 import blue.mild.covid.vaxx.dao.model.VaccinationSlots
-import blue.mild.covid.vaxx.dao.model.Vaccinations
 import blue.mild.covid.vaxx.dto.response.VaccinationSlotDtoOut
 import org.jetbrains.exposed.sql.Op
 import org.jetbrains.exposed.sql.SqlExpressionBuilder
@@ -36,38 +35,26 @@ class VaccinationSlotRepository {
      */
     suspend fun updateVaccinationSlot(
         vaccinationSlotId: EntityId,
-        locationId: EntityId? = null,
         patientId: EntityId? = null,
-        from: Instant? = null,
-        to: Instant? = null,
-    ): Boolean = newSuspendedTransaction {
-        val isUpdateNecessary =
-            locationId ?: patientId
-            ?: from ?: to
-
-        // if so, perform update query
-        val vaccinationUpdated = if (isUpdateNecessary != null) {
-            Vaccinations.update(
-                where = { VaccinationSlots.id eq vaccinationSlotId },
-                body = { row ->
-                    row.apply {
-                        updateIfNotNull(locationId, VaccinationSlots.locationId)
-                        updateIfNotNull(patientId, VaccinationSlots.patientId)
-                        updateIfNotNull(from, VaccinationSlots.from)
-                        updateIfNotNull(to, VaccinationSlots.to)
-                    }
+    ): Int = newSuspendedTransaction {
+        VaccinationSlots.update(
+            where = { VaccinationSlots.id eq vaccinationSlotId },
+            body = { row ->
+                row.apply {
+                    this[VaccinationSlots.patientId] = patientId
                 }
-            )
-        } else 0
-        vaccinationUpdated == 1
+            }
+        )
     }
 
     suspend fun get(where: SqlExpressionBuilder.() -> Op<Boolean>) =
         newSuspendedTransaction {
             VaccinationSlots
                 .select(where)
-                ?.let {
-                    data -> data.map {
+                .orderBy(VaccinationSlots.from)
+                .orderBy(VaccinationSlots.id)
+                ?.let { data ->
+                    data.map {
                         VaccinationSlotDtoOut(
                             id = it[VaccinationSlots.id],
                             locationId = it[VaccinationSlots.locationId],
