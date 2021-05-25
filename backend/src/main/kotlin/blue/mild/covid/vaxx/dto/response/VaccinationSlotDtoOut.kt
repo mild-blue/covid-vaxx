@@ -7,6 +7,7 @@ data class VaccinationSlotDtoOut(
     val id: EntityId,
     val locationId: EntityId,
     val patientId: EntityId?,
+    val queue: Int,
     val from: Instant,
     val to: Instant
 )

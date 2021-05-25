@@ -134,6 +134,7 @@ class LocationRepository {
         id = this[VaccinationSlots.id],
         locationId = this[VaccinationSlots.locationId],
         patientId = this[VaccinationSlots.patientId],
+        queue = this[VaccinationSlots.queue],
         from = this[VaccinationSlots.from],
         to = this[VaccinationSlots.to]
     )

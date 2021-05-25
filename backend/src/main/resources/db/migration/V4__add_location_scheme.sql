@@ -32,9 +32,10 @@ CREATE TABLE vaccination_slots
     updated              TIMESTAMPTZ      NOT NULL,
     location_id          UUID             NOT NULL REFERENCES locations (id) ON DELETE CASCADE,
     patient_id           UUID             REFERENCES patients (id) ON DELETE SET NULL,
+    queue                INTEGER          NOT NULL,
     "from"               TIMESTAMPTZ      NOT NULL,
     "to"                 TIMESTAMPTZ      NOT NULL,
-    UNIQUE(location_id, "from", "to")
+    UNIQUE(location_id, queue, "from", "to")
 );
 
 CREATE TRIGGER tgr_vaccination_slots_set_created

@@ -33,7 +33,7 @@ fun NormalOpenAPIRoute.vaccinationSlotRoutes() {
     authorizeRoute(requireOneOf = setOf(UserRole.ADMIN)) {
         route(Routes.vaccinationSlots) {
             post<Unit, List<EntityId>, CreateVaccinationSlotsDtoIn, UserPrincipal>(
-                info("Add new location into the system.")
+                info("Add new vaccination slots for given location.")
             ) { location, createSlots ->
                 val principal = principal()
                 logger.info {
@@ -44,7 +44,7 @@ fun NormalOpenAPIRoute.vaccinationSlotRoutes() {
 
             route("filter") {
                 get<MultipleVaccinationSlotsQueryDtoOut, List<VaccinationSlotDtoOut>, UserPrincipal>(
-                    info("Get patient the parameters. Filters by and clause. Empty parameters return all patients.")
+                    info("Get vaccination spots matching ")
                 ) { slotsQuery ->
                     val principal = principal()
                     logger.info { "User ${principal.userId} search query: $slotsQuery." }

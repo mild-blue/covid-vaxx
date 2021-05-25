@@ -30,7 +30,8 @@ class VaccinationSlotRoutesTest : ServerTestBase() {
             locationId = UUID.randomUUID(),
             from = Instant.ofEpochSecond(1000),
             to = Instant.ofEpochSecond(2000),
-            durationMillis = 100
+            durationMillis = 100,
+            bandwidth = 10,
         )
         handleRequest(HttpMethod.Post, Routes.vaccinationSlots) {
             authorize()
@@ -64,6 +65,7 @@ class VaccinationSlotRoutesTest : ServerTestBase() {
             from = Instant.ofEpochMilli(1000000),
             to = Instant.ofEpochMilli(3000000),
             durationMillis = 100000,
+            bandwidth = 1,
         )
 
         handleRequest(HttpMethod.Post, Routes.vaccinationSlots) {
@@ -92,6 +94,7 @@ class VaccinationSlotRoutesTest : ServerTestBase() {
             from = Instant.ofEpochMilli(2000000),
             to = Instant.ofEpochMilli(5000000),
             durationMillis = 300000,
+            bandwidth = 4,
         )
 
         handleRequest(HttpMethod.Post, Routes.vaccinationSlots) {
@@ -100,11 +103,11 @@ class VaccinationSlotRoutesTest : ServerTestBase() {
         }.run {
             expectStatus(HttpStatusCode.OK)
             val slots = receive<List<EntityId>>()
-            assertEquals(10, slots.size)
+            assertEquals(40, slots.size)
         }
 
         val slotsAll  = runBlocking { vaccinationSlotService.getSlotsByConjunctionOf() }
-        assertEquals(30, slotsAll.size)
+        assertEquals(60, slotsAll.size)
 
         // get all slots
         handleRequest(HttpMethod.Get, "${Routes.vaccinationSlots}/filter") {
@@ -112,7 +115,7 @@ class VaccinationSlotRoutesTest : ServerTestBase() {
         }.run {
             expectStatus(HttpStatusCode.OK)
             val slots = receive<List<VaccinationSlotDtoOut>>()
-            assertEquals(30, slots.size)
+            assertEquals(60, slots.size)
         }
 
         // restrict by location
@@ -130,7 +133,7 @@ class VaccinationSlotRoutesTest : ServerTestBase() {
         }.run {
             expectStatus(HttpStatusCode.OK)
             val slots = receive<List<VaccinationSlotDtoOut>>()
-            assertEquals(20, slots.size)
+            assertEquals(10 + 40, slots.size)
         }
 
         // restrict by to
@@ -166,6 +169,7 @@ class VaccinationSlotRoutesTest : ServerTestBase() {
             val slot = receive<VaccinationSlotDtoOut>()
             assertEquals(slotsAll[0].id, slot.id)
             assertEquals(patientId, slot.patientId)
+            assertEquals(0, slot.queue)
         }
 
         // first location has one less free slot
@@ -183,7 +187,7 @@ class VaccinationSlotRoutesTest : ServerTestBase() {
         }.run {
             expectStatus(HttpStatusCode.OK)
             val slots = receive<List<VaccinationSlotDtoOut>>()
-            assertEquals(10, slots.size)
+            assertEquals(40, slots.size)
         }
 
         // reserve slot by specifying location and minimal from
@@ -194,8 +198,9 @@ class VaccinationSlotRoutesTest : ServerTestBase() {
             expectStatus(HttpStatusCode.OK)
             val slot = receive<VaccinationSlotDtoOut>()
             // it should be the middle one for the second location
-            assertEquals(slotsAll[25].id, slot.id)
+            assertEquals(slotsAll[20 + 5 * 4].id, slot.id)
             assertEquals(patientId, slot.patientId)
+            assertEquals(0, slot.queue)
         }
 
         // first location has the same amount of free slots as before
@@ -213,7 +218,7 @@ class VaccinationSlotRoutesTest : ServerTestBase() {
         }.run {
             expectStatus(HttpStatusCode.OK)
             val slots = receive<List<VaccinationSlotDtoOut>>()
-            assertEquals(9, slots.size)
+            assertEquals(39, slots.size)
         }
 
         // get slots - default
@@ -222,7 +227,7 @@ class VaccinationSlotRoutesTest : ServerTestBase() {
         }.run {
             expectStatus(HttpStatusCode.OK)
             val slots = receive<List<VaccinationSlotDtoOut>>()
-            assertEquals(28, slots.size)
+            assertEquals(58, slots.size)
         }
 
         // get slots - ALL
@@ -231,7 +236,7 @@ class VaccinationSlotRoutesTest : ServerTestBase() {
         }.run {
             expectStatus(HttpStatusCode.OK)
             val slots = receive<List<VaccinationSlotDtoOut>>()
-            assertEquals(30, slots.size)
+            assertEquals(60, slots.size)
         }
 
         // get slots - FREE
@@ -240,7 +245,7 @@ class VaccinationSlotRoutesTest : ServerTestBase() {
         }.run {
             expectStatus(HttpStatusCode.OK)
             val slots = receive<List<VaccinationSlotDtoOut>>()
-            assertEquals(28, slots.size)
+            assertEquals(58, slots.size)
         }
 
         // get slots - OCCUPIED
@@ -274,7 +279,7 @@ class VaccinationSlotRoutesTest : ServerTestBase() {
         }.run {
             expectStatus(HttpStatusCode.OK)
             val slots = receive<List<VaccinationSlotDtoOut>>()
-            assertEquals(29, slots.size)
+            assertEquals(59, slots.size)
         }
 
         // get slots - OCCUPIED - there will be one less
@@ -285,8 +290,5 @@ class VaccinationSlotRoutesTest : ServerTestBase() {
             val slots = receive<List<VaccinationSlotDtoOut>>()
             assertEquals(1, slots.size)
         }
-
-
-
     }
 }

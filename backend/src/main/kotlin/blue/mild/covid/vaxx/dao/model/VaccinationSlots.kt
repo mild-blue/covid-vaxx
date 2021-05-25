@@ -17,6 +17,11 @@ object VaccinationSlots : ManagedTable("vaccination_slots") {
     val patientId = patientReference().nullable()
 
     /**
+     * Identifier of the queue for locations with greater capacity
+     */
+    val queue = integer("queue")
+
+    /**
      * When time slot starts.
      */
     val from = timestamp("from")
@@ -25,6 +30,4 @@ object VaccinationSlots : ManagedTable("vaccination_slots") {
      * When time slot ends.
      */
     val to = timestamp("to")
-
-
 }

@@ -44,14 +44,17 @@ class VaccinationSlotService(
         val createdIds = mutableListOf<EntityId>()
         while (ts.plusMillis(createDto.durationMillis).isBefore(createDto.to.plusMillis(1))) {
             val to = ts.plusMillis(createDto.durationMillis)
-            createdIds.add(
-                vaccinationSlotRepository.addVaccinationSlot(
-                    locationId=location.id,
-                    patientId = null,
-                    from = ts,
-                    to = to,
+            for (queue in 0 until createDto.bandwidth) {
+                createdIds.add(
+                    vaccinationSlotRepository.addVaccinationSlot(
+                        locationId = location.id,
+                        patientId = null,
+                        queue = queue,
+                        from = ts,
+                        to = to,
+                    )
                 )
-            )
+            }
             ts = to
         }
 

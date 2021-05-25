@@ -19,12 +19,14 @@ class VaccinationSlotRepository {
     suspend fun addVaccinationSlot(
         locationId: EntityId,
         patientId: EntityId? = null,
+        queue: Int,
         from: Instant,
         to: Instant,
     ): EntityId = newSuspendedTransaction {
         VaccinationSlots.insert {
             it[VaccinationSlots.patientId] = patientId
             it[VaccinationSlots.locationId] = locationId
+            it[VaccinationSlots.queue] = queue
             it[VaccinationSlots.from] = from
             it[VaccinationSlots.to] = to
         }[VaccinationSlots.id]
@@ -52,6 +54,7 @@ class VaccinationSlotRepository {
             VaccinationSlots
                 .select(where)
                 .orderBy(VaccinationSlots.from)
+                .orderBy(VaccinationSlots.queue)
                 .orderBy(VaccinationSlots.id)
                 ?.let { data ->
                     data.map {
@@ -59,6 +62,7 @@ class VaccinationSlotRepository {
                             id = it[VaccinationSlots.id],
                             locationId = it[VaccinationSlots.locationId],
                             patientId = it[VaccinationSlots.patientId],
+                            queue = it[VaccinationSlots.queue],
                             from = it[VaccinationSlots.from],
                             to = it[VaccinationSlots.to]
                         )

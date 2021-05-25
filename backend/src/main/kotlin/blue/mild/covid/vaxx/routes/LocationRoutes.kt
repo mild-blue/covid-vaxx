@@ -2,7 +2,6 @@ package blue.mild.covid.vaxx.routes
 
 import blue.mild.covid.vaxx.dao.model.EntityId
 import blue.mild.covid.vaxx.dao.model.UserRole
-import blue.mild.covid.vaxx.dto.request.CreateVaccinationSlotsDtoIn
 import blue.mild.covid.vaxx.dto.request.LocationDtoIn
 import blue.mild.covid.vaxx.dto.request.query.LocationIdDtoIn
 import blue.mild.covid.vaxx.dto.response.LocationDtoOut
@@ -28,7 +27,6 @@ import org.kodein.di.instance
  */
 fun NormalOpenAPIRoute.locationRoutes() {
     val locationService by di().instance<LocationService>()
-    val vaccinationSlotService by di().instance<VaccinationSlotService>()
 
     val logger = createLogger("LocationRoutes")
 
@@ -50,19 +48,19 @@ fun NormalOpenAPIRoute.locationRoutes() {
                 respond(locationService.getLocationById(locationId))
             }
 
-            // MartinLLama - Locations: I am trying to make endpoint /locations/{id}/slots - this does not work
-            // https://ktor.io/docs/routing-in-ktor.html#multiple_routes - based on sub-routes
-            route("/slots") {
-                post<LocationIdDtoIn, List<EntityId>, CreateVaccinationSlotsDtoIn, UserPrincipal>(
-                    info("Add new vaccination slots into the system.")
-                ) { location, createSlots ->
-                    val principal = principal()
-                    logger.info {
-                        "For location ${location} adding slots ${createSlots} by ${principal.userId} from host ${request.determineRealIp()}."
-                    }
-                    respond(vaccinationSlotService.addSlots(createSlots, location.id))
-                }
-            }
+//            // MartinLLama - Locations: I am trying to make endpoint /locations/{id}/slots - this does not work
+//            // https://ktor.io/docs/routing-in-ktor.html#multiple_routes - based on sub-routes
+//            route("/slots") {
+//                post<LocationIdDtoIn, List<EntityId>, CreateVaccinationSlotsDtoIn, UserPrincipal>(
+//                    info("Add new vaccination slots into the system.")
+//                ) { location, createSlots ->
+//                    val principal = principal()
+//                    logger.info {
+//                        "For location ${location} adding slots ${createSlots} by ${principal.userId} from host ${request.determineRealIp()}."
+//                    }
+//                    respond(vaccinationSlotService.addSlots(createSlots, location.id))
+//                }
+//            }
         }
 
 // MartinLLama - Locations: I am trying to make endpoint /locations/{id}/slots - this does not work
