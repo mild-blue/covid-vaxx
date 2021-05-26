@@ -4,7 +4,7 @@ object Locations : ManagedTable("locations") {
     /**
      * Address
      *
-     * We have other attributes zipCode & district to make matching with patient simpler
+     * We have other attributes zipCode & district to make matching with patient simpler.
      */
     val address = varchar("address", DatabaseTypeLength.DEFAULT_STRING)
 
@@ -19,7 +19,7 @@ object Locations : ManagedTable("locations") {
     val district = varchar("district", DatabaseTypeLength.SHORT_STRING)
 
     /**
-     * Validated phone number in format +420xxxyyyzzz
+     * Validated phone number in format +420xxxyyyzzz.
      */
     val phoneNumber = varchar("phone_number", DatabaseTypeLength.PHONE_NUMBER).nullable()
 
@@ -29,9 +29,7 @@ object Locations : ManagedTable("locations") {
     val email = varchar("email", DatabaseTypeLength.DEFAULT_STRING).nullable()
 
     /**
-     * Indication about patient - ie. chronic disease or teacher.
+     * Additional information about location.
      */
     val notes = text("notes").nullable()
-
-
 }

@@ -12,6 +12,7 @@ enum class VaccinationSlotStatus(val status: Int) {
 data class MultipleVaccinationSlotsQueryDtoOut(
     @QueryParam("Filter by slot id.") val id: EntityId?,
     @QueryParam("Filter by location id.") val locationId: EntityId?,
+    @QueryParam("Filter by patient id.") val patientId: EntityId?,
     @QueryParam("Filter with from greater or equal to.") val fromMillis: Long?,
     @QueryParam("Filter with to lower or equal to.") val toMillis: Long?,
     @QueryParam("Filter only free slots?.") val status: VaccinationSlotStatus?,
@@ -21,6 +22,7 @@ data class MultipleVaccinationSlotsQueryDtoOut(
         listOfNotNull(
             id?.let { "id=$it" },
             locationId?.let { "locationId=$it" },
+            patientId?.let { "patientId=$it" },
             fromMillis?.let { "fromMillis=$it" },
             toMillis?.let { "toMillis=$it" },
             status?.let { "status=$it" },

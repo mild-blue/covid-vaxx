@@ -17,7 +17,7 @@ object VaccinationSlots : ManagedTable("vaccination_slots") {
     val patientId = patientReference().nullable()
 
     /**
-     * Identifier of the queue for locations with greater capacity
+     * Identifier of the queue for locations with greater capacity.
      */
     val queue = integer("queue")
 

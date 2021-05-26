@@ -2,7 +2,7 @@ package blue.mild.covid.vaxx.dao.model
 
 import org.jetbrains.exposed.sql.Column
 import org.jetbrains.exposed.sql.Table
-import java.util.*
+import java.util.UUID
 
 /**
  * Represents format for IDs.

@@ -52,6 +52,7 @@ fun NormalOpenAPIRoute.vaccinationSlotRoutes() {
                     val slots = vaccinationSlotService.getSlotsByConjunctionOf(
                         id = slotsQuery.id,
                         locationId = slotsQuery.locationId,
+                        patientId = slotsQuery.patientId,
                         fromMillis = slotsQuery.fromMillis,
                         toMillis = slotsQuery.toMillis,
                         status = slotsQuery.status,
@@ -72,10 +73,11 @@ fun NormalOpenAPIRoute.vaccinationSlotRoutes() {
                     val slot = vaccinationSlotService.updateSlot(
                         id = slotsQuery.id,
                         locationId = slotsQuery.locationId,
+                        patientId = slotsQuery.patientId,
                         fromMillis = slotsQuery.fromMillis,
                         toMillis = slotsQuery.toMillis,
                         status = slotsQuery.status,
-                        patientId = patientDtoIn.patientId,
+                        newPatientId = patientDtoIn.patientId,
                     )
 
                     logger.info { "Updated ${slot} record." }

@@ -16,7 +16,7 @@ import org.jetbrains.exposed.sql.and
 import java.time.Instant
 
 @Suppress("MagicNumber")
-val MAX_FUTURE: Instant = Instant.now().plusMillis(2*365*24*60*60*1000)
+val MAX_FUTURE: Instant = Instant.now().plusMillis(2L*365*24*60*60*1000)
 val DEFAULT_STATUS: VaccinationSlotStatus = VaccinationSlotStatus.ONLY_FREE
 
 class VaccinationSlotService(
@@ -35,7 +35,9 @@ class VaccinationSlotService(
         if (createDto.locationId != null && locationId != null) {
             throw Exception("Location mismatch - ${createDto} vs ${locationId}")
         }
-        val usedLocationId = (createDto.locationId ?: locationId)!!
+        val usedLocationId = requireNotNull(createDto.locationId ?: locationId) {
+            "LocationId has to be specified - createDto: ${createDto}; locationId: ${locationId}."
+        }
 
         val location = locationRepository.getAndMapLocationsBy { Locations.id eq usedLocationId }
             .singleOrNull() ?: throw entityNotFound<Locations>(Locations::id, usedLocationId)
@@ -64,9 +66,11 @@ class VaccinationSlotService(
     /**
      * Filters the database with the conjunction (and clause) of the given properties.
      */
+    @Suppress("LongParameterList")
     suspend fun getSlotsByConjunctionOf(
         id: EntityId? = null,
         locationId: EntityId? = null,
+        patientId: EntityId? = null,
         fromMillis: Long? = null,
         toMillis: Long? = null,
         status: VaccinationSlotStatus? = DEFAULT_STATUS,
@@ -81,10 +85,11 @@ class VaccinationSlotService(
             Op.TRUE
                 .andWithIfNotEmpty(id, VaccinationSlots.id)
                 .andWithIfNotEmpty(locationId, VaccinationSlots.locationId)
+                .andWithIfNotEmpty(patientId, VaccinationSlots.patientId)
                 .and { VaccinationSlots.from.greaterEq(fromI) }
                 .and { VaccinationSlots.to.lessEq(toI) }
                 .and { when(usedStatus) {
-                    // MartinLLama: I do not know how to write ALL as match all = 1 == 1
+                    // MartinLLama: I do not know how to write ALL to not perform any additional filtering
                     VaccinationSlotStatus.ALL -> {VaccinationSlots.id.isNotNull()}
                     VaccinationSlotStatus.ONLY_FREE -> VaccinationSlots.patientId.isNull()
                     VaccinationSlotStatus.ONLY_OCCUPIED -> VaccinationSlots.patientId.isNotNull()
@@ -96,14 +101,16 @@ class VaccinationSlotService(
     suspend fun updateSlot(
         id: EntityId? = null,
         locationId: EntityId? = null,
+        patientId: EntityId? = null,
         fromMillis: Long? = null,
         toMillis: Long? = null,
         status: VaccinationSlotStatus?,
-        patientId: EntityId?,
+        newPatientId: EntityId?,
     ): VaccinationSlotDtoOut {
         val availableSlots = getSlotsByConjunctionOf(
             id = id,
             locationId = locationId,
+            patientId = patientId,
             fromMillis = fromMillis,
             toMillis = toMillis,
             status = status,
@@ -116,7 +123,7 @@ class VaccinationSlotService(
         val pickedSlotId = availableSlots[0].id
         vaccinationSlotRepository.updateVaccinationSlot(
             vaccinationSlotId = pickedSlotId,
-            patientId = patientId,
+            patientId = newPatientId,
         )
 
         return vaccinationSlotRepository.get { VaccinationSlots.id.eq(pickedSlotId) }[0]

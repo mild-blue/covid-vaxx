@@ -257,6 +257,15 @@ class VaccinationSlotRoutesTest : ServerTestBase() {
             assertEquals(2, slots.size)
         }
 
+        // get slots - ALL with given patient
+        handleRequest(HttpMethod.Get, "${Routes.vaccinationSlots}/filter?status=${VaccinationSlotStatus.ALL}&patientId=${patientId}") {
+            authorize()
+        }.run {
+            expectStatus(HttpStatusCode.OK)
+            val slots = receive<List<VaccinationSlotDtoOut>>()
+            assertEquals(2, slots.size)
+        }
+
         // get occopied slots
         val slotsOccupied  = runBlocking { vaccinationSlotService.getSlotsByConjunctionOf(status = VaccinationSlotStatus.ONLY_OCCUPIED) }
         val firstOccupiedId = slotsOccupied[0].id
