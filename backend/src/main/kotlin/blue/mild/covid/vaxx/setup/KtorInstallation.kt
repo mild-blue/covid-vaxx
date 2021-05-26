@@ -59,7 +59,7 @@ import org.kodein.di.instanceOrNull
 import org.kodein.di.ktor.closestDI
 import org.kodein.di.ktor.di
 import org.slf4j.event.Level
-import java.util.UUID
+import java.util.*
 import kotlin.reflect.KType
 
 
@@ -83,13 +83,24 @@ fun Application.init() {
  */
 fun Application.setupDiAwareApplication() {
     // now kodein is running and can be used
-    installationLogger.debug { "DI container started." }
+    installationLogger.debug { "DI container - setupDiAwareApplication - BEGIN." }
+
     // connect to the database
+    installationLogger.debug { "DI container - connecting to DB - BEGIN." }
     connectDatabase()
+    installationLogger.debug { "DI container - connecting to DB - END." }
+
     // configure Ktor
+    installationLogger.debug { "DI container - installing frameworks - BEGIN." }
     installFrameworks()
+    installationLogger.debug { "DI container - installing frameworks - END." }
+
     // configure routing
+    installationLogger.debug { "DI container - installing routes - BEGIN." }
     installRouting()
+    installationLogger.debug { "DI container - installing routes - END." }
+
+    installationLogger.debug { "DI container - setupDiAwareApplication - END." }
 }
 
 private fun Application.installRouting() {
@@ -136,10 +147,13 @@ private fun Application.connectDatabase() {
 private fun Application.migrateDatabase() {
     installationLogger.info { "Migrating database." }
     val shouldMigrate by closestDI().instanceOrNull<Boolean>("should-migrate")
+    installationLogger.info { "Migrating database - should migrate: ${shouldMigrate}." }
     // enable migration by default
     if (shouldMigrate != false) {
         val flyway by closestDI().instance<Flyway>()
+        installationLogger.info { "Migrating database - migration - BEGIN." }
         val migrateResult = flyway.migrate()
+        installationLogger.info { "Migrating database - migration - END." }
 
         installationLogger.info {
             if (migrateResult.migrationsExecuted == 0) "No migrations necessary."

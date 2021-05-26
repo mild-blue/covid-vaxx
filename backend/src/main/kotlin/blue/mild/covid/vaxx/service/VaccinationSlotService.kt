@@ -16,8 +16,8 @@ import org.jetbrains.exposed.sql.and
 import java.time.Instant
 
 @Suppress("MagicNumber")
-val MAX_FUTURE = Instant.now().plusMillis(2*365*24*60*60*1000)
-val DEFAULT_STATUS = VaccinationSlotStatus.ONLY_FREE
+val MAX_FUTURE: Instant = Instant.now().plusMillis(2*365*24*60*60*1000)
+val DEFAULT_STATUS: VaccinationSlotStatus = VaccinationSlotStatus.ONLY_FREE
 
 class VaccinationSlotService(
     private val locationRepository: LocationRepository,

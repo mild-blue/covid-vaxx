@@ -56,7 +56,7 @@ class VaccinationSlotRepository {
                 .orderBy(VaccinationSlots.from)
                 .orderBy(VaccinationSlots.queue)
                 .orderBy(VaccinationSlots.id)
-                ?.let { data ->
+                .let { data ->
                     data.map {
                         VaccinationSlotDtoOut(
                             id = it[VaccinationSlots.id],

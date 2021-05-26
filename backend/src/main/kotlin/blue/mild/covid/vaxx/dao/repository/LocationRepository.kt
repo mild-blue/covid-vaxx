@@ -114,6 +114,7 @@ class LocationRepository {
                 // MartinLlama - this is outer join, so slots are there only for some locations
                 // I want to have slots equal to empty list or null if there are no slots
                 // I have to hack it by using containsKey
+                // It believes that VaccinationSlots.id cannot be null, but when there are no slots it is null!
                 val slots = data.filter { it[VaccinationSlots.id] != null }.groupBy({ it[Locations.id] }, { it.mapSlots() })
                 data.distinctBy { it[Locations.id] }
                     .map { mapLocation(it, if (slots.containsKey(it[Locations.id])) slots.getValue(it[Locations.id]) else ArrayList()) }
