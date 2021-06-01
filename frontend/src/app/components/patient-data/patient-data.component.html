@@ -1,90 +1,90 @@
 <div *ngIf="patientData" class="patient-data">
   <mat-card>
     <mat-card-content>
-      <app-form-field>
+      <app-patient-data-item>
         <mat-label>Jméno:</mat-label>
         <mat-label *ngIf="patientData.firstName else unspecified;">
           {{ patientData.firstName }}
         </mat-label>
-      </app-form-field>
+      </app-patient-data-item>
       <mat-divider></mat-divider>
-      <app-form-field>
+      <app-patient-data-item>
         <mat-label>Příjmení:</mat-label>
         <mat-label *ngIf="patientData.lastName else unspecified;">
           {{ patientData.lastName }}
         </mat-label>
-      </app-form-field>
+      </app-patient-data-item>
       <mat-divider></mat-divider>
-      <app-form-field>
+      <app-patient-data-item>
         <mat-label>Rodné číslo:</mat-label>
         <mat-label *ngIf="patientData.personalNumber else unspecified;">
           {{ patientData.personalNumber }}
         </mat-label>
-      </app-form-field>
+      </app-patient-data-item>
       <mat-divider></mat-divider>
-      <app-form-field>
+      <app-patient-data-item>
         <mat-label>Městská část:</mat-label>
         <mat-label *ngIf="patientData.district else unspecified;">
           {{ patientData.district }}
         </mat-label>
-      </app-form-field>
+      </app-patient-data-item>
       <mat-divider></mat-divider>
-      <app-form-field>
+      <app-patient-data-item>
         <mat-label>PSČ:</mat-label>
         <mat-label *ngIf="patientData.zipCode else unspecified;">
           {{ patientData.zipCode }}
         </mat-label>
-      </app-form-field>
+      </app-patient-data-item>
       <mat-divider></mat-divider>
-      <app-form-field>
+      <app-patient-data-item>
         <mat-label>Pojištovna:</mat-label>
         <mat-label *ngIf="patientData.insuranceCompany else unspecified;">
           {{ patientData.insuranceCompany }}
         </mat-label>
-      </app-form-field>
+      </app-patient-data-item>
       <mat-divider></mat-divider>
-      <app-form-field>
+      <app-patient-data-item>
         <mat-label>Telefonní číslo:</mat-label>
         <mat-label *ngIf="patientData.phoneNumber else unspecified;">
           {{ patientData.phoneNumber | phoneNumber }}
         </mat-label>
-      </app-form-field>
+      </app-patient-data-item>
       <mat-divider></mat-divider>
-      <app-form-field>
+      <app-patient-data-item>
         <mat-label>E-mail:</mat-label>
         <mat-label *ngIf="patientData.email else unspecified;">
           {{ patientData.email }}
         </mat-label>
-      </app-form-field>
+      </app-patient-data-item>
       <mat-divider></mat-divider>
       <ng-container *ngIf="showExtraFields">
-        <app-form-field>
+        <app-patient-data-item>
           <mat-label>Indikace:</mat-label>
           <mat-label *ngIf="patientData.indication else unspecified;">
             {{ patientData.indication }}
           </mat-label>
-        </app-form-field>
+        </app-patient-data-item>
         <mat-divider></mat-divider>
-        <app-form-field>
+        <app-patient-data-item>
           <mat-label>Ověření údajů proběhlo:</mat-label>
           <mat-label>
             <app-chip [value]="!!patientData.verified"></app-chip>
           </mat-label>
-        </app-form-field>
+        </app-patient-data-item>
         <mat-divider></mat-divider>
-        <app-form-field>
+        <app-patient-data-item>
           <mat-label>Očkování proběhlo:</mat-label>
           <mat-label>
             <app-chip [value]="!!patientData.vaccinatedOn"></app-chip>
           </mat-label>
-        </app-form-field>
+        </app-patient-data-item>
         <mat-divider></mat-divider>
-        <app-form-field *ngIf="patientData.vaccinatedOn">
+        <app-patient-data-item *ngIf="patientData.vaccinatedOn">
           <mat-label>Datum očkování:</mat-label>
           <mat-label>
             {{ patientData.vaccinatedOn | date:'EEEE, d. MMMM y' }}
           </mat-label>
-        </app-form-field>
+        </app-patient-data-item>
         <mat-divider></mat-divider>
       </ng-container>
     </mat-card-content>
@@ -93,12 +93,12 @@
   <mat-card>
     <mat-card-content>
       <ng-container *ngFor="let q of patientData.questionnaire; let i = index">
-        <app-form-field>
+        <app-patient-data-item>
           <mat-label>{{ q.label }}</mat-label>
           <mat-label *ngIf="q.answer !== undefined else unspecified;">
             <app-chip [value]="q.answer"></app-chip>
           </mat-label>
-        </app-form-field>
+        </app-patient-data-item>
         <mat-divider></mat-divider>
       </ng-container>
     </mat-card-content>

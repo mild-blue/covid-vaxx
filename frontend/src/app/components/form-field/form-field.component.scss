@@ -1,13 +1,35 @@
-@import "../../../styles/breakpoints";
+@import "../../../styles/variables";
 
 .form-field {
-  width: 100%;
   display: flex;
-  align-items: center;
-  justify-content: space-between;
-  padding: 10px 0;
+  flex-direction: column;
+  margin-bottom: 30px;
 
-  ::ng-deep mat-label:not(:last-of-type) {
-    padding-right: 20px;
+  label {
+    font-weight: 700;
+    margin-bottom: 5px;
+  }
+
+  ::ng-deep {
+    input, textarea {
+      background: $light;
+      border: 1px solid $gray-200;
+      border-radius: 6px;
+      padding: 14px 15px;
+
+      &::-webkit-input-placeholder, &::-moz-placeholder, &:-ms-input-placeholder {
+        color: $gray-100;
+      }
+
+      &[disabled] {
+        color: $gray-800;
+        background: $light;
+      }
+
+      &.large {
+        font-weight: 700;
+        font-size: 20px;
+      }
+    }
   }
 }
