@@ -6,15 +6,15 @@
   <mat-horizontal-stepper [linear]="true">
 
     <!-- 1. Osobní informace -->
-    <mat-step #firstStep [completed]="patientForm.valid" label="Osobní informace">
+    <mat-step #firstStep [completed]="!missingInfo.length" label="Osobní informace">
       <app-container [wide]="true">
-        <form #patientForm="ngForm">
-          <app-patient-info-form [patient]="patient"></app-patient-info-form>
-        </form>
+        <app-patient-info-form [patient]="patient"
+                               (missingInfo)="this.missingInfo = $event"
+                               (patientUpdated)="updatePatient($event)"></app-patient-info-form>
 
         <div *ngIf="missingInfo.length" class="missing-info-warning">
           <mat-icon>warning</mat-icon>
-          <span>Pro pokračování vyplňte následující informace: <strong>{{ missingInfo }}</strong>.</span>
+          <span>Pro pokračování vyplňte následující informace: <strong>{{ missingInfo.join(', ') }}</strong>.</span>
         </div>
 
         <div class="nav-buttons">

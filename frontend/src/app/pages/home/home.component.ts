@@ -1,11 +1,10 @@
 import { Component, ViewChild } from '@angular/core';
 import { FormBuilder, NgForm } from '@angular/forms';
-import { InsuranceCompany } from '@app/model/InsuranceCompany';
 import { QuestionService } from '@app/services/question/question.service';
 import { PatientService } from '@app/services/patient/patient.service';
 import { AlertService } from '@app/services/alert/alert.service';
 import { ActivatedRoute, Router } from '@angular/router';
-import { PatientData, patientDataLabels } from '@app/model/PatientData';
+import { PatientData } from '@app/model/PatientData';
 import { ReCaptchaV3Service } from 'ng-recaptcha';
 import { AnsweredQuestion } from '@app/model/AnsweredQuestion';
 
@@ -19,7 +18,7 @@ export class HomeComponent {
   @ViewChild('patientForm') patientForm?: NgForm;
 
   public patient?: PatientData;
-  public allInsuranceCompanies: string[] = Object.values(InsuranceCompany);
+  public missingInfo: string[] = [];
 
   public agreementCheckboxValue: boolean = false;
   public confirmationCheckboxValue: boolean = false;
@@ -50,17 +49,6 @@ export class HomeComponent {
     }
     const unanswered = this.patient.questionnaire.filter(q => q.answer === undefined);
     return unanswered.length === 0;
-  }
-
-  get missingInfo(): string {
-    if (!this.patient) {
-      return '';
-
-    }
-    const missingKeys = Object.keys(this.patient).filter((key: string) => this.patient && !this.patient[key]);
-    const missingKeysLabels = missingKeys.map((key: string) => patientDataLabels[key]);
-
-    return missingKeysLabels.join(', ');
   }
 
   public openGdprInfo(): void {
@@ -101,6 +89,13 @@ export class HomeComponent {
       zipCode: '',
       district: '',
       questionnaire: emptyQuestions
+    };
+  }
+
+  updatePatient(data: PatientData) {
+    this.patient = {
+      ...this.patient,
+      ...data
     };
   }
 }
