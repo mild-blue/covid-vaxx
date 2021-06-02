@@ -70,7 +70,7 @@ import { IConfig, NgxMaskModule } from 'ngx-mask';
 registerLocaleData(localeCs);
 
 const maskConfig: Partial<IConfig> = {
-  validation: false,
+  validation: true,
   dropSpecialCharacters: false,
   showMaskTyped: true
 };

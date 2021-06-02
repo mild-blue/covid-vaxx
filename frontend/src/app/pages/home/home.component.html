@@ -12,11 +12,17 @@
           <app-patient-info-form [patient]="patient"></app-patient-info-form>
         </form>
 
+        <div *ngIf="missingInfo.length" class="missing-info-warning">
+          <mat-icon>warning</mat-icon>
+          <span>Pro pokračování vyplňte následující informace: <strong>{{ missingInfo }}</strong>.</span>
+        </div>
+
         <div class="nav-buttons">
           <div></div>
           <button [disabled]="!firstStep.completed"
                   color="primary" mat-raised-button matStepperNext>
             Další krok
+            <mat-icon>arrow_forward</mat-icon>
           </button>
         </div>
       </app-container>
@@ -29,10 +35,12 @@
         <div class="nav-buttons">
           <button color="secondary" mat-raised-button matStepperPrevious>
             Předchozí krok
+            <mat-icon>arrow_back</mat-icon>
           </button>
           <button [disabled]="!secondStep.completed"
                   color="primary" mat-raised-button matStepperNext>
             Další krok
+            <mat-icon>arrow_forward</mat-icon>
           </button>
         </div>
       </app-container>
@@ -62,11 +70,13 @@
         <div class="nav-buttons">
           <button color="secondary" mat-raised-button matStepperPrevious>
             Předchozí krok
+            <mat-icon>arrow_back</mat-icon>
           </button>
           <button (click)="submit()"
                   [disabled]="!thirdStep.completed"
                   color="primary" mat-raised-button matStepperNext>
             Odeslat požadavek
+            <mat-icon>done</mat-icon>
           </button>
         </div>
       </app-container>

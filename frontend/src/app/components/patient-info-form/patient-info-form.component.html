@@ -19,7 +19,7 @@
                required appPersonalNumberValidator>
       </app-form-field>
 
-      <app-form-field label="Zdravotní pojišťovna *" note="Vyberte ze seznamu"
+      <app-form-field label="Zdravotní pojišťovna *" note="Vyberte ze seznamu zdravotních pojišťoven"
                       [invalid]="!!(insuranceCompany.invalid && (insuranceCompany.dirty || insuranceCompany.touched))"
                       [errors]="insuranceCompany.errors">
         <mat-select #insuranceCompany="ngModel" [(ngModel)]="patient.insuranceCompany" name="insuranceCompany" placeholder="Vyberte Vaší zdravotní pojišťovnu" required>

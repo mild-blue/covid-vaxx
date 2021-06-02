@@ -5,7 +5,7 @@ import { QuestionService } from '@app/services/question/question.service';
 import { PatientService } from '@app/services/patient/patient.service';
 import { AlertService } from '@app/services/alert/alert.service';
 import { ActivatedRoute, Router } from '@angular/router';
-import { PatientData } from '@app/model/PatientData';
+import { PatientData, patientDataLabels } from '@app/model/PatientData';
 import { ReCaptchaV3Service } from 'ng-recaptcha';
 import { AnsweredQuestion } from '@app/model/AnsweredQuestion';
 
@@ -50,6 +50,17 @@ export class HomeComponent {
     }
     const unanswered = this.patient.questionnaire.filter(q => q.answer === undefined);
     return unanswered.length === 0;
+  }
+
+  get missingInfo(): string {
+    if (!this.patient) {
+      return '';
+
+    }
+    const missingKeys = Object.keys(this.patient).filter((key: string) => this.patient && !this.patient[key]);
+    const missingKeysLabels = missingKeys.map((key: string) => patientDataLabels[key]);
+
+    return missingKeysLabels.join(', ');
   }
 
   public openGdprInfo(): void {
