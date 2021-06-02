@@ -10,6 +10,8 @@ fun NormalOpenAPIRoute.registerRoutes() {
     questionRoutes()
     insuranceCompanyRoutes()
     userRoutes()
+    locationRoutes()
+    vaccinationSlotRoutes()
     serviceRoutes()
     vaccinationRoutes()
     dataCorrectnessRoutes()

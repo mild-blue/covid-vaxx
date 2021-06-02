@@ -5,6 +5,7 @@ import blue.mild.covid.vaxx.dto.config.CorsConfigurationDto
 import blue.mild.covid.vaxx.dto.config.DatabaseConfigurationDto
 import blue.mild.covid.vaxx.dto.config.JwtConfigurationDto
 import blue.mild.covid.vaxx.dto.config.RateLimitConfigurationDto
+import blue.mild.covid.vaxx.dto.response.ApplicationInformationDtoOut
 import blue.mild.covid.vaxx.error.installExceptionHandling
 import blue.mild.covid.vaxx.extensions.determineRealIp
 import blue.mild.covid.vaxx.monitoring.AMAZON_TRACE
@@ -61,6 +62,7 @@ import org.kodein.di.ktor.di
 import org.slf4j.event.Level
 import java.util.UUID
 import kotlin.reflect.KType
+import kotlin.system.exitProcess
 
 
 private val installationLogger = createLogger("ApplicationSetup")
@@ -68,7 +70,7 @@ private val installationLogger = createLogger("ApplicationSetup")
 /**
  * Loads the application.
  */
-fun Application.init() {
+fun Application.init() = runCatching {
     // setup DI
     di {
         bindConfiguration()
@@ -76,6 +78,9 @@ fun Application.init() {
         registerClasses()
     }
     setupDiAwareApplication()
+}.onFailure {
+    installationLogger.error(it) { "It was not possible to start the application." }
+    exitProcess(1)
 }
 
 /**
@@ -83,7 +88,7 @@ fun Application.init() {
  */
 fun Application.setupDiAwareApplication() {
     // now kodein is running and can be used
-    installationLogger.debug { "DI container started." }
+
     // connect to the database
     connectDatabase()
     // configure Ktor
@@ -124,22 +129,30 @@ private fun Application.installRouting() {
 private fun Application.connectDatabase() {
     val dbConfig by closestDI().instance<DatabaseConfigurationDto>()
 
-    installationLogger.info { "Connecting to the DB" }
+    installationLogger.debug { "Connecting to the DB" }
     DatabaseSetup.connect(dbConfig)
 
     require(DatabaseSetup.isConnected()) { "It was not possible to connect to db database!" }
-    installationLogger.info { "DB connected." }
+    installationLogger.info { "Database is connected." }
+
     migrateDatabase()
 }
 
 // Migrate database using flyway.
 private fun Application.migrateDatabase() {
-    installationLogger.info { "Migrating database." }
     val shouldMigrate by closestDI().instanceOrNull<Boolean>("should-migrate")
+    installationLogger.info { "Migrating database - should migrate: ${shouldMigrate}." }
+
     // enable migration by default
     if (shouldMigrate != false) {
         val flyway by closestDI().instance<Flyway>()
-        val migrateResult = flyway.migrate()
+        installationLogger.info { "Migrating database - migration." }
+
+        val migrateResult = runCatching { flyway.migrate() }
+            .onFailure {
+                installationLogger.error(it) { "It was not possible to migrate database! Exiting.." }
+                exitProcess(1)
+            }.getOrThrow()
 
         installationLogger.info {
             if (migrateResult.migrationsExecuted == 0) "No migrations necessary."
@@ -228,11 +241,12 @@ private fun Application.installAuthentication() {
 // Install swagger features.
 private fun Application.installSwagger() {
     val enableSwagger by closestDI().instance<Boolean>(EnvVariables.ENABLE_SWAGGER)
-
+    val info by closestDI().instance<ApplicationInformationDtoOut>()
     // install swagger
     install(OpenAPIGen) {
+
         info {
-            version = "0.1.0"
+            version = info.version
             title = "Mild Blue - Covid Vaxx"
             description = "Covid Vaxx API"
             serveSwaggerUi = enableSwagger

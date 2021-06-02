@@ -5,21 +5,25 @@ import blue.mild.covid.vaxx.dto.internal.PatientEmailRequestDto
 import blue.mild.covid.vaxx.dto.request.PatientRegistrationDtoIn
 import blue.mild.covid.vaxx.dto.request.PatientUpdateDtoIn
 import blue.mild.covid.vaxx.dto.request.query.CaptchaVerificationDtoIn
-import blue.mild.covid.vaxx.dto.request.query.MultiplePatientsQueryDtoOut
+import blue.mild.covid.vaxx.dto.request.query.MultiplePatientsQueryDtoIn
 import blue.mild.covid.vaxx.dto.request.query.PatientByPersonalNumberQueryDtoIn
 import blue.mild.covid.vaxx.dto.request.query.PatientIdDtoIn
 import blue.mild.covid.vaxx.dto.response.OK
 import blue.mild.covid.vaxx.dto.response.Ok
 import blue.mild.covid.vaxx.dto.response.PatientDtoOut
+import blue.mild.covid.vaxx.dto.response.VaccinationSlotDtoOut
+import blue.mild.covid.vaxx.error.NoVaccinationSlotsFoundException
 import blue.mild.covid.vaxx.extensions.asContextAware
+import blue.mild.covid.vaxx.extensions.closestDI
 import blue.mild.covid.vaxx.extensions.determineRealIp
-import blue.mild.covid.vaxx.extensions.di
 import blue.mild.covid.vaxx.extensions.request
 import blue.mild.covid.vaxx.security.auth.UserPrincipal
 import blue.mild.covid.vaxx.security.auth.authorizeRoute
 import blue.mild.covid.vaxx.security.ddos.RequestVerificationService
+import blue.mild.covid.vaxx.service.LocationService
 import blue.mild.covid.vaxx.service.MailService
 import blue.mild.covid.vaxx.service.PatientService
+import blue.mild.covid.vaxx.service.VaccinationSlotService
 import blue.mild.covid.vaxx.utils.createLogger
 import com.papsign.ktor.openapigen.route.info
 import com.papsign.ktor.openapigen.route.path.auth.delete
@@ -35,17 +39,20 @@ import org.kodein.di.instance
 /**
  * Routes related to patient entity.
  */
-@Suppress("LongMethod") // this is routing, that's fine
+@Suppress("LongMethod", "TooGenericExceptionCaught") // this is routing, that's fine plus we need not to save
+// patient in case any issue during processing happens
 fun NormalOpenAPIRoute.patientRoutes() {
     val logger = createLogger("PatientRoutes")
 
-    val captchaService by di().instance<RequestVerificationService>()
+    val captchaService by closestDI().instance<RequestVerificationService>()
 
-    val patientService by di().instance<PatientService>()
-    val emailService by di().instance<MailService>()
+    val patientService by closestDI().instance<PatientService>()
+    val emailService by closestDI().instance<MailService>()
+    val vaccinationSlotService by closestDI().instance<VaccinationSlotService>()
+    val locationService by closestDI().instance<LocationService>()
 
     route(Routes.patient) {
-        post<CaptchaVerificationDtoIn, Ok, PatientRegistrationDtoIn>(
+        post<CaptchaVerificationDtoIn, VaccinationSlotDtoOut, PatientRegistrationDtoIn>(
             info("Save patient registration to the database.")
         ) { (recaptchaToken), patientRegistration ->
             logger.debug { "Patient registration request. Executing captcha verification." }
@@ -53,20 +60,38 @@ fun NormalOpenAPIRoute.patientRoutes() {
             logger.debug { "Captcha token verified. Saving registration." }
 
             val patientId = patientService.savePatient(asContextAware(patientRegistration))
-            logger.info { "Registration created for patient ${patientId}." }
-            logger.debug { "Adding email to the queue." }
-            emailService.sendEmail(
-                PatientEmailRequestDto(
-                    firstName = patientRegistration.firstName,
-                    lastName = patientRegistration.lastName,
-                    email = patientRegistration.email,
-                    patientId = patientId
+            logger.info { "Patient saved to the database with id: ${patientId}. Booking slot." }
+            try {
+                val slot = vaccinationSlotService.bookSlotForPatient(patientId = patientId)
+                val location = locationService.getLocationById(slot.locationId)
+                logger.info { "Slot booked: ${slot.id} for patient ${patientId}." }
+                logger.info { "Registration completed for patient ${patientId}." }
+                logger.debug { "Adding email to the queue." }
+                emailService.sendEmail(
+                    PatientEmailRequestDto(
+                        firstName = patientRegistration.firstName,
+                        lastName = patientRegistration.lastName,
+                        email = patientRegistration.email,
+                        patientId = patientId,
+                        slot = slot,
+                        location = location
+                    )
                 )
-            )
+                // TODO maybe return something more reasonable then just the slot dto
+                respond(slot)
+            } catch (e: NoVaccinationSlotsFoundException) {
+                patientService.deletePatientById(patientId)
+                logger.info { "Patient deleted: ${patientId}. No slot found." }
+                throw e
+            } catch (e: Exception) {
+                patientService.deletePatientById(patientId)
+                logger.info { "Patient deleted: ${patientId}. Some issue during saving" }
+                throw e
+            }
             logger.debug { "Email request registered. Registration successful." }
-            respond(OK)
         }
     }
+
     // admin routes for registered users only
     authorizeRoute(requireOneOf = setOf(UserRole.ADMIN, UserRole.DOCTOR)) {
         route(Routes.adminSectionPatient) {
@@ -116,7 +141,7 @@ fun NormalOpenAPIRoute.patientRoutes() {
             }
 
             route("filter") {
-                get<MultiplePatientsQueryDtoOut, List<PatientDtoOut>, UserPrincipal>(
+                get<MultiplePatientsQueryDtoIn, List<PatientDtoOut>, UserPrincipal>(
                     info("Get patient the parameters. Filters by and clause. Empty parameters return all patients.")
                 ) { patientQuery ->
                     val principal = principal()

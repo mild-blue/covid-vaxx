@@ -1,16 +1,19 @@
 package blue.mild.covid.vaxx.setup
 
 import blue.mild.covid.vaxx.dao.repository.DataCorrectnessRepository
+import blue.mild.covid.vaxx.dao.repository.LocationRepository
 import blue.mild.covid.vaxx.dao.repository.NurseRepository
 import blue.mild.covid.vaxx.dao.repository.PatientRepository
 import blue.mild.covid.vaxx.dao.repository.UserRepository
 import blue.mild.covid.vaxx.dao.repository.VaccinationRepository
+import blue.mild.covid.vaxx.dao.repository.VaccinationSlotRepository
 import blue.mild.covid.vaxx.dto.config.DatabaseConfigurationDto
 import blue.mild.covid.vaxx.dto.config.MailJetConfigurationDto
 import blue.mild.covid.vaxx.security.ddos.CaptchaVerificationService
 import blue.mild.covid.vaxx.security.ddos.RequestVerificationService
 import blue.mild.covid.vaxx.service.DataCorrectnessService
 import blue.mild.covid.vaxx.service.IsinRegistrationService
+import blue.mild.covid.vaxx.service.LocationService
 import blue.mild.covid.vaxx.service.MailJetEmailService
 import blue.mild.covid.vaxx.service.MailService
 import blue.mild.covid.vaxx.service.MedicalRegistrationService
@@ -20,6 +23,7 @@ import blue.mild.covid.vaxx.service.QuestionService
 import blue.mild.covid.vaxx.service.SystemStatisticsService
 import blue.mild.covid.vaxx.service.UserService
 import blue.mild.covid.vaxx.service.VaccinationService
+import blue.mild.covid.vaxx.service.VaccinationSlotService
 import blue.mild.covid.vaxx.service.ValidationService
 import blue.mild.covid.vaxx.service.dummy.DummyMailService
 import blue.mild.covid.vaxx.service.dummy.DummyMedicalRegistrationService
@@ -67,6 +71,8 @@ fun DI.MainBuilder.registerClasses() {
         }
     }
 
+    bind<LocationRepository>() with singleton { LocationRepository() }
+    bind<VaccinationSlotRepository>() with singleton { VaccinationSlotRepository(instance()) }
     bind<PatientRepository>() with singleton { PatientRepository(instance()) }
     bind<UserRepository>() with singleton { UserRepository() }
     bind<DataCorrectnessRepository>() with singleton { DataCorrectnessRepository() }
@@ -78,6 +84,8 @@ fun DI.MainBuilder.registerClasses() {
 
     bind<QuestionService>() with singleton { QuestionService() }
     bind<ValidationService>() with singleton { ValidationService(instance()) }
+    bind<LocationService>() with singleton { LocationService(instance()) }
+    bind<VaccinationSlotService>() with singleton { VaccinationSlotService(instance(), instance()) }
     bind<PatientService>() with singleton { PatientService(instance(), instance()) }
     bind<UserService>() with singleton { UserService(instance(), instance()) }
     bind<VaccinationService>() with singleton { VaccinationService(instance()) }

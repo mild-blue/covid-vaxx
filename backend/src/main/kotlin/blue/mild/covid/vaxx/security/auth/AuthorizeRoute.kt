@@ -1,7 +1,7 @@
 package blue.mild.covid.vaxx.security.auth
 
 import blue.mild.covid.vaxx.dao.model.UserRole
-import blue.mild.covid.vaxx.extensions.di
+import blue.mild.covid.vaxx.extensions.closestDI
 import com.papsign.ktor.openapigen.route.path.auth.OpenAPIAuthenticatedRoute
 import com.papsign.ktor.openapigen.route.path.normal.NormalOpenAPIRoute
 import io.ktor.application.feature
@@ -32,7 +32,7 @@ fun NormalOpenAPIRoute.authorizeRoute(
         authenticatedKtorRoute
     }
     // obtain provider from the DI container
-    val jwtProvider by di().instance<JwtAuthProvider>()
+    val jwtProvider by closestDI().instance<JwtAuthProvider>()
     // and register this route in the swagger
     return OpenAPIAuthenticatedRoute(authorizedKtorRoute, provider.child(), jwtProvider).apply { route() }
 }

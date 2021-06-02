@@ -6,7 +6,7 @@ import blue.mild.covid.vaxx.dto.request.query.SystemStatisticsFilterDtoIn
 import blue.mild.covid.vaxx.dto.response.ApplicationInformationDtoOut
 import blue.mild.covid.vaxx.dto.response.ServiceHealthDtoOut
 import blue.mild.covid.vaxx.dto.response.SystemStatisticsDtoOut
-import blue.mild.covid.vaxx.extensions.di
+import blue.mild.covid.vaxx.extensions.closestDI
 import blue.mild.covid.vaxx.extensions.request
 import blue.mild.covid.vaxx.extensions.respondWithStatus
 import blue.mild.covid.vaxx.security.auth.UserPrincipal
@@ -26,8 +26,8 @@ import org.kodein.di.instance
  * Registers prometheus data.
  */
 fun NormalOpenAPIRoute.serviceRoutes() {
-    val version by di().instance<ApplicationInformationDtoOut>()
-    val systemStatisticsService by di().instance<SystemStatisticsService>()
+    val version by closestDI().instance<ApplicationInformationDtoOut>()
+    val systemStatisticsService by closestDI().instance<SystemStatisticsService>()
 
     /**
      * Send data about version.

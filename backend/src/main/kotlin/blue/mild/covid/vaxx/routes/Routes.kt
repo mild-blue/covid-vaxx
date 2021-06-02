@@ -20,6 +20,12 @@ object Routes {
     val userRegistration = adminRoute("register")
     val userLoginVerification = adminRoute("self")
 
+    val publicLocations = apiName("locations")
+
+    val locations = adminRoute("locations")
+
+    val vaccinationSlots = adminRoute("vaccination-slots")
+
     val adminSectionPatient = adminRoute("patient")
     val vaccination = adminRoute("vaccination")
     val nurse = adminRoute("nurse")

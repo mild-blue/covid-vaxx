@@ -7,7 +7,7 @@ import blue.mild.covid.vaxx.dto.request.query.VaccinationIdDtoIn
 import blue.mild.covid.vaxx.dto.response.VaccinationDetailDtoOut
 import blue.mild.covid.vaxx.dto.response.toPatientVaccinationDetailDto
 import blue.mild.covid.vaxx.extensions.asContextAware
-import blue.mild.covid.vaxx.extensions.di
+import blue.mild.covid.vaxx.extensions.closestDI
 import blue.mild.covid.vaxx.security.auth.UserPrincipal
 import blue.mild.covid.vaxx.security.auth.authorizeRoute
 import blue.mild.covid.vaxx.service.MedicalRegistrationService
@@ -28,8 +28,8 @@ import org.kodein.di.instance
 fun NormalOpenAPIRoute.vaccinationRoutes() {
     val logger = createLogger("VaccinationRoutes")
 
-    val vaccinationService by di().instance<VaccinationService>()
-    val medicalRegistrationService by di().instance<MedicalRegistrationService>()
+    val vaccinationService by closestDI().instance<VaccinationService>()
+    val medicalRegistrationService by closestDI().instance<MedicalRegistrationService>()
 
     authorizeRoute(requireOneOf = setOf(UserRole.ADMIN, UserRole.DOCTOR)) {
         route(Routes.vaccination) {
