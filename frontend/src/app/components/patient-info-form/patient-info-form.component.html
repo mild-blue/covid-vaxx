@@ -11,7 +11,10 @@
 
     <app-form-field label="Rodné číslo *" note="Rodné číslo ve formátu RRMMDD/ČČČ(Č)" [invalid]="!!(personalNumber.invalid && (personalNumber.dirty || personalNumber.touched))"
                     [errors]="personalNumber.errors">
-      <input #personalNumber="ngModel" [(ngModel)]="patient.personalNumber" name="personalNumber" placeholder="Vaše rodné číslo" required maxlength="11" appPersonalNumberValidator>
+      <input #personalNumber="ngModel" [(ngModel)]="patient.personalNumber"
+             name="personalNumber" placeholder="Vaše rodné číslo"
+             mask="000000/0009" [showMaskTyped]="patient.personalNumber.length < 10"
+             required appPersonalNumberValidator>
     </app-form-field>
 
     <mat-form-field floatLabel="always">

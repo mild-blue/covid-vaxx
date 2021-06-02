@@ -4,7 +4,7 @@
   <!--  {{errors | json}}-->
   <ng-content></ng-content>
 
-  <div *ngIf="note" class="note">
+  <div *ngIf="note && !invalid" class="note">
     {{ note }}
   </div>
 

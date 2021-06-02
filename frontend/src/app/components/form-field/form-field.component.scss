@@ -27,7 +27,7 @@
   .note {
     margin-top: 5px;
     font-size: 90%;
-    color: $gray-300;
+    color: $gray-500;
   }
 
   .error {
@@ -37,7 +37,7 @@
   ::ng-deep {
     input, textarea {
 
-      padding: 8px 16px;
+      padding: 8px 15px;
       line-height: 25px;
       font-size: 14px;
       font-family: inherit;
@@ -53,15 +53,19 @@
       }
 
       &::-moz-placeholder { /* Firefox 19+ */
-        color: pink;
+        color: $gray-400;
       }
 
       &:-ms-input-placeholder { /* IE 10+ */
-        color: pink;
+        color: $gray-400;
       }
 
       &:-moz-placeholder { /* Firefox 18- */
-        color: pink;
+        color: $gray-400;
+      }
+
+      &.ng-untouched:not(.ng-dirty) {
+        color: $gray-400;
       }
 
       &:focus {

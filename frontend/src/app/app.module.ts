@@ -65,8 +65,15 @@ import { WarningComponent } from './components/warning/warning.component';
 import { BodyPartPipe } from './pipes/body-part/body-part.pipe';
 import { BodyPartInflectedPipe } from './pipes/body-part-inflected/body-part-inflected.pipe';
 import { FormFieldComponent } from './components/form-field/form-field.component';
+import { IConfig, NgxMaskModule } from 'ngx-mask';
 
 registerLocaleData(localeCs);
+
+const maskConfig: Partial<IConfig> = {
+  validation: false,
+  dropSpecialCharacters: false,
+  showMaskTyped: true
+};
 
 @NgModule({
   declarations: [
@@ -136,7 +143,8 @@ registerLocaleData(localeCs);
     RecaptchaV3Module,
     NgxMatIntlTelInputModule,
     MatDatepickerModule,
-    MatMomentDateModule
+    MatMomentDateModule,
+    NgxMaskModule.forRoot(maskConfig)
   ],
   providers: [
     { provide: LOCALE_ID, useValue: 'cs-CZ' },
