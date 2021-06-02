@@ -219,3 +219,19 @@ So curl looks like this:
 ```bash
 curl -X POST "http://localhost:8080/api/patient?captcha=123456" -H "accept: application/json" -H "Content-Type: application/json" -d "{\"answers\":[{\"questionId\":\"9a5587a1-dc43-49f3-9847-b736127c9e39\",\"value\":\"true\"},{\"questionId\":\"f74ebe1e-ef94-4af0-963d-97ffab086b6b\",\"value\":\"true\"},{\"questionId\":\"f68d221d-27a1-4c81-bf45-07b1f0290e15\",\"value\":\"false\"},{\"questionId\":\"f9c99047-0f44-4dfe-9964-71274a7af5e9\",\"value\":\"false\"},{\"questionId\":\"f5cf0689-a4d7-4c42-8107-6eaedca88a93\",\"value\":\"true\"},{\"questionId\":\"7b02b12a-abb4-45d3-8bf4-0b074e445f37\",\"value\":\"false\"},{\"questionId\":\"112f5fbd-cde2-4fe9-8cab-f5b4fff57296\",\"value\":\"true\"},{\"questionId\":\"f4ca8d25-faaa-4b2f-abc2-3d7a8702d4a3\",\"value\":\"true\"}],\"confirmation\":{\"covid19VaccinationAgreement\":true,\"healthStateDisclosureConfirmation\":true,\"gdprAgreement\":true},\"district\":\"Praha 6\",\"email\":\"bob@doe.com\",\"firstName\":\"Bob\",\"indication\":\"Teacher\",\"insuranceCompany\":\"VZP\",\"lastName\":\"Doe\",\"personalNumber\":\"9109146255\",\"phoneNumber\":{\"countryCode\":\"CZ\",\"number\":\"604987321\"},\"zipCode\":16001}"
 ```
+
+### Test Location
+
+```json
+{
+  "address": "Markova 123",
+  "district": "Praha 7",
+  "email": "prh7@praha7.cz",
+  "notes": "Nic moc zvlastniho",
+  "phoneNumber": {
+    "countryCode": "CZ",
+    "number": "777123456"
+  },
+  "zipCode": 16001
+}
+```

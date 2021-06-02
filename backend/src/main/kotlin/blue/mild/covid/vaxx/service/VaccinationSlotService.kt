@@ -25,13 +25,14 @@ import pw.forst.katlib.whenFalse
 import java.sql.Connection.TRANSACTION_SERIALIZABLE
 import java.time.Instant
 
-val DEFAULT_STATUS: VaccinationSlotStatus = VaccinationSlotStatus.ONLY_FREE
 
 class VaccinationSlotService(
     private val locationRepository: LocationRepository,
     private val vaccinationSlotRepository: VaccinationSlotRepository,
 ) {
-    private companion object : KLogging()
+    private companion object : KLogging() {
+        val DEFAULT_STATUS: VaccinationSlotStatus = VaccinationSlotStatus.ONLY_FREE
+    }
 
     /**
      * Inserts given slots to the database.
