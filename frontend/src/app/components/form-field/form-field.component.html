@@ -1,4 +1,20 @@
-<div class="form-field">
+<div class="form-field" [class.invalid]="invalid">
   <label *ngIf="label">{{ label }}</label>
+
+  <!--  {{errors | json}}-->
   <ng-content></ng-content>
+
+  <div *ngIf="note" class="note">
+    {{ note }}
+  </div>
+
+  <ng-container *ngIf="invalid">
+    <div class="error" *ngIf="errors?.required">
+      Tato položka je povinná.
+    </div>
+    <div class="error" *ngIf="!errors?.required && errors?.personalNumberInvalid">
+      Rodné číslo musí odpovídat formátu RRMMDD/ČČČ(Č)
+    </div>
+  </ng-container>
+
 </div>

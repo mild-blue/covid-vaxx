@@ -1,20 +1,18 @@
 <mat-card *ngIf="patient">
   <mat-card-content>
 
-    <app-form-field label="Jméno">
-      <input [(ngModel)]="patient.firstName" name="firstName" placeholder="Vaše jméno" required maxlength="64">
+    <app-form-field label="Jméno *" [invalid]="!!(input.invalid && (input.dirty || input.touched))" [errors]="input.errors">
+      <input #input="ngModel" [(ngModel)]="patient.firstName" name="firstName" placeholder="Vaše jméno" required maxlength="64">
     </app-form-field>
 
-    <mat-form-field floatLabel="always">
-      <mat-label>Příjmení</mat-label>
-      <input [(ngModel)]="patient.lastName" name="lastName" matInput placeholder="Vaše příjmení" required maxlength="64">
-    </mat-form-field>
+    <app-form-field label="Příjmení *" [invalid]="!!(lastName.invalid && (lastName.dirty || lastName.touched))" [errors]="lastName.errors">
+      <input #lastName="ngModel" [(ngModel)]="patient.lastName" name="lastName" placeholder="Vaše příjmení" required maxlength="64">
+    </app-form-field>
 
-    <mat-form-field floatLabel="always" class="has-hint">
-      <mat-label>Rodné číslo</mat-label>
-      <input [(ngModel)]="patient.personalNumber" name="personalNumber" matInput appPersonalNumberValidator placeholder="Vaše rodné číslo" required maxlength="11">
-      <mat-hint>Rodné číslo ve formátu RRMMDD/ČČČ(Č)</mat-hint>
-    </mat-form-field>
+    <app-form-field label="Rodné číslo *" note="Rodné číslo ve formátu RRMMDD/ČČČ(Č)" [invalid]="!!(personalNumber.invalid && (personalNumber.dirty || personalNumber.touched))"
+                    [errors]="personalNumber.errors">
+      <input #personalNumber="ngModel" [(ngModel)]="patient.personalNumber" name="personalNumber" placeholder="Vaše rodné číslo" required maxlength="11" appPersonalNumberValidator>
+    </app-form-field>
 
     <mat-form-field floatLabel="always">
       <mat-label>Městská část</mat-label>

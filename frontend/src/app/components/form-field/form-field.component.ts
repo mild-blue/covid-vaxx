@@ -1,4 +1,5 @@
 import { Component, Input } from '@angular/core';
+import { ValidationErrors } from '@angular/forms';
 
 @Component({
   selector: 'app-form-field',
@@ -8,6 +9,9 @@ import { Component, Input } from '@angular/core';
 export class FormFieldComponent {
 
   @Input() label?: string;
+  @Input() note?: string;
+  @Input() invalid: boolean = false;
+  @Input() errors?: ValidationErrors | null;
 
   constructor() {
   }
