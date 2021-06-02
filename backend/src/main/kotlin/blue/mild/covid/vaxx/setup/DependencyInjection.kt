@@ -72,7 +72,7 @@ fun DI.MainBuilder.registerClasses() {
     }
 
     bind<LocationRepository>() with singleton { LocationRepository() }
-    bind<VaccinationSlotRepository>() with singleton { VaccinationSlotRepository() }
+    bind<VaccinationSlotRepository>() with singleton { VaccinationSlotRepository(instance()) }
     bind<PatientRepository>() with singleton { PatientRepository(instance()) }
     bind<UserRepository>() with singleton { UserRepository() }
     bind<DataCorrectnessRepository>() with singleton { DataCorrectnessRepository() }

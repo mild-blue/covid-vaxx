@@ -1,8 +1,8 @@
 package blue.mild.covid.vaxx.routes
 
-import blue.mild.covid.vaxx.dao.model.EntityId
 import blue.mild.covid.vaxx.dto.request.LocationDtoIn
 import blue.mild.covid.vaxx.dto.request.PhoneNumberDtoIn
+import blue.mild.covid.vaxx.dto.response.EntityIdDtoOut
 import blue.mild.covid.vaxx.dto.response.LocationDtoOut
 import blue.mild.covid.vaxx.utils.ServerTestBase
 import io.ktor.http.HttpMethod
@@ -24,42 +24,29 @@ class LocationRoutesTest : ServerTestBase() {
             email = "location-1@test.com",
             notes = "location-1 - note"
         )
-        handleRequest(HttpMethod.Post, Routes.locations) {
+
+        val locationId = handleRequest(HttpMethod.Post, Routes.locations) {
             authorize()
             jsonBody(location)
         }.run {
             expectStatus(HttpStatusCode.OK)
-            val locationId = receive<EntityId>()
+            receive<EntityIdDtoOut>()
+        }
 
-            handleRequest(HttpMethod.Get, Routes.locations + "/${locationId}") {
-                authorize()
-            }.run {
-                expectStatus(HttpStatusCode.OK)
-                val response = receive<LocationDtoOut>()
-                assertEquals(location.address, response.address)
-                assertEquals(location.zipCode, response.zipCode)
-                assertEquals(location.district, response.district)
-                // MartinLlama: Figure out how to compare phone numbers
-                assertEquals(location.phoneNumber?.number, response.phoneNumber)
-                assertEquals(location.email, response.email)
-                assertEquals(location.notes, response.notes)
-                assertEquals(locationId, response.id)
-            }
+        handleRequest(HttpMethod.Get, Routes.publicLocations + "/${locationId.id}") {
+            authorize()
+        }.run {
+            expectStatus(HttpStatusCode.OK)
+            val response = receive<LocationDtoOut>()
 
-            // MartinLLama - Locations: I am not able to figure out how to configure /locations/{id}/slots
-//            val createSlots = CreateVaccinationSlotsDtoIn(
-//                from = Instant.ofEpochSecond(1000),
-//                to = Instant.ofEpochSecond(2000),
-//                durationSec = 100,
-//            )
-//            handleRequest(HttpMethod.Post, Routes.locations + "/${locationId}/slots") {
-//                authorize()
-//                jsonBody(createSlots)
-//            }.run {
-//                expectStatus(HttpStatusCode.OK)
-//                val response = receive<List<EntityId>>()
-//                assertEquals(10, response.size)
-//            }
+            assertEquals(location.address, response.address)
+            assertEquals(location.zipCode, response.zipCode)
+            assertEquals(location.district, response.district)
+            // MartinLlama: Figure out how to compare phone numbers
+            assertEquals(location.phoneNumber.number, response.phoneNumber)
+            assertEquals(location.email, response.email)
+            assertEquals(location.notes, response.notes)
+            assertEquals(locationId.id, response.id)
         }
     }
 }

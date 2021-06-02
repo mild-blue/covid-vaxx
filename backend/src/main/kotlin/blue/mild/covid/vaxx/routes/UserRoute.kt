@@ -6,8 +6,8 @@ import blue.mild.covid.vaxx.dto.request.UserRegistrationDtoIn
 import blue.mild.covid.vaxx.dto.response.UserLoginResponseDtoOut
 import blue.mild.covid.vaxx.dto.response.UserRegisteredDtoOut
 import blue.mild.covid.vaxx.extensions.asContextAware
+import blue.mild.covid.vaxx.extensions.closestDI
 import blue.mild.covid.vaxx.extensions.determineRealIp
-import blue.mild.covid.vaxx.extensions.di
 import blue.mild.covid.vaxx.extensions.request
 import blue.mild.covid.vaxx.extensions.respondWithStatus
 import blue.mild.covid.vaxx.security.auth.JwtService
@@ -30,8 +30,8 @@ import org.kodein.di.instance
  * Routes associated with the user logins and authorizations.
  */
 fun NormalOpenAPIRoute.userRoutes() {
-    val userService by di().instance<UserService>()
-    val jwtService by di().instance<JwtService>()
+    val userService by closestDI().instance<UserService>()
+    val jwtService by closestDI().instance<JwtService>()
     val logger = createLogger("UserRoute")
 
     route(Routes.registeredUserLogin) {

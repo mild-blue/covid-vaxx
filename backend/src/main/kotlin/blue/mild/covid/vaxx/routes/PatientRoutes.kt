@@ -5,21 +5,23 @@ import blue.mild.covid.vaxx.dto.internal.PatientEmailRequestDto
 import blue.mild.covid.vaxx.dto.request.PatientRegistrationDtoIn
 import blue.mild.covid.vaxx.dto.request.PatientUpdateDtoIn
 import blue.mild.covid.vaxx.dto.request.query.CaptchaVerificationDtoIn
-import blue.mild.covid.vaxx.dto.request.query.MultiplePatientsQueryDtoOut
+import blue.mild.covid.vaxx.dto.request.query.MultiplePatientsQueryDtoIn
 import blue.mild.covid.vaxx.dto.request.query.PatientByPersonalNumberQueryDtoIn
 import blue.mild.covid.vaxx.dto.request.query.PatientIdDtoIn
 import blue.mild.covid.vaxx.dto.response.OK
 import blue.mild.covid.vaxx.dto.response.Ok
 import blue.mild.covid.vaxx.dto.response.PatientDtoOut
+import blue.mild.covid.vaxx.dto.response.VaccinationSlotDtoOut
 import blue.mild.covid.vaxx.extensions.asContextAware
+import blue.mild.covid.vaxx.extensions.closestDI
 import blue.mild.covid.vaxx.extensions.determineRealIp
-import blue.mild.covid.vaxx.extensions.di
 import blue.mild.covid.vaxx.extensions.request
 import blue.mild.covid.vaxx.security.auth.UserPrincipal
 import blue.mild.covid.vaxx.security.auth.authorizeRoute
 import blue.mild.covid.vaxx.security.ddos.RequestVerificationService
 import blue.mild.covid.vaxx.service.MailService
 import blue.mild.covid.vaxx.service.PatientService
+import blue.mild.covid.vaxx.service.VaccinationSlotService
 import blue.mild.covid.vaxx.utils.createLogger
 import com.papsign.ktor.openapigen.route.info
 import com.papsign.ktor.openapigen.route.path.auth.delete
@@ -39,13 +41,14 @@ import org.kodein.di.instance
 fun NormalOpenAPIRoute.patientRoutes() {
     val logger = createLogger("PatientRoutes")
 
-    val captchaService by di().instance<RequestVerificationService>()
+    val captchaService by closestDI().instance<RequestVerificationService>()
 
-    val patientService by di().instance<PatientService>()
-    val emailService by di().instance<MailService>()
+    val patientService by closestDI().instance<PatientService>()
+    val emailService by closestDI().instance<MailService>()
+    val vaccinationSlotService by closestDI().instance<VaccinationSlotService>()
 
     route(Routes.patient) {
-        post<CaptchaVerificationDtoIn, Ok, PatientRegistrationDtoIn>(
+        post<CaptchaVerificationDtoIn, VaccinationSlotDtoOut, PatientRegistrationDtoIn>(
             info("Save patient registration to the database.")
         ) { (recaptchaToken), patientRegistration ->
             logger.debug { "Patient registration request. Executing captcha verification." }
@@ -53,20 +56,27 @@ fun NormalOpenAPIRoute.patientRoutes() {
             logger.debug { "Captcha token verified. Saving registration." }
 
             val patientId = patientService.savePatient(asContextAware(patientRegistration))
-            logger.info { "Registration created for patient ${patientId}." }
+            logger.info { "Patient saved to the database with id: ${patientId}. Booking slot." }
+            val slot = vaccinationSlotService.bookSlotForPatient(patientId = patientId)
+            logger.info { "Slot booked: ${slot.id} for patient ${patientId}." }
+
+            logger.info { "Registration completed for patient ${patientId}." }
             logger.debug { "Adding email to the queue." }
             emailService.sendEmail(
                 PatientEmailRequestDto(
                     firstName = patientRegistration.firstName,
                     lastName = patientRegistration.lastName,
                     email = patientRegistration.email,
-                    patientId = patientId
+                    patientId = patientId,
+                    slot = slot
                 )
             )
             logger.debug { "Email request registered. Registration successful." }
-            respond(OK)
+            // TODO maybe return something more reasonable then just the slot dto
+            respond(slot)
         }
     }
+
     // admin routes for registered users only
     authorizeRoute(requireOneOf = setOf(UserRole.ADMIN, UserRole.DOCTOR)) {
         route(Routes.adminSectionPatient) {
@@ -116,7 +126,7 @@ fun NormalOpenAPIRoute.patientRoutes() {
             }
 
             route("filter") {
-                get<MultiplePatientsQueryDtoOut, List<PatientDtoOut>, UserPrincipal>(
+                get<MultiplePatientsQueryDtoIn, List<PatientDtoOut>, UserPrincipal>(
                     info("Get patient the parameters. Filters by and clause. Empty parameters return all patients.")
                 ) { patientQuery ->
                     val principal = principal()

@@ -2,34 +2,40 @@ package blue.mild.covid.vaxx.dao.repository
 
 import blue.mild.covid.vaxx.dao.model.EntityId
 import blue.mild.covid.vaxx.dao.model.VaccinationSlots
+import blue.mild.covid.vaxx.dto.internal.VaccinationSlotDto
 import blue.mild.covid.vaxx.dto.response.VaccinationSlotDtoOut
+import blue.mild.covid.vaxx.utils.applyIfNotNull
 import org.jetbrains.exposed.sql.Op
+import org.jetbrains.exposed.sql.ResultRow
 import org.jetbrains.exposed.sql.SqlExpressionBuilder
-import org.jetbrains.exposed.sql.insert
+import org.jetbrains.exposed.sql.batchInsert
 import org.jetbrains.exposed.sql.select
 import org.jetbrains.exposed.sql.transactions.experimental.newSuspendedTransaction
 import org.jetbrains.exposed.sql.update
+import pw.forst.katlib.TimeProvider
 import java.time.Instant
 
-@Suppress("LongParameterList") // it's a repository, we're fine with this
-class VaccinationSlotRepository {
+class VaccinationSlotRepository(private val instantTimeProvider: TimeProvider<Instant>) {
+
     /**
-     * Creates new vaccination slot record for given data.
+     * Insert all slots to the database.
      */
-    suspend fun addVaccinationSlot(
-        locationId: EntityId,
-        patientId: EntityId? = null,
-        queue: Int,
-        from: Instant,
-        to: Instant,
-    ): EntityId = newSuspendedTransaction {
-        VaccinationSlots.insert {
-            it[VaccinationSlots.patientId] = patientId
-            it[VaccinationSlots.locationId] = locationId
-            it[VaccinationSlots.queue] = queue
-            it[VaccinationSlots.from] = from
-            it[VaccinationSlots.to] = to
-        }[VaccinationSlots.id]
+    suspend fun batchInsertVaccinationSlots(
+        slots: List<VaccinationSlotDto>
+    ): List<EntityId> = newSuspendedTransaction {
+        val now = instantTimeProvider.now()
+        VaccinationSlots.batchInsert(slots, shouldReturnGeneratedValues = true) {
+            this[VaccinationSlots.patientId] = it.patientId
+            this[VaccinationSlots.locationId] = it.locationId
+            this[VaccinationSlots.queue] = it.queue
+            this[VaccinationSlots.from] = it.from
+            this[VaccinationSlots.to] = it.to
+
+            // we want to specify these values because DB defaults don't support in batch inserts
+            // however, the real value will be set by the database once inserted
+            this[VaccinationSlots.created] = now
+            this[VaccinationSlots.updated] = now
+        }.map { it[VaccinationSlots.id] }
     }
 
     /**
@@ -38,36 +44,34 @@ class VaccinationSlotRepository {
     suspend fun updateVaccinationSlot(
         vaccinationSlotId: EntityId,
         patientId: EntityId? = null,
-    ): Int = newSuspendedTransaction {
+    ): Boolean = newSuspendedTransaction {
         VaccinationSlots.update(
             where = { VaccinationSlots.id eq vaccinationSlotId },
-            body = { row ->
-                row.apply {
-                    this[VaccinationSlots.patientId] = patientId
-                }
-            }
-        )
+            body = { it[VaccinationSlots.patientId] = patientId }
+        ) == 1
     }
 
-    suspend fun get(where: SqlExpressionBuilder.() -> Op<Boolean>) =
+    /**
+     * Retrieves all vaccination slots from the database with given filter.
+     */
+    suspend fun getAndMap(where: SqlExpressionBuilder.() -> Op<Boolean>, limit: Int? = null) =
         newSuspendedTransaction {
             VaccinationSlots
                 .select(where)
                 .orderBy(VaccinationSlots.from)
                 .orderBy(VaccinationSlots.queue)
                 .orderBy(VaccinationSlots.id)
-                .let { data ->
-                    data.map {
-                        VaccinationSlotDtoOut(
-                            id = it[VaccinationSlots.id],
-                            locationId = it[VaccinationSlots.locationId],
-                            patientId = it[VaccinationSlots.patientId],
-                            queue = it[VaccinationSlots.queue],
-                            from = it[VaccinationSlots.from],
-                            to = it[VaccinationSlots.to]
-                        )
-                    }
-                }
+                .applyIfNotNull(limit) { limit(it) }
+                .toList()
+                .let { data -> data.map { it.mapVaccinationSlot() } }
         }
 
+    private fun ResultRow.mapVaccinationSlot() = VaccinationSlotDtoOut(
+        id = this[VaccinationSlots.id],
+        locationId = this[VaccinationSlots.locationId],
+        patientId = this[VaccinationSlots.patientId],
+        queue = this[VaccinationSlots.queue],
+        from = this[VaccinationSlots.from],
+        to = this[VaccinationSlots.to]
+    )
 }

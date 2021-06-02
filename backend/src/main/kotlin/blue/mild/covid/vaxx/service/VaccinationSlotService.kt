@@ -5,62 +5,62 @@ import blue.mild.covid.vaxx.dao.model.Locations
 import blue.mild.covid.vaxx.dao.model.VaccinationSlots
 import blue.mild.covid.vaxx.dao.repository.LocationRepository
 import blue.mild.covid.vaxx.dao.repository.VaccinationSlotRepository
+import blue.mild.covid.vaxx.dto.internal.VaccinationSlotDto
 import blue.mild.covid.vaxx.dto.request.CreateVaccinationSlotsDtoIn
 import blue.mild.covid.vaxx.dto.request.query.VaccinationSlotStatus
 import blue.mild.covid.vaxx.dto.response.VaccinationSlotDtoOut
+import blue.mild.covid.vaxx.error.InvalidSlotCreationRequest
+import blue.mild.covid.vaxx.error.NoVaccinationSlotsFoundException
 import blue.mild.covid.vaxx.error.entityNotFound
+import blue.mild.covid.vaxx.utils.defaultPostgresFrom
+import blue.mild.covid.vaxx.utils.defaultPostgresTo
 import mu.KLogging
 import org.jetbrains.exposed.sql.Column
 import org.jetbrains.exposed.sql.Op
+import org.jetbrains.exposed.sql.SqlExpressionBuilder
 import org.jetbrains.exposed.sql.and
+import org.jetbrains.exposed.sql.transactions.experimental.newSuspendedTransaction
+import pw.forst.katlib.validate
+import pw.forst.katlib.whenFalse
 import java.time.Instant
 
-@Suppress("MagicNumber")
-val MAX_FUTURE: Instant = Instant.now().plusMillis(2L*365*24*60*60*1000)
 val DEFAULT_STATUS: VaccinationSlotStatus = VaccinationSlotStatus.ONLY_FREE
 
 class VaccinationSlotService(
     private val locationRepository: LocationRepository,
     private val vaccinationSlotRepository: VaccinationSlotRepository,
-//    private val patientRepository: PatientRepository
 ) {
     private companion object : KLogging()
 
-    @Suppress("TooGenericExceptionThrown", "ThrowsCount")
-    suspend fun addSlots(createDto: CreateVaccinationSlotsDtoIn, locationId: EntityId? = null): List<EntityId> {
-        if (createDto.to < createDto.from.plusMillis(createDto.durationMillis)) {
-            throw Exception("Specified time range is not valid - ${createDto}")
+    /**
+     * Inserts given slots to the database.
+     */
+    suspend fun addSlots(createDto: CreateVaccinationSlotsDtoIn): List<EntityId> {
+        validate(createDto.to >= createDto.from.plusMillis(createDto.durationMillis)) {
+            throw InvalidSlotCreationRequest("Specified time range is not valid.", createDto)
         }
 
-        if (createDto.locationId != null && locationId != null) {
-            throw Exception("Location mismatch - ${createDto} vs ${locationId}")
-        }
-        val usedLocationId = requireNotNull(createDto.locationId ?: locationId) {
-            "LocationId has to be specified - createDto: ${createDto}; locationId: ${locationId}."
-        }
+        locationRepository.locationIdExists(createDto.locationId)
+            .whenFalse { throw entityNotFound<Locations>(Locations::id, createDto.locationId) }
 
-        val location = locationRepository.getAndMapLocationsBy { Locations.id eq usedLocationId }
-            .singleOrNull() ?: throw entityNotFound<Locations>(Locations::id, usedLocationId)
+        val availableTime = createDto.to.toEpochMilli() - createDto.from.toEpochMilli()
+        val slotsCount = (availableTime / createDto.durationMillis).toInt()
 
-        var ts = createDto.from
-        val createdIds = mutableListOf<EntityId>()
-        while (ts.plusMillis(createDto.durationMillis).isBefore(createDto.to.plusMillis(1))) {
-            val to = ts.plusMillis(createDto.durationMillis)
-            for (queue in 0 until createDto.bandwidth) {
-                createdIds.add(
-                    vaccinationSlotRepository.addVaccinationSlot(
-                        locationId = location.id,
-                        patientId = null,
-                        queue = queue,
-                        from = ts,
-                        to = to,
-                    )
+        val slots = (0 until slotsCount).flatMap { slotId ->
+            (0 until createDto.bandwidth).map { queue ->
+                val from = createDto.from.plusMillis(slotId * createDto.durationMillis)
+                val to = from.plusMillis(createDto.durationMillis)
+
+                VaccinationSlotDto(
+                    locationId = createDto.locationId,
+                    queue = queue,
+                    from = from,
+                    to = to,
                 )
             }
-            ts = to
         }
 
-        return createdIds
+        return vaccinationSlotRepository.batchInsertVaccinationSlots(slots)
     }
 
     /**
@@ -68,67 +68,67 @@ class VaccinationSlotService(
      */
     @Suppress("LongParameterList")
     suspend fun getSlotsByConjunctionOf(
-        id: EntityId? = null,
+        slotId: EntityId? = null,
         locationId: EntityId? = null,
         patientId: EntityId? = null,
-        fromMillis: Long? = null,
-        toMillis: Long? = null,
-        status: VaccinationSlotStatus? = DEFAULT_STATUS,
+        from: Instant? = null,
+        to: Instant? = null,
+        status: VaccinationSlotStatus? = null,
+        limit: Int? = null
     ): List<VaccinationSlotDtoOut> {
-        // To Consider: Maybe when id is specified all the other parameter should be
-        val fromI = Instant.ofEpochMilli(fromMillis ?: Instant.EPOCH.toEpochMilli())
-        // MartinLLama: With Instant.MAX it was failing on Exception occurred in the application: long overflow
-        val toI = Instant.ofEpochMilli(toMillis ?: MAX_FUTURE.toEpochMilli())
-        val usedStatus = status ?: if (id == null) DEFAULT_STATUS else VaccinationSlotStatus.ALL
+        val fromI = from ?: defaultPostgresFrom
+        val toI = to ?: defaultPostgresTo
 
-        return vaccinationSlotRepository.get {
+        val usedStatus = status ?: if (slotId == null) DEFAULT_STATUS else VaccinationSlotStatus.ALL
+
+        val filter: SqlExpressionBuilder.() -> Op<Boolean> = {
             Op.TRUE
-                .andWithIfNotEmpty(id, VaccinationSlots.id)
+                .andWithIfNotEmpty(slotId, VaccinationSlots.id)
                 .andWithIfNotEmpty(locationId, VaccinationSlots.locationId)
                 .andWithIfNotEmpty(patientId, VaccinationSlots.patientId)
-                .and { VaccinationSlots.from.greaterEq(fromI) }
-                .and { VaccinationSlots.to.lessEq(toI) }
-                .and { when(usedStatus) {
-                    // MartinLLama: I do not know how to write ALL to not perform any additional filtering
-                    VaccinationSlotStatus.ALL -> {VaccinationSlots.id.isNotNull()}
-                    VaccinationSlotStatus.ONLY_FREE -> VaccinationSlots.patientId.isNull()
-                    VaccinationSlotStatus.ONLY_OCCUPIED -> VaccinationSlots.patientId.isNotNull()
-                }}
+                .and { VaccinationSlots.from greaterEq fromI }
+                .and { VaccinationSlots.to lessEq toI }
+                .and {
+                    when (usedStatus) {
+                        VaccinationSlotStatus.ALL -> Op.TRUE
+                        VaccinationSlotStatus.ONLY_FREE -> VaccinationSlots.patientId.isNull()
+                        VaccinationSlotStatus.ONLY_OCCUPIED -> VaccinationSlots.patientId.isNotNull()
+                    }
+                }
         }
+
+        return vaccinationSlotRepository.getAndMap(filter, limit)
     }
 
-    @Suppress("TooGenericExceptionThrown", "LongParameterList")
-    suspend fun updateSlot(
-        id: EntityId? = null,
+    /**
+     * Book a vaccination slot for the patient with given requirements
+     * using AND clause. If property is null, we ignore it.
+     */
+    suspend fun bookSlotForPatient(
+        patientId: EntityId,
+        slotId: EntityId? = null,
         locationId: EntityId? = null,
-        patientId: EntityId? = null,
-        fromMillis: Long? = null,
-        toMillis: Long? = null,
-        status: VaccinationSlotStatus?,
-        newPatientId: EntityId?,
-    ): VaccinationSlotDtoOut {
-        val availableSlots = getSlotsByConjunctionOf(
-            id = id,
+        from: Instant? = null,
+        to: Instant? = null
+    ): VaccinationSlotDtoOut = newSuspendedTransaction {
+        getSlotsByConjunctionOf(
+            slotId = slotId,
             locationId = locationId,
-            patientId = patientId,
-            fromMillis = fromMillis,
-            toMillis = toMillis,
-            status = status,
-        )
+            from = from,
+            to = to,
+            status = VaccinationSlotStatus.ONLY_FREE,
+            // select a single slot
+            limit = 1
+        ).singleOrNull()?.apply {
+            // book slot for the given patient
+            vaccinationSlotRepository.updateVaccinationSlot(
+                vaccinationSlotId = this.id,
+                patientId = patientId,
+            )
+        }?.let { getSlotsByConjunctionOf(slotId = it.id).single() }
+    } ?: throw NoVaccinationSlotsFoundException()
 
-        if (availableSlots.isEmpty()) {
-            throw Exception("There are no available slots")
-        }
 
-        val pickedSlotId = availableSlots[0].id
-        vaccinationSlotRepository.updateVaccinationSlot(
-            vaccinationSlotId = pickedSlotId,
-            patientId = newPatientId,
-        )
-
-        return vaccinationSlotRepository.get { VaccinationSlots.id.eq(pickedSlotId) }[0]
-    }
-
-    private fun <T> Op<Boolean>.andWithIfNotEmpty(value: T?, column: Column<T>): Op<Boolean> =
+    private inline fun <reified T> Op<Boolean>.andWithIfNotEmpty(value: T?, column: Column<T>): Op<Boolean> =
         value?.let { and { column eq value } } ?: this
 }

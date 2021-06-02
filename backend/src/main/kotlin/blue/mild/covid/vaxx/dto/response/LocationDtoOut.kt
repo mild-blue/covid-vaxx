@@ -9,6 +9,5 @@ data class LocationDtoOut(
     val district: String,
     val phoneNumber: String? = null,
     val email: String? = null,
-    val notes: String? = null,
-    val slots: List<VaccinationSlotDtoOut>
+    val notes: String? = null
 )

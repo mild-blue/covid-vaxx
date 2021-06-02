@@ -7,7 +7,7 @@ import blue.mild.covid.vaxx.dto.request.NurseCreationDtoIn
 import blue.mild.covid.vaxx.dto.response.OK
 import blue.mild.covid.vaxx.dto.response.Ok
 import blue.mild.covid.vaxx.dto.response.PersonnelDtoOut
-import blue.mild.covid.vaxx.extensions.di
+import blue.mild.covid.vaxx.extensions.closestDI
 import blue.mild.covid.vaxx.security.auth.UserPrincipal
 import blue.mild.covid.vaxx.security.auth.authorizeRoute
 import blue.mild.covid.vaxx.service.UserService
@@ -23,8 +23,8 @@ import org.kodein.di.instance
  * Registers routes related to the nurse entity.
  */
 fun NormalOpenAPIRoute.nurseRoutes() {
-    val userService by di().instance<UserService>()
-    val nurseRepository by di().instance<NurseRepository>()
+    val userService by closestDI().instance<UserService>()
+    val nurseRepository by closestDI().instance<NurseRepository>()
 
     route(Routes.nurse) {
         post<Unit, List<PersonnelDtoOut>, CredentialsDtoIn>(
@@ -38,7 +38,6 @@ fun NormalOpenAPIRoute.nurseRoutes() {
 
     authorizeRoute(requireOneOf = setOf(UserRole.ADMIN)) {
         route(Routes.nurse) {
-            // RESTFUL: This should be PUT
             put<Unit, Ok, NurseCreationDtoIn, UserPrincipal>(
                 info("Creates nurse entity.")
             ) { _, request ->

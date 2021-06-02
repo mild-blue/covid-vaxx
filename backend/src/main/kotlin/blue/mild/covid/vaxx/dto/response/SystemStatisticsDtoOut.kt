@@ -4,5 +4,7 @@ data class SystemStatisticsDtoOut(
     val vaccinatedPatientsCount: Long,
     val patientsDataVerifiedCount: Long,
     val registrationsCount: Long,
-    val emailsSentCount: Long
+    val emailsSentCount: Long,
+    val availableSlots: Long,
+    val bookedSlots: Long
 )

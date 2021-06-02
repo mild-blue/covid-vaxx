@@ -90,6 +90,7 @@ class MailJetEmailService(
                                         JSONObject()
                                             .put("Email", emailRequest.email)
                                             .put("Name", "${emailRequest.firstName} ${emailRequest.lastName}")
+                                    // TODO add slot information from emailRequest.slot
                                     )
                             )
                             .put(Emailv31.Message.SUBJECT, mailJetConfig.subject)

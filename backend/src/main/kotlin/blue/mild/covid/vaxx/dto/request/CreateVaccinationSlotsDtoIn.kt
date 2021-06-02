@@ -1,13 +1,15 @@
 package blue.mild.covid.vaxx.dto.request
 
 import blue.mild.covid.vaxx.dao.model.EntityId
+import blue.mild.covid.vaxx.utils.Milliseconds
+import blue.mild.covid.vaxx.utils.PeopleVaccinatedInParallel
 import java.time.Instant
 
 data class CreateVaccinationSlotsDtoIn(
     /**
-     * Location id
+     * Location id.
      */
-    val locationId: EntityId? = null,
+    val locationId: EntityId,
     /**
      * When the location opens.
      */
@@ -21,9 +23,9 @@ data class CreateVaccinationSlotsDtoIn(
      *
      * Number of queues.
      */
-    val bandwidth: Int,
+    val bandwidth: PeopleVaccinatedInParallel,
     /**
      * How long it takes to vaccinate single person.
      */
-    val durationMillis: Long
+    val durationMillis: Milliseconds
 )
