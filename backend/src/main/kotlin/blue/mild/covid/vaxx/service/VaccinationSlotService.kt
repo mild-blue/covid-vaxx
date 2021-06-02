@@ -22,6 +22,7 @@ import org.jetbrains.exposed.sql.and
 import org.jetbrains.exposed.sql.transactions.experimental.newSuspendedTransaction
 import pw.forst.katlib.validate
 import pw.forst.katlib.whenFalse
+import java.sql.Connection.TRANSACTION_SERIALIZABLE
 import java.time.Instant
 
 val DEFAULT_STATUS: VaccinationSlotStatus = VaccinationSlotStatus.ONLY_FREE
@@ -110,7 +111,7 @@ class VaccinationSlotService(
         locationId: EntityId? = null,
         from: Instant? = null,
         to: Instant? = null
-    ): VaccinationSlotDtoOut = newSuspendedTransaction {
+    ): VaccinationSlotDtoOut = newSuspendedTransaction(transactionIsolation = TRANSACTION_SERIALIZABLE) {
         getSlotsByConjunctionOf(
             slotId = slotId,
             locationId = locationId,
