@@ -3,7 +3,7 @@
 .form-field {
   display: flex;
   flex-direction: column;
-  margin-bottom: 30px;
+  margin-bottom: 20px;
 
   label {
     font-weight: 700;
@@ -65,7 +65,7 @@
         color: $gray-400;
       }
 
-      &.ng-untouched:not(.ng-dirty) {
+      &.ng-pristine.ng-invalid {
         color: $gray-400;
       }
 

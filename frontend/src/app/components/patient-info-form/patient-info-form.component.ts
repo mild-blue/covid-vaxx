@@ -13,6 +13,7 @@ export class PatientInfoFormComponent {
 
   @Input() patient?: PatientData;
   @Input() showExtraFields: boolean = false;
+  @Input() vertical: boolean = false;
 
   public allInsuranceCompanies: string[] = Object.values(InsuranceCompany);
   public minVaccinationDate = new Date('1/1/2020');

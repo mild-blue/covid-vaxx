@@ -7,7 +7,7 @@
 
     <!-- 1. Osobní informace -->
     <mat-step #firstStep [completed]="patientForm.valid" label="Osobní informace">
-      <app-container>
+      <app-container [wide]="true">
         <form #patientForm="ngForm">
           <app-patient-info-form [patient]="patient"></app-patient-info-form>
         </form>
