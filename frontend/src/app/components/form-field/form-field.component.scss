@@ -15,23 +15,20 @@
 
     ::ng-deep {
       input, textarea, mat-select, ngx-mat-intl-tel-input {
-        border-color: $danger;
-
-        &:focus {
-          border-color: $danger;
+        &, &:focus {
+          border-color: rgba($danger, 0.5);
         }
       }
     }
   }
 
-  .note {
+  .note, .error {
     margin-top: 5px;
     font-size: 90%;
-    color: $gray-500;
   }
 
-  .error {
-    margin-top: 5px;
+  .note {
+    color: $gray-500;
   }
 
   ::ng-deep {
@@ -65,11 +62,7 @@
         color: $gray-400;
       }
 
-      &.ng-pristine.ng-invalid {
-        color: $gray-400;
-      }
-
-      ::ng-deep .mat-select-placeholder {
+      ::ng-deep .mat-select-placeholder, &.ng-pristine.ng-invalid {
         color: $gray-400;
       }
 
