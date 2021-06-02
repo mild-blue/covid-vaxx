@@ -14,7 +14,7 @@
     color: $danger;
 
     ::ng-deep {
-      input, textarea {
+      input, textarea, mat-select, ngx-mat-intl-tel-input {
         border-color: $danger;
 
         &:focus {
@@ -35,7 +35,7 @@
   }
 
   ::ng-deep {
-    input, textarea {
+    input, textarea, mat-select, ngx-mat-intl-tel-input {
 
       padding: 8px 15px;
       line-height: 25px;
@@ -47,6 +47,7 @@
       border: 1px solid $gray-300;
       background: $white;
       transition: border .3s ease;
+      position: relative;
 
       &::-webkit-input-placeholder { /* Chrome/Opera/Safari */
         color: $gray-400;
@@ -65,6 +66,10 @@
       }
 
       &.ng-untouched:not(.ng-dirty) {
+        color: $gray-400;
+      }
+
+      ::ng-deep .mat-select-placeholder {
         color: $gray-400;
       }
 

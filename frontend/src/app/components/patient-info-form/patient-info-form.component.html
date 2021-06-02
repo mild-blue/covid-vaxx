@@ -11,34 +11,32 @@
 
     <app-form-field label="Rodné číslo *" note="Rodné číslo ve formátu RRMMDD/ČČČ(Č)" [invalid]="!!(personalNumber.invalid && (personalNumber.dirty || personalNumber.touched))"
                     [errors]="personalNumber.errors">
-      <input #personalNumber="ngModel" [(ngModel)]="patient.personalNumber"
-             name="personalNumber" placeholder="Vaše rodné číslo"
+      <input #personalNumber="ngModel" [(ngModel)]="patient.personalNumber" name="personalNumber" placeholder="Vaše rodné číslo"
              mask="000000/0009" [showMaskTyped]="patient.personalNumber.length < 10"
              required appPersonalNumberValidator>
     </app-form-field>
 
-    <mat-form-field floatLabel="always">
-      <mat-label>Městská část</mat-label>
-      <input [(ngModel)]="patient.district" name="district" matInput placeholder="Vaše městská část" required maxlength="64">
-    </mat-form-field>
+    <app-form-field label="Městská část *" [invalid]="!!(district.invalid && (district.dirty || district.touched))" [errors]="district.errors">
+      <input #district="ngModel" [(ngModel)]="patient.district" name="district" placeholder="Vaše městská část" required maxlength="64">
+    </app-form-field>
 
-    <mat-form-field floatLabel="always">
-      <mat-label>PSČ</mat-label>
-      <input [(ngModel)]="patient.zipCode" #zipCode="ngModel" (input)="formatZipCode(zipCode)" name="zipCode" matInput appPostalCodeValidator placeholder="Vaše PSČ" required maxlength="6">
-    </mat-form-field>
+    <app-form-field label="PSČ *" [invalid]="!!(zipCode.invalid && (zipCode.dirty || zipCode.touched))" [errors]="zipCode.errors">
+      <input #zipCode="ngModel" [(ngModel)]="patient.zipCode" name="zipCode" placeholder="Vaše PSČ"
+             mask="000 00" [showMaskTyped]="true"
+             required appPostalCodeValidator>
+    </app-form-field>
 
-    <mat-form-field floatLabel="always">
-      <mat-label>Zdravotní pojišťovna</mat-label>
-      <mat-select name="insuranceCompany" [(ngModel)]="patient.insuranceCompany" placeholder="Vyberte Vaší zdravotní pojišťovnu" required>
+    <app-form-field label="Zdravotní pojišťovna *" [invalid]="!!(insuranceCompany.invalid && (insuranceCompany.dirty || insuranceCompany.touched))" [errors]="insuranceCompany.errors">
+      <mat-select #insuranceCompany="ngModel" [(ngModel)]="patient.insuranceCompany" name="insuranceCompany" placeholder="Vyberte Vaší zdravotní pojišťovnu" required>
         <mat-option *ngFor="let insuranceCompany of allInsuranceCompanies" [value]="insuranceCompany">
           {{insuranceCompany}}
         </mat-option>
       </mat-select>
-    </mat-form-field>
+    </app-form-field>
 
-    <mat-form-field floatLabel="always">
-      <mat-label>Telefonní číslo</mat-label>
-      <ngx-mat-intl-tel-input [(ngModel)]="patient.phoneNumber"
+    <app-form-field label="Telefonní číslo *" [invalid]="!!(phoneNumber.invalid && (phoneNumber.dirty || phoneNumber.touched))" [errors]="phoneNumber.errors">
+      <ngx-mat-intl-tel-input #phoneNumber="ngModel"
+                              [(ngModel)]="patient.phoneNumber"
                               [preferredCountries]="['cz', 'sk', 'de', 'at', 'pl']"
                               [enablePlaceholder]="true"
                               [enableSearch]="false"
@@ -47,17 +45,18 @@
                               class="ngx-floating"
                               name="phoneNumber"
                               inputPlaceholder="Vaše telefonní číslo"></ngx-mat-intl-tel-input>
-    </mat-form-field>
-    <mat-form-field floatLabel="always">
-      <mat-label>E-mail</mat-label>
-      <input [(ngModel)]="patient.email" name="email" matInput placeholder="Váš e-mail" appEmailValidator required maxlength="64">
-    </mat-form-field>
+    </app-form-field>
+
+    <app-form-field label="E-mail *" [invalid]="!!(email.invalid && (email.dirty || email.touched))" [errors]="email.errors">
+      <input #email="ngModel" [(ngModel)]="patient.email" name="email" placeholder="Váš e-mail"
+             required maxlength="64" appEmailValidator>
+    </app-form-field>
 
     <ng-container *ngIf="showExtraFields">
-      <mat-form-field floatLabel="always">
-        <mat-label>Indikace</mat-label>
-        <input [(ngModel)]="patient.indication" name="indication" matInput placeholder="Indikace pacienta (zdravotník, učitel, senior, soc. pracovník)" maxlength="64">
-      </mat-form-field>
+      <app-form-field label="Indikace" [invalid]="!!(indication.invalid && (indication.dirty || indication.touched))" [errors]="indication.errors">
+        <input #indication="ngModel" [(ngModel)]="patient.indication" name="indication" placeholder="Indikace pacienta (zdravotník, učitel, senior, soc. pracovník)" maxlength="64">
+      </app-form-field>
+
       <!-- TODO: *Feature* Enable editing vaccinationDate on BE -->
       <!--            <mat-form-field *ngIf="patient.vaccinatedOn" floatLabel="always">-->
       <!--              <mat-label>Datum vakcinace</mat-label>-->

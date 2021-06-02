@@ -15,6 +15,9 @@
     <div class="error" *ngIf="!errors?.required && errors?.personalNumberInvalid">
       Rodné číslo musí odpovídat formátu RRMMDD/ČČČ(Č)
     </div>
+    <div class="error" *ngIf="!errors?.required && errors?.postalCodeInvalid">
+      PSČ musí odpovídat formátu XXX XX
+    </div>
   </ng-container>
 
 </div>
