@@ -1,15 +1,15 @@
 -- Create table locations
 CREATE TABLE locations
 (
-    id                UUID PRIMARY KEY   NOT NULL DEFAULT uuid_generate_v4(),
-    created           TIMESTAMPTZ        NOT NULL,
-    updated           TIMESTAMPTZ        NOT NULL,
-    address           VARCHAR(256)       NOT NULL,
-    zip_code          INTEGER            NOT NULL,
-    district          VARCHAR(128)       NOT NULL,
-    phone_number      VARCHAR(13)        NOT NULL,
-    email             VARCHAR(256)       NOT NULL,
-    notes             TEXT
+    id           UUID PRIMARY KEY NOT NULL DEFAULT uuid_generate_v4(),
+    created      TIMESTAMPTZ      NOT NULL,
+    updated      TIMESTAMPTZ      NOT NULL,
+    address      VARCHAR(256)     NOT NULL,
+    zip_code     INTEGER          NOT NULL,
+    district     VARCHAR(128)     NOT NULL,
+    phone_number VARCHAR(13),
+    email        VARCHAR(256),
+    notes        TEXT
 );
 
 CREATE TRIGGER tgr_locations_set_created

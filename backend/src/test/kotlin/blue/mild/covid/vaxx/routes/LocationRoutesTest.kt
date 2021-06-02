@@ -43,7 +43,7 @@ class LocationRoutesTest : ServerTestBase() {
             assertEquals(location.zipCode, response.zipCode)
             assertEquals(location.district, response.district)
             // MartinLlama: Figure out how to compare phone numbers
-            assertEquals(location.phoneNumber.number, response.phoneNumber)
+            assertEquals(location.phoneNumber?.number, response.phoneNumber)
             assertEquals(location.email, response.email)
             assertEquals(location.notes, response.notes)
             assertEquals(locationId.id, response.id)
