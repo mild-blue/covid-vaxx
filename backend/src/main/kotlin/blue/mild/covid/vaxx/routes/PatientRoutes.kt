@@ -12,6 +12,7 @@ import blue.mild.covid.vaxx.dto.response.OK
 import blue.mild.covid.vaxx.dto.response.Ok
 import blue.mild.covid.vaxx.dto.response.PatientDtoOut
 import blue.mild.covid.vaxx.dto.response.VaccinationSlotDtoOut
+import blue.mild.covid.vaxx.error.NoVaccinationSlotsFoundException
 import blue.mild.covid.vaxx.extensions.asContextAware
 import blue.mild.covid.vaxx.extensions.closestDI
 import blue.mild.covid.vaxx.extensions.determineRealIp
@@ -19,6 +20,7 @@ import blue.mild.covid.vaxx.extensions.request
 import blue.mild.covid.vaxx.security.auth.UserPrincipal
 import blue.mild.covid.vaxx.security.auth.authorizeRoute
 import blue.mild.covid.vaxx.security.ddos.RequestVerificationService
+import blue.mild.covid.vaxx.service.LocationService
 import blue.mild.covid.vaxx.service.MailService
 import blue.mild.covid.vaxx.service.PatientService
 import blue.mild.covid.vaxx.service.VaccinationSlotService
@@ -37,7 +39,8 @@ import org.kodein.di.instance
 /**
  * Routes related to patient entity.
  */
-@Suppress("LongMethod") // this is routing, that's fine
+@Suppress("LongMethod", "TooGenericExceptionCaught") // this is routing, that's fine plus we need not to save
+// patient in case any issue during processing happens
 fun NormalOpenAPIRoute.patientRoutes() {
     val logger = createLogger("PatientRoutes")
 
@@ -46,6 +49,7 @@ fun NormalOpenAPIRoute.patientRoutes() {
     val patientService by closestDI().instance<PatientService>()
     val emailService by closestDI().instance<MailService>()
     val vaccinationSlotService by closestDI().instance<VaccinationSlotService>()
+    val locationService by closestDI().instance<LocationService>()
 
     route(Routes.patient) {
         post<CaptchaVerificationDtoIn, VaccinationSlotDtoOut, PatientRegistrationDtoIn>(
@@ -57,23 +61,34 @@ fun NormalOpenAPIRoute.patientRoutes() {
 
             val patientId = patientService.savePatient(asContextAware(patientRegistration))
             logger.info { "Patient saved to the database with id: ${patientId}. Booking slot." }
-            val slot = vaccinationSlotService.bookSlotForPatient(patientId = patientId)
-            logger.info { "Slot booked: ${slot.id} for patient ${patientId}." }
-
-            logger.info { "Registration completed for patient ${patientId}." }
-            logger.debug { "Adding email to the queue." }
-            emailService.sendEmail(
-                PatientEmailRequestDto(
-                    firstName = patientRegistration.firstName,
-                    lastName = patientRegistration.lastName,
-                    email = patientRegistration.email,
-                    patientId = patientId,
-                    slot = slot
+            try {
+                val slot = vaccinationSlotService.bookSlotForPatient(patientId = patientId)
+                val location = locationService.getLocationById(slot.locationId)
+                logger.info { "Slot booked: ${slot.id} for patient ${patientId}." }
+                logger.info { "Registration completed for patient ${patientId}." }
+                logger.debug { "Adding email to the queue." }
+                emailService.sendEmail(
+                    PatientEmailRequestDto(
+                        firstName = patientRegistration.firstName,
+                        lastName = patientRegistration.lastName,
+                        email = patientRegistration.email,
+                        patientId = patientId,
+                        slot = slot,
+                        location = location
+                    )
                 )
-            )
+                // TODO maybe return something more reasonable then just the slot dto
+                respond(slot)
+            } catch (e: NoVaccinationSlotsFoundException) {
+                patientService.deletePatientById(patientId)
+                logger.info { "Patient deleted: ${patientId}. No slot found." }
+                throw e
+            } catch (e: Exception) {
+                patientService.deletePatientById(patientId)
+                logger.info { "Patient deleted: ${patientId}. Some issue during saving" }
+                throw e
+            }
             logger.debug { "Email request registered. Registration successful." }
-            // TODO maybe return something more reasonable then just the slot dto
-            respond(slot)
         }
     }
 
