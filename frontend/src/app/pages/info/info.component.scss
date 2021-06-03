@@ -2,8 +2,6 @@
 @import "../../../styles/breakpoints";
 
 $icon-size: 40px;
-$animation-speed: 0.5;
-$animation-delay: 0.1;
 
 .welcome {
   &__item {
@@ -97,16 +95,4 @@ main {
 
 :host {
   flex: 1;
-}
-
-@keyframes slideOutUp {
-  from {
-    top: 10px;
-    opacity: 0;
-  }
-
-  to {
-    top: 0;
-    opacity: 1;
-  }
 }

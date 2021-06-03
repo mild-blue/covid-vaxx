@@ -30,8 +30,7 @@
       <app-container *ngIf="firstStep.completed">
         <app-patient-questions-form [patient]="patient"></app-patient-questions-form>
 
-        <!--  TODO: [showIcon]="true" -->
-        <app-warning>
+        <app-warning [showIcon]="true">
           Pokud na některou z uvedených otázek odpovíte ANO, neznamená to, že nemůžete být očkován/a.
         </app-warning>
 
@@ -55,15 +54,15 @@
         <app-patient-data [patientData]="patient"></app-patient-data>
 
         <div class="checkboxes">
-          <mat-checkbox [(ngModel)]="confirmationCheckboxValue">
+          <mat-checkbox [(ngModel)]="confirmationCheckboxValue" color="primary">
             Potvrzuji, že jsem nezamlčel/a žádné informace o svém zdravotním stavu.
           </mat-checkbox>
 
-          <mat-checkbox [(ngModel)]="agreementCheckboxValue">
+          <mat-checkbox [(ngModel)]="agreementCheckboxValue" color="primary">
             Souhlasím s aplikací očkovací látky proti onemocnění COVID-19.
           </mat-checkbox>
 
-          <mat-checkbox [(ngModel)]="gdprCheckboxValue">
+          <mat-checkbox [(ngModel)]="gdprCheckboxValue" color="primary">
             Souhlasím se
             <button mat-button color="primary" (click)="openGdprInfo()">zpracováním osobních údajů</button>
             .
