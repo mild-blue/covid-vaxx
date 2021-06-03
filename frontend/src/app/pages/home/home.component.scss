@@ -59,6 +59,10 @@ app-patient-info-form, app-patient-questions-form, app-patient-data {
   }
 }
 
+main {
+  padding-top: 30px;
+}
+
 :host {
   flex: 1;
 }

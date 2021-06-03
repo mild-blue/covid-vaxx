@@ -11,12 +11,12 @@
    !
    [CDATA[
    .fil1 {
-       fill: #008D42;
+       fill: #ffffff;
        fill-rule: nonzero
    }
 
    .fil0 {
-       fill: #1B4E9B;
+       fill: #ffffff;
        fill-rule: nonzero
    }
 

@@ -1,0 +1,30 @@
+@import "../../../styles/variables";
+
+header {
+  padding: 10px 24px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background: $primary;
+  color: $white;
+
+  .logos {
+    display: flex;
+    padding-left: 30px;
+
+    img {
+      height: 26px;
+    }
+
+    div + div {
+      margin-left: 20px;
+      padding-left: 20px;
+      border-left: 3px solid $white;
+    }
+
+    div:first-child {
+      position: relative;
+      top: 3px;
+    }
+  }
+}
