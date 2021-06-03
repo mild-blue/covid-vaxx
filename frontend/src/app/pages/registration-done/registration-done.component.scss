@@ -1,10 +1,11 @@
 @import "../../../styles/variables";
+@import "../../../styles/breakpoints";
 
 .success {
   display: flex;
   justify-content: center;
   color: $success;
-  margin: 40px 0;
+  margin: 30px 0 40px;
 
   h1 {
     margin: 0 0 0 20px;
@@ -39,6 +40,11 @@ mat-card-content {
     display: flex;
     align-items: center;
 
+    @include media-breakpoint-down(sm) {
+      flex-direction: column;
+      align-items: flex-start;
+    }
+
     &-info {
       flex: 1;
       line-height: 1.6;
@@ -53,6 +59,11 @@ mat-card-content {
       flex: 1;
       border-radius: 6px;
       overflow: hidden;
+
+      @include media-breakpoint-down(sm) {
+        width: 100%;
+        margin-top: 40px;
+      }
 
       #map {
         width: 100%;
@@ -98,4 +109,9 @@ h2 {
 
 main {
   margin-top: 30px;
+}
+
+app-warning {
+  margin: 40px 0 60px;
+  display: block;
 }

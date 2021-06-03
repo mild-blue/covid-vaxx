@@ -86,7 +86,10 @@
             V případě dotazů se obraťte na infolinku Prahy 7 každý všední den od 8:00 do 16:00 hodin na čísle: 734 521 840</p>
           <p>Aktuality najdete na: <a href="https://www.praha7.cz/ockovani" target="_blank">www.praha7.cz/ockovani</a></p>
           <p>Další informace naleznete <a href="https://koronavirus.mzcr.cz/ockovani-proti-covid-19/" target="_blank">zde</a>.</p>
+          <br>
+          <br>
           <p>Děkujeme, že svým očkováním chráníte sebe i ostatní a přispíváte k návratu k běžnému životu.</p>
+          <br>
           <p>Na viděnou v ZŠ Strossmayerovo náměstí.</p>
           <i>MČ Praha 7 a tým Mild Blue</i>
         </mat-card-content>
@@ -100,12 +103,13 @@
     <app-patient-data [patientData]="patientData"></app-patient-data>
 
     <app-warning>
-      Pokud vidíte chybu v zadaných údajích, anebo je chcete změnit, kontaktujte nás prosím na <a
-      href="mailto:{{ companyEmail }}?subject=Požadavek na úpravu osobních údajů pacienta r.č. {{ patientData.personalNumber }}">{{ companyEmail }}</a>.
+      Pokud vidíte chybu v zadaných údajích, anebo je chcete změnit, kontaktujte nás prosím na
+      <a href="mailto:{{ companyEmail }}?subject=Požadavek na úpravu osobních údajů pacienta r.č. {{ patientData.personalNumber }}">{{ companyEmail }}</a>.
     </app-warning>
 
     <button color="primary" class="nav-button mt-30" (click)="handleStartAgain()" mat-raised-button>
       Registrovat další osobu
+      <mat-icon>arrow_forward</mat-icon>
     </button>
   </app-container>
 </main>
