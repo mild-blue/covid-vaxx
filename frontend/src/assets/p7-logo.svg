@@ -7,22 +7,15 @@
 >
  <defs>
   <style type="text/css">
-   <
-   !
-   [CDATA[
-   .fil1 {
-       fill: #ffffff;
-       fill-rule: nonzero
-   }
+    .fil1 {
+        fill: #ffffff;
+        fill-rule: nonzero
+    }
 
-   .fil0 {
-       fill: #ffffff;
-       fill-rule: nonzero
-   }
-
-   ]
-   ]
-   >
+    .fil0 {
+        fill: #ffffff;
+        fill-rule: nonzero
+    }
   </style>
  </defs>
     <g id="Vrstva_x0020_1">
