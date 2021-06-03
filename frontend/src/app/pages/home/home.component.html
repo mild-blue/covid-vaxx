@@ -10,10 +10,9 @@
                                (missingInfo)="this.missingInfo = $event"
                                (patientUpdated)="updatePatient($event)"></app-patient-info-form>
 
-        <div *ngIf="missingInfo.length" class="missing-info-warning">
-          <mat-icon>warning</mat-icon>
-          <span>Pro pokračování vyplňte následující informace: <strong>{{ missingInfo.join(', ') }}</strong>.</span>
-        </div>
+        <app-warning *ngIf="missingInfo.length" [showIcon]="true">
+          Pro pokračování vyplňte následující informace: <strong>{{ missingInfo.join(', ') }}</strong>.
+        </app-warning>
 
         <div class="nav-buttons">
           <div></div>
