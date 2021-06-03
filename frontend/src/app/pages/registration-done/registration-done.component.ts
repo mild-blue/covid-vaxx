@@ -1,5 +1,5 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
-import { Component, OnInit } from '@angular/core';
+import { Component } from '@angular/core';
 import { Router } from '@angular/router';
 import { PatientService } from '@app/services/patient/patient.service';
 import { environment } from '@environments/environment';
@@ -13,7 +13,7 @@ import { defaultLocation, defaultMapLocation, VaccinationLocation } from '@app/m
   templateUrl: './registration-done.component.html',
   styleUrls: ['./registration-done.component.scss']
 })
-export class RegistrationDoneComponent implements OnInit {
+export class RegistrationDoneComponent {
 
   public patientData?: PatientData;
   public confirmation?: RegistrationConfirmation;
@@ -26,12 +26,10 @@ export class RegistrationDoneComponent implements OnInit {
               private _confirmationService: ConfirmationService,
               private _patientService: PatientService) {
     this._patientService.patientObservable.subscribe(patient => this.patientData = patient);
-    this._confirmationService.confirmationObservable.subscribe(confirmation => this.confirmation = confirmation);
-  }
-
-  async ngOnInit(): Promise<void> {
-    await this._initLocation();
-    this._initMap();
+    this._confirmationService.confirmationObservable.subscribe(confirmation => {
+      this.confirmation = confirmation;
+      this._initLocation();
+    });
   }
 
   handleStartAgain() {
@@ -51,6 +49,9 @@ export class RegistrationDoneComponent implements OnInit {
       this.location = defaultLocation;
     } finally {
       this.loading = false;
+
+      // Init map afterwards
+      this._initMap();
     }
   }
 
