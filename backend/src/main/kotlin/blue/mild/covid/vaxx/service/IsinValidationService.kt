@@ -6,28 +6,34 @@ import blue.mild.covid.vaxx.dto.internal.IsinValidationResultStatus
 import blue.mild.covid.vaxx.dto.request.PatientRegistrationDtoIn
 import blue.mild.covid.vaxx.utils.normalizePersonalNumber
 import com.fasterxml.jackson.databind.JsonNode
-import io.ktor.client.*
-import io.ktor.client.call.*
-import io.ktor.client.engine.apache.*
-import io.ktor.client.features.*
-import io.ktor.client.features.json.*
-import io.ktor.client.features.logging.*
-import io.ktor.client.request.*
-import io.ktor.client.statement.*
+import io.ktor.client.HttpClient
+import io.ktor.client.HttpClientConfig
+import io.ktor.client.call.receive
+import io.ktor.client.engine.apache.Apache
+import io.ktor.client.engine.apache.ApacheEngineConfig
+import io.ktor.client.features.HttpTimeout
+import io.ktor.client.features.json.JacksonSerializer
+import io.ktor.client.features.json.JsonFeature
+import io.ktor.client.request.get
+import io.ktor.client.statement.HttpResponse
 import mu.KLogging
 import org.apache.http.ssl.SSLContextBuilder
 import java.io.ByteArrayInputStream
 import java.security.KeyStore
-import java.util.*
+import java.util.Base64
+import java.util.Locale
 
 private const val URL_NAJDI_PACIENTA = "pacienti/VyhledatDleJmenoPrijmeniRc"
+
+private const val REQUEST_TIMEOUT_MILLIS: Long = 15000
 
 class IsinValidationService(
     private val configuration: IsinConfigurationDto
 ) {
     private val isinClient = client(configuration)
 
-    private val userIdentification = "?pcz=${configuration.pracovnik.pcz}&pracovnikNrzpCislo=${configuration.pracovnik.nrzpCislo}"
+    private val userIdentification =
+        "?pcz=${configuration.pracovnik.pcz}&pracovnikNrzpCislo=${configuration.pracovnik.nrzpCislo}"
 
     private companion object : KLogging()
 
@@ -82,7 +88,12 @@ class IsinValidationService(
         return isinClient.get<HttpResponse>(url)
     }
 
-    private fun createIsinURL(requestUrl: String, baseUrl: String = configuration.rootUrl, parameters: List<Any> = listOf(), includeIdentification: Boolean = true): String {
+    private fun createIsinURL(
+        requestUrl: String,
+        baseUrl: String = configuration.rootUrl,
+        parameters: List<Any> = listOf(),
+        includeIdentification: Boolean = true
+    ): String {
         val parametersUrl = parameters.map { it.toString() }.joinToString(separator = "/")
         return "$baseUrl/$requestUrl/$parametersUrl${if (includeIdentification) userIdentification else ""}"
     }
@@ -96,7 +107,7 @@ class IsinValidationService(
             }
 
             install(HttpTimeout) {
-                requestTimeoutMillis = 15000
+                requestTimeoutMillis = REQUEST_TIMEOUT_MILLIS
             }
 
             configureCertificates(config)

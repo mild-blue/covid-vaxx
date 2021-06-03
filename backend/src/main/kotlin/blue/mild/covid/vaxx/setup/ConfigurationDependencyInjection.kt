@@ -1,6 +1,12 @@
 package blue.mild.covid.vaxx.setup
 
-import blue.mild.covid.vaxx.dto.config.*
+import blue.mild.covid.vaxx.dto.config.CorsConfigurationDto
+import blue.mild.covid.vaxx.dto.config.DatabaseConfigurationDto
+import blue.mild.covid.vaxx.dto.config.IsinConfigurationDto
+import blue.mild.covid.vaxx.dto.config.JwtConfigurationDto
+import blue.mild.covid.vaxx.dto.config.MailJetConfigurationDto
+import blue.mild.covid.vaxx.dto.config.RateLimitConfigurationDto
+import blue.mild.covid.vaxx.dto.config.ReCaptchaVerificationConfigurationDto
 import blue.mild.covid.vaxx.dto.response.ApplicationInformationDtoOut
 import blue.mild.covid.vaxx.isin.Pracovnik
 import blue.mild.covid.vaxx.utils.createLogger
@@ -107,15 +113,15 @@ fun DI.MainBuilder.bindConfiguration() {
     bind<IsinConfigurationDto>() with singleton {
         val certPassword = requireEnv(EnvVariables.ISIN_CERT_PASSWORD)
 
-        // TODO: certificate password decryption
-        /*val ksmKeyId = getEnvOrLogDefault(EnvVariables.KMS_KEY_ID, "")
-        if(!ksmKeyId.isEmpty()) {
-            val kmsClient: AWSKMS = AWSKMSClientBuilder.standard().build()
-            val encryptedCertKey: ByteBuffer = ByteBuffer.wrap(certPassword.toByteArray())
-            val req: DecryptRequest = DecryptRequest().withCiphertextBlob(encryptedCertKey).withKeyId(ksmKeyId);
-            val decryptedCertKey: ByteBuffer = kmsClient.decrypt(req).getPlaintext();
-            certPassword = decryptedCertKey.toString()
-        }*/
+//        // TODO certificate password decryption
+//        val ksmKeyId = getEnvOrLogDefault(EnvVariables.KMS_KEY_ID, "")
+//        if(!ksmKeyId.isEmpty()) {
+//            val kmsClient: AWSKMS = AWSKMSClientBuilder.standard().build()
+//            val encryptedCertKey: ByteBuffer = ByteBuffer.wrap(certPassword.toByteArray())
+//            val req: DecryptRequest = DecryptRequest().withCiphertextBlob(encryptedCertKey).withKeyId(ksmKeyId);
+//            val decryptedCertKey: ByteBuffer = kmsClient.decrypt(req).getPlaintext();
+//            certPassword = decryptedCertKey.toString()
+//        }
 
         val pracovnik = Pracovnik(
             nrzpCislo = getEnvOrLogDefault(EnvVariables.ISIN_PRACOVNIK_NRZP_CISLO, "172319367"),
