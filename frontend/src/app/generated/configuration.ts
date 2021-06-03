@@ -88,15 +88,15 @@ export class Configuration {
 
   /**
    * Select the correct accept content-type to use for a request.
-     * Uses {@link Configuration#isJsonMime} to determine the correct accept content-type.
-     * If no content type is found return the first found type if the contentTypes is not empty
-     * @param accepts - the array of content types that are available for selection.
-     * @returns the selected content-type or <code>undefined</code> if no selection could be made.
-     */
-    public selectHeaderAccept(accepts: string[]): string | undefined {
-        if (accepts.length === 0) {
-            return undefined;
-        }
+   * Uses {@link Configuration#isJsonMime} to determine the correct accept content-type.
+   * If no content type is found return the first found type if the contentTypes is not empty
+   * @param accepts - the array of content types that are available for selection.
+   * @returns the selected content-type or <code>undefined</code> if no selection could be made.
+   */
+  public selectHeaderAccept(accepts: string[]): string | undefined {
+    if (accepts.length === 0) {
+      return undefined;
+    }
 
         const type = accepts.find((x: string) => this.isJsonMime(x));
         if (type === undefined) {

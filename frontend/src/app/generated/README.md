@@ -173,6 +173,7 @@ import { BASE_PATH } from '';
 export class AppModule {}
 ```
 
+
 #### Using @angular/cli
 First extend your `src/environments/*.ts` files by adding the corresponding base path:
 
