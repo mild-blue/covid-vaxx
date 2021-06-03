@@ -75,6 +75,16 @@ const maskConfig: Partial<IConfig> = {
   showMaskTyped: true
 };
 
+// For Seznam maps
+declare global {
+  interface Window {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    JAK: any;
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    SMap: any;
+  }
+}
+
 @NgModule({
   declarations: [
     AppComponent,

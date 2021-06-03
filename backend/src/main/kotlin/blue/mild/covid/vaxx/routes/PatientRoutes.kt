@@ -81,7 +81,7 @@ fun NormalOpenAPIRoute.patientRoutes() {
             val patientId = patientService.savePatient(asContextAware(patientRegistration), isIsinValidated)
             logger.info { "Patient saved to the database with id: ${patientId}. Booking slot." }
             try {
-                val slot = vaccinationSlotService.bookSlotForPatient(patientId = patientId)
+                val slot = vaccinationSlotService.bookSlotForPatient(patientId)
                 val location = locationService.getLocationById(slot.locationId)
                 logger.info { "Slot booked: ${slot.id} for patient ${patientId}." }
                 logger.info { "Registration completed for patient ${patientId}." }

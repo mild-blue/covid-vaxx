@@ -9,11 +9,15 @@
  * https://openapi-generator.tech
  * Do not edit the class manually.
  */
+import { PhoneNumberDtoIn } from './phoneNumberDtoIn';
 
 
-export interface ConfirmationDtoIn {
-  covid19VaccinationAgreement: boolean;
-  gdprAgreement: boolean;
-  healthStateDisclosureConfirmation: boolean;
+export interface LocationDtoIn {
+  address: string;
+  district: string;
+  email?: string | null;
+  notes?: string | null;
+  phoneNumber?: PhoneNumberDtoIn;
+  zipCode: number;
 }
 

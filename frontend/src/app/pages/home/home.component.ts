@@ -7,6 +7,7 @@ import { ActivatedRoute, Router } from '@angular/router';
 import { PatientData } from '@app/model/PatientData';
 import { ReCaptchaV3Service } from 'ng-recaptcha';
 import { AnsweredQuestion } from '@app/model/AnsweredQuestion';
+import { ConfirmationService } from '@app/services/confirmation/confirmation.service';
 
 @Component({
   selector: 'app-home',
@@ -30,6 +31,7 @@ export class HomeComponent {
               private _questionService: QuestionService,
               private _patientService: PatientService,
               private _recaptchaV3Service: ReCaptchaV3Service,
+              private _confirmationService: ConfirmationService,
               private _alertService: AlertService) {
     this.patient = HomeComponent._initEmptyPatient(this._questionService.questionsValue);
 
@@ -62,7 +64,7 @@ export class HomeComponent {
 
     try {
       const token = await this._recaptchaV3Service.execute('patientRegistration').toPromise();
-      await this._patientService.savePatientInfo(
+      this._confirmationService.registrationConfirmation = await this._patientService.savePatientInfo(
         token,
         this.patient,
         this.agreementCheckboxValue,

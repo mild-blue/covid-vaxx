@@ -2,6 +2,7 @@ package blue.mild.covid.vaxx.utils
 
 import blue.mild.covid.vaxx.dao.model.DatabaseSetup
 import blue.mild.covid.vaxx.dto.config.DatabaseConfigurationDto
+import blue.mild.covid.vaxx.dto.config.RateLimitConfigurationDto
 import blue.mild.covid.vaxx.security.auth.JwtService
 import blue.mild.covid.vaxx.security.auth.UserPrincipal
 import blue.mild.covid.vaxx.security.auth.registerJwtAuth
@@ -28,6 +29,7 @@ import org.kodein.di.instance
 import org.kodein.di.ktor.closestDI
 import org.kodein.di.ktor.di
 import org.kodein.di.singleton
+import java.time.Duration
 import kotlin.test.assertEquals
 import kotlin.test.assertNotNull
 
@@ -45,6 +47,14 @@ open class DiAwareTestBase {
 
         // disable migration on startup, instead migrate during tests
         bind<Boolean>("should-migrate") with singleton { false }
+        // disable rate limiting
+        bind<RateLimitConfigurationDto>() with singleton {
+            RateLimitConfigurationDto(
+                enableRateLimiting = false,
+                rateLimit = 0,
+                rateLimitDuration = Duration.ofMinutes(0L)
+            )
+        }
 
         overrideDIContainer()?.let { extend(it, allowOverride = true) }
     }

@@ -2,9 +2,14 @@ package blue.mild.covid.vaxx.routes
 
 import blue.mild.covid.vaxx.dao.model.EntityId
 import blue.mild.covid.vaxx.dao.model.InsuranceCompany
+import blue.mild.covid.vaxx.dao.model.Questions
+import blue.mild.covid.vaxx.dao.model.VaccinationSlots
 import blue.mild.covid.vaxx.dao.repository.PatientRepository
+import blue.mild.covid.vaxx.dto.request.AnswerDtoIn
+import blue.mild.covid.vaxx.dto.request.ConfirmationDtoIn
 import blue.mild.covid.vaxx.dto.request.CreateVaccinationSlotsDtoIn
 import blue.mild.covid.vaxx.dto.request.LocationDtoIn
+import blue.mild.covid.vaxx.dto.request.PatientRegistrationDtoIn
 import blue.mild.covid.vaxx.dto.request.PatientVaccinationSlotSelectionDtoIn
 import blue.mild.covid.vaxx.dto.request.PhoneNumberDtoIn
 import blue.mild.covid.vaxx.dto.request.query.VaccinationSlotStatus
@@ -12,10 +17,16 @@ import blue.mild.covid.vaxx.dto.response.VaccinationSlotDtoOut
 import blue.mild.covid.vaxx.service.LocationService
 import blue.mild.covid.vaxx.service.VaccinationSlotService
 import blue.mild.covid.vaxx.utils.ServerTestBase
+import blue.mild.covid.vaxx.utils.generatePersonalNumber
 import io.ktor.http.HttpMethod
 import io.ktor.http.HttpStatusCode
 import io.ktor.server.testing.handleRequest
+import kotlinx.coroutines.async
+import kotlinx.coroutines.awaitAll
 import kotlinx.coroutines.runBlocking
+import org.jetbrains.exposed.sql.select
+import org.jetbrains.exposed.sql.selectAll
+import org.jetbrains.exposed.sql.transactions.transaction
 import org.junit.jupiter.api.Test
 import org.kodein.di.DI
 import org.kodein.di.instance
@@ -130,6 +141,79 @@ class VaccinationSlotRoutesTest : ServerTestBase() {
         }
     }
 
+    @Test
+    fun `test concurrent booking`() = withTestApplication {
+        val from = 1000000L
+        val to = 5000000L
+        val createSlots = CreateVaccinationSlotsDtoIn(
+            locationId = locationId,
+            from = Instant.ofEpochMilli(from),
+            to = Instant.ofEpochMilli(to),
+            durationMillis = 100000L,
+            bandwidth = 5,
+        )
+
+        val vaccinationSlotService by closestDI().instance<VaccinationSlotService>()
+        val totalSlots = runBlocking { vaccinationSlotService.addSlots(createSlots) }.size
+
+        val answers = transaction {
+            Questions.selectAll().map { AnswerDtoIn(it[Questions.id], true) }
+        }
+        val generatePatient: () -> PatientRegistrationDtoIn = { generatePatientRegistrationDto(answers) }
+        val bookedSlots = runBlocking {
+            (0 until totalSlots).map {
+                async {
+                    handleRequest(HttpMethod.Post, "${Routes.patient}?captcha=disabled") {
+                        jsonBody(generatePatient())
+                    }.run {
+                        expectStatus(HttpStatusCode.OK)
+                        receive<VaccinationSlotDtoOut>()
+                    }
+                }
+            }.awaitAll()
+        }
+
+        assertEquals(totalSlots, bookedSlots.size)
+        // check that each slot was booked just once
+        bookedSlots.groupBy({ it.id }, { it.patientId })
+            .forEach { (_, patientId) ->
+                assertEquals(1, patientId.count())
+            }
+
+        val totalSlotsInDatabase = transaction { VaccinationSlots.selectAll().count().toInt() }
+        assertEquals(totalSlots, totalSlotsInDatabase)
+
+        val bookedSlotsInDatabase = transaction { VaccinationSlots.select { VaccinationSlots.patientId.isNotNull() }.count().toInt() }
+        assertEquals(totalSlots, bookedSlotsInDatabase)
+
+        val freeSlots = transaction { VaccinationSlots.select { VaccinationSlots.patientId.isNull() }.count().toInt() }
+        assertEquals(0, freeSlots)
+
+        val patientsSlots = transaction {
+            VaccinationSlots.selectAll()
+                .groupBy { it[VaccinationSlots.patientId] }.mapValues { (_, rows) -> rows.count() }
+        }
+        assertEquals(totalSlots, patientsSlots.size)
+        patientsSlots.forEach { (_, count) -> assertEquals(1, count) }
+    }
+
+    private fun generatePatientRegistrationDto(answers: List<AnswerDtoIn>) = PatientRegistrationDtoIn(
+        firstName = UUID.randomUUID().toString(),
+        lastName = UUID.randomUUID().toString(),
+        zipCode = 1600,
+        district = "Praha 6",
+        personalNumber = generatePersonalNumber(),
+        phoneNumber = PhoneNumberDtoIn("721680111", "CZ"),
+        email = "${UUID.randomUUID()}@mild.blue",
+        insuranceCompany = InsuranceCompany.values().random(),
+        indication = null,
+        answers = answers,
+        confirmation = ConfirmationDtoIn(
+            healthStateDisclosureConfirmation = true,
+            covid19VaccinationAgreement = true,
+            gdprAgreement = true
+        )
+    )
 
     @Test
     @Suppress("LongMethod", "ComplexMethod") // its whole flow test, that's fine
