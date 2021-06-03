@@ -42,7 +42,7 @@ import org.kodein.di.instance
 /**
  * Routes related to patient entity.
  */
-@Suppress("LongMethod", "TooGenericExceptionCaught") // this is routing, that's fine plus we need not to save
+@Suppress("LongMethod", "TooGenericExceptionCaught", "ThrowsCount") // this is routing, that's fine plus we need not to save
 // patient in case any issue during processing happens
 fun NormalOpenAPIRoute.patientRoutes() {
     val logger = createLogger("PatientRoutes")
