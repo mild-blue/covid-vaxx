@@ -81,9 +81,10 @@
       <h2>Kde naleznete certifikát o očkování?</h2>
       <mat-card>
         <mat-card-content>
-          <p>Na portálu ocko.uzis.cz (Očkovací portál občana) lze certifikát stáhnout a vytisknout.
+          <p>Na portálu <a href="https://ocko.uzis.cz" target="_blank">ocko.uzis.cz</a> (Očkovací portál občana) lze certifikát stáhnout a vytisknout.
             Certifikát Vám bude zároveň poslán e-mailem, který jste zadávali při registraci na očkování.
-            V případě dotazů se obraťte na infolinku Prahy 7 každý všední den od 8:00 do 16:00 hodin na čísle: 734 521 840</p>
+            V případě dotazů se obraťte na infolinku Prahy 7 každý všední den od 8:00 do 16:00 hodin na čísle: {{ location ? (location.phoneNumber | phoneNumber) : '734 521 840' }}
+          </p>
           <p>Aktuality najdete na: <a href="https://www.praha7.cz/ockovani" target="_blank">www.praha7.cz/ockovani</a></p>
           <p>Další informace naleznete <a href="https://koronavirus.mzcr.cz/ockovani-proti-covid-19/" target="_blank">zde</a>.</p>
           <br>
