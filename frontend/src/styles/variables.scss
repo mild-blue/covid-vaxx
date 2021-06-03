@@ -1,5 +1,13 @@
 @import "definitions/colors";
 
+$primary: $blue;
+$secondary: $light-blue;
+$body-bg: $light-blue;
+$body-color: $dark-blue;
+$font-weight-base: 300;
+$font-family-base: 'Poppins', sans-serif;
+$font-family-secondary: 'Archia', sans-serif;
+
 // CONTAINER
 $container-max-width: 650px;
 $container-max-width--wide: 1360px;

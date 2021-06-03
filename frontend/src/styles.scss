@@ -1,10 +1,18 @@
+@import url('https://fonts.googleapis.com/css2?family=Poppins:ital,wght@0,100;0,300;0,400;0,500;0,600;0,800;0,900;1,700&display=swap');
+
+@import "styles/definitions/fonts";
+
 @import "styles/elements/html";
 @import "styles/elements/body";
 @import "styles/elements/main";
 @import "styles/elements/a";
+@import "styles/elements/headings";
+@import "styles/elements/strong";
 
 // Vendor overrides
-@import "styles/vendor/mat-typography";
+@import "styles/vendor/mat-theme";
+@import "styles/vendor/mat-card";
+@import "styles/vendor/mat-stepper";
 @import "styles/vendor/mat-form-field";
 @import "styles/vendor/mat-toolbar";
 @import "styles/vendor/mat-badge";

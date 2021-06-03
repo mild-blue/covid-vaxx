@@ -1,6 +1,10 @@
 @import "../variables";
 
-.mat-button, .mat-raised-button {
+button.mat-button, button.mat-raised-button {
+  font-family: $font-family-base;
+  font-size: 16px;
+  line-height: 45px;
+
   mat-icon {
     font-size: 16px;
     height: 18px;
