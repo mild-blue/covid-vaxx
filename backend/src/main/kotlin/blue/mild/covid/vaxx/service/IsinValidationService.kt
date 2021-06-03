@@ -9,6 +9,7 @@ import com.fasterxml.jackson.databind.JsonNode
 import io.ktor.client.*
 import io.ktor.client.call.*
 import io.ktor.client.engine.apache.*
+import io.ktor.client.features.*
 import io.ktor.client.features.json.*
 import io.ktor.client.features.logging.*
 import io.ktor.client.request.*
@@ -58,7 +59,8 @@ class IsinValidationService(
         logger.debug { "Isin result: ${result}, message: ${json.get("vysledekZprava").textValue()}" }
 
         return when (result) {
-            VyhledaniPacientaResult.PacientNalezen.name ->
+            VyhledaniPacientaResult.PacientNalezen.name,
+            VyhledaniPacientaResult.NalezenoVicePacientu.name ->
                 IsinValidationResultDto(
                     status = IsinValidationResultStatus.PATIENT_FOUND,
                     patientId = json.get("pacient").get("id").textValue()
@@ -91,6 +93,10 @@ class IsinValidationService(
         HttpClient(Apache) {
             install(JsonFeature) {
                 serializer = JacksonSerializer()
+            }
+
+            install(HttpTimeout) {
+                requestTimeoutMillis = 15000
             }
 
             configureCertificates(config)
