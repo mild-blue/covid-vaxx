@@ -5,9 +5,13 @@ button.mat-button, button.mat-raised-button {
   font-size: 16px;
   line-height: 45px;
 
+  @include media-breakpoint-down(sm) {
+    font-size: 14px;
+  }
+
   mat-icon {
-    font-size: 16px;
-    height: 18px;
+    font-size: 18px;
+    height: 20px;
   }
 }
 

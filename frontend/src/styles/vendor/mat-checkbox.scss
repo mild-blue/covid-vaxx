@@ -1,0 +1,10 @@
+@import "../variables";
+
+.mat-checkbox {
+  font-family: $font-family-base;
+  font-size: 14px;
+
+  button.mat-button {
+    font-size: 14px;
+  }
+}

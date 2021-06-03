@@ -5,13 +5,13 @@ mat-button-toggle {
 
   &.mat-button-toggle-checked {
     &.true {
-      background-color: rgba($success, 0.2);
-      color: $success;
+      background-color: rgba($danger, 0.2);
+      color: $danger;
     }
 
     &.false {
-      background-color: rgba($danger, 0.2);
-      color: $danger;
+      background-color: rgba($success, 0.2);
+      color: $success;
     }
   }
 
@@ -24,4 +24,8 @@ mat-card {
   padding-top: 0;
   padding-bottom: 0;
   height: 100%;
+
+  mat-button-toggle-group {
+    margin-left: 20px;
+  }
 }

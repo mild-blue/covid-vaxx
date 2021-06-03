@@ -1,4 +1,5 @@
 @import "../../../styles/variables";
+@import "../../../styles/breakpoints";
 
 $icon-size: 40px;
 $animation-speed: 0.5;
@@ -21,9 +22,18 @@ $animation-delay: 0.1;
 
     padding: 15px 15px 15px 0;
 
+    @include media-breakpoint-down(sm) {
+      flex-direction: column;
+      padding: 15px;
+    }
+
     img, mat-icon {
       width: $icon-size;
       margin: 0 30px;
+
+      @include media-breakpoint-down(sm) {
+        margin: 0 0 30px;
+      }
     }
 
     mat-icon {

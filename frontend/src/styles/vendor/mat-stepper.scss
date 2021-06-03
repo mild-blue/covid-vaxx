@@ -2,4 +2,8 @@
 
 .mat-stepper-vertical, .mat-stepper-horizontal {
   font-family: $font-family-base;
+
+  .mat-horizontal-content-container {
+    padding: 0;
+  }
 }
