@@ -18,10 +18,6 @@ mat-card-content:not(.vertical) .row {
     @include media-breakpoint-down(sm) {
       width: 100%;
       margin: 0;
-
-      &:last-child {
-        margin-top: 20px;
-      }
     }
   }
 }

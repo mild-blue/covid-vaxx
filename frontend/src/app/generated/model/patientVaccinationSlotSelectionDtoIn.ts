@@ -11,9 +11,7 @@
  */
 
 
-export interface ConfirmationDtoIn {
-  covid19VaccinationAgreement: boolean;
-  gdprAgreement: boolean;
-  healthStateDisclosureConfirmation: boolean;
+export interface PatientVaccinationSlotSelectionDtoIn {
+  patientId: string;
 }
 

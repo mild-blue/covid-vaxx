@@ -1,8 +1,17 @@
 @import "../../../styles/variables";
 
 .warning {
-  background: lighten($warning, 45%);
-  color: $warning;
   margin: 30px auto;
-  text-align: center;
+  padding: 15px 30px;
+  background: $warning-bg;
+  color: $warning-color;
+  border: 1px solid $warning-border-color;
+  border-radius: 6px;
+
+  display: flex;
+  align-items: center;
+
+  mat-icon {
+    margin-right: 20px;
+  }
 }
