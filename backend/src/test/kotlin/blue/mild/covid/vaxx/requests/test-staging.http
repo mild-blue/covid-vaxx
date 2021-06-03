@@ -16,15 +16,15 @@ Content-Type: application/json
 Authorization: Bearer {{auth_token}}
 
 {
-  "address": "Markova 123",
+  "address": "Testovaci 123",
   "district": "Praha 7",
-  "email": "prh7@praha7.cz",
-  "notes": "Nic moc zvlastniho",
+  "email": "ockovani@praha7.cz",
+  "notes": "Testovaci mistnost",
   "phoneNumber": {
     "countryCode": "CZ",
-    "number": "777123456"
+    "number": "734521840"
   },
-  "zipCode": 16001
+  "zipCode": 17000
 }
 > {% client.global.set("location_id", response.body["id"]); %}
 ###
@@ -35,10 +35,10 @@ Authorization: Bearer {{auth_token}}
 
 {
   "locationId": "{{location_id}}",
-  "from": "2017-01-23T12:34:56.123456789Z",
-  "to": "2017-01-23T20:34:56.123456789Z",
+  "from": "2021-06-07T15:00:00.00000000Z",
+  "to": "2021-06-07T22:00:00.00000000Z",
   "bandwidth": 2,
-  "durationMillis": 600000
+  "durationMillis": 180000
 }
 
 ###
