@@ -2,13 +2,13 @@
   <mat-card-content>
     <form>
       <ng-container *ngFor="let question of patient.questionnaire">
-        <app-form-field>
+        <app-patient-data-item>
           <mat-label>{{ question.label }}</mat-label>
           <mat-button-toggle-group [(ngModel)]="question.answer" [name]="question.name">
             <mat-button-toggle [value]="true" [class.true]="question.answer === true">Ano</mat-button-toggle>
             <mat-button-toggle [value]="false" [class.false]="question.answer === false">Ne</mat-button-toggle>
           </mat-button-toggle-group>
-        </app-form-field>
+        </app-patient-data-item>
         <mat-divider></mat-divider>
       </ng-container>
     </form>

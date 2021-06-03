@@ -1,6 +1,5 @@
 import { Component, ViewChild } from '@angular/core';
 import { FormBuilder, NgForm } from '@angular/forms';
-import { InsuranceCompany } from '@app/model/InsuranceCompany';
 import { QuestionService } from '@app/services/question/question.service';
 import { PatientService } from '@app/services/patient/patient.service';
 import { AlertService } from '@app/services/alert/alert.service';
@@ -19,7 +18,7 @@ export class HomeComponent {
   @ViewChild('patientForm') patientForm?: NgForm;
 
   public patient?: PatientData;
-  public allInsuranceCompanies: string[] = Object.values(InsuranceCompany);
+  public missingInfo: string[] = [];
 
   public agreementCheckboxValue: boolean = false;
   public confirmationCheckboxValue: boolean = false;
@@ -90,6 +89,13 @@ export class HomeComponent {
       zipCode: '',
       district: '',
       questionnaire: emptyQuestions
+    };
+  }
+
+  updatePatient(data: PatientData) {
+    this.patient = {
+      ...this.patient,
+      ...data
     };
   }
 }

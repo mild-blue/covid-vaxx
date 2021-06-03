@@ -6,17 +6,23 @@
   <mat-horizontal-stepper [linear]="true">
 
     <!-- 1. Osobní informace -->
-    <mat-step #firstStep [completed]="patientForm.valid" label="Osobní informace">
-      <app-container>
-        <form #patientForm="ngForm">
-          <app-patient-info-form [patient]="patient"></app-patient-info-form>
-        </form>
+    <mat-step #firstStep [completed]="!missingInfo.length" label="Osobní informace">
+      <app-container [wide]="true">
+        <app-patient-info-form [patient]="patient"
+                               (missingInfo)="this.missingInfo = $event"
+                               (patientUpdated)="updatePatient($event)"></app-patient-info-form>
+
+        <div *ngIf="missingInfo.length" class="missing-info-warning">
+          <mat-icon>warning</mat-icon>
+          <span>Pro pokračování vyplňte následující informace: <strong>{{ missingInfo.join(', ') }}</strong>.</span>
+        </div>
 
         <div class="nav-buttons">
           <div></div>
           <button [disabled]="!firstStep.completed"
                   color="primary" mat-raised-button matStepperNext>
             Další krok
+            <mat-icon>arrow_forward</mat-icon>
           </button>
         </div>
       </app-container>
@@ -28,11 +34,13 @@
         <app-patient-questions-form [patient]="patient"></app-patient-questions-form>
         <div class="nav-buttons">
           <button color="secondary" mat-raised-button matStepperPrevious>
+            <mat-icon>arrow_back</mat-icon>
             Předchozí krok
           </button>
           <button [disabled]="!secondStep.completed"
                   color="primary" mat-raised-button matStepperNext>
             Další krok
+            <mat-icon>arrow_forward</mat-icon>
           </button>
         </div>
       </app-container>
@@ -61,12 +69,14 @@
 
         <div class="nav-buttons">
           <button color="secondary" mat-raised-button matStepperPrevious>
+            <mat-icon>arrow_back</mat-icon>
             Předchozí krok
           </button>
           <button (click)="submit()"
                   [disabled]="!thirdStep.completed"
                   color="primary" mat-raised-button matStepperNext>
             Odeslat požadavek
+            <mat-icon>done</mat-icon>
           </button>
         </div>
       </app-container>

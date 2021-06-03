@@ -246,10 +246,6 @@
           "rxjs/Rx",
           "firebase"
         ],
-        "no-restricted-syntax": [
-          "error",
-          "ForInStatement"
-        ],
         "no-return-await": "error",
         "no-throw-literal": "error",
         "no-trailing-spaces": "error",

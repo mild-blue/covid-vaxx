@@ -34,7 +34,7 @@ import { MatBadgeModule } from '@angular/material/badge';
 import { BackButtonComponent } from './components/back-button/back-button.component';
 import { NoPatientFoundComponent } from './components/dialogs/no-patient-found/no-patient-found.component';
 import { PatientDataComponent } from './components/patient-data/patient-data.component';
-import { FormFieldComponent } from './components/form-field/form-field.component';
+import { PatientDataItemComponent } from './components/patient-data-item/patient-data-item.component';
 import { InfoComponent } from './pages/info/info.component';
 import { GdprComponent } from './components/dialogs/gdpr/gdpr.component';
 import { RECAPTCHA_V3_SITE_KEY, RecaptchaV3Module } from 'ng-recaptcha';
@@ -64,8 +64,16 @@ import { ConfirmPatientDataComponent } from './components/dialogs/confirm-patien
 import { WarningComponent } from './components/warning/warning.component';
 import { BodyPartPipe } from './pipes/body-part/body-part.pipe';
 import { BodyPartInflectedPipe } from './pipes/body-part-inflected/body-part-inflected.pipe';
+import { FormFieldComponent } from './components/form-field/form-field.component';
+import { IConfig, NgxMaskModule } from 'ngx-mask';
 
 registerLocaleData(localeCs);
+
+const maskConfig: Partial<IConfig> = {
+  validation: true,
+  dropSpecialCharacters: false,
+  showMaskTyped: true
+};
 
 @NgModule({
   declarations: [
@@ -79,7 +87,7 @@ registerLocaleData(localeCs);
     BackButtonComponent,
     NoPatientFoundComponent,
     PatientDataComponent,
-    FormFieldComponent,
+    PatientDataItemComponent,
     InfoComponent,
     GdprComponent,
     RegistrationDoneComponent,
@@ -106,7 +114,8 @@ registerLocaleData(localeCs);
     ConfirmPatientDataComponent,
     WarningComponent,
     BodyPartPipe,
-    BodyPartInflectedPipe
+    BodyPartInflectedPipe,
+    FormFieldComponent
   ],
   imports: [
     BrowserModule,
@@ -134,7 +143,8 @@ registerLocaleData(localeCs);
     RecaptchaV3Module,
     NgxMatIntlTelInputModule,
     MatDatepickerModule,
-    MatMomentDateModule
+    MatMomentDateModule,
+    NgxMaskModule.forRoot(maskConfig)
   ],
   providers: [
     { provide: LOCALE_ID, useValue: 'cs-CZ' },

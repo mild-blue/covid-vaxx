@@ -1,0 +1,13 @@
+@import "../../../styles/breakpoints";
+
+.data-item {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 10px 0;
+
+  ::ng-deep mat-label:not(:last-of-type) {
+    padding-right: 20px;
+  }
+}
