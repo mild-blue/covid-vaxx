@@ -14,15 +14,18 @@ import blue.mild.covid.vaxx.error.NoVaccinationSlotsFoundException
 import blue.mild.covid.vaxx.error.entityNotFound
 import blue.mild.covid.vaxx.utils.defaultPostgresFrom
 import blue.mild.covid.vaxx.utils.defaultPostgresTo
+import kotlinx.coroutines.sync.Mutex
+import kotlinx.coroutines.sync.withLock
 import mu.KLogging
 import org.jetbrains.exposed.sql.Column
 import org.jetbrains.exposed.sql.Op
 import org.jetbrains.exposed.sql.SqlExpressionBuilder
 import org.jetbrains.exposed.sql.and
+import org.jetbrains.exposed.sql.select
 import org.jetbrains.exposed.sql.transactions.experimental.newSuspendedTransaction
+import org.jetbrains.exposed.sql.update
 import pw.forst.katlib.validate
 import pw.forst.katlib.whenFalse
-import java.sql.Connection.TRANSACTION_SERIALIZABLE
 import java.time.Instant
 
 
@@ -102,6 +105,36 @@ class VaccinationSlotService(
         return vaccinationSlotRepository.getAndMap(filter, limit)
     }
 
+
+    private val slotsBookingMutex = Mutex()
+
+    /**
+     * Book a vaccination slot for the patient.
+     */
+    suspend fun bookSlotForPatient(patientId: EntityId) =
+    // TODO this is reeeeeaaaaallly poor man's solution, but it works.. see concurrent booking test
+    // we need to achieve atomic update in the database, but unfortunately postgres does not support limit on update
+    // and we don't want to block whole table..
+        // also transaction serialization didn't work for some reason
+        slotsBookingMutex.withLock {
+            newSuspendedTransaction {
+                VaccinationSlots
+                    .select { VaccinationSlots.patientId.isNull() }
+                    .limit(1)
+                    .singleOrNull()
+                    ?.getOrNull(VaccinationSlots.id)
+                    ?.let { slotId ->
+                        VaccinationSlots.update(
+                            where = { VaccinationSlots.id eq slotId },
+                            body = { it[VaccinationSlots.patientId] = patientId },
+                        ) == 1
+                    }
+            }
+        }.takeIf { it == true }?.let {
+            vaccinationSlotRepository.getAndMap({ VaccinationSlots.patientId eq patientId }, 1).singleOrNull()
+        } ?: throw NoVaccinationSlotsFoundException()
+
+
     /**
      * Book a vaccination slot for the patient with given requirements
      * using AND clause. If property is null, we ignore it.
@@ -112,23 +145,25 @@ class VaccinationSlotService(
         locationId: EntityId? = null,
         from: Instant? = null,
         to: Instant? = null
-    ): VaccinationSlotDtoOut = newSuspendedTransaction(transactionIsolation = TRANSACTION_SERIALIZABLE) {
-        getSlotsByConjunctionOf(
-            slotId = slotId,
-            locationId = locationId,
-            from = from,
-            to = to,
-            status = VaccinationSlotStatus.ONLY_FREE,
-            // select a single slot
-            limit = 1
-        ).singleOrNull()?.apply {
-            // book slot for the given patient
-            vaccinationSlotRepository.updateVaccinationSlot(
-                vaccinationSlotId = this.id,
-                patientId = patientId,
-            )
-        }?.let { getSlotsByConjunctionOf(slotId = it.id).single() }
-    } ?: throw NoVaccinationSlotsFoundException()
+    ): VaccinationSlotDtoOut = slotsBookingMutex.withLock {
+        newSuspendedTransaction {
+            getSlotsByConjunctionOf(
+                slotId = slotId,
+                locationId = locationId,
+                from = from,
+                to = to,
+                status = VaccinationSlotStatus.ONLY_FREE,
+                // select a single slot
+                limit = 1
+            ).singleOrNull()?.apply {
+                // book slot for the given patient
+                vaccinationSlotRepository.updateVaccinationSlot(
+                    vaccinationSlotId = this.id,
+                    patientId = patientId,
+                )
+            }
+        }
+    }?.let { getSlotsByConjunctionOf(slotId = it.id).single() } ?: throw NoVaccinationSlotsFoundException()
 
 
     private inline fun <reified T> Op<Boolean>.andWithIfNotEmpty(value: T?, column: Column<T>): Op<Boolean> =
