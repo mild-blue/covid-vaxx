@@ -125,7 +125,7 @@ class VaccinationSlotService(
                     ?.getOrNull(VaccinationSlots.id)
                     ?.let { slotId ->
                         VaccinationSlots.update(
-                            where = { VaccinationSlots.id eq slotId },
+                            where = { VaccinationSlots.id eq slotId and VaccinationSlots.patientId.isNull() },
                             body = { it[VaccinationSlots.patientId] = patientId },
                         ) == 1
                     }
@@ -155,15 +155,16 @@ class VaccinationSlotService(
                 status = VaccinationSlotStatus.ONLY_FREE,
                 // select a single slot
                 limit = 1
-            ).singleOrNull()?.apply {
+            ).singleOrNull()?.let {
                 // book slot for the given patient
-                vaccinationSlotRepository.updateVaccinationSlot(
-                    vaccinationSlotId = this.id,
-                    patientId = patientId,
-                )
-            }
+                VaccinationSlots.update(
+                    where = { VaccinationSlots.id eq it.id and VaccinationSlots.patientId.isNull() },
+                    body = { it[VaccinationSlots.patientId] = patientId }
+                ) == 1
+            }?.takeIf { it }
         }
-    }?.let { getSlotsByConjunctionOf(slotId = it.id).single() } ?: throw NoVaccinationSlotsFoundException()
+    }?.let { vaccinationSlotRepository.getAndMap({ VaccinationSlots.patientId eq patientId }, 1).singleOrNull() }
+        ?: throw NoVaccinationSlotsFoundException()
 
 
     private inline fun <reified T> Op<Boolean>.andWithIfNotEmpty(value: T?, column: Column<T>): Op<Boolean> =
