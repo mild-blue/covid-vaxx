@@ -1,6 +1,7 @@
 package blue.mild.covid.vaxx.routes
 
 import blue.mild.covid.vaxx.dao.model.UserRole
+import blue.mild.covid.vaxx.dto.internal.IsinValidationResultStatus
 import blue.mild.covid.vaxx.dto.internal.PatientEmailRequestDto
 import blue.mild.covid.vaxx.dto.request.PatientRegistrationDtoIn
 import blue.mild.covid.vaxx.dto.request.PatientUpdateDtoIn
@@ -11,6 +12,7 @@ import blue.mild.covid.vaxx.dto.request.query.PatientIdDtoIn
 import blue.mild.covid.vaxx.dto.response.OK
 import blue.mild.covid.vaxx.dto.response.Ok
 import blue.mild.covid.vaxx.dto.response.PatientDtoOut
+import blue.mild.covid.vaxx.error.IsinValidationException
 import blue.mild.covid.vaxx.extensions.asContextAware
 import blue.mild.covid.vaxx.extensions.determineRealIp
 import blue.mild.covid.vaxx.extensions.di
@@ -18,6 +20,7 @@ import blue.mild.covid.vaxx.extensions.request
 import blue.mild.covid.vaxx.security.auth.UserPrincipal
 import blue.mild.covid.vaxx.security.auth.authorizeRoute
 import blue.mild.covid.vaxx.security.ddos.RequestVerificationService
+import blue.mild.covid.vaxx.service.IsinValidationService
 import blue.mild.covid.vaxx.service.MailService
 import blue.mild.covid.vaxx.service.PatientService
 import blue.mild.covid.vaxx.utils.createLogger
@@ -43,6 +46,7 @@ fun NormalOpenAPIRoute.patientRoutes() {
 
     val patientService by di().instance<PatientService>()
     val emailService by di().instance<MailService>()
+    val isinValidationService by di().instance<IsinValidationService>()
 
     route(Routes.patient) {
         post<CaptchaVerificationDtoIn, Ok, PatientRegistrationDtoIn>(
@@ -50,7 +54,20 @@ fun NormalOpenAPIRoute.patientRoutes() {
         ) { (recaptchaToken), patientRegistration ->
             logger.debug { "Patient registration request. Executing captcha verification." }
             captchaService.verify(recaptchaToken, request.determineRealIp())
-            logger.debug { "Captcha token verified. Saving registration." }
+            logger.debug { "Captcha token verified. Validating isin." }
+
+            val isinValidationResult = isinValidationService.validatePatientIsin(patientRegistration)
+
+            when (isinValidationResult.status) {
+                IsinValidationResultStatus.PATIENT_FOUND -> {}
+                IsinValidationResultStatus.PATIENT_NOT_FOUND ->
+                    throw IsinValidationException(isinValidationResult)
+                IsinValidationResultStatus.WAS_NOT_VERIFIED -> {
+                    logger.warn { "Patient was not validated in isin due to some problem. Skipping isin validation." }
+                }
+            }
+
+            logger.debug { "Isin validation ended. Saving registration." }
 
             val patientId = patientService.savePatient(asContextAware(patientRegistration))
             logger.info { "Registration created for patient ${patientId}." }

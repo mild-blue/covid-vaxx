@@ -1,26 +1,11 @@
 package blue.mild.covid.vaxx.setup
 
-import blue.mild.covid.vaxx.dao.repository.DataCorrectnessRepository
-import blue.mild.covid.vaxx.dao.repository.NurseRepository
-import blue.mild.covid.vaxx.dao.repository.PatientRepository
-import blue.mild.covid.vaxx.dao.repository.UserRepository
-import blue.mild.covid.vaxx.dao.repository.VaccinationRepository
+import blue.mild.covid.vaxx.dao.repository.*
 import blue.mild.covid.vaxx.dto.config.DatabaseConfigurationDto
 import blue.mild.covid.vaxx.dto.config.MailJetConfigurationDto
 import blue.mild.covid.vaxx.security.ddos.CaptchaVerificationService
 import blue.mild.covid.vaxx.security.ddos.RequestVerificationService
-import blue.mild.covid.vaxx.service.DataCorrectnessService
-import blue.mild.covid.vaxx.service.IsinRegistrationService
-import blue.mild.covid.vaxx.service.MailJetEmailService
-import blue.mild.covid.vaxx.service.MailService
-import blue.mild.covid.vaxx.service.MedicalRegistrationService
-import blue.mild.covid.vaxx.service.PasswordHashProvider
-import blue.mild.covid.vaxx.service.PatientService
-import blue.mild.covid.vaxx.service.QuestionService
-import blue.mild.covid.vaxx.service.SystemStatisticsService
-import blue.mild.covid.vaxx.service.UserService
-import blue.mild.covid.vaxx.service.VaccinationService
-import blue.mild.covid.vaxx.service.ValidationService
+import blue.mild.covid.vaxx.service.*
 import blue.mild.covid.vaxx.service.dummy.DummyMailService
 import blue.mild.covid.vaxx.service.dummy.DummyMedicalRegistrationService
 import blue.mild.covid.vaxx.service.dummy.DummyRequestVerificationService
@@ -32,10 +17,9 @@ import com.mailjet.client.ClientOptions
 import com.mailjet.client.MailjetClient
 import freemarker.template.Configuration
 import freemarker.template.Version
-import io.ktor.client.HttpClient
-import io.ktor.client.engine.apache.Apache
-import io.ktor.client.features.json.JacksonSerializer
-import io.ktor.client.features.json.JsonFeature
+import io.ktor.client.*
+import io.ktor.client.engine.apache.*
+import io.ktor.client.features.json.*
 import org.flywaydb.core.Flyway
 import org.kodein.di.DI
 import org.kodein.di.bind
@@ -84,6 +68,7 @@ fun DI.MainBuilder.registerClasses() {
     bind<DataCorrectnessService>() with singleton { DataCorrectnessService(instance()) }
     bind<MailJetEmailService>() with singleton { MailJetEmailService(instance(), instance(), instance(), instance()) }
     bind<SystemStatisticsService>() with singleton { SystemStatisticsService() }
+    bind<IsinValidationService>() with singleton { IsinValidationService(instance()) }
 
     bind<MailjetClient>() with singleton {
         val mailJetConfig = instance<MailJetConfigurationDto>()

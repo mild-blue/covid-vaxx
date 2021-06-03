@@ -9,6 +9,7 @@ import blue.mild.covid.vaxx.dto.request.PatientUpdateDtoIn
 import blue.mild.covid.vaxx.dto.response.PatientDtoOut
 import blue.mild.covid.vaxx.error.entityNotFound
 import blue.mild.covid.vaxx.utils.formatPhoneNumber
+import blue.mild.covid.vaxx.utils.normalizePersonalNumber
 import blue.mild.covid.vaxx.utils.removeAllWhitespaces
 import mu.KLogging
 import org.jetbrains.exposed.sql.Column
@@ -38,7 +39,7 @@ class PatientService(
      */
     suspend fun getPatientByPersonalNumber(patientPersonalNumber: String): PatientDtoOut =
         patientRepository.getAndMapPatientsBy {
-            Patients.personalNumber eq normalizePersonalNumber(patientPersonalNumber)
+            Patients.personalNumber eq patientPersonalNumber.normalizePersonalNumber()
         }.singleOrNull()?.withSortedAnswers()
             ?: throw entityNotFound<Patients>(Patients::personalNumber, patientPersonalNumber)
 
@@ -77,7 +78,7 @@ class PatientService(
             zipCode = changeSet.zipCode,
             district = changeSet.district?.trim(),
             phoneNumber = changeSet.phoneNumber?.formatPhoneNumber(),
-            personalNumber = changeSet.personalNumber?.let { normalizePersonalNumber(it) },
+            personalNumber = changeSet.personalNumber?.let { it.normalizePersonalNumber() },
             email = changeSet.email?.trim()?.lowercase(Locale.getDefault()),
             insuranceCompany = changeSet.insuranceCompany,
             indication = changeSet.indication?.trim(),
@@ -102,7 +103,7 @@ class PatientService(
             zipCode = registration.zipCode,
             district = registration.district.trim(),
             phoneNumber = registration.phoneNumber.formatPhoneNumber(),
-            personalNumber = normalizePersonalNumber(registration.personalNumber),
+            personalNumber = registration.personalNumber.normalizePersonalNumber(),
             email = registration.email.trim().lowercase(Locale.getDefault()),
             insuranceCompany = registration.insuranceCompany,
             indication = registration.indication?.trim(),
@@ -126,9 +127,6 @@ class PatientService(
     private fun List<PatientDtoOut>.sorted() = map { it.withSortedAnswers() }.sortedBy { it.registeredOn }
 
     private fun PatientDtoOut.withSortedAnswers() = copy(answers = answers.sortedBy { it.questionId })
-
-    private fun normalizePersonalNumber(personalNumber: String): String =
-        personalNumber.replace("/", "").trim()
 
     private fun <T> Op<Boolean>.andWithIfNotEmpty(value: T?, column: Column<T>): Op<Boolean> =
         value?.let { and { column eq value } } ?: this

@@ -8,6 +8,7 @@ import blue.mild.covid.vaxx.dto.config.MailJetConfigurationDto
 import blue.mild.covid.vaxx.dto.config.RateLimitConfigurationDto
 import blue.mild.covid.vaxx.dto.config.ReCaptchaVerificationConfigurationDto
 import blue.mild.covid.vaxx.dto.response.ApplicationInformationDtoOut
+import blue.mild.covid.vaxx.isin.Pracovnik
 import blue.mild.covid.vaxx.utils.createLogger
 import org.kodein.di.DI
 import org.kodein.di.bind
@@ -110,7 +111,24 @@ fun DI.MainBuilder.bindConfiguration() {
     }
 
     bind<IsinConfigurationDto>() with singleton {
-        TODO("Not implemented yet.")
+        val pracovnik = Pracovnik(
+            nrzpCislo = getEnvOrLogDefault(EnvVariables.ISIN_PRACOVNIK_NRZP_CISLO, "172319367"),
+            rodneCislo = getEnvOrLogDefault(EnvVariables.ISIN_PRACOVNIK_RODNE_CISLO, "245510064"),
+
+            // 000 je pro polikliniky - neni to placeholder
+            // https://nrpzs.uzis.cz/detail-66375-clinicum-a-s.html#fndtn-detail_uzis
+            pcz = getEnvOrLogDefault(EnvVariables.ISIN_PRACOVNIK_PCZ, "000")
+        )
+        IsinConfigurationDto(
+            rootUrl = getEnvOrLogDefault(EnvVariables.ISIN_ROOT_URL, "https://apitest.uzis.cz/api/v1"),
+
+            pracovnik = pracovnik,
+
+            storePass = getEnvOrLogDefault(EnvVariables.ISIN_STORE_PASS, ""),
+            storePath = getEnvOrLogDefault(EnvVariables.ISIN_STORE_PATH, ""),
+            storeType = getEnvOrLogDefault(EnvVariables.ISIN_STORE_TYPE, "JKS"),
+            keyPass = getEnvOrLogDefault(EnvVariables.ISIN_KEY_PASS, ""),
+        )
     }
 }
 

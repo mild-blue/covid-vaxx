@@ -37,6 +37,8 @@ export class ErrorInterceptor implements HttpInterceptor {
       } else if (err.status === 404) {
         // TODO Pres href a lepe. Mame na to uz button
         message = 'Je nám líto, ale Vašemu dotazu nic neodpovídá. Zkuste pacienta registrovat na ockovani.mild.blue.';
+      } else if (err.status === 406) {
+        message = 'Nepodařila se validace Vaší osoby. Prosím, zkontrolujte, že máte zadané spávné jméno, příjmení a rodné číslo.';
       } else if (err.status === 409) {
 
         message = 'Myslíme si, že pacient s Vašimi údaji je již registrován.';
