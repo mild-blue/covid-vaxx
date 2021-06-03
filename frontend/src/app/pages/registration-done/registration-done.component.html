@@ -3,18 +3,89 @@
 </mat-toolbar>
 
 <main>
-  <app-container>
-    <mat-card class="success">
-      <mat-card-title class="success__header">
-        <app-check-mark></app-check-mark>
-        <h1 class="mat-h1">Registrace proběhla úspěšně</h1>
-      </mat-card-title>
-      <mat-card-content class="success__content">
-        <p>Děkujeme za registraci k očkování. Dostavte se do Vaší volební místnosti ve stanovený čas. Den před očkování nepijte alkohol. Níže naleznete Vámi zadané údaje.
-          V případě jakýchkoliv dotazů či připomínek se na nás neváhejte obrátit na <a href="mailto:{{ companyEmail }}">{{ companyEmail }}</a>.</p>
-        <p><i>Za tým Mild Blue a Prahy 7<br><b>MUDr. Alžběta Honzková, Mild Blue</b></i></p>
-      </mat-card-content>
-    </mat-card>
+  <app-container [wide]="true">
+    <div class="success">
+      <app-check-mark></app-check-mark>
+      <h1 class="mat-h1">Registrace proběhla úspěšně</h1>
+    </div>
+
+    <div class="confirmation">
+      <mat-card>
+        <mat-card-content>
+          <ng-container *ngIf="confirmation">
+            <h3>Váš rezervovaný termín</h3>
+            <div class="time">
+              {{ confirmation.from | date:"dd.MM.yyyy HH:mm" }} - {{ confirmation.to | date:"HH:mm" }}
+            </div>
+          </ng-container>
+
+          <ng-container *ngIf="location">
+            <h3>Dostavte se v uvedený termín na adresu</h3>
+            <div class="place">
+              <div class="place-address">
+                <mat-icon>place</mat-icon>
+                <div>
+                  {{ location.address }}<br>
+                  {{ location.district }}, {{ location.zipCode | zipCode }}<br>
+                  {{ location.notes }}
+                </div>
+              </div>
+              <div class="place-contact" *ngIf="location.phoneNumber">
+                <mat-icon>phone_outline</mat-icon>
+                <a href="tel:{{ location.phoneNumber }}">{{ location.phoneNumber | phoneNumber }}</a>
+              </div>
+              <div class="place-contact" *ngIf="location.email">
+                <mat-icon>mail_outline</mat-icon>
+                <a href="mailto:{{ location.email }}">{{ location.email }}</a>
+              </div>
+            </div>
+          </ng-container>
+        </mat-card-content>
+      </mat-card>
+    </div>
+
+    <div class="info">
+      <h2>Dodržujte zásady:</h2>
+      <mat-card>
+        <mat-card-content>
+          <ul>
+            <li>dostavte se na místo očkování nejdříve s desetiminutovým předstihem</li>
+            <li>vhodné oblečení - tričko nebo košili s krátkým rukávem</li>
+            <li>přicházejte samostatně; maximálně v doprovodu jedné osoby</li>
+            <li>do očkovacího centra nevnášejte rozměrná zavazadla, batohy, zbraně</li>
+            <li>v místě očkování dodržujte hygienická pravidla: mějte RESPIRÁTOR (typu FFP2 nebo N95, případně nanorouška), dodržujte bezpečné ROZESTUPY (2m)</li>
+            <li>v místě očkování platí zákaz konzumace potravin a nápojů</li>
+          </ul>
+        </mat-card-content>
+      </mat-card>
+
+      <h2>K očkování nechoďte, pokud:</h2>
+      <mat-card>
+        <mat-card-content>
+          <ul>
+            <li>máte zvýšenou tělesnou teplotu</li>
+            <li>máte aktuálně zhoršený zdravotní stav v důsledku jiného onemocnění</li>
+            <li>Vám očkování v současné době nedoporučil Váš praktický lékař</li>
+          </ul>
+        </mat-card-content>
+      </mat-card>
+
+      <h2>Kde naleznete certifikát o očkování?</h2>
+      <mat-card>
+        <mat-card-content>
+          <p>Na portálu ocko.uzis.cz (Očkovací portál občana) lze certifikát stáhnout a vytisknout.
+            Certifikát Vám bude zároveň poslán e-mailem, který jste zadávali při registraci na očkování.
+            <br>
+            V případě dotazů se obraťte na infolinku Prahy 7 každý všední den od 8:00 do 16:00 hodin na čísle: 734 521 840</p>
+          <p>Aktuality najdete na: <a href="https://www.praha7.cz/ockovani" target="_blank">www.praha7.cz/ockovani</a></p>
+          <p>Další informace naleznete <a href="https://koronavirus.mzcr.cz/ockovani-proti-covid-19/" target="_blank">zde</a>.</p>
+          <p>Děkujeme, že svým očkováním chráníte sebe i ostatní a přispíváte k návratu k běžnému životu.</p>
+          <p>Na viděnou v ZŠ Strossmayerovo náměstí.<br>
+            MČ Praha 7 a tým Mild Blue</p>
+        </mat-card-content>
+      </mat-card>
+    </div>
+
   </app-container>
 
   <app-container *ngIf="patientData" [wide]="true">

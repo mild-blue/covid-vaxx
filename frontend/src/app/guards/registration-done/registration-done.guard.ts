@@ -11,13 +11,15 @@ export class RegistrationDoneGuard implements CanActivate {
   }
 
   canActivate(route: ActivatedRouteSnapshot, state: RouterStateSnapshot) {
-    if (this._patientService.patient) {
-      // patient exists, return true
-      return true;
-    }
-
-    // patient does not exist, redirect to home
-    this._router.navigate(['/']);
-    return false;
+    return true;
+    // todo: uncomment
+    // if (this._patientService.patient) {
+    //   // patient exists, return true
+    //   return true;
+    // }
+    //
+    // // patient does not exist, redirect to home
+    // this._router.navigate(['/']);
+    // return false;
   }
 }

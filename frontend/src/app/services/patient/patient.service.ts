@@ -13,12 +13,24 @@ import { BehaviorSubject, Observable } from 'rxjs';
 import { RegistrationConfirmation } from '@app/model/RegistrationConfirmation';
 import { parseVaccinationSlotToRegistrationConfirmation } from '@app/parsers/registration.parser';
 
+const nasta: PatientData = {
+  firstName: '',
+  lastName: '',
+  personalNumber: '',
+  email: '',
+  phoneNumber: '',
+  district: '',
+  zipCode: '',
+  questionnaire: []
+};
+
 @Injectable({
   providedIn: 'root'
 })
 export class PatientService {
 
-  private _patientSubject: BehaviorSubject<PatientData | undefined> = new BehaviorSubject<PatientData | undefined>(undefined);
+  // todo
+  private _patientSubject: BehaviorSubject<PatientData | undefined> = new BehaviorSubject<PatientData | undefined>(nasta);
   public patientObservable: Observable<PatientData | undefined> = this._patientSubject.asObservable();
 
   constructor(private _http: HttpClient,
