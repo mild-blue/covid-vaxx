@@ -8,6 +8,7 @@ import blue.mild.covid.vaxx.utils.applyIfNotNull
 import org.jetbrains.exposed.sql.Op
 import org.jetbrains.exposed.sql.ResultRow
 import org.jetbrains.exposed.sql.SqlExpressionBuilder
+import org.jetbrains.exposed.sql.and
 import org.jetbrains.exposed.sql.batchInsert
 import org.jetbrains.exposed.sql.select
 import org.jetbrains.exposed.sql.transactions.experimental.newSuspendedTransaction
@@ -46,7 +47,7 @@ class VaccinationSlotRepository(private val instantTimeProvider: TimeProvider<In
         patientId: EntityId? = null,
     ): Boolean = newSuspendedTransaction {
         VaccinationSlots.update(
-            where = { VaccinationSlots.id eq vaccinationSlotId },
+            where = { VaccinationSlots.id eq vaccinationSlotId and VaccinationSlots.patientId.isNull() },
             body = { it[VaccinationSlots.patientId] = patientId }
         ) == 1
     }
