@@ -1,7 +1,19 @@
 <div class="form-field" [class.invalid]="invalid">
-  <label *ngIf="label">{{ label }}</label>
 
-  <!--  {{errors | json}}-->
+  <div class="label">
+    <label *ngIf="label">{{ label }}</label>
+
+    <div *ngIf="info" class="tooltip-holder"
+         (mouseover)="tooltip.classList.add('visible')"
+         (mouseleave)="tooltip.classList.remove('visible')"
+         (click)="tooltip.classList.toggle('visible')">
+      <mat-icon>help_outline</mat-icon>
+      <div #tooltip class="tooltip">
+        {{ info }}
+      </div>
+    </div>
+  </div>
+
   <ng-content></ng-content>
 
   <div *ngIf="note && !invalid" class="note">

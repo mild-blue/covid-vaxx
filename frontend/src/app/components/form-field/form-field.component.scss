@@ -1,13 +1,87 @@
 @import "../../../styles/variables";
+@import "../../../styles/breakpoints";
 
 .form-field {
   display: flex;
   flex-direction: column;
   margin-bottom: 20px;
 
-  label {
-    font-weight: 700;
-    margin-bottom: 5px;
+  .label {
+
+    @include media-breakpoint-down(sm) {
+      position: relative;
+    }
+
+    label {
+      font-weight: 700;
+      margin-bottom: 5px;
+    }
+
+    mat-icon {
+      color: $primary;
+
+      font-size: 14px;
+      position: relative;
+      top: 1px;
+      margin: 0 10px;
+    }
+
+    .tooltip {
+      position: absolute;
+      z-index: 10;
+      top: 10px;
+      left: 100%;
+      width: 350px;
+      background: $primary;
+      color: $white;
+      line-height: 1.5;
+      padding: 10px 15px;
+      border-radius: 6px;
+      transform: translateY(-50%);
+      font-size: 12px;
+
+      display: none;
+
+      @include media-breakpoint-down(sm) {
+        top: 100%;
+        transform: none;
+        left: 0;
+
+        max-width: calc(100vw - 138px);
+      }
+
+      &-holder {
+        position: relative;
+        display: inline-block;
+        cursor: pointer;
+
+        @include media-breakpoint-down(sm) {
+          position: unset;
+        }
+      }
+
+      &::after {
+        content: '';
+        position: absolute;
+        top: 50%;
+        right: 100%;
+        transform: translateY(-50%);
+
+        border-top: 8px solid transparent;
+        border-bottom: 8px solid transparent;
+
+        border-left: 15px solid transparent;
+        border-right: 15px solid $primary;
+
+        @include media-breakpoint-down(sm) {
+          display: none;
+        }
+      }
+
+      &.visible {
+        display: block;
+      }
+    }
   }
 
   &.invalid {
