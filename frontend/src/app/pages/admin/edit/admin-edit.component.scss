@@ -30,6 +30,10 @@
       }
     }
   }
+
+  ::ng-deep app-form-field .note {
+    display: none;
+  }
 }
 
 .buttons {

@@ -2,7 +2,7 @@ package blue.mild.covid.vaxx.routes
 
 import blue.mild.covid.vaxx.dao.model.UserRole
 import blue.mild.covid.vaxx.dto.response.QuestionDtoOut
-import blue.mild.covid.vaxx.extensions.di
+import blue.mild.covid.vaxx.extensions.closestDI
 import blue.mild.covid.vaxx.security.auth.UserPrincipal
 import blue.mild.covid.vaxx.security.auth.authorizeRoute
 import blue.mild.covid.vaxx.service.QuestionService
@@ -22,7 +22,7 @@ import org.kodein.di.instance
 fun NormalOpenAPIRoute.questionRoutes() {
     val logger = createLogger("QuestionRoutes")
 
-    val questionService by di().instance<QuestionService>()
+    val questionService by closestDI().instance<QuestionService>()
 
     route(Routes.questions) {
         get<Unit, List<QuestionDtoOut>>(

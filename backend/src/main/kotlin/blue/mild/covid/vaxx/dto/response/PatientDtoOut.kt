@@ -19,5 +19,6 @@ data class PatientDtoOut(
     val answers: List<AnswerDtoOut>,
     val registrationEmailSentOn: Instant? = null,
     val vaccinated: VaccinationDtoOut? = null,
-    val dataCorrect: DataCorrectnessConfirmationDtoOut? = null
+    val dataCorrect: DataCorrectnessConfirmationDtoOut? = null,
+    val vaccinationSlotDtoOut: VaccinationSlotDtoOut? = null
 )

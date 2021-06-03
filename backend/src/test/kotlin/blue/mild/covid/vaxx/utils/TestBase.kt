@@ -1,5 +1,7 @@
 package blue.mild.covid.vaxx.utils
 
+import blue.mild.covid.vaxx.dao.model.DatabaseSetup
+import blue.mild.covid.vaxx.dto.config.DatabaseConfigurationDto
 import blue.mild.covid.vaxx.security.auth.JwtService
 import blue.mild.covid.vaxx.security.auth.UserPrincipal
 import blue.mild.covid.vaxx.security.auth.registerJwtAuth
@@ -16,6 +18,7 @@ import io.ktor.server.testing.TestApplicationEngine
 import io.ktor.server.testing.TestApplicationRequest
 import io.ktor.server.testing.setBody
 import io.ktor.server.testing.withTestApplication
+import mu.KLogging
 import org.flywaydb.core.Flyway
 import org.junit.jupiter.api.AfterEach
 import org.junit.jupiter.api.BeforeEach
@@ -65,8 +68,15 @@ open class DatabaseTestBase(private val shouldSetupDatabase: Boolean = true) : D
     @BeforeEach
     fun beforeEach() {
         if (shouldSetupDatabase) {
+            val dbConfig by rootDI.instance<DatabaseConfigurationDto>()
+
+            DatabaseSetup.connect(dbConfig)
+
+            require(DatabaseSetup.isConnected()) { "It was not possible to connect to db database!" }
+
             flyway.clean()
             flyway.migrate()
+
             populateDatabase(rootDI)
         }
     }
@@ -97,6 +107,8 @@ open class DatabaseTestBase(private val shouldSetupDatabase: Boolean = true) : D
  */
 open class ServerTestBase(needsDatabase: Boolean = true) : DatabaseTestBase(needsDatabase) {
 
+    protected companion object : KLogging()
+
     protected val mapper by rootDI.instance<ObjectMapper>()
     protected val jwtService by rootDI.instance<JwtService>()
 
@@ -124,6 +136,7 @@ open class ServerTestBase(needsDatabase: Boolean = true) : DatabaseTestBase(need
 
     protected inline fun <reified T> TestApplicationCall.receiveOrNull(): T? {
         val content = response.content ?: return null
+        logger.info { "received content:\n${content}" }
         return mapper.readValue(content)
     }
 

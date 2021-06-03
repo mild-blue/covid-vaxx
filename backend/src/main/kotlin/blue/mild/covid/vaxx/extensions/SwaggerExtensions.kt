@@ -14,7 +14,7 @@ import org.kodein.di.ktor.closestDI
 /**
  * Simple extension to provide DI container inside Swagger defined routes.
  */
-fun OpenAPIRoute<*>.di() = ktorRoute.closestDI()
+fun OpenAPIRoute<*>.closestDI() = ktorRoute.closestDI()
 
 val OpenAPIPipelineResponseContext<*>.context
     get() = pipeline.context

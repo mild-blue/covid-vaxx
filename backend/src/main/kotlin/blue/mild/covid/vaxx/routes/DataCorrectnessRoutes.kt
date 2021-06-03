@@ -6,7 +6,7 @@ import blue.mild.covid.vaxx.dto.request.query.DataCorrectnessConfirmationIdDtoIn
 import blue.mild.covid.vaxx.dto.request.query.PatientIdQueryDtoIn
 import blue.mild.covid.vaxx.dto.response.DataCorrectnessConfirmationDetailDtoOut
 import blue.mild.covid.vaxx.extensions.asContextAware
-import blue.mild.covid.vaxx.extensions.di
+import blue.mild.covid.vaxx.extensions.closestDI
 import blue.mild.covid.vaxx.security.auth.UserPrincipal
 import blue.mild.covid.vaxx.security.auth.authorizeRoute
 import blue.mild.covid.vaxx.service.DataCorrectnessService
@@ -26,7 +26,7 @@ import org.kodein.di.instance
 fun NormalOpenAPIRoute.dataCorrectnessRoutes() {
     val logger = createLogger("DataCorrectnessRoutes")
 
-    val dataCorrectnessService by di().instance<DataCorrectnessService>()
+    val dataCorrectnessService by closestDI().instance<DataCorrectnessService>()
 
     authorizeRoute {
         route(Routes.dataCorrectness) {

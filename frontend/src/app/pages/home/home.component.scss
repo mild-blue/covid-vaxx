@@ -1,3 +1,4 @@
+@import "../../../styles/variables";
 @import "../../../styles/breakpoints";
 
 mat-horizontal-stepper {
@@ -40,6 +41,21 @@ app-patient-info-form, app-patient-questions-form, app-patient-data {
 
   @include media-breakpoint-down(sm) {
     align-items: flex-start;
+  }
+}
+
+.missing-info-warning {
+  padding: 15px 30px;
+  background: $warning-bg;
+  color: $warning-color;
+  border: 1px solid $warning-border-color;
+  border-radius: 6px;
+
+  display: flex;
+  align-items: center;
+
+  mat-icon {
+    margin-right: 20px;
   }
 }
 

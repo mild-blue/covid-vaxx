@@ -56,6 +56,15 @@ fun Application.installExceptionHandling() {
             call.errorResponse(HttpStatusCode.NotFound, cause.message)
         }
 
+        exception<InvalidSlotCreationRequest> { cause ->
+            logger.debug { "${cause.message} --> ${cause.entity}" }
+            call.errorResponse(HttpStatusCode.BadRequest, cause.message)
+        }
+
+        exception<NoVaccinationSlotsFoundException> { cause ->
+            call.errorResponse(HttpStatusCode.NotFound, cause.message)
+        }
+
         jsonExceptions()
 
         exception<IsinValidationException> { cause ->

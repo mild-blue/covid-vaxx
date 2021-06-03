@@ -2,7 +2,7 @@ import java.net.URI
 
 
 plugins {
-    kotlin("jvm") version "1.5.0"
+    kotlin("jvm") version "1.5.10"
     application
     distribution
     id("net.nemerosa.versioning") version "2.14.0"
@@ -40,10 +40,10 @@ repositories {
 dependencies {
     // extension functions
     implementation("pw.forst", "katlib", "2.0.1")
-    implementation("org.jetbrains.kotlin", "kotlin-reflect", "1.5.0")
+    implementation("org.jetbrains.kotlin", "kotlin-reflect", "1.5.10")
 
     // Ktor server dependencies
-    val ktorVersion = "1.5.4"
+    val ktorVersion = "1.6.0"
     implementation("io.ktor", "ktor-server-core", ktorVersion)
     implementation("io.ktor", "ktor-server-netty", ktorVersion)
     implementation("io.ktor", "ktor-jackson", ktorVersion)
@@ -56,7 +56,7 @@ dependencies {
     implementation("io.ktor", "ktor-server-sessions", ktorVersion)
 
     // ktor swagger
-    implementation("com.github.papsign", "Ktor-OpenAPI-Generator", "0.2-beta.16") {
+    implementation("com.github.papsign", "Ktor-OpenAPI-Generator", "0.2-beta.18") {
         // exclude obsolete libraries from the generator
         exclude("io.ktor", "ktor-metrics")
         exclude("io.ktor", "ktor-server-sessions")
@@ -84,7 +84,7 @@ dependencies {
     implementation("com.lambdaworks", "scrypt", "1.4.0")
 
     // DI
-    val kodeinVersion = "7.5.0"
+    val kodeinVersion = "7.6.0"
     implementation("org.kodein.di", "kodein-di-jvm", kodeinVersion)
     implementation("org.kodein.di", "kodein-di-framework-ktor-server-jvm", kodeinVersion)
 
@@ -98,7 +98,7 @@ dependencies {
     implementation("org.jetbrains.exposed", "exposed-java-time", exposedVersion)
 
     // database migrations from the code
-    implementation("org.flywaydb", "flyway-core", "7.9.0")
+    implementation("org.flywaydb", "flyway-core", "7.9.1")
 
     // sending emails
     implementation("com.mailjet", "mailjet-client", "5.1.1")
@@ -109,24 +109,12 @@ dependencies {
 
     // tests
     testImplementation("io.mockk", "mockk", "1.11.0")
-    testImplementation(kotlin("test"))
-    testImplementation(kotlin("test-junit5"))
-    val junitVersion = "5.7.1"
+
+    val junitVersion = "5.7.2"
     testImplementation("org.junit.jupiter", "junit-jupiter-api", junitVersion) // junit testing framework
     testImplementation("org.junit.jupiter", "junit-jupiter-params", junitVersion) // generated parameters for tests
     testImplementation("io.ktor", "ktor-server-test-host", ktorVersion)
     testRuntimeOnly("org.junit.jupiter", "junit-jupiter-engine", junitVersion)
-}
-
-// because sometimes has Idea problems to link the main module to test module
-kotlin {
-    sourceSets["main"].apply {
-        kotlin.srcDir("src/main/kotlin")
-    }
-
-    sourceSets["test"].apply {
-        kotlin.srcDir("src/test/kotlin")
-    }
 }
 
 tasks {

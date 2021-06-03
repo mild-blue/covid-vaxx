@@ -5,11 +5,13 @@ import blue.mild.covid.vaxx.dao.model.EntityId
 import blue.mild.covid.vaxx.dao.model.InsuranceCompany
 import blue.mild.covid.vaxx.dao.model.PatientDataCorrectnessConfirmation
 import blue.mild.covid.vaxx.dao.model.Patients
+import blue.mild.covid.vaxx.dao.model.VaccinationSlots
 import blue.mild.covid.vaxx.dao.model.Vaccinations
 import blue.mild.covid.vaxx.dto.response.AnswerDtoOut
 import blue.mild.covid.vaxx.dto.response.DataCorrectnessConfirmationDtoOut
 import blue.mild.covid.vaxx.dto.response.PatientDtoOut
 import blue.mild.covid.vaxx.dto.response.VaccinationDtoOut
+import blue.mild.covid.vaxx.dto.response.VaccinationSlotDtoOut
 import org.jetbrains.exposed.sql.Op
 import org.jetbrains.exposed.sql.ResultRow
 import org.jetbrains.exposed.sql.SqlExpressionBuilder
@@ -165,6 +167,7 @@ class PatientRepository(
             .leftJoin(Answers, { id }, { patientId })
             .leftJoin(Vaccinations, { Patients.vaccination }, { id })
             .leftJoin(PatientDataCorrectnessConfirmation, { Patients.dataCorrectness }, { id })
+            .leftJoin(VaccinationSlots, { Patients.id }, { patientId })
             .let { if (where != null) it.select(where) else it.selectAll() }
             .toList() // eager fetch all data from the database
             .let { data ->
@@ -188,20 +191,34 @@ class PatientRepository(
         answers = answers,
         registeredOn = row[Patients.created],
         vaccinated = row.mapVaccinated(),
-        dataCorrect = row.mapDataCorrect()
+        dataCorrect = row.mapDataCorrect(),
+        vaccinationSlotDtoOut = row.mapVaccinationSlot()
     )
 
-    private fun ResultRow.mapDataCorrect() =
-        if (getOrNull(PatientDataCorrectnessConfirmation.id) != null) DataCorrectnessConfirmationDtoOut(
+    private fun ResultRow.mapVaccinationSlot() = getOrNull(VaccinationSlots.id)?.let {
+        VaccinationSlotDtoOut(
+            id = this[VaccinationSlots.id],
+            locationId = this[VaccinationSlots.locationId],
+            patientId = this[VaccinationSlots.patientId],
+            queue = this[VaccinationSlots.queue],
+            from = this[VaccinationSlots.from],
+            to = this[VaccinationSlots.to]
+        )
+    }
+
+    private fun ResultRow.mapDataCorrect() = getOrNull(PatientDataCorrectnessConfirmation.id)?.let {
+        DataCorrectnessConfirmationDtoOut(
             id = this[PatientDataCorrectnessConfirmation.id],
             dataAreCorrect = this[PatientDataCorrectnessConfirmation.dataAreCorrect]
-        ) else null
+        )
+    }
 
-    private fun ResultRow.mapVaccinated() =
-        if (getOrNull(Vaccinations.id) != null) VaccinationDtoOut(
+    private fun ResultRow.mapVaccinated() = getOrNull(Vaccinations.id)?.let {
+        VaccinationDtoOut(
             id = this[Vaccinations.id],
             vaccinatedOn = this[Vaccinations.vaccinatedOn]
-        ) else null
+        )
+    }
 
     private fun ResultRow.mapAnswer() = AnswerDtoOut(
         questionId = this[Answers.questionId],

@@ -4,6 +4,7 @@ import { PatientService } from '@app/services/patient/patient.service';
 import { AlertService } from '@app/services/alert/alert.service';
 import { AdminPatientAbstractComponent } from '@app/pages/admin/abstract/admin-patient-abstract.component';
 import { Patient } from '@app/model/Patient';
+import { PatientData } from '@app/model/PatientData';
 
 @Component({
   selector: 'app-edit-patient',
@@ -13,6 +14,7 @@ import { Patient } from '@app/model/Patient';
 export class AdminEditComponent extends AdminPatientAbstractComponent implements OnInit {
 
   private _patientBase?: Patient;
+  public patientValid: boolean = true;
 
   constructor(private _route: ActivatedRoute,
               private _router: Router,
@@ -48,6 +50,17 @@ export class AdminEditComponent extends AdminPatientAbstractComponent implements
     } catch (e) {
       this._alertService.error(e.message);
     }
+  }
+
+  public updatePatient(data: PatientData) {
+    if (!this.patient) {
+      return;
+    }
+
+    this.patient = {
+      ...this.patient,
+      ...data
+    };
   }
 
   private _routeBack(): void {

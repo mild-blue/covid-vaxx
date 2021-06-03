@@ -10,13 +10,13 @@ test: test-db
 
 check: detekt test
 
-test-db: stop-db
+test-db: stop-test-db stop-db
 	docker-compose -f docker-compose.test.yml up -d db
 
 stop-test-db:
 	docker-compose -f docker-compose.test.yml stop db
 
-db: stop-test-db
+db: stop-test-db stop-db
 	docker-compose -f ../docker-compose.yml up -d db
 
 stop-db:

@@ -1,13 +1,85 @@
-@import "../../../styles/breakpoints";
+@import "../../../styles/variables";
 
 .form-field {
-  width: 100%;
   display: flex;
-  align-items: center;
-  justify-content: space-between;
-  padding: 10px 0;
+  flex-direction: column;
+  margin-bottom: 20px;
 
-  ::ng-deep mat-label:not(:last-of-type) {
-    padding-right: 20px;
+  label {
+    font-weight: 700;
+    margin-bottom: 5px;
+  }
+
+  &.invalid {
+    color: $danger;
+
+    ::ng-deep {
+      input, textarea, mat-select, ngx-mat-intl-tel-input {
+        &, &:focus {
+          border-color: rgba($danger, 0.5);
+        }
+      }
+    }
+  }
+
+  .note, .error {
+    margin-top: 5px;
+    font-size: 90%;
+  }
+
+  .note {
+    color: $gray-500;
+  }
+
+  ::ng-deep {
+    input, textarea, mat-select, ngx-mat-intl-tel-input {
+
+      padding: 8px 15px;
+      line-height: 25px;
+      font-size: 14px;
+      font-family: inherit;
+      border-radius: 6px;
+      -webkit-appearance: none;
+      color: $black;
+      border: 1px solid $gray-300;
+      background: $white;
+      transition: border .3s ease;
+      position: relative;
+
+      &::-webkit-input-placeholder { /* Chrome/Opera/Safari */
+        color: $gray-400;
+      }
+
+      &::-moz-placeholder { /* Firefox 19+ */
+        color: $gray-400;
+      }
+
+      &:-ms-input-placeholder { /* IE 10+ */
+        color: $gray-400;
+      }
+
+      &:-moz-placeholder { /* Firefox 18- */
+        color: $gray-400;
+      }
+
+      ::ng-deep .mat-select-placeholder, &.ng-pristine.ng-invalid {
+        color: $gray-400;
+      }
+
+      &:focus {
+        outline: none;
+        border-color: $accent;
+      }
+
+      &[disabled] {
+        color: $gray-800;
+        background: $light;
+      }
+
+      &.large {
+        font-weight: 700;
+        font-size: 20px;
+      }
+    }
   }
 }

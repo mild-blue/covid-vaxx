@@ -1,5 +1,6 @@
 <!DOCTYPE html>
-<html lang="en" xmlns="http://www.w3.org/1999/xhtml" xmlns:v="urn:schemas-microsoft-com:vml" xmlns:o="urn:schemas-microsoft-com:office:office">
+<html lang="en" xmlns="http://www.w3.org/1999/xhtml" xmlns:v="urn:schemas-microsoft-com:vml"
+      xmlns:o="urn:schemas-microsoft-com:office:office">
 <head>
     <meta charset="utf-8"> <!-- utf-8 works for most cases -->
     <meta name="viewport" content="width=device-width"> <!-- Forcing initial-scale shouldn't be necessary -->
@@ -51,7 +52,7 @@
 
         /* What it does: Uses a better rendering method when resizing images in IE. */
         img {
-            -ms-interpolation-mode:bicubic;
+            -ms-interpolation-mode: bicubic;
         }
 
         /* What it does: Prevents Windows 10 Mail from underlining links despite inline CSS. Styles for underlined links should be inline. */
@@ -60,7 +61,7 @@
         }
 
         /* What it does: A work-around for email clients meddling in triggered links. */
-        *[x-apple-data-detectors],  /* iOS */
+        *[x-apple-data-detectors], /* iOS */
         .unstyle-auto-detected-links *,
         .aBn {
             border-bottom: 0 !important;
@@ -98,12 +99,14 @@
                 min-width: 320px !important;
             }
         }
+
         /* iPhone 6, 6S, 7, 8, and X */
         @media only screen and (min-device-width: 375px) and (max-device-width: 413px) {
             u ~ div .email-container {
                 min-width: 375px !important;
             }
         }
+
         /* iPhone 6+, 7+, and 8+ */
         @media only screen and (min-device-width: 414px) {
             u ~ div .email-container {
@@ -119,85 +122,97 @@
     <!-- Progressive Enhancements : BEGIN -->
     <style>
 
-        .primary{
+        .primary {
             background: #3f51b5;
         }
-        .bg_white{
+
+        .bg_white {
             background: #ffffff;
         }
-        .bg_light{
+
+        .bg_light {
             background: #f7fafa;
         }
-        .bg_black{
+
+        .bg_black {
             background: #000000;
         }
-        .bg_dark{
+
+        .bg_dark {
             background: #3f51b5
         }
-        .email-section{
-            padding:2.5em;
+
+        .email-section {
+            padding: 2.5em;
         }
 
         /*BUTTON*/
-        .btn{
+        .btn {
             padding: 10px 15px;
             display: inline-block;
         }
-        .btn.btn-primary{
+
+        .btn.btn-primary {
             border-radius: 5px;
             background: #17bebb;
             color: #ffffff;
         }
-        .btn.btn-white{
+
+        .btn.btn-white {
             border-radius: 5px;
             background: #ffffff;
             color: #000000;
         }
-        .btn.btn-white-outline{
+
+        .btn.btn-white-outline {
             border-radius: 5px;
             background: transparent;
             border: 1px solid #fff;
             color: #fff;
         }
-        .btn.btn-black-outline{
+
+        .btn.btn-black-outline {
             border-radius: 0px;
             background: transparent;
             border: 2px solid #000;
             color: #000;
             font-weight: 700;
         }
-        .btn-custom{
-            color: rgba(0,0,0,.3);
+
+        .btn-custom {
+            color: rgba(0, 0, 0, .3);
             text-decoration: underline;
         }
 
-        h1,h2,h3,h4,h5,h6{
+        h1, h2, h3, h4, h5, h6 {
             font-family: 'Poppins', sans-serif;
             color: #000000;
             margin-top: 0;
             font-weight: 400;
         }
 
-        body{
+        body {
             font-family: 'Poppins', sans-serif;
             font-weight: 400;
             font-size: 15px;
             line-height: 1.8;
-            color: rgba(0,0,0,.4);
+            color: rgba(0, 0, 0, .4);
         }
 
-        a{
+        a {
             color: #3f51b5;
         }
 
-        table{
+        table {
         }
+
         /*LOGO*/
 
-        .logo h1{
+        .logo h1 {
             margin: 0;
         }
-        .logo h1 a{
+
+        .logo h1 a {
             color: #3f51b5;
             font-size: 24px;
             font-weight: 700;
@@ -205,70 +220,81 @@
         }
 
         /*HERO*/
-        .hero{
+        .hero {
             position: relative;
             z-index: 0;
         }
 
-        .hero .text{
-            color: rgba(0,0,0,.3);
+        .hero .text {
+            color: rgba(0, 0, 0, .3);
         }
-        .hero .text h2{
+
+        .hero .text h2 {
             color: #000;
             font-size: 34px;
             margin-bottom: 0;
             font-weight: 200;
             line-height: 1.4;
         }
-        .hero .text h3{
+
+        .hero .text h3 {
             font-size: 24px;
             font-weight: 300;
         }
-        .hero .text h2 span{
+
+        .hero .text h2 span {
             font-weight: 600;
             color: #000;
         }
 
-        .text-author{
-            bordeR: 1px solid rgba(0,0,0,.05);
+        .text-author {
+            bordeR: 1px solid rgba(0, 0, 0, .05);
             max-width: 50%;
             margin: 0 auto;
             padding: 2em;
         }
-        .text-author img{
+
+        .text-author img {
             padding-bottom: 20px;
         }
-        .text-author h3{
+
+        .text-author h3 {
             margin-bottom: 0;
         }
-        ul.social{
+
+        ul.social {
             padding: 0;
         }
-        ul.social li{
+
+        ul.social li {
             display: inline-block;
             margin-right: 10px;
         }
 
         /*FOOTER*/
 
-        .footer{
-            border-top: 1px solid rgba(0,0,0,.05);
+        .footer {
+            border-top: 1px solid rgba(0, 0, 0, .05);
             color: #fff;
         }
-        .footer .heading{
+
+        .footer .heading {
             color: #000;
             font-size: 20px;
         }
-        .footer ul{
+
+        .footer ul {
             margin: 0;
             padding: 0;
         }
-        .footer ul li{
+
+        .footer ul li {
             list-style: none;
             margin-bottom: 10px;
         }
-        .footer ul li a{
-            color: rgba(0,0,0,1);
+
+        .footer ul li a {
+            color: rgba(0, 0, 0, 1);
         }
 
 
@@ -290,7 +316,8 @@
     </div>
     <div style="max-width: 600px; margin: 0 auto;" class="email-container">
         <!-- BEGIN BODY -->
-        <table align="center" role="presentation" cellspacing="0" cellpadding="0" border="0" width="100%" style="margin: auto;">
+        <table align="center" role="presentation" cellspacing="0" cellpadding="0" border="0" width="100%"
+               style="margin: auto;">
             <tr>
                 <td valign="top" class="bg_white" style="padding: 1em 2.5em 0 2.5em;">
                     <table role="presentation" border="0" cellpadding="0" cellspacing="0" width="100%">
@@ -316,8 +343,15 @@
                             <td style="text-align: center;">
                                 <div class="text-author">
                                     <p>
-                                        Děkujeme za registraci k očkování. Dostavte se do Vaší volební místnosti ve stanovený čas. Den před očkování nepijte alkohol. Níže naleznete Vámi zadané údaje.
-                                        V případě jakýchkoliv dotazů či připomínek se na nás neváhejte obrátit na <a href = "mailto: info@mild.blue">info@mild.blue</a>.
+                                        Děkujeme za registraci k očkování. Dostavte se na
+                                        adresu ${emailRequestDto.location.address}
+                                        dne ${emailRequestDto.slot.date()} v ${emailRequestDto.slot.time()}.
+                                    </p>
+                                    <p>
+                                        Den před očkování nepijte alkohol. Níže naleznete Vámi zadané údaje.
+                                        V případě jakýchkoliv dotazů či připomínek se na nás neváhejte obrátit na
+                                        <a href="mailto: ${emailRequestDto.location.email}">${emailRequestDto.location.email}</a>
+                                        ci na tel ${emailRequestDto.location.phoneNumber}.
                                     </p>
 
                                     <p>
@@ -369,7 +403,8 @@
             <!-- 1 Column Text + Button : END -->
         </table>
 
-        <table align="center" role="presentation" cellspacing="0" cellpadding="0" border="0" width="100%" style="margin: auto;">
+        <table align="center" role="presentation" cellspacing="0" cellpadding="0" border="0" width="100%"
+               style="margin: auto;">
             <tr>
                 <td valign="middle" class="bg_dark footer email-section">
                     <table>
@@ -378,7 +413,7 @@
                                 Powered by
                                 <a href="https://mild.blue" style="color: #fff;" target="_blank">
                                     Mild Blue
-								</a>
+                                </a>
                             </td>
                         </tr>
                     </table>
