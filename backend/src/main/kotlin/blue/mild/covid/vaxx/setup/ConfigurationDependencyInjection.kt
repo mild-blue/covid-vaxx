@@ -1,12 +1,6 @@
 package blue.mild.covid.vaxx.setup
 
-import blue.mild.covid.vaxx.dto.config.CorsConfigurationDto
-import blue.mild.covid.vaxx.dto.config.DatabaseConfigurationDto
-import blue.mild.covid.vaxx.dto.config.IsinConfigurationDto
-import blue.mild.covid.vaxx.dto.config.JwtConfigurationDto
-import blue.mild.covid.vaxx.dto.config.MailJetConfigurationDto
-import blue.mild.covid.vaxx.dto.config.RateLimitConfigurationDto
-import blue.mild.covid.vaxx.dto.config.ReCaptchaVerificationConfigurationDto
+import blue.mild.covid.vaxx.dto.config.*
 import blue.mild.covid.vaxx.dto.response.ApplicationInformationDtoOut
 import blue.mild.covid.vaxx.isin.Pracovnik
 import blue.mild.covid.vaxx.utils.createLogger
@@ -17,7 +11,7 @@ import pw.forst.katlib.getEnv
 import pw.forst.katlib.whenNull
 import java.io.File
 import java.time.Duration
-import java.util.UUID
+import java.util.*
 
 /**
  * Loads the DI container with configuration from the system environment.
@@ -111,23 +105,32 @@ fun DI.MainBuilder.bindConfiguration() {
     }
 
     bind<IsinConfigurationDto>() with singleton {
+        val certPassword = requireEnv(EnvVariables.ISIN_CERT_PASSWORD)
+
+        // TODO: certificate password decryption
+        /*val ksmKeyId = getEnvOrLogDefault(EnvVariables.KMS_KEY_ID, "")
+        if(!ksmKeyId.isEmpty()) {
+            val kmsClient: AWSKMS = AWSKMSClientBuilder.standard().build()
+            val encryptedCertKey: ByteBuffer = ByteBuffer.wrap(certPassword.toByteArray())
+            val req: DecryptRequest = DecryptRequest().withCiphertextBlob(encryptedCertKey).withKeyId(ksmKeyId);
+            val decryptedCertKey: ByteBuffer = kmsClient.decrypt(req).getPlaintext();
+            certPassword = decryptedCertKey.toString()
+        }*/
+
         val pracovnik = Pracovnik(
             nrzpCislo = getEnvOrLogDefault(EnvVariables.ISIN_PRACOVNIK_NRZP_CISLO, "172319367"),
             rodneCislo = getEnvOrLogDefault(EnvVariables.ISIN_PRACOVNIK_RODNE_CISLO, "245510064"),
-
             // 000 je pro polikliniky - neni to placeholder
             // https://nrpzs.uzis.cz/detail-66375-clinicum-a-s.html#fndtn-detail_uzis
             pcz = getEnvOrLogDefault(EnvVariables.ISIN_PRACOVNIK_PCZ, "000")
         )
         IsinConfigurationDto(
             rootUrl = getEnvOrLogDefault(EnvVariables.ISIN_ROOT_URL, "https://apitest.uzis.cz/api/v1"),
-
             pracovnik = pracovnik,
-
-            storePass = getEnvOrLogDefault(EnvVariables.ISIN_STORE_PASS, ""),
-            storePath = getEnvOrLogDefault(EnvVariables.ISIN_STORE_PATH, ""),
+            storePass = certPassword,
+            certBase64 = requireEnv(EnvVariables.ISIN_CERT_BASE64),
             storeType = getEnvOrLogDefault(EnvVariables.ISIN_STORE_TYPE, "JKS"),
-            keyPass = getEnvOrLogDefault(EnvVariables.ISIN_KEY_PASS, ""),
+            keyPass = certPassword
         )
     }
 }

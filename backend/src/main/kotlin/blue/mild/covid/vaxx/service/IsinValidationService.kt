@@ -16,9 +16,9 @@ import io.ktor.client.request.*
 import io.ktor.client.statement.*
 import mu.KLogging
 import org.apache.http.ssl.SSLContextBuilder
-import java.io.File
+import java.io.ByteArrayInputStream
 import java.security.KeyStore
-import java.util.Locale
+import java.util.*
 
 private const val URL_NAJDI_PACIENTA = "pacienti/VyhledatDleJmenoPrijmeniRc"
 
@@ -117,7 +117,7 @@ class IsinValidationService(
 
     private fun readStore(config: IsinConfigurationDto): KeyStore? =
         runCatching {
-            File(config.storePath).inputStream().use {
+            ByteArrayInputStream(Base64.getDecoder().decode(config.certBase64)).use {
                 KeyStore.getInstance(config.storeType).apply {
                     load(it, config.storePass.toCharArray())
                 }

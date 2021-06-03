@@ -13,9 +13,9 @@ data class IsinConfigurationDto(
     val storePass: String,
 
     /**
-     * Full path to the file.
+     * Certificate in base64 format
      */
-    val storePath: String,
+    val certBase64: String,
 
     /**
      * Type of the store JKS for example.
