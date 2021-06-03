@@ -1,5 +1,6 @@
 // === BRAND COLORS === //
 $brand-mild-blue: #2D4496;
+$brand-mild-blue-light: #f4faff;
 
 // === GRAYS === //
 $gray-100: #f8f9fa;
@@ -16,7 +17,7 @@ $gray-900: #212529;
 $primary: $brand-mild-blue;
 $black: #000000;
 $white: #ffffff;
-$light: #f5f5f5;
+$light: $brand-mild-blue-light;
 $dark: $gray-700;
 $accent: #007bff;
 $success: #28a745;
