@@ -356,11 +356,11 @@
 
                                     <p>
 
-                                        Za tým Mild Blue a Prahy 7
+                                        Za tým Prahy 7 a Mild Blue
                                     </p>
                                     <p>
 
-                                        MUDr. Alžběta Honzková, Mild Blue
+                                        Jan Čižinský & Tomáš Kouřim
                                     </p>
                                 </div>
                             </td>
