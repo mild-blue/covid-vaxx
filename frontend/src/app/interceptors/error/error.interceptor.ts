@@ -30,7 +30,7 @@ export class ErrorInterceptor implements HttpInterceptor {
       if (err.status === 401) {
         // auto logout if 401 response returned from api
         this._authService.logout();
-        message = 'Uživatel nenalezen. Zkontrolujte prosím správnost přihlašovacích údajů.';
+        message = 'Špatné přihlašovací údaje. Zkuste to prosím znovu.';
       } else if (err.status === 403) {
         message = 'Přístup byl odmítnut.';
         emailSubject = 'Požadavek na udělení přístupu';

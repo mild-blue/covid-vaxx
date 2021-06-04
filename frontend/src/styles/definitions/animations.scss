@@ -1,0 +1,14 @@
+@keyframes slideOutUp {
+  from {
+    top: 10px;
+    opacity: 0;
+  }
+
+  to {
+    top: 0;
+    opacity: 1;
+  }
+}
+
+$animation-speed: 0.5;
+$animation-delay: 0.1;

@@ -87,6 +87,7 @@ export class AuthService {
 
   public logout(): void {
     localStorage.removeItem('user');
+    localStorage.removeItem('searchHistory');
     this._currentUserSubject.next(undefined);
     this._router.navigate(['/login']);
   }

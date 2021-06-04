@@ -3,10 +3,11 @@
 body {
   display: flex;
   flex-direction: column;
-  background: $light;
+  background: $body-bg;
+  color: $body-color;
   height: 100%;
   margin: 0;
-  font-family: Roboto, "Helvetica Neue", sans-serif;
+  font-family: $font-family-base;
 
   &, * {
     box-sizing: border-box;

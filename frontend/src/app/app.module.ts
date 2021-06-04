@@ -66,6 +66,7 @@ import { BodyPartPipe } from './pipes/body-part/body-part.pipe';
 import { BodyPartInflectedPipe } from './pipes/body-part-inflected/body-part-inflected.pipe';
 import { FormFieldComponent } from './components/form-field/form-field.component';
 import { IConfig, NgxMaskModule } from 'ngx-mask';
+import { HeaderComponent } from './components/header/header.component';
 
 registerLocaleData(localeCs);
 
@@ -125,7 +126,8 @@ declare global {
     WarningComponent,
     BodyPartPipe,
     BodyPartInflectedPipe,
-    FormFieldComponent
+    FormFieldComponent,
+    HeaderComponent
   ],
   imports: [
     BrowserModule,

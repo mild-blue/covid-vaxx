@@ -1,0 +1,7 @@
+@import "../variables";
+
+mat-card {
+  &, &.mat-card {
+    font-family: $font-family-base;
+  }
+}

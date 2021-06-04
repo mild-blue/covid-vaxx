@@ -1,10 +1,9 @@
-<mat-toolbar color="primary">
-  <span>Administrační sekce</span>
+<app-header title="Administrační sekce" [showLogos]="false">
   <button mat-button (click)="logOut()">
     Odhlásit
     <mat-icon>logout</mat-icon>
   </button>
-</mat-toolbar>
+</app-header>
 
 <main>
   <router-outlet></router-outlet>

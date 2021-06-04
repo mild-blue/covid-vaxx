@@ -2,7 +2,7 @@
 
 mat-card-content:not(.vertical) .row {
   display: flex;
-  margin: 0 -10px;
+  margin: 0 -13px;
 
   @include media-breakpoint-down(sm) {
     flex-direction: column;
@@ -12,8 +12,8 @@ mat-card-content:not(.vertical) .row {
 
   > * {
     flex: 1;
-    margin-left: 10px;
-    margin-right: 10px;
+    margin-left: 13px;
+    margin-right: 13px;
 
     @include media-breakpoint-down(sm) {
       width: 100%;
