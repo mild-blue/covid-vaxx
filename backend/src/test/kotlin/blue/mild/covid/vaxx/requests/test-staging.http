@@ -38,7 +38,7 @@ Authorization: Bearer {{auth_token}}
   "from": "2021-06-07T15:00:00.00000000Z",
   "to": "2021-06-07T22:00:00.00000000Z",
   "bandwidth": 2,
-  "durationMillis": 180000
+  "durationMillis": 120000
 }
 
 ###
