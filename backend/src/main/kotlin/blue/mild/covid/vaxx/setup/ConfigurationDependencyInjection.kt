@@ -8,6 +8,7 @@ import blue.mild.covid.vaxx.dto.config.MailJetConfigurationDto
 import blue.mild.covid.vaxx.dto.config.RateLimitConfigurationDto
 import blue.mild.covid.vaxx.dto.config.ReCaptchaVerificationConfigurationDto
 import blue.mild.covid.vaxx.dto.response.ApplicationInformationDtoOut
+import blue.mild.covid.vaxx.isin.Pracovnik
 import blue.mild.covid.vaxx.utils.createLogger
 import org.kodein.di.DI
 import org.kodein.di.bind
@@ -110,7 +111,33 @@ fun DI.MainBuilder.bindConfiguration() {
     }
 
     bind<IsinConfigurationDto>() with singleton {
-        TODO("Not implemented yet.")
+        val certPassword = getEnvOrLogDefault(EnvVariables.ISIN_CERT_PASSWORD, "")
+
+//        // TODO certificate password decryption
+//        val ksmKeyId = getEnvOrLogDefault(EnvVariables.KMS_KEY_ID, "")
+//        if(!ksmKeyId.isEmpty()) {
+//            val kmsClient: AWSKMS = AWSKMSClientBuilder.standard().build()
+//            val encryptedCertKey: ByteBuffer = ByteBuffer.wrap(certPassword.toByteArray())
+//            val req: DecryptRequest = DecryptRequest().withCiphertextBlob(encryptedCertKey).withKeyId(ksmKeyId);
+//            val decryptedCertKey: ByteBuffer = kmsClient.decrypt(req).getPlaintext();
+//            certPassword = decryptedCertKey.toString()
+//        }
+
+        val pracovnik = Pracovnik(
+            nrzpCislo = getEnvOrLogDefault(EnvVariables.ISIN_PRACOVNIK_NRZP_CISLO, "172319367"),
+            rodneCislo = "",
+            // 000 je pro polikliniky - neni to placeholder
+            // https://nrpzs.uzis.cz/detail-66375-clinicum-a-s.html#fndtn-detail_uzis
+            pcz = getEnvOrLogDefault(EnvVariables.ISIN_PRACOVNIK_PCZ, "000")
+        )
+        IsinConfigurationDto(
+            rootUrl = getEnvOrLogDefault(EnvVariables.ISIN_ROOT_URL, "https://apitest.uzis.cz/api/v1"),
+            pracovnik = pracovnik,
+            storePass = certPassword,
+            certBase64 = getEnvOrLogDefault(EnvVariables.ISIN_CERT_BASE64, ""),
+            storeType = getEnvOrLogDefault(EnvVariables.ISIN_STORE_TYPE, "JKS"),
+            keyPass = certPassword
+        )
     }
 }
 

@@ -1,6 +1,7 @@
 package blue.mild.covid.vaxx.routes
 
 import blue.mild.covid.vaxx.dao.model.UserRole
+import blue.mild.covid.vaxx.dto.internal.IsinValidationResultStatus
 import blue.mild.covid.vaxx.dto.internal.PatientEmailRequestDto
 import blue.mild.covid.vaxx.dto.request.PatientRegistrationDtoIn
 import blue.mild.covid.vaxx.dto.request.PatientUpdateDtoIn
@@ -12,6 +13,7 @@ import blue.mild.covid.vaxx.dto.response.OK
 import blue.mild.covid.vaxx.dto.response.Ok
 import blue.mild.covid.vaxx.dto.response.PatientDtoOut
 import blue.mild.covid.vaxx.dto.response.VaccinationSlotDtoOut
+import blue.mild.covid.vaxx.error.IsinValidationException
 import blue.mild.covid.vaxx.error.NoVaccinationSlotsFoundException
 import blue.mild.covid.vaxx.extensions.asContextAware
 import blue.mild.covid.vaxx.extensions.closestDI
@@ -20,6 +22,7 @@ import blue.mild.covid.vaxx.extensions.request
 import blue.mild.covid.vaxx.security.auth.UserPrincipal
 import blue.mild.covid.vaxx.security.auth.authorizeRoute
 import blue.mild.covid.vaxx.security.ddos.RequestVerificationService
+import blue.mild.covid.vaxx.service.IsinValidationService
 import blue.mild.covid.vaxx.service.LocationService
 import blue.mild.covid.vaxx.service.MailService
 import blue.mild.covid.vaxx.service.PatientService
@@ -39,17 +42,18 @@ import org.kodein.di.instance
 /**
  * Routes related to patient entity.
  */
-@Suppress("LongMethod", "TooGenericExceptionCaught") // this is routing, that's fine plus we need not to save
+@Suppress("LongMethod", "TooGenericExceptionCaught", "ThrowsCount") // this is routing, that's fine plus we need not to save
 // patient in case any issue during processing happens
 fun NormalOpenAPIRoute.patientRoutes() {
     val logger = createLogger("PatientRoutes")
 
     val captchaService by closestDI().instance<RequestVerificationService>()
 
-    val patientService by closestDI().instance<PatientService>()
-    val emailService by closestDI().instance<MailService>()
     val vaccinationSlotService by closestDI().instance<VaccinationSlotService>()
     val locationService by closestDI().instance<LocationService>()
+    val patientService by closestDI().instance<PatientService>()
+    val emailService by closestDI().instance<MailService>()
+    val isinValidationService by closestDI().instance<IsinValidationService>()
 
     route(Routes.patient) {
         post<CaptchaVerificationDtoIn, VaccinationSlotDtoOut, PatientRegistrationDtoIn>(
@@ -57,9 +61,24 @@ fun NormalOpenAPIRoute.patientRoutes() {
         ) { (recaptchaToken), patientRegistration ->
             logger.debug { "Patient registration request. Executing captcha verification." }
             captchaService.verify(recaptchaToken, request.determineRealIp())
-            logger.debug { "Captcha token verified. Saving registration." }
+            logger.debug { "Captcha token verified. Validating isin." }
 
-            val patientId = patientService.savePatient(asContextAware(patientRegistration))
+            val isinValidationResult = isinValidationService.validatePatientIsin(patientRegistration)
+
+            val isIsinValidated: Boolean = when (isinValidationResult.status) {
+                IsinValidationResultStatus.PATIENT_FOUND ->
+                    true
+                IsinValidationResultStatus.PATIENT_NOT_FOUND ->
+                    throw IsinValidationException(isinValidationResult)
+                IsinValidationResultStatus.WAS_NOT_VERIFIED -> {
+                    logger.warn { "Patient was not validated in isin due to some problem. Skipping isin validation." }
+                    false
+                }
+            }
+
+            logger.debug { "Isin validation ended. Saving registration." }
+
+            val patientId = patientService.savePatient(asContextAware(patientRegistration), isIsinValidated)
             logger.info { "Patient saved to the database with id: ${patientId}. Booking slot." }
             try {
                 val slot = vaccinationSlotService.bookSlotForPatient(patientId)

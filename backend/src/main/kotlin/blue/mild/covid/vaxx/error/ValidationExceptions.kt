@@ -1,5 +1,7 @@
 package blue.mild.covid.vaxx.error
 
+import blue.mild.covid.vaxx.dto.internal.IsinValidationResultDto
+
 sealed class ValidationException(
     override val message: String
 ) : Exception(message)
@@ -12,6 +14,10 @@ data class PropertyValidationException(
 data class EmptyStringException(
     val parameterName: String,
 ) : ValidationException("Parameter $parameterName must not be empty.")
+
+data class IsinValidationException(
+    val validationResult: IsinValidationResultDto
+    ) : ValidationException("Problem occurred during isin validation: ${validationResult.status}")
 
 class EmptyUpdateException : ValidationException("No data given for the update.")
 

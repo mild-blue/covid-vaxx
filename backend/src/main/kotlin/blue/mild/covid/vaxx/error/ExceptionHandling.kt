@@ -67,6 +67,11 @@ fun Application.installExceptionHandling() {
 
         jsonExceptions()
 
+        exception<IsinValidationException> { cause ->
+            logger.debug { cause.message }
+            call.errorResponse(HttpStatusCode.NotAcceptable, "Not acceptable: ${cause.message}.")
+        }
+
         // validation failed for some property
         exception<ValidationException> { cause ->
             logger.debug { cause.message }

@@ -13,6 +13,7 @@ import blue.mild.covid.vaxx.security.ddos.CaptchaVerificationService
 import blue.mild.covid.vaxx.security.ddos.RequestVerificationService
 import blue.mild.covid.vaxx.service.DataCorrectnessService
 import blue.mild.covid.vaxx.service.IsinRegistrationService
+import blue.mild.covid.vaxx.service.IsinValidationService
 import blue.mild.covid.vaxx.service.LocationService
 import blue.mild.covid.vaxx.service.MailJetEmailService
 import blue.mild.covid.vaxx.service.MailService
@@ -92,6 +93,7 @@ fun DI.MainBuilder.registerClasses() {
     bind<DataCorrectnessService>() with singleton { DataCorrectnessService(instance()) }
     bind<MailJetEmailService>() with singleton { MailJetEmailService(instance(), instance(), instance(), instance()) }
     bind<SystemStatisticsService>() with singleton { SystemStatisticsService() }
+    bind<IsinValidationService>() with singleton { IsinValidationService(instance()) }
 
     bind<MailjetClient>() with singleton {
         val mailJetConfig = instance<MailJetConfigurationDto>()

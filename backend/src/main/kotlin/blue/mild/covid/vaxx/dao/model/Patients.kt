@@ -67,4 +67,9 @@ object Patients : ManagedTable("patients") {
      * Data about patient's vaccination.
      */
     val vaccination = (entityId("vaccination_id") references Vaccinations.id).nullable()
+
+    /**
+     * Patient was validated in isin
+     */
+    val isIsinValidated = bool("is_isin_validated")
 }
