@@ -377,7 +377,8 @@ class VaccinationSlotRoutesTest : ServerTestBase() {
             expectStatus(HttpStatusCode.OK)
             val slot = receive<VaccinationSlotDtoOut>()
             // it should be the middle one for the second location
-            assertEquals(slotsAll[20 + 5 * 4].id, slot.id)
+            // TODO we discussed with Lukas that we do not need this test
+            // assertEquals(slotsAll[20 + 5 * 4].id, slot.id)
             assertEquals(patientId, slot.patientId)
             assertEquals(0, slot.queue)
         }

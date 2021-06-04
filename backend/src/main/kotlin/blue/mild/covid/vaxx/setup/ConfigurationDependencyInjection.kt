@@ -17,7 +17,7 @@ import pw.forst.katlib.getEnv
 import pw.forst.katlib.whenNull
 import java.io.File
 import java.time.Duration
-import java.util.*
+import java.util.UUID
 
 /**
  * Loads the DI container with configuration from the system environment.
@@ -125,7 +125,7 @@ fun DI.MainBuilder.bindConfiguration() {
 
         val pracovnik = Pracovnik(
             nrzpCislo = getEnvOrLogDefault(EnvVariables.ISIN_PRACOVNIK_NRZP_CISLO, "172319367"),
-            rodneCislo = getEnvOrLogDefault(EnvVariables.ISIN_PRACOVNIK_RODNE_CISLO, "245510064"),
+            rodneCislo = "",
             // 000 je pro polikliniky - neni to placeholder
             // https://nrpzs.uzis.cz/detail-66375-clinicum-a-s.html#fndtn-detail_uzis
             pcz = getEnvOrLogDefault(EnvVariables.ISIN_PRACOVNIK_PCZ, "000")

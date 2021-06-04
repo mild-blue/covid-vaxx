@@ -20,13 +20,13 @@ enum class EnvVariables {
      */
     ISIN_ROOT_URL,
     ISIN_PRACOVNIK_NRZP_CISLO,
-    ISIN_PRACOVNIK_RODNE_CISLO,
     ISIN_PRACOVNIK_PCZ,
     ISIN_CERT_BASE64,
     ISIN_CERT_PASSWORD,
     ISIN_STORE_TYPE,
 
-    KMS_KEY_ID,
+    // TODO certificate password decryption
+    // KMS_KEY_ID,
 
     /**
      * If the MailJet email should be enabled.
