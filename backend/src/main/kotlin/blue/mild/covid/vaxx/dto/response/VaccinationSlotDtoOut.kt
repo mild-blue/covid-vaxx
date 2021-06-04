@@ -24,7 +24,7 @@ data class VaccinationSlotDtoOut(
     }
 
     fun time(): String {
-        return "${this.from.atOffset(getFromWithOffset()).hour}:" +
-                "${this.from.atOffset(getFromWithOffset()).minute}"
+        return this.from.atOffset(getFromWithOffset()).hour.toString().padStart(2, '0') + ":" +
+                this.from.atOffset(getFromWithOffset()).minute.toString().padStart(2, '0')
     }
 }

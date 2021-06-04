@@ -249,7 +249,7 @@
 
         .text-author {
             bordeR: 1px solid rgba(0, 0, 0, .05);
-            max-width: 50%;
+            max-width: 70%;
             margin: 0 auto;
             padding: 2em;
         }
@@ -314,7 +314,7 @@
     <div style="display: none; font-size: 1px;max-height: 0px; max-width: 0px; opacity: 0; overflow: hidden; mso-hide: all; font-family: sans-serif;">
         &zwnj;&nbsp;&zwnj;&nbsp;&zwnj;&nbsp;&zwnj;&nbsp;&zwnj;&nbsp;&zwnj;&nbsp;&zwnj;&nbsp;&zwnj;&nbsp;&zwnj;&nbsp;&zwnj;&nbsp;&zwnj;&nbsp;&zwnj;&nbsp;&zwnj;&nbsp;&zwnj;&nbsp;&zwnj;&nbsp;&zwnj;&nbsp;&zwnj;&nbsp;&zwnj;&nbsp;
     </div>
-    <div style="max-width: 600px; margin: 0 auto;" class="email-container">
+    <div style="max-width: 1000px; margin: 0 auto;" class="email-container">
         <!-- BEGIN BODY -->
         <table align="center" role="presentation" cellspacing="0" cellpadding="0" border="0" width="100%"
                style="margin: auto;">
