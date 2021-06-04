@@ -351,11 +351,12 @@
                                     <strong>Dodržujte zásady:</strong>
                                     <ul style="text-align: left; padding-left: 20px;">
                                         <li>dostavte se na místo očkování nejdříve s desetiminutovým předstihem</li>
-                                        <li>vhodné oblečení - tričko nebo košili s krátkým rukávem</li>
+                                        <li>vhodné oblečení - tričko nebo košili s krátkým rukávem, aby Vaše rameno bylo snadno přístupné</li>
                                         <li>přicházejte samostatně; maximálně v doprovodu jedné osoby</li>
                                         <li>do očkovacího centra nevnášejte rozměrná zavazadla, batohy, zbraně</li>
                                         <li>v místě očkování dodržujte hygienická pravidla: mějte RESPIRÁTOR (typu FFP2 nebo N95, případně nanorouška), dodržujte bezpečné ROZESTUPY (2m)</li>
                                         <li>v místě očkování platí zákaz konzumace potravin a nápojů</li>
+                                        <li>prosíme, respektujte pokyny očkovacího personálu</li>
                                     </ul>
 
                                     <strong>K očkování nechoďte, pokud:</strong>
