@@ -16,6 +16,19 @@ enum class EnvVariables {
     POSTGRES_PASSWORD,
 
     /**
+     * Isin configuration
+     */
+    ISIN_ROOT_URL,
+    ISIN_PRACOVNIK_NRZP_CISLO,
+    ISIN_PRACOVNIK_PCZ,
+    ISIN_CERT_BASE64,
+    ISIN_CERT_PASSWORD,
+    ISIN_STORE_TYPE,
+
+    // TODO certificate password decryption
+    // KMS_KEY_ID,
+
+    /**
      * If the MailJet email should be enabled.
      * If so, other envs need to specified as well.
      */
@@ -25,6 +38,8 @@ enum class EnvVariables {
     MAIL_ADDRESS_FROM,
     MAIL_FROM,
     MAIL_SUBJECT,
+
+
 
     /**
      * From which path should backend serve static
