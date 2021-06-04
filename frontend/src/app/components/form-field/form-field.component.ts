@@ -10,6 +10,7 @@ export class FormFieldComponent {
 
   @Input() label?: string;
   @Input() note?: string;
+  @Input() info?: string;
   @Input() invalid: boolean = false;
   @Input() errors?: ValidationErrors | null;
 

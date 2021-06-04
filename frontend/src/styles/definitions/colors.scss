@@ -1,6 +1,11 @@
 // === BRAND COLORS === //
-$brand-mild-blue: #2D4496;
-$brand-mild-blue-light: #f4faff;
+$blue: #253EA7;
+$dark-blue: #11205E;
+$light-blue: #F4FAFF;
+$pale-blue: #D2D8E5;
+$gray: #A1A4AF;
+$light-gray: #B8BCCE;
+$dark-gray: #525664;
 
 // === GRAYS === //
 $gray-100: #f8f9fa;
@@ -14,10 +19,10 @@ $gray-800: #343a40;
 $gray-900: #212529;
 
 // === APP COLORS === //
-$primary: $brand-mild-blue;
+$primary: $blue;
 $black: #000000;
 $white: #ffffff;
-$light: $brand-mild-blue-light;
+$light: #f5f5f5;
 $dark: $gray-700;
 $accent: #007bff;
 $success: #28a745;

@@ -342,25 +342,52 @@
                         <tr>
                             <td style="text-align: center;">
                                 <div class="text-author">
+                                    <p>Dobrý den,</p>
                                     <p>
-                                        Děkujeme za registraci k očkování. Dostavte se na
-                                        adresu ${emailRequestDto.location.address}
+                                        byly Vám vytvořeny rezervace na očkování v místě ${emailRequestDto.location.address}
                                         dne ${emailRequestDto.slot.date()} v ${emailRequestDto.slot.time()}.
                                     </p>
-                                    <p>
-                                        Den před očkování nepijte alkohol. Níže naleznete Vámi zadané údaje.
-                                        V případě jakýchkoliv dotazů či připomínek se na nás neváhejte obrátit na
-                                        <a href="mailto: ${emailRequestDto.location.email}">${emailRequestDto.location.email}</a>
-                                        ci na tel ${emailRequestDto.location.phoneNumber}.
+
+                                    <strong>Dodržujte zásady:</strong>
+                                    <ul style="text-align: left; padding-left: 20px;">
+                                        <li>dostavte se na místo očkování nejdříve s desetiminutovým předstihem</li>
+                                        <li>vhodné oblečení - tričko nebo košili s krátkým rukávem</li>
+                                        <li>přicházejte samostatně; maximálně v doprovodu jedné osoby</li>
+                                        <li>do očkovacího centra nevnášejte rozměrná zavazadla, batohy, zbraně</li>
+                                        <li>v místě očkování dodržujte hygienická pravidla: mějte RESPIRÁTOR (typu FFP2 nebo N95, případně nanorouška), dodržujte bezpečné ROZESTUPY (2m)</li>
+                                        <li>v místě očkování platí zákaz konzumace potravin a nápojů</li>
+                                    </ul>
+
+                                    <strong>K očkování nechoďte, pokud:</strong>
+                                    <ul style="text-align: left; padding-left: 20px;">
+                                        <li>máte zvýšenou tělesnou teplotu</li>
+                                        <li>máte aktuálně zhoršený zdravotní stav v důsledku jiného onemocnění</li>
+                                        <li>Vám očkování v současné době nedoporučil Váš praktický lékař</li>
+                                    </ul>
+
+                                    <strong>Kde naleznete certifikát o očkování?</strong>
+                                    <p style="text-align: left;">
+                                        Na portálu <a href="https://ocko.uzis.cz" target="_blank">ocko.uzis.cz</a> (Očkovací portál občana) lze certifikát stáhnout a vytisknout.
+                                        Certifikát Vám bude zároveň poslán e-mailem, který jste zadávali při registraci na očkování.
+                                        <br>
+                                        V případě dotazů se obraťte na infolinku Prahy 7 každý všední den od 8:00 do 16:00 hodin na čísle: ${emailRequestDto.location.phoneNumber}
                                     </p>
-
                                     <p>
-
-                                        Za tým Mild Blue a Prahy 7
+                                        Aktuality najdete na: <a href="https://www.praha7.cz/ockovani" target="_blank">www.praha7.cz/ockovani</a>
                                     </p>
                                     <p>
-
-                                        MUDr. Alžběta Honzková, Mild Blue
+                                        Další informace naleznete <a href="https://koronavirus.mzcr.cz/ockovani-proti-covid-19/" target="_blank">zde</a>.
+                                    </p>
+                                    <br>
+                                    <p>
+                                        Děkujeme, že svým očkováním chráníte sebe i ostatní a přispíváte k návratu k běžnému životu.
+                                    </p>
+                                    <br>
+                                    <p>
+                                        Na viděnou v ZŠ Strossmayerovo náměstí.
+                                    </p>
+                                    <p>
+                                        <i>MČ Praha 7 a tým Mild Blue</i>
                                     </p>
                                 </div>
                             </td>

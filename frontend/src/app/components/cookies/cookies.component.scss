@@ -1,17 +1,26 @@
 @import "../../../styles/variables";
+@import "../../../styles/breakpoints";
 
 .cookies {
-  background: $gray-800;
-  box-shadow: 0 -1px 2px 0 rgba($gray-800, 30%);
+  background: $white;
   font-size: 12px;
-  color: $white;
+  color: $body-color;
+  border-radius: 6px;
+  box-shadow: rgba(149, 157, 165, 0.2) 0 8px 24px;
 
   position: fixed;
-  bottom: 0;
-  width: 100%;
-  padding: 3px 0;
+  bottom: 30px;
+  left: 30px;
+  width: 25%;
+  min-width: 350px;
+  padding: 10px;
 
   z-index: 100;
+
+  @include media-breakpoint-down(sm) {
+    width: calc(100vw - 60px);
+    min-width: 0;
+  }
 
   &__content {
     display: flex;
@@ -24,10 +33,9 @@
 
     button {
       font-size: 12px;
-      color: $gray-800;
-      line-height: 20px;
+      line-height: 25px;
       padding: 0 10px;
-      min-width: 0;
+      min-width: 50px;
       margin-left: 20px;
     }
   }

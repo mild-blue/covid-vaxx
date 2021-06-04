@@ -1,42 +1,130 @@
 @import "../../../styles/variables";
 @import "../../../styles/breakpoints";
 
+$icon-size: 40px;
+
 .success {
   display: flex;
   justify-content: center;
   color: $success;
   margin: 30px 0 40px;
 
+  @include media-breakpoint-down(sm) {
+    flex-direction: column;
+    align-items: center;
+  }
+
   h1 {
     margin: 0 0 0 20px;
-    padding-top: 5px;
-  }
-}
+    padding-top: 15px;
 
-mat-card-content {
-  font-size: 16px;
-  line-height: 1.8;
-  padding: 15px 30px;
-
-  ul {
-    margin: 0;
-    padding: 0 0 0 20px;
+    @include media-breakpoint-down(sm) {
+      margin: 0;
+      text-align: center;
+    }
   }
 }
 
 .confirmation {
-  mat-card-content {
-    padding-bottom: 30px;
-  }
 
-  .time {
-    font-weight: 900;
-    font-size: 36px;
-    text-align: center;
-    margin: 40px 0;
+  &__item {
+    margin-bottom: 60px;
+    position: relative;
+    top: 10px;
+    opacity: 0;
+
+    animation: slideOutUp #{$animation-speed}s ease-in-out forwards;
+
+    .content {
+      display: flex;
+      align-items: center;
+
+      background: $white;
+      border-radius: 6px;
+      box-shadow: rgba(149, 157, 165, 0.2) 0 8px 24px;
+
+      padding: 15px 15px 15px 30px;
+
+      @include media-breakpoint-down(sm) {
+        flex-direction: column;
+        align-items: center;
+
+        padding: 20px;
+      }
+
+      > mat-icon {
+        width: $icon-size;
+        height: $icon-size;
+        font-size: $icon-size;
+        color: $primary;
+        margin: 0 30px;
+        display: inline-block;
+      }
+
+      > ul {
+        padding: 0 0 0 20px;
+        margin: 0;
+
+        li:not(:last-child) {
+          margin-bottom: 10px;
+        }
+      }
+
+      > p {
+        margin-top: 0;
+      }
+
+      h1 {
+        display: inline-block;
+        margin: 0;
+        font-size: 32px;
+
+        @include media-breakpoint-down(sm) {
+          text-align: center;
+          margin-top: 10px;
+        }
+      }
+
+      &.info {
+        flex-direction: column;
+        align-items: flex-start;
+
+        i {
+          text-align: right;
+        }
+      }
+    }
+
+    @include media-breakpoint-up(md) {
+      &:nth-child(1) .content {
+        padding-left: 0;
+      }
+    }
+
+    &:nth-child(2) {
+      animation-delay: #{$animation-delay}s;
+    }
+
+    &:nth-child(3) {
+      animation-delay: #{$animation-delay * 2}s;
+    }
+
+    &:nth-child(3) {
+      animation-delay: #{$animation-delay * 3}s;
+    }
+
+    &:nth-child(4) {
+      animation-delay: #{$animation-delay * 4}s;
+    }
+
+    &:nth-child(5) {
+      animation-delay: #{$animation-delay * 5}s;
+    }
   }
 
   .place {
+    flex: 1;
+    width: 100%;
     display: flex;
     align-items: center;
 
@@ -87,19 +175,6 @@ mat-card-content {
       }
     }
   }
-}
-
-.info {
-  i {
-    text-align: right;
-    display: block;
-    color: $primary;
-    font-weight: 500;
-  }
-}
-
-h2 {
-  margin-top: 40px;
 }
 
 .nav-button {
