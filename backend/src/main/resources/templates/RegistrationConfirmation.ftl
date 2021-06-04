@@ -356,6 +356,8 @@
                                         <li>do očkovacího centra nevnášejte rozměrná zavazadla, batohy, zbraně</li>
                                         <li>v místě očkování dodržujte hygienická pravidla: mějte RESPIRÁTOR (typu FFP2 nebo N95, případně nanorouška), dodržujte bezpečné ROZESTUPY (2m)</li>
                                         <li>v místě očkování platí zákaz konzumace potravin a nápojů</li>
+                                        <li>s sebou si nezapomeňte vzít doklad totožnosti a kartičku pojištěnce</li>
+                                        <li>den před očkováním nepijte alkohol</li>
                                         <li>prosíme, respektujte pokyny očkovacího personálu</li>
                                     </ul>
 
@@ -369,9 +371,9 @@
                                     <strong>Kde naleznete certifikát o očkování?</strong>
                                     <p style="text-align: left;">
                                         Na portálu <a href="https://ocko.uzis.cz" target="_blank">ocko.uzis.cz</a> (Očkovací portál občana) lze certifikát stáhnout a vytisknout.
-                                        Certifikát Vám bude zároveň poslán e-mailem, který jste zadávali při registraci na očkování.
+                                        Certifikát Vám bude zároveň poslán e-mailem, který jste zadávali při registraci na očkování (zkontrolujte pro jistotu i složku Spam či Hromadné).
                                         <br>
-                                        V případě dotazů se obraťte na infolinku Prahy 7 každý všední den od 8:00 do 16:00 hodin na čísle: ${emailRequestDto.location.phoneNumber}
+                                        V případě dotazů se obraťte na infolinku Prahy 7 každý všední den od 8:00 do 16:00 hodin na čísle: ${emailRequestDto.location.phoneNumber}. V případě dotazů technického typu napište email na ockovani@mild.blue.
                                     </p>
                                     <p>
                                         Aktuality najdete na: <a href="https://www.praha7.cz/ockovani" target="_blank">www.praha7.cz/ockovani</a>
