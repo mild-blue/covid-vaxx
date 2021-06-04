@@ -111,7 +111,7 @@ fun DI.MainBuilder.bindConfiguration() {
     }
 
     bind<IsinConfigurationDto>() with singleton {
-        val certPassword = requireEnv(EnvVariables.ISIN_CERT_PASSWORD)
+        val certPassword = getEnvOrLogDefault(EnvVariables.ISIN_CERT_PASSWORD, "")
 
 //        // TODO certificate password decryption
 //        val ksmKeyId = getEnvOrLogDefault(EnvVariables.KMS_KEY_ID, "")
@@ -134,7 +134,7 @@ fun DI.MainBuilder.bindConfiguration() {
             rootUrl = getEnvOrLogDefault(EnvVariables.ISIN_ROOT_URL, "https://apitest.uzis.cz/api/v1"),
             pracovnik = pracovnik,
             storePass = certPassword,
-            certBase64 = requireEnv(EnvVariables.ISIN_CERT_BASE64),
+            certBase64 = getEnvOrLogDefault(EnvVariables.ISIN_CERT_BASE64, ""),
             storeType = getEnvOrLogDefault(EnvVariables.ISIN_STORE_TYPE, "JKS"),
             keyPass = certPassword
         )
