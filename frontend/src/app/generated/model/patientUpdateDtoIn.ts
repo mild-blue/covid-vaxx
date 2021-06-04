@@ -26,13 +26,13 @@ export interface PatientUpdateDtoIn {
   zipCode?: number | null;
 }
 export enum PatientUpdateDtoInInsuranceCompanyEnum {
-    Vzp = 'VZP',
-    Vozp = 'VOZP',
-    Cpzp = 'CPZP',
-    Ozp = 'OZP',
-    Zps = 'ZPS',
-    Zpmv = 'ZPMV',
-    Rbp = 'RBP'
+    Vzp = '111 - Všeobecná zdravotní pojišťovna (VZP)',
+    Vozp = '201 - Vojenská zdravotní pojišťovna (VOZP)',
+    Cpzp = '205 - Česká průmyslová zdravotní pojišťovna (CPZP)',
+    Ozp = '207 - Oborová zdravotní pojišťovna zaměstnanců bank, pojišťoven a stavebnictví (OZP)',
+    Zps = '209 - Zaměstnanecká pojišťovna Škoda (ZPS)',
+    Zpmv = '211 - Zdravotní pojišťovna ministerstva vnitra (ZPMV)',
+    Rbp = '213 - Revírní bratrská pokladna, zdravotní pojišťovna (RBP)'
 };
 
 

@@ -31,8 +31,8 @@
       </div>
 
       <div class="row">
-        <app-form-field label="Město *" [invalid]="isControlInvalid('district')" [errors]="getControlErrors('district')">
-          <input formControlName="district" name="district" placeholder="Vaše město" required maxlength="64">
+        <app-form-field label="Město / městská část *" [invalid]="isControlInvalid('district')" [errors]="getControlErrors('district')">
+          <input formControlName="district" name="district" placeholder="Vaše město (nebo městská část)" required maxlength="64">
         </app-form-field>
 
         <app-form-field label="PSČ *" [invalid]="isControlInvalid('zipCode')" [errors]="getControlErrors('zipCode')">
