@@ -1,33 +1,120 @@
-<mat-toolbar color="primary">
-  <span>Dotazník před očkováním proti nemoci COVID-19</span>
-</mat-toolbar>
+<app-header title="Dotazník před očkováním proti nemoci COVID-19"></app-header>
 
 <main>
-  <app-container>
-    <mat-card class="success">
-      <mat-card-title class="success__header">
-        <app-check-mark></app-check-mark>
-        <h1 class="mat-h1">Registrace proběhla úspěšně</h1>
-      </mat-card-title>
-      <mat-card-content class="success__content">
-        <p>Děkujeme za registraci k očkování. Dostavte se do Vaší volební místnosti ve stanovený čas. Den před očkování nepijte alkohol. Níže naleznete Vámi zadané údaje.
-          V případě jakýchkoliv dotazů či připomínek se na nás neváhejte obrátit na <a href="mailto:{{ companyEmail }}">{{ companyEmail }}</a>.</p>
-        <p><i>Za tým Prahy 7 a Mild Blue<br><b>Jan Čižinský & Tomáš Kouřim</b></i></p>
-      </mat-card-content>
-    </mat-card>
-  </app-container>
+  <app-container [wide]="true">
+    <div class="success">
+      <app-check-mark></app-check-mark>
+      <h1>Registrace proběhla úspěšně</h1>
+    </div>
 
-  <app-container *ngIf="patientData" [wide]="true">
-    <h2 class="mat-h2">Shrnutí zadaných údajů</h2>
-    <app-patient-data [patientData]="patientData"></app-patient-data>
+    <div class="confirmation">
 
-    <app-warning>
-      Pokud vidíte chybu v zadaných údajích, anebo je chcete změnit, kontaktujte nás prosím na <a
-      href="mailto:{{ companyEmail }}?subject=Požadavek na úpravu osobních údajů pacienta r.č. {{ patientData.personalNumber }}">{{ companyEmail }}</a>.
-    </app-warning>
+      <ng-container *ngIf="confirmation">
+        <div class="confirmation__item">
+          <h2>Váš rezervovaný termín:</h2>
+          <div class="content">
+            <mat-icon>schedule</mat-icon>
+            <h1>
+              {{ confirmation.from | date:"d.M.yyyy HH:mm" }} - {{ confirmation.to | date:"HH:mm" }}
+            </h1>
+          </div>
+        </div>
+      </ng-container>
 
-    <button color="primary" class="nav-button mt-30" (click)="handleStartAgain()" mat-raised-button>
+      <ng-container *ngIf="location">
+        <div class="confirmation__item">
+          <h2>Dostavte se v uvedený termín na adresu:</h2>
+          <div class="content">
+            <div class="place">
+              <div class="place-info">
+                <div class="place-address">
+                  <mat-icon>place</mat-icon>
+                  <div>
+                    {{ location.address }}<br>
+                    {{ location.district }}, {{ location.zipCode | zipCode }}<br>
+                    {{ location.notes }}
+                  </div>
+                </div>
+                <div class="place-contact" *ngIf="location.phoneNumber">
+                  <mat-icon>phone_outline</mat-icon>
+                  <a href="tel:{{ location.phoneNumber }}">{{ location.phoneNumber | phoneNumber }}</a>
+                </div>
+                <div class="place-contact" *ngIf="location.email">
+                  <mat-icon>mail_outline</mat-icon>
+                  <a href="mailto:{{ location.email }}">{{ location.email }}</a>
+                </div>
+              </div>
+
+              <div class="place-map">
+                <div id="map"></div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </ng-container>
+
+      <div class="confirmation__item">
+        <h2>Dodržujte zásady:</h2>
+        <div class="content">
+          <ul>
+            <li>dostavte se na místo očkování nejdříve s desetiminutovým předstihem</li>
+            <li>vhodné oblečení - tričko nebo košili s krátkým rukávem</li>
+            <li>přicházejte samostatně; maximálně v doprovodu jedné osoby</li>
+            <li>do očkovacího centra nevnášejte rozměrná zavazadla, batohy, zbraně</li>
+            <li>v místě očkování dodržujte hygienická pravidla: mějte RESPIRÁTOR (typu FFP2 nebo N95, případně nanorouška), dodržujte bezpečné ROZESTUPY (2m)</li>
+            <li>v místě očkování platí zákaz konzumace potravin a nápojů</li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="confirmation__item">
+        <h2>K očkování nechoďte, pokud:</h2>
+        <div class="content">
+          <ul>
+            <li>máte zvýšenou tělesnou teplotu</li>
+            <li>máte aktuálně zhoršený zdravotní stav v důsledku jiného onemocnění</li>
+            <li>Vám očkování v současné době nedoporučil Váš praktický lékař</li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="confirmation__item">
+        <h2>Kde naleznete certifikát o očkování?</h2>
+        <div class="content info">
+          <p>
+            Na portálu <a href="https://ocko.uzis.cz" target="_blank">ocko.uzis.cz</a> (Očkovací portál občana) lze certifikát stáhnout a vytisknout.
+            Certifikát Vám bude zároveň poslán e-mailem, který jste zadávali při registraci na očkování.
+            V případě dotazů se obraťte na infolinku Prahy 7 každý všední den od 8:00 do 16:00 hodin na
+            čísle: {{ location && location.phoneNumber ? (location.phoneNumber | phoneNumber) : '734 521 840' }}
+          </p>
+          <p>
+            Aktuality najdete na: <a href="https://www.praha7.cz/ockovani" target="_blank">www.praha7.cz/ockovani</a>
+            <br>
+            Další informace naleznete <a href="https://koronavirus.mzcr.cz/ockovani-proti-covid-19/" target="_blank">zde</a>.
+          </p>
+          <p>
+            Děkujeme, že svým očkováním chráníte sebe i ostatní a přispíváte k návratu k běžnému životu.<br>
+            Na viděnou v ZŠ Strossmayerovo náměstí.
+          </p>
+          <i>MČ Praha 7 a tým Mild Blue</i>
+        </div>
+      </div>
+    </div>
+
+    <ng-container *ngIf="patientData">
+      <h2>Shrnutí zadaných údajů</h2>
+      <app-patient-data [patientData]="patientData"></app-patient-data>
+
+      <app-warning>
+        Pokud vidíte chybu v zadaných údajích, anebo je chcete změnit, kontaktujte nás prosím na
+        <a href="mailto:{{ companyEmail }}?subject=Požadavek na úpravu osobních údajů pacienta r.č. {{ patientData.personalNumber }}">{{ companyEmail }}</a>.
+      </app-warning>
+    </ng-container>
+
+    <button color="primary" class="nav-button" (click)="handleStartAgain()" mat-raised-button>
       Registrovat další osobu
+      <mat-icon>arrow_forward</mat-icon>
     </button>
+
   </app-container>
 </main>

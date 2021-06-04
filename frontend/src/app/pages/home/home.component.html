@@ -1,21 +1,18 @@
-<mat-toolbar color="primary">
-  <span>Dotazník před očkováním proti nemoci COVID-19</span>
-</mat-toolbar>
+<app-header title="Dotazník před očkováním proti nemoci COVID-19"></app-header>
 
 <main>
-  <mat-horizontal-stepper [linear]="true">
+  <mat-horizontal-stepper #stepper [linear]="true">
 
     <!-- 1. Osobní informace -->
     <mat-step #firstStep [completed]="!missingInfo.length" label="Osobní informace">
-      <app-container [wide]="true">
+      <app-container (keydown.enter)="stepper.next()" [wide]="true">
         <app-patient-info-form [patient]="patient"
                                (missingInfo)="this.missingInfo = $event"
                                (patientUpdated)="updatePatient($event)"></app-patient-info-form>
 
-        <div *ngIf="missingInfo.length" class="missing-info-warning">
-          <mat-icon>warning</mat-icon>
-          <span>Pro pokračování vyplňte následující informace: <strong>{{ missingInfo.join(', ') }}</strong>.</span>
-        </div>
+        <app-warning *ngIf="missingInfo.length" [showIcon]="true">
+          Pro pokračování vyplňte následující informace: <strong>{{ missingInfo.join(', ') }}</strong>.
+        </app-warning>
 
         <div class="nav-buttons">
           <div></div>
@@ -32,6 +29,11 @@
     <mat-step #secondStep [completed]="firstStep.completed && allQuestionsAnswered" label="Zdravotní informace">
       <app-container *ngIf="firstStep.completed">
         <app-patient-questions-form [patient]="patient"></app-patient-questions-form>
+
+        <app-warning [showIcon]="true">
+          Pokud na některou z uvedených otázek odpovíte ANO, neznamená to, že nemůžete být očkován/a.
+        </app-warning>
+
         <div class="nav-buttons">
           <button color="secondary" mat-raised-button matStepperPrevious>
             <mat-icon>arrow_back</mat-icon>
@@ -52,15 +54,15 @@
         <app-patient-data [patientData]="patient"></app-patient-data>
 
         <div class="checkboxes">
-          <mat-checkbox [(ngModel)]="confirmationCheckboxValue">
+          <mat-checkbox [(ngModel)]="confirmationCheckboxValue" color="primary">
             Potvrzuji, že jsem nezamlčel/a žádné informace o svém zdravotním stavu.
           </mat-checkbox>
 
-          <mat-checkbox [(ngModel)]="agreementCheckboxValue">
+          <mat-checkbox [(ngModel)]="agreementCheckboxValue" color="primary">
             Souhlasím s aplikací očkovací látky proti onemocnění COVID-19.
           </mat-checkbox>
 
-          <mat-checkbox [(ngModel)]="gdprCheckboxValue">
+          <mat-checkbox [(ngModel)]="gdprCheckboxValue" color="primary">
             Souhlasím se
             <button mat-button color="primary" (click)="openGdprInfo()">zpracováním osobních údajů</button>
             .

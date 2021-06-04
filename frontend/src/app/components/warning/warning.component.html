@@ -1,5 +1,6 @@
-<mat-card class="warning">
-  <mat-card-content>
+<div class="warning">
+  <mat-icon *ngIf="showIcon">warning</mat-icon>
+  <span>
     <ng-content></ng-content>
-  </mat-card-content>
-</mat-card>
+  </span>
+</div>

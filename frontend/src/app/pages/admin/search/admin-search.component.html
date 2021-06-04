@@ -1,7 +1,7 @@
 <app-progress-loading [show]="loading"></app-progress-loading>
 
 <app-container>
-  <h1 class="mat-h1">Vyhledávání pacienta</h1>
+  <h1>Vyhledávání pacienta</h1>
   <mat-card>
     <mat-card-content>
       <form (ngSubmit)="onSubmit()">
@@ -24,7 +24,7 @@
   </mat-card>
 
   <div class="history__header">
-    <h3 class="mat-h3">Historie vyhledávání</h3>
+    <h3>Historie vyhledávání</h3>
     <button *ngIf="searchHistory.length"
             (click)="clearHistory()" mat-button color="warn">
       Vymazat historii

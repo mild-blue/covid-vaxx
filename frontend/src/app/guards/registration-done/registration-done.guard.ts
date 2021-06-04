@@ -11,9 +11,7 @@ export class RegistrationDoneGuard implements CanActivate {
   }
 
   canActivate(route: ActivatedRouteSnapshot, state: RouterStateSnapshot) {
-    const savedPatient = this._patientService.getFromStorage();
-
-    if (savedPatient) {
+    if (this._patientService.patient) {
       // patient exists, return true
       return true;
     }

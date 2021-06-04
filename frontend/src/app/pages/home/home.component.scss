@@ -3,6 +3,12 @@
 
 mat-horizontal-stepper {
   background-color: transparent;
+
+  @include media-breakpoint-down(sm) {
+    ::ng-deep .mat-step-label {
+      display: none;
+    }
+  }
 }
 
 app-patient-info-form, app-patient-questions-form, app-patient-data {
@@ -14,9 +20,18 @@ app-patient-info-form, app-patient-questions-form, app-patient-data {
   display: flex;
   justify-content: space-between;
   margin-top: 30px;
+  padding-bottom: 10px;
+
+  @include media-breakpoint-down(sm) {
+    flex-direction: column;
+  }
 
   button:not(:first-child) {
     margin-left: 20px;
+
+    @include media-breakpoint-down(sm) {
+      margin: 20px 0 0;
+    }
   }
 }
 
@@ -41,21 +56,6 @@ app-patient-info-form, app-patient-questions-form, app-patient-data {
 
   @include media-breakpoint-down(sm) {
     align-items: flex-start;
-  }
-}
-
-.missing-info-warning {
-  padding: 15px 30px;
-  background: $warning-bg;
-  color: $warning-color;
-  border: 1px solid $warning-border-color;
-  border-radius: 6px;
-
-  display: flex;
-  align-items: center;
-
-  mat-icon {
-    margin-right: 20px;
   }
 }
 

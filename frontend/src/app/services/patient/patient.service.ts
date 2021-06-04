@@ -5,32 +5,44 @@ import { HttpClient, HttpParams, HttpResponse } from '@angular/common/http';
 import { Patient } from '@app/model/Patient';
 import { parsePatient } from '@app/parsers/patient.parser';
 import { QuestionService } from '@app/services/question/question.service';
-import { PatientDtoOut } from '@app/generated';
+import { PatientDtoOut, VaccinationSlotDtoOut } from '@app/generated';
 import { PatientData } from '@app/model/PatientData';
 import { fromPatientToRegistrationGenerated, fromPatientToUpdateGenerated } from '@app/parsers/to-generated/patient.parser';
 import { BodyPart } from '@app/model/enums/BodyPart';
+import { BehaviorSubject, Observable } from 'rxjs';
+import { RegistrationConfirmation } from '@app/model/RegistrationConfirmation';
+import { parseVaccinationSlotToRegistrationConfirmation } from '@app/parsers/registration.parser';
 
 @Injectable({
   providedIn: 'root'
 })
 export class PatientService {
 
-  private _sessionStorageKey: string = 'patientData';
+  private _patientSubject: BehaviorSubject<PatientData | undefined> = new BehaviorSubject<PatientData | undefined>(undefined);
+  public patientObservable: Observable<PatientData | undefined> = this._patientSubject.asObservable();
 
   constructor(private _http: HttpClient,
               private _questionService: QuestionService) {
   }
 
-  public async savePatientInfo(token: string, patient: PatientData, agreement: boolean, confirmation: boolean, gdpr: boolean): Promise<HttpResponse<unknown>> {
-    const params = new HttpParams().set('captcha', token);
-    this.saveToStorage(patient);
+  get patient(): PatientData | undefined {
+    return this._patientSubject.value;
+  }
 
-    return this._http.post<HttpResponse<unknown>>(
+  set patient(p: PatientData | undefined) {
+    this._patientSubject.next(p);
+  }
+
+  public async savePatientInfo(token: string, patient: PatientData, agreement: boolean, confirmation: boolean, gdpr: boolean): Promise<RegistrationConfirmation> {
+    const params = new HttpParams().set('captcha', token);
+    this._patientSubject.next(patient);
+
+    return this._http.post<VaccinationSlotDtoOut>(
       `${environment.apiUrl}/patient`,
       fromPatientToRegistrationGenerated(patient, agreement, confirmation, gdpr),
       { params }
     ).pipe(
-      first()
+      map(parseVaccinationSlotToRegistrationConfirmation)
     ).toPromise();
   }
 
@@ -46,24 +58,6 @@ export class PatientService {
         return parsePatient(data, questions);
       })
     ).toPromise();
-  }
-
-  public getFromStorage(): Patient | undefined {
-    const retrieveData = sessionStorage.getItem(this._sessionStorageKey);
-    let patientData;
-
-    if (retrieveData) {
-      patientData = JSON.parse(retrieveData);
-    }
-    return patientData;
-  }
-
-  public saveToStorage(patientInfo: PatientData): void {
-    sessionStorage.setItem(this._sessionStorageKey, JSON.stringify(patientInfo));
-  }
-
-  public deleteFromStorage(): void {
-    sessionStorage.removeItem(this._sessionStorageKey);
   }
 
   public async findPatientById(id: string): Promise<Patient> {

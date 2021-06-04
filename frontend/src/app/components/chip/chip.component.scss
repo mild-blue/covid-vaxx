@@ -5,17 +5,17 @@
   border-radius: 4px;
 
   &.no {
-    background: rgba($danger, 0.2);
-    color: $danger;
-  }
-
-  &.yes {
     background: rgba($success, 0.2);
     color: $success;
   }
 
+  &.yes {
+    background: rgba($danger, 0.2);
+    color: $danger;
+  }
+
   &.maybe {
-    background: rgba($warning, 0.2);
-    color: $warning;
+    background: $warning-bg;
+    color: $warning-color;
   }
 }

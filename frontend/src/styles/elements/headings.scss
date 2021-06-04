@@ -1,0 +1,44 @@
+@import "../variables";
+@import "../breakpoints";
+
+h1 {
+  font-size: 26px;
+  font-weight: 700;
+  font-family: $font-family-secondary;
+}
+
+h2 {
+  font-size: 20px;
+  font-weight: 700;
+
+  @include media-breakpoint-down(md) {
+    font-size: 18px;
+  }
+}
+
+h3 {
+  font-size: 18px;
+  font-weight: 700;
+}
+
+h4 {
+  color: $gray;
+  text-transform: uppercase;
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: 1px;
+  line-height: 1.5;
+
+  @include media-breakpoint-down(md) {
+    font-size: 10px;
+  }
+}
+
+h5 {
+  color: $dark-gray;
+  font-size: 15px;
+  line-height: 2;
+  letter-spacing: 0.1px;
+  text-align: center;
+  font-weight: 300;
+}

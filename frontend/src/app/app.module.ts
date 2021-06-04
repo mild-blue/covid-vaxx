@@ -66,6 +66,7 @@ import { BodyPartPipe } from './pipes/body-part/body-part.pipe';
 import { BodyPartInflectedPipe } from './pipes/body-part-inflected/body-part-inflected.pipe';
 import { FormFieldComponent } from './components/form-field/form-field.component';
 import { IConfig, NgxMaskModule } from 'ngx-mask';
+import { HeaderComponent } from './components/header/header.component';
 
 registerLocaleData(localeCs);
 
@@ -74,6 +75,16 @@ const maskConfig: Partial<IConfig> = {
   dropSpecialCharacters: false,
   showMaskTyped: true
 };
+
+// For Seznam maps
+declare global {
+  interface Window {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    JAK: any;
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    SMap: any;
+  }
+}
 
 @NgModule({
   declarations: [
@@ -115,7 +126,8 @@ const maskConfig: Partial<IConfig> = {
     WarningComponent,
     BodyPartPipe,
     BodyPartInflectedPipe,
-    FormFieldComponent
+    FormFieldComponent,
+    HeaderComponent
   ],
   imports: [
     BrowserModule,
