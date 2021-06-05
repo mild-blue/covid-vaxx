@@ -65,7 +65,7 @@ class VaccinationSlotRepository(private val instantTimeProvider: TimeProvider<In
      * The attempts are here for distributed environment where some different pod might have booked the slot before
      * the one selecting the slot for booking. Thus we try multiple times and "hope for the best".
      *
-     * TODO this is reeeeeaaaaallly poor man's solution, but it works.. see concurrent booking test.
+     * TODO #267 this is reeeeeaaaaallly poor man's solution, but it works.. see concurrent booking test.
      * We need to achieve atomic update in the database, but unfortunately postgres does not support limit on update
      * and somehow lock the rows and then do not add them to filter why searching.
      */
