@@ -10,7 +10,8 @@
     "lint": "eslint -c .eslintrc.js --ext .ts src",
     "generate-stubs-prod": "./generate-stubs.sh https://vaccination.mild.blue/openapi.json",
     "generate-stubs-stg": "./generate-stubs.sh https://covid-vaxx.stg.mild.blue/openapi.json",
-    "generate-stubs-local": "./generate-stubs.sh ./openapi.json",
+    "generate-stubs-local": "./generate-stubs.sh http://localhost:8080/openapi.json",
+    "generate-stubs-file": "./generate-stubs.sh ./openapi.json",
     "e2e": "ng e2e"
   },
   "private": true,
