@@ -7,8 +7,6 @@ import blue.mild.covid.vaxx.dto.request.query.MultipleVaccinationSlotsQueryDtoIn
 import blue.mild.covid.vaxx.dto.response.VaccinationSlotDtoOut
 import blue.mild.covid.vaxx.extensions.closestDI
 import blue.mild.covid.vaxx.extensions.createLogger
-import blue.mild.covid.vaxx.extensions.determineRealIp
-import blue.mild.covid.vaxx.extensions.request
 import blue.mild.covid.vaxx.security.auth.UserPrincipal
 import blue.mild.covid.vaxx.security.auth.authorizeRoute
 import blue.mild.covid.vaxx.service.VaccinationSlotService
@@ -34,9 +32,7 @@ fun NormalOpenAPIRoute.vaccinationSlotRoutes() {
             info("Generate new vaccination slots for given location.")
         ) { _, createSlots ->
             val principal = principal()
-            logger.info {
-                "For location ${createSlots.locationId} adding slots by ${principal.userId} from host ${request.determineRealIp()}."
-            }
+            logger.info { "For location ${createSlots.locationId} adding slots by ${principal.userId}." }
             val slots = vaccinationSlotService.addSlots(createSlots)
             logger.info { "${slots.size} vaccination slots created." }
 

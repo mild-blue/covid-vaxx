@@ -58,9 +58,11 @@ fun NormalOpenAPIRoute.patientRoutes() {
         post<CaptchaVerificationDtoIn, PatientRegistrationResponseDtoOut, PatientRegistrationDtoIn>(
             info("Save patient registration to the database.")
         ) { (recaptchaToken), patientRegistration ->
-            logger.info { "Patient registration request. Executing captcha verification." }
+            logger.info {
+                "Patient registration request - personal number ${patientRegistration.personalNumber}. Executing captcha verification."
+            }
             captchaService.verify(recaptchaToken, request.determineRealIp())
-            logger.debug { "Captcha token verified. Validating ISIN." }
+            logger.info { "Captcha token verified. Validating ISIN." }
             // TODO  maybe validate received input before actually using ISIN
             val patientValidationResult = patientValidation.validatePatient(patientRegistration)
 
@@ -103,7 +105,7 @@ fun NormalOpenAPIRoute.patientRoutes() {
             }.onFailure {
                 logger.error {
                     "It was not possible to complete registration process for patient $patientId -" +
-                            " ${patientRegistration.personalNumber}. See additional logs."
+                            "personal number ${patientRegistration.personalNumber}. See additional logs."
                 }
                 patientService.deletePatientById(patientId)
             }.getOrThrow()

@@ -33,12 +33,16 @@ fun NormalOpenAPIRoute.dataCorrectnessRoutes() {
             get<DataCorrectnessConfirmationIdDtoIn, DataCorrectnessConfirmationDetailDtoOut, UserPrincipal>(
                 info("Get detail about data correctness check for given data ID.")
             ) { (dataCorrectnessId) ->
+                val principal = principal()
+                logger.info { "Data correctness request from user ${principal.userId} for correctness ID: $dataCorrectnessId." }
                 respond(dataCorrectnessService.get(dataCorrectnessId))
             }
 
             get<PatientIdQueryDtoIn, DataCorrectnessConfirmationDetailDtoOut, UserPrincipal>(
                 info("Get detail about data correctness check for given patient ID.")
             ) { (patientId) ->
+                val principal = principal()
+                logger.info { "Data correctness request from user ${principal.userId} for patient ID: $patientId." }
                 respond(dataCorrectnessService.getForPatient(patientId))
             }
         }
@@ -50,10 +54,10 @@ fun NormalOpenAPIRoute.dataCorrectnessRoutes() {
                 info("Register that the data about patient are correct. Requires DOCTOR role.")
             ) { _, request ->
                 val principal = principal()
-                logger.debug { "User ${principal.userId} verified data for ${request.patientId} with result ${request.dataAreCorrect}." }
+                logger.info { "User ${principal.userId} verified data for ${request.patientId} with result ${request.dataAreCorrect}." }
 
                 val correctnessId = dataCorrectnessService.registerCorrectness(asContextAware(request))
-                logger.debug { "Correctness saved successfully under id $correctnessId." }
+                logger.info { "Correctness saved successfully under id $correctnessId." }
                 respond(dataCorrectnessService.get(correctnessId))
             }
         }

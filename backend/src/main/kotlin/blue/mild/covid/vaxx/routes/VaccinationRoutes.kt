@@ -36,12 +36,16 @@ fun NormalOpenAPIRoute.vaccinationRoutes() {
             get<VaccinationIdDtoIn, VaccinationDetailDtoOut, UserPrincipal>(
                 info("Get vaccination detail by given vaccination id.")
             ) { (vaccinationId) ->
+                val userId = principal().userId
+                logger.info { "User $userId requested data about vaccination ID $vaccinationId." }
                 respond(vaccinationService.get(vaccinationId))
             }
 
             get<PatientIdQueryDtoIn, VaccinationDetailDtoOut, UserPrincipal>(
                 info("Get vaccination detail for given patient ID.")
             ) { (patientId) ->
+                val userId = principal().userId
+                logger.info { "User $userId requested vaccination data about patient with ID $patientId." }
                 respond(vaccinationService.getForPatient(patientId))
             }
 

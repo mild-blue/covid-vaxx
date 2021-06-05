@@ -8,10 +8,12 @@ import blue.mild.covid.vaxx.dto.response.OK
 import blue.mild.covid.vaxx.dto.response.Ok
 import blue.mild.covid.vaxx.dto.response.PersonnelDtoOut
 import blue.mild.covid.vaxx.extensions.closestDI
+import blue.mild.covid.vaxx.extensions.createLogger
 import blue.mild.covid.vaxx.security.auth.UserPrincipal
 import blue.mild.covid.vaxx.security.auth.authorizeRoute
 import blue.mild.covid.vaxx.service.UserService
 import com.papsign.ktor.openapigen.route.info
+import com.papsign.ktor.openapigen.route.path.auth.principal
 import com.papsign.ktor.openapigen.route.path.auth.put
 import com.papsign.ktor.openapigen.route.path.normal.NormalOpenAPIRoute
 import com.papsign.ktor.openapigen.route.path.normal.post
@@ -25,6 +27,8 @@ import org.kodein.di.instance
 fun NormalOpenAPIRoute.nurseRoutes() {
     val userService by closestDI().instance<UserService>()
     val nurseRepository by closestDI().instance<NurseRepository>()
+
+    val logger = createLogger("NurseRoutes")
 
     route(Routes.nurse) {
         post<Unit, List<PersonnelDtoOut>, CredentialsDtoIn>(
@@ -41,6 +45,8 @@ fun NormalOpenAPIRoute.nurseRoutes() {
             put<Unit, Ok, NurseCreationDtoIn, UserPrincipal>(
                 info("Creates nurse entity.")
             ) { _, request ->
+                val principal = principal()
+                logger.info { "Creating new nurse - $request by user ${principal.userId}." }
                 // this is ugly, but it is just an admin endpoint
                 nurseRepository.saveNurse(
                     firstName = request.firstName.trim(),
