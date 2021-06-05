@@ -115,7 +115,8 @@ class PatientRepository(
         zipCode: Int,
         district: String,
         phoneNumber: String,
-        personalNumber: String,
+        personalNumber: String?,
+        insuranceNumber: String?,
         email: String,
         insuranceCompany: InsuranceCompany,
         indication: String?,
@@ -129,6 +130,7 @@ class PatientRepository(
             it[Patients.zipCode] = zipCode
             it[Patients.district] = district
             it[Patients.personalNumber] = personalNumber
+            it[Patients.insuranceNumber] = insuranceNumber
             it[Patients.phoneNumber] = phoneNumber
             it[Patients.email] = email
             it[Patients.insuranceCompany] = insuranceCompany
@@ -183,6 +185,7 @@ class PatientRepository(
         zipCode = row[Patients.zipCode],
         district = row[Patients.district],
         personalNumber = row[Patients.personalNumber],
+        insuranceNumber = row[Patients.insuranceNumber],
         phoneNumber = row[Patients.phoneNumber],
         email = row[Patients.email],
         insuranceCompany = row[Patients.insuranceCompany],

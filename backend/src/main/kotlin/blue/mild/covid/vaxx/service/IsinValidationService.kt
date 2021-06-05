@@ -46,11 +46,9 @@ class IsinValidationService(
         Chyba
     }
 
-    suspend fun validatePatientIsin(registrationDto: PatientRegistrationDtoIn): IsinValidationResultDto {
-        val firstName = registrationDto.firstName.trim().uppercase(Locale.getDefault())
-        val lastName = registrationDto.lastName.trim().uppercase(Locale.getDefault())
-        val personalNumber = registrationDto.personalNumber.normalizePersonalNumber()
-
+    suspend fun validatePatientIsin(
+        firstName: String, lastName: String, personalNumber: String
+    ): IsinValidationResultDto {
         val response = runCatching {
             getPatientResponse(
                 jmeno = firstName,
@@ -94,7 +92,11 @@ class IsinValidationService(
     }
 
     private suspend fun getPatientResponse(jmeno: String, prijmeni: String, rodneCislo: String): HttpResponse {
-        val url = createIsinURL(URL_NAJDI_PACIENTA, parameters = listOf(jmeno, prijmeni, rodneCislo))
+        val firstName = jmeno.trim().uppercase(Locale.getDefault())
+        val lastName = prijmeni.trim().uppercase(Locale.getDefault())
+        val personalNumber = rodneCislo.normalizePersonalNumber()
+
+        val url = createIsinURL(URL_NAJDI_PACIENTA, parameters = listOf(firstName, lastName, personalNumber))
         return isinClient.get<HttpResponse>(url)
     }
 

@@ -63,20 +63,25 @@ fun NormalOpenAPIRoute.patientRoutes() {
             captchaService.verify(recaptchaToken, request.determineRealIp())
             logger.debug { "Captcha token verified. Validating isin." }
 
-            val isinValidationResult = isinValidationService.validatePatientIsin(patientRegistration)
+            val patientIsinId: String? = if (patientRegistration.personalNumber != null) {
+                val isinValidationResult = isinValidationService.validatePatientIsin(
+                    patientRegistration.firstName, patientRegistration.lastName, patientRegistration.personalNumber
+                )
 
-            val patientIsinId: String? = when (isinValidationResult.status) {
-                IsinValidationResultStatus.PATIENT_FOUND ->
-                    isinValidationResult.patientId
-                IsinValidationResultStatus.PATIENT_NOT_FOUND ->
-                    throw IsinValidationException(isinValidationResult)
-                IsinValidationResultStatus.WAS_NOT_VERIFIED -> {
-                    logger.warn { "Patient was not validated in isin due to some problem. Skipping isin validation." }
-                    null
+                when (isinValidationResult.status) {
+                    IsinValidationResultStatus.PATIENT_FOUND ->
+                        isinValidationResult.patientId
+                    IsinValidationResultStatus.PATIENT_NOT_FOUND ->
+                        throw IsinValidationException(isinValidationResult)
+                    IsinValidationResultStatus.WAS_NOT_VERIFIED -> {
+                        logger.warn { "Patient was not validated in isin due to some problem. Skipping isin validation." }
+                        null
+                    }
                 }
+            } else {
+                logger.debug { "Personal number not set. Skipping isin validation" }
+                null
             }
-
-            logger.debug { "Isin validation ended. Saving registration." }
 
             val patientId = patientService.savePatient(asContextAware(patientRegistration), patientIsinId)
             logger.info { "Patient saved to the database with id: ${patientId}. Booking slot." }

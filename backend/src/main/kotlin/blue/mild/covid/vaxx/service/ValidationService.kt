@@ -4,6 +4,7 @@ import blue.mild.covid.vaxx.dto.request.PatientRegistrationDtoIn
 import blue.mild.covid.vaxx.dto.request.PatientUpdateDtoIn
 import blue.mild.covid.vaxx.error.EmptyStringException
 import blue.mild.covid.vaxx.error.EmptyUpdateException
+import blue.mild.covid.vaxx.error.NoPersonalAndInsuranceNumberException
 import blue.mild.covid.vaxx.error.PropertyValidationException
 import com.google.i18n.phonenumbers.PhoneNumberUtil
 import mu.KLogging
@@ -33,7 +34,10 @@ class ValidationService(private val questionService: QuestionService) {
         requireNotEmptyString("district", patientRegistrationDto.district)
         // now check specific cases
         requireValidZipCode(patientRegistrationDto.zipCode)
-        requireValidPersonalNumber(patientRegistrationDto.personalNumber)
+        requireValidPersonalOrInsuranceNumber(
+            patientRegistrationDto.personalNumber,
+            patientRegistrationDto.insuranceNumber
+        )
         requireValidPhoneNumber(patientRegistrationDto.phoneNumber.number, patientRegistrationDto.phoneNumber.countryCode)
         requireValidEmail(patientRegistrationDto.email)
         // check agreements
@@ -122,6 +126,16 @@ class ValidationService(private val questionService: QuestionService) {
     fun requireValidEmail(email: String) {
         if (!isEmailValid(email.trim())) {
             throw PropertyValidationException("email", email)
+        }
+    }
+
+    fun requireValidPersonalOrInsuranceNumber(personalNumber: String?, insuranceNumber: String?) {
+        if (personalNumber != null && personalNumber.isNotBlank())
+            requireValidPersonalNumber(personalNumber)
+        else if (insuranceNumber != null && insuranceNumber.isNotBlank()){
+            requireNotEmptyString("insuranceNumber", insuranceNumber)
+        } else {
+            throw NoPersonalAndInsuranceNumberException()
         }
     }
 

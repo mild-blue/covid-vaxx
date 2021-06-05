@@ -26,7 +26,12 @@ object Patients : ManagedTable("patients") {
     /**
      * Personal/Birth number = Rodne Cislo.
      */
-    val personalNumber = varchar("personal_number", DatabaseTypeLength.PERSONAL_NUMBER)
+    val personalNumber = varchar("personal_number", DatabaseTypeLength.PERSONAL_NUMBER).nullable()
+
+    /**
+     * Insurance number = Číslo pojištěnce (pro cizince).
+     */
+    val insuranceNumber = varchar("insurance_number", DatabaseTypeLength.DEFAULT_STRING).nullable()
 
     /**
      * Validated phone number in format +420xxxyyyzzz
