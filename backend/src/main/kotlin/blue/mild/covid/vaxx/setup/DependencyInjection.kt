@@ -10,6 +10,7 @@ import blue.mild.covid.vaxx.dao.repository.VaccinationSlotRepository
 import blue.mild.covid.vaxx.dto.config.DatabaseConfigurationDto
 import blue.mild.covid.vaxx.dto.config.IsinConfigurationDto
 import blue.mild.covid.vaxx.dto.config.MailJetConfigurationDto
+import blue.mild.covid.vaxx.extensions.createLogger
 import blue.mild.covid.vaxx.security.ddos.CaptchaVerificationService
 import blue.mild.covid.vaxx.security.ddos.RequestVerificationService
 import blue.mild.covid.vaxx.service.DataCorrectnessService
@@ -32,7 +33,6 @@ import blue.mild.covid.vaxx.service.ValidationService
 import blue.mild.covid.vaxx.service.dummy.DummyMailService
 import blue.mild.covid.vaxx.service.dummy.DummyMedicalRegistrationService
 import blue.mild.covid.vaxx.service.dummy.DummyRequestVerificationService
-import blue.mild.covid.vaxx.utils.createLogger
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.fasterxml.jackson.databind.SerializationFeature
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule

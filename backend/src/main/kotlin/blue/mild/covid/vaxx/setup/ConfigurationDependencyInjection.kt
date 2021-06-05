@@ -8,8 +8,8 @@ import blue.mild.covid.vaxx.dto.config.MailJetConfigurationDto
 import blue.mild.covid.vaxx.dto.config.RateLimitConfigurationDto
 import blue.mild.covid.vaxx.dto.config.ReCaptchaVerificationConfigurationDto
 import blue.mild.covid.vaxx.dto.response.ApplicationInformationDtoOut
+import blue.mild.covid.vaxx.extensions.createLogger
 import blue.mild.covid.vaxx.isin.Pracovnik
-import blue.mild.covid.vaxx.utils.createLogger
 import org.kodein.di.DI
 import org.kodein.di.bind
 import org.kodein.di.singleton

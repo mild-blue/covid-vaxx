@@ -7,6 +7,7 @@ import blue.mild.covid.vaxx.dto.config.JwtConfigurationDto
 import blue.mild.covid.vaxx.dto.config.RateLimitConfigurationDto
 import blue.mild.covid.vaxx.dto.response.ApplicationInformationDtoOut
 import blue.mild.covid.vaxx.error.installExceptionHandling
+import blue.mild.covid.vaxx.extensions.createLogger
 import blue.mild.covid.vaxx.extensions.determineRealIp
 import blue.mild.covid.vaxx.monitoring.AMAZON_TRACE
 import blue.mild.covid.vaxx.monitoring.CALL_ID
@@ -18,7 +19,6 @@ import blue.mild.covid.vaxx.security.auth.JwtService
 import blue.mild.covid.vaxx.security.auth.RoleBasedAuthorization
 import blue.mild.covid.vaxx.security.auth.registerJwtAuth
 import blue.mild.covid.vaxx.security.ddos.RateLimiting
-import blue.mild.covid.vaxx.utils.createLogger
 import com.auth0.jwt.JWTVerifier
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.papsign.ktor.openapigen.OpenAPIGen

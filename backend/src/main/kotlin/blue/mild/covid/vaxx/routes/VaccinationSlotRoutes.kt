@@ -6,12 +6,12 @@ import blue.mild.covid.vaxx.dto.request.CreateVaccinationSlotsDtoIn
 import blue.mild.covid.vaxx.dto.request.query.MultipleVaccinationSlotsQueryDtoIn
 import blue.mild.covid.vaxx.dto.response.VaccinationSlotDtoOut
 import blue.mild.covid.vaxx.extensions.closestDI
+import blue.mild.covid.vaxx.extensions.createLogger
 import blue.mild.covid.vaxx.extensions.determineRealIp
 import blue.mild.covid.vaxx.extensions.request
 import blue.mild.covid.vaxx.security.auth.UserPrincipal
 import blue.mild.covid.vaxx.security.auth.authorizeRoute
 import blue.mild.covid.vaxx.service.VaccinationSlotService
-import blue.mild.covid.vaxx.utils.createLogger
 import com.papsign.ktor.openapigen.route.info
 import com.papsign.ktor.openapigen.route.path.auth.get
 import com.papsign.ktor.openapigen.route.path.auth.post

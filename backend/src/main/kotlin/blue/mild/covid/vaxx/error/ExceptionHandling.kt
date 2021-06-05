@@ -1,10 +1,10 @@
 package blue.mild.covid.vaxx.error
 
+import blue.mild.covid.vaxx.extensions.createLogger
 import blue.mild.covid.vaxx.security.auth.AuthorizationException
 import blue.mild.covid.vaxx.security.auth.CaptchaFailedException
 import blue.mild.covid.vaxx.security.auth.InsufficientRightsException
 import blue.mild.covid.vaxx.security.auth.UserPrincipal
-import blue.mild.covid.vaxx.utils.createLogger
 import com.fasterxml.jackson.core.JacksonException
 import com.fasterxml.jackson.databind.exc.InvalidFormatException
 import com.fasterxml.jackson.databind.exc.UnrecognizedPropertyException
@@ -69,7 +69,7 @@ fun Application.installExceptionHandling() {
         jsonExceptions()
 
         exception<IsinValidationException> {
-            logger.info(it) { "ISIN validation failed - $it." }
+            logger.warn(it) { "ISIN validation failed - $it." }
             call.errorResponse(HttpStatusCode.NotAcceptable, "Not acceptable: ${it.message}.")
         }
 
@@ -81,13 +81,13 @@ fun Application.installExceptionHandling() {
 
         // open api serializer - missing parameters such as headers or query
         exception<OpenAPIRequiredFieldException> {
-            logger.error { "Missing data in request: ${it.message}" }
+            logger.error { "Missing data in request: ${it.message}." }
             call.errorResponse(HttpStatusCode.BadRequest, "Missing data in request: ${it.message}.")
         }
 
         // exception from exposed, during saving to the database
         exception<ExposedSQLException> {
-            if (it.message?.contains("already exists") == true) {
+            if (it.message?.contains("already exists", ignoreCase = true) == true) {
                 logger.warn(it) { "Requested entity already exists - ${it.message}." }
                 call.errorResponse(HttpStatusCode.Conflict, "Entity already exists!.")
             } else {

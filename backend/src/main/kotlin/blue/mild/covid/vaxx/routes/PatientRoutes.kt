@@ -16,6 +16,7 @@ import blue.mild.covid.vaxx.dto.response.VaccinationSlotDtoOut
 import blue.mild.covid.vaxx.error.IsinValidationException
 import blue.mild.covid.vaxx.extensions.asContextAware
 import blue.mild.covid.vaxx.extensions.closestDI
+import blue.mild.covid.vaxx.extensions.createLogger
 import blue.mild.covid.vaxx.extensions.determineRealIp
 import blue.mild.covid.vaxx.extensions.request
 import blue.mild.covid.vaxx.security.auth.UserPrincipal
@@ -26,7 +27,6 @@ import blue.mild.covid.vaxx.service.MailService
 import blue.mild.covid.vaxx.service.PatientService
 import blue.mild.covid.vaxx.service.PatientValidationService
 import blue.mild.covid.vaxx.service.VaccinationSlotService
-import blue.mild.covid.vaxx.utils.createLogger
 import com.papsign.ktor.openapigen.route.info
 import com.papsign.ktor.openapigen.route.path.auth.delete
 import com.papsign.ktor.openapigen.route.path.auth.get
@@ -83,7 +83,10 @@ fun NormalOpenAPIRoute.patientRoutes() {
 
             val slot = runCatching {
                 val slot = vaccinationSlotService.bookSlotForPatient(patientId)
+                    .toRoundedSlot() // display rounded data
+
                 val location = locationService.getLocationById(slot.locationId)
+
                 logger.info { "Slot booked: ${slot.id} for patient $patientId - registration completed." }
                 logger.debug { "Adding email to the queue." }
                 emailService.sendEmail(
