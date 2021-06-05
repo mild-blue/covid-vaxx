@@ -29,6 +29,9 @@ class LocationRepository {
         Locations.select { Locations.id eq id }.singleOrNull()?.mapLocation()
     }
 
+    /**
+     * Returns true if the location exist.
+     */
     suspend fun locationIdExists(id: EntityId) = newSuspendedTransaction {
         Locations.select { Locations.id eq id }.count() == 1L
     }

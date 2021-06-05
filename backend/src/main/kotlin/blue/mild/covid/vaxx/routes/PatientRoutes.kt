@@ -1,8 +1,8 @@
 package blue.mild.covid.vaxx.routes
 
 import blue.mild.covid.vaxx.dao.model.UserRole
-import blue.mild.covid.vaxx.dto.internal.IsinValidationResultStatus
 import blue.mild.covid.vaxx.dto.internal.PatientEmailRequestDto
+import blue.mild.covid.vaxx.dto.internal.PatientValidationResult
 import blue.mild.covid.vaxx.dto.request.PatientRegistrationDtoIn
 import blue.mild.covid.vaxx.dto.request.PatientUpdateDtoIn
 import blue.mild.covid.vaxx.dto.request.query.CaptchaVerificationDtoIn
@@ -14,7 +14,6 @@ import blue.mild.covid.vaxx.dto.response.Ok
 import blue.mild.covid.vaxx.dto.response.PatientDtoOut
 import blue.mild.covid.vaxx.dto.response.VaccinationSlotDtoOut
 import blue.mild.covid.vaxx.error.IsinValidationException
-import blue.mild.covid.vaxx.error.NoVaccinationSlotsFoundException
 import blue.mild.covid.vaxx.extensions.asContextAware
 import blue.mild.covid.vaxx.extensions.closestDI
 import blue.mild.covid.vaxx.extensions.determineRealIp
@@ -22,10 +21,10 @@ import blue.mild.covid.vaxx.extensions.request
 import blue.mild.covid.vaxx.security.auth.UserPrincipal
 import blue.mild.covid.vaxx.security.auth.authorizeRoute
 import blue.mild.covid.vaxx.security.ddos.RequestVerificationService
-import blue.mild.covid.vaxx.service.IsinValidationService
 import blue.mild.covid.vaxx.service.LocationService
 import blue.mild.covid.vaxx.service.MailService
 import blue.mild.covid.vaxx.service.PatientService
+import blue.mild.covid.vaxx.service.PatientValidationService
 import blue.mild.covid.vaxx.service.VaccinationSlotService
 import blue.mild.covid.vaxx.utils.createLogger
 import com.papsign.ktor.openapigen.route.info
@@ -42,7 +41,7 @@ import org.kodein.di.instance
 /**
  * Routes related to patient entity.
  */
-@Suppress("LongMethod", "TooGenericExceptionCaught", "ThrowsCount") // this is routing, that's fine plus we need not to save
+@Suppress("LongMethod") // this is routing, that's fine plus we need not to save
 // patient in case any issue during processing happens
 fun NormalOpenAPIRoute.patientRoutes() {
     val logger = createLogger("PatientRoutes")
@@ -53,38 +52,39 @@ fun NormalOpenAPIRoute.patientRoutes() {
     val locationService by closestDI().instance<LocationService>()
     val patientService by closestDI().instance<PatientService>()
     val emailService by closestDI().instance<MailService>()
-    val isinValidationService by closestDI().instance<IsinValidationService>()
+    val patientValidation by closestDI().instance<PatientValidationService>()
 
     route(Routes.patient) {
         post<CaptchaVerificationDtoIn, VaccinationSlotDtoOut, PatientRegistrationDtoIn>(
             info("Save patient registration to the database.")
         ) { (recaptchaToken), patientRegistration ->
-            logger.debug { "Patient registration request. Executing captcha verification." }
+            logger.info { "Patient registration request. Executing captcha verification." }
             captchaService.verify(recaptchaToken, request.determineRealIp())
-            logger.debug { "Captcha token verified. Validating isin." }
+            logger.debug { "Captcha token verified. Validating ISIN." }
+            // TODO  maybe validate received input before actually using ISIN
+            val patientValidationResult = patientValidation.validatePatient(patientRegistration)
 
-            val isinValidationResult = isinValidationService.validatePatientIsin(patientRegistration)
-
-            val patientIsinId: String? = when (isinValidationResult.status) {
-                IsinValidationResultStatus.PATIENT_FOUND ->
-                    isinValidationResult.patientId
-                IsinValidationResultStatus.PATIENT_NOT_FOUND ->
-                    throw IsinValidationException(isinValidationResult)
-                IsinValidationResultStatus.WAS_NOT_VERIFIED -> {
+            val patientIsinId: String? = when (patientValidationResult.status) {
+                PatientValidationResult.PATIENT_FOUND ->
+                    patientValidationResult.patientId
+                PatientValidationResult.PATIENT_NOT_FOUND ->
+                    throw IsinValidationException(patientValidationResult)
+                PatientValidationResult.WAS_NOT_VERIFIED -> {
                     logger.warn { "Patient was not validated in isin due to some problem. Skipping isin validation." }
                     null
                 }
             }
 
-            logger.debug { "Isin validation ended. Saving registration." }
+            logger.info { "ISIN validation completed. Saving registration." }
 
+            // TODO maybe run this in the transaction and then do rollback
             val patientId = patientService.savePatient(asContextAware(patientRegistration), patientIsinId)
             logger.info { "Patient saved to the database with id: ${patientId}. Booking slot." }
-            try {
+
+            val slot = runCatching {
                 val slot = vaccinationSlotService.bookSlotForPatient(patientId)
                 val location = locationService.getLocationById(slot.locationId)
-                logger.info { "Slot booked: ${slot.id} for patient ${patientId}." }
-                logger.info { "Registration completed for patient ${patientId}." }
+                logger.info { "Slot booked: ${slot.id} for patient $patientId - registration completed." }
                 logger.debug { "Adding email to the queue." }
                 emailService.sendEmail(
                     PatientEmailRequestDto(
@@ -96,18 +96,18 @@ fun NormalOpenAPIRoute.patientRoutes() {
                         location = location
                     )
                 )
-                // TODO maybe return something more reasonable then just the slot dto
-                respond(slot)
-            } catch (e: NoVaccinationSlotsFoundException) {
+                slot
+            }.onFailure {
+                logger.error {
+                    "It was not possible to complete registration process for patient $patientId -" +
+                            " ${patientRegistration.personalNumber}. See additional logs."
+                }
                 patientService.deletePatientById(patientId)
-                logger.info { "Patient deleted: ${patientId}. No slot found." }
-                throw e
-            } catch (e: Exception) {
-                patientService.deletePatientById(patientId)
-                logger.info { "Patient deleted: ${patientId}. Some issue during saving" }
-                throw e
-            }
-            logger.debug { "Email request registered. Registration successful." }
+            }.getOrThrow()
+            logger.info { "Registration successful for patient $patientId." }
+
+            // TODO maybe return something more reasonable then just the slot dto
+            respond(slot)
         }
     }
 

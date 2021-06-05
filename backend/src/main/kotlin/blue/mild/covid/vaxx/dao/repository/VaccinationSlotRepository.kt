@@ -8,11 +8,9 @@ import blue.mild.covid.vaxx.utils.applyIfNotNull
 import org.jetbrains.exposed.sql.Op
 import org.jetbrains.exposed.sql.ResultRow
 import org.jetbrains.exposed.sql.SqlExpressionBuilder
-import org.jetbrains.exposed.sql.and
 import org.jetbrains.exposed.sql.batchInsert
 import org.jetbrains.exposed.sql.select
 import org.jetbrains.exposed.sql.transactions.experimental.newSuspendedTransaction
-import org.jetbrains.exposed.sql.update
 import pw.forst.katlib.TimeProvider
 import java.time.Instant
 
@@ -40,22 +38,9 @@ class VaccinationSlotRepository(private val instantTimeProvider: TimeProvider<In
     }
 
     /**
-     * Updates vaccination slot entity with id [vaccinationSlotId].
-     */
-    suspend fun updateVaccinationSlot(
-        vaccinationSlotId: EntityId,
-        patientId: EntityId? = null,
-    ): Boolean = newSuspendedTransaction {
-        VaccinationSlots.update(
-            where = { VaccinationSlots.id eq vaccinationSlotId and VaccinationSlots.patientId.isNull() },
-            body = { it[VaccinationSlots.patientId] = patientId }
-        ) == 1
-    }
-
-    /**
      * Retrieves all vaccination slots from the database with given filter.
      */
-    suspend fun getAndMap(where: SqlExpressionBuilder.() -> Op<Boolean>, limit: Int? = null) =
+    suspend fun getAndMap(limit: Int? = null, where: SqlExpressionBuilder.() -> Op<Boolean>) =
         newSuspendedTransaction {
             VaccinationSlots
                 .select(where)

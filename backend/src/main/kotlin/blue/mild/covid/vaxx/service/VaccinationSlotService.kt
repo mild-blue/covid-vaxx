@@ -19,7 +19,6 @@ import kotlinx.coroutines.sync.withLock
 import mu.KLogging
 import org.jetbrains.exposed.sql.Column
 import org.jetbrains.exposed.sql.Op
-import org.jetbrains.exposed.sql.SqlExpressionBuilder
 import org.jetbrains.exposed.sql.and
 import org.jetbrains.exposed.sql.select
 import org.jetbrains.exposed.sql.transactions.experimental.newSuspendedTransaction
@@ -35,6 +34,7 @@ class VaccinationSlotService(
 ) {
     private companion object : KLogging() {
         val DEFAULT_STATUS: VaccinationSlotStatus = VaccinationSlotStatus.ONLY_FREE
+        val slotsBookingMutex = Mutex()
     }
 
     /**
@@ -86,7 +86,7 @@ class VaccinationSlotService(
 
         val usedStatus = status ?: if (slotId == null) DEFAULT_STATUS else VaccinationSlotStatus.ALL
 
-        val filter: SqlExpressionBuilder.() -> Op<Boolean> = {
+        return vaccinationSlotRepository.getAndMap(limit) {
             Op.TRUE
                 .andWithIfNotEmpty(slotId, VaccinationSlots.id)
                 .andWithIfNotEmpty(locationId, VaccinationSlots.locationId)
@@ -101,25 +101,35 @@ class VaccinationSlotService(
                     }
                 }
         }
-
-        return vaccinationSlotRepository.getAndMap(filter, limit)
     }
 
-
-    private val slotsBookingMutex = Mutex()
+    private inline fun <reified T> Op<Boolean>.andWithIfNotEmpty(value: T?, column: Column<T>): Op<Boolean> =
+        value?.let { and { column eq value } } ?: this
 
     /**
-     * Book a vaccination slot for the patient.
+     * Book a vaccination slot for the patient. Tries five times to book a slot before failing to do so.
      */
     suspend fun bookSlotForPatient(patientId: EntityId) =
-    // TODO this is reeeeeaaaaallly poor man's solution, but it works.. see concurrent booking test
-    // we need to achieve atomic update in the database, but unfortunately postgres does not support limit on update
-    // and we don't want to block whole table..
-        // also transaction serialization didn't work for some reason
-        slotsBookingMutex.withLock {
+        tryToBookSlotForPatient(patientId, attemptsLeft = 5) ?: throw NoVaccinationSlotsFoundException()
+
+    /**
+     * Tries to book slot for patient [attemptsLeft] times. If it's not successful returns null.
+     *
+     * The attempts are here for distributed environment where some different pod might have booked the slot before
+     * the one selecting the slot for booking. Thus we try multiple times and "hope for the best".
+     *
+     * TODO this is reeeeeaaaaallly poor man's solution, but it works.. see concurrent booking test.
+     * We need to achieve atomic update in the database, but unfortunately postgres does not support limit on update
+     * and somehow lock the rows and then do not add them to filter why searching.
+     */
+    private tailrec suspend fun tryToBookSlotForPatient(patientId: EntityId, attemptsLeft: Int): VaccinationSlotDtoOut? =
+        if (attemptsLeft == 0) null
+        else slotsBookingMutex.withLock {
             newSuspendedTransaction {
                 VaccinationSlots
                     .select { VaccinationSlots.patientId.isNull() }
+                    .orderBy(VaccinationSlots.from)
+                    .orderBy(VaccinationSlots.queue)
                     .limit(1)
                     .singleOrNull()
                     ?.getOrNull(VaccinationSlots.id)
@@ -127,46 +137,14 @@ class VaccinationSlotService(
                         VaccinationSlots.update(
                             where = { VaccinationSlots.id eq slotId and VaccinationSlots.patientId.isNull() },
                             body = { it[VaccinationSlots.patientId] = patientId },
-                        ) == 1
+                        )
                     }
+
+                commit()
+
+                vaccinationSlotRepository
+                    .getAndMap { VaccinationSlots.patientId eq patientId }
+                    .singleOrNull()
             }
-        }.takeIf { it == true }?.let {
-            vaccinationSlotRepository.getAndMap({ VaccinationSlots.patientId eq patientId }, 1).singleOrNull()
-        } ?: throw NoVaccinationSlotsFoundException()
-
-
-    /**
-     * Book a vaccination slot for the patient with given requirements
-     * using AND clause. If property is null, we ignore it.
-     */
-    suspend fun bookSlotForPatient(
-        patientId: EntityId,
-        slotId: EntityId? = null,
-        locationId: EntityId? = null,
-        from: Instant? = null,
-        to: Instant? = null
-    ): VaccinationSlotDtoOut = slotsBookingMutex.withLock {
-        newSuspendedTransaction {
-            getSlotsByConjunctionOf(
-                slotId = slotId,
-                locationId = locationId,
-                from = from,
-                to = to,
-                status = VaccinationSlotStatus.ONLY_FREE,
-                // select a single slot
-                limit = 1
-            ).singleOrNull()?.let {
-                // book slot for the given patient
-                VaccinationSlots.update(
-                    where = { VaccinationSlots.id eq it.id and VaccinationSlots.patientId.isNull() },
-                    body = { it[VaccinationSlots.patientId] = patientId }
-                ) == 1
-            }?.takeIf { it }
-        }
-    }?.let { vaccinationSlotRepository.getAndMap({ VaccinationSlots.patientId eq patientId }, 1).singleOrNull() }
-        ?: throw NoVaccinationSlotsFoundException()
-
-
-    private inline fun <reified T> Op<Boolean>.andWithIfNotEmpty(value: T?, column: Column<T>): Op<Boolean> =
-        value?.let { and { column eq value } } ?: this
+        } ?: tryToBookSlotForPatient(patientId, attemptsLeft - 1)
 }

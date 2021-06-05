@@ -31,72 +31,73 @@ private val logger = createLogger("ExceptionHandler")
  */
 fun Application.installExceptionHandling() {
     install(StatusPages) {
-        // TODO define correct logging level policy
-
         exception<InsufficientRightsException> {
-            logger.warn {
+            logger.warn(it) {
                 call.principal<UserPrincipal>()
-                    ?.let { "$it tried to access resource \"${call.request.path()}\" that is not allowed." }
+                    ?.let { user -> "${user.userId} tried to access resource \"${call.request.path()}\" that is not allowed." }
                     ?: "User without principals tried to access the resource ${call.request.path()}."
             }
             call.respond(HttpStatusCode.Forbidden)
         }
 
         exception<CaptchaFailedException> {
-            logger.debug { "Captcha verification failed." }
+            logger.warn(it) { "Captcha verification failed - $it.¬" }
             call.errorResponse(HttpStatusCode.UnprocessableEntity, "Captcha verification failed.")
         }
 
         exception<AuthorizationException> {
+            logger.warn(it) { "Authorization failed - $it." }
             call.respond(HttpStatusCode.Unauthorized)
         }
 
-        exception<EntityNotFoundException> { cause ->
-            logger.debug { cause.message }
-            call.errorResponse(HttpStatusCode.NotFound, cause.message)
+        exception<EntityNotFoundException> {
+            logger.warn(it) { "Entity was not found - $it." }
+            call.errorResponse(HttpStatusCode.NotFound, it.message)
         }
 
-        exception<InvalidSlotCreationRequest> { cause ->
-            logger.debug { "${cause.message} --> ${cause.entity}" }
-            call.errorResponse(HttpStatusCode.BadRequest, cause.message)
+        exception<InvalidSlotCreationRequest> {
+            logger.error(it) { "Invalid slot creation request - $it." }
+            call.errorResponse(HttpStatusCode.BadRequest, it.message)
         }
 
-        exception<NoVaccinationSlotsFoundException> { cause ->
-            call.errorResponse(HttpStatusCode.NotFound, cause.message)
+        exception<NoVaccinationSlotsFoundException> {
+            logger.error(it) { "No vaccination slots found - $it." }
+            call.errorResponse(HttpStatusCode.NotFound, it.message)
         }
 
         jsonExceptions()
 
-        exception<IsinValidationException> { cause ->
-            logger.debug { cause.message }
-            call.errorResponse(HttpStatusCode.NotAcceptable, "Not acceptable: ${cause.message}.")
+        exception<IsinValidationException> {
+            logger.info(it) { "ISIN validation failed - $it." }
+            call.errorResponse(HttpStatusCode.NotAcceptable, "Not acceptable: ${it.message}.")
         }
 
         // validation failed for some property
-        exception<ValidationException> { cause ->
-            logger.debug { cause.message }
-            call.errorResponse(HttpStatusCode.BadRequest, "Bad request: ${cause.message}.")
+        exception<ValidationException> {
+            logger.warn(it) { "Validation exception - $it." }
+            call.errorResponse(HttpStatusCode.BadRequest, "Bad request: ${it.message}.")
         }
 
         // open api serializer - missing parameters such as headers or query
-        exception<OpenAPIRequiredFieldException> { cause ->
-            logger.debug { "Missing data in request: ${cause.message}" }
-            call.errorResponse(HttpStatusCode.BadRequest, "Missing data in request: ${cause.message}.")
+        exception<OpenAPIRequiredFieldException> {
+            logger.error { "Missing data in request: ${it.message}" }
+            call.errorResponse(HttpStatusCode.BadRequest, "Missing data in request: ${it.message}.")
         }
 
         // exception from exposed, during saving to the database
-        exception<ExposedSQLException> { cause ->
-            logger.warn { "Attempt to store invalid data to the database: ${cause.message}." }
-            if (cause.message?.contains("already exists") == true) {
+        exception<ExposedSQLException> {
+            if (it.message?.contains("already exists") == true) {
+                logger.warn(it) { "Requested entity already exists - ${it.message}." }
                 call.errorResponse(HttpStatusCode.Conflict, "Entity already exists!.")
             } else {
+                logger.error(it) { "Unknown exposed SQL Exception." }
                 call.errorResponse(HttpStatusCode.BadRequest, "Bad request.")
             }
         }
 
         // generic error handling
-        exception<Exception> { cause ->
-            logger.error(cause) { "Exception occurred in the application: ${cause.message}." }
+        exception<Exception> {
+            logger.error(it) { "Unknown exception occurred in the application: ${it.message}." }
             call.errorResponse(
                 HttpStatusCode.InternalServerError,
                 "Server was unable to fulfill the request, please contact administrator with request ID: ${call.callId}."
@@ -111,25 +112,26 @@ private fun StatusPages.Configuration.jsonExceptions() {
     }
 
     // wrong format of some property
-    exception<InvalidFormatException> { cause ->
-        logger.debug { cause.message }
+    exception<InvalidFormatException> {
+        logger.error(it) { "Invalid data format." }
         respond("Wrong data format.")
     }
 
     // server received JSON with additional properties it does not know
-    exception<UnrecognizedPropertyException> { cause ->
-        respond("Unrecognized body property ${cause.propertyName}.")
+    exception<UnrecognizedPropertyException> {
+        logger.error(it) { "Unrecognized property in the JSON." }
+        respond("Unrecognized body property ${it.propertyName}.")
     }
 
     // missing data in the request
-    exception<MissingKotlinParameterException> { cause ->
-        logger.debug { "Missing parameter in the request: ${cause.message}" }
-        respond("Missing parameter: ${cause.parameter}.")
+    exception<MissingKotlinParameterException> {
+        logger.error(it) { "Missing parameter in the request: ${it.message}." }
+        respond("Missing parameter: ${it.parameter}.")
     }
 
     // generic, catch-all exception from jackson serialization
-    exception<JacksonException> { cause ->
-        logger.debug { cause.message }
+    exception<JacksonException> {
+        logger.error(it) { "Could not deserialize data: ${it.message}." }
         respond("Bad request, could not deserialize data.")
     }
 }

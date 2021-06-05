@@ -10,7 +10,6 @@ import blue.mild.covid.vaxx.dto.request.ConfirmationDtoIn
 import blue.mild.covid.vaxx.dto.request.CreateVaccinationSlotsDtoIn
 import blue.mild.covid.vaxx.dto.request.LocationDtoIn
 import blue.mild.covid.vaxx.dto.request.PatientRegistrationDtoIn
-import blue.mild.covid.vaxx.dto.request.PatientVaccinationSlotSelectionDtoIn
 import blue.mild.covid.vaxx.dto.request.PhoneNumberDtoIn
 import blue.mild.covid.vaxx.dto.request.query.VaccinationSlotStatus
 import blue.mild.covid.vaxx.dto.response.VaccinationSlotDtoOut
@@ -302,7 +301,7 @@ class VaccinationSlotRoutesTest : ServerTestBase() {
         }
 
         // restrict by from
-        var from = Instant.ofEpochMilli(2000000).toUrlString()
+        val from = Instant.ofEpochMilli(2000000).toUrlString()
         handleRequest(HttpMethod.Get, "${Routes.vaccinationSlots}/filter?from=$from") {
             authorize()
         }.run {
@@ -336,69 +335,13 @@ class VaccinationSlotRoutesTest : ServerTestBase() {
                 "alice", "alice", 12345, "alice", "1", "1", "email", InsuranceCompany.CPZP, "indication", "remoteHost", mapOf(), null
             )
         }
-        val patientDtoIn = PatientVaccinationSlotSelectionDtoIn(patientId)
-
         // reserve slot - it should be the first one
-        handleRequest(HttpMethod.Post, "${Routes.vaccinationSlots}/book") {
-            authorize()
-            jsonBody(patientDtoIn)
-        }.run {
-            expectStatus(HttpStatusCode.OK)
-            val slot = receive<VaccinationSlotDtoOut>()
+        runBlocking {
+            vaccinationSlotService.bookSlotForPatient(patientId)
+        }.let { slot ->
             assertEquals(slotsAll[0].id, slot.id)
             assertEquals(patientId, slot.patientId)
             assertEquals(0, slot.queue)
-        }
-
-        // first location has one less free slot
-        handleRequest(HttpMethod.Get, "${Routes.vaccinationSlots}/filter?locationId=${locationId1}") {
-            authorize()
-        }.run {
-            expectStatus(HttpStatusCode.OK)
-            val slots = receive<List<VaccinationSlotDtoOut>>()
-            assertEquals(19, slots.size)
-        }
-
-        // second location has still the same amount of slots
-        handleRequest(HttpMethod.Get, "${Routes.vaccinationSlots}/filter?locationId=${locationId2}") {
-            authorize()
-        }.run {
-            expectStatus(HttpStatusCode.OK)
-            val slots = receive<List<VaccinationSlotDtoOut>>()
-            assertEquals(40, slots.size)
-        }
-
-        // reserve slot by specifying location and minimal from
-        from = Instant.ofEpochMilli(3500000).toUrlString()
-        handleRequest(HttpMethod.Post, "${Routes.vaccinationSlots}/book?locationId=${locationId2}&from=$from") {
-            authorize()
-            jsonBody(patientDtoIn)
-        }.run {
-            expectStatus(HttpStatusCode.OK)
-            val slot = receive<VaccinationSlotDtoOut>()
-            // it should be the middle one for the second location
-            // TODO we discussed with Lukas that we do not need this test
-            // assertEquals(slotsAll[20 + 5 * 4].id, slot.id)
-            assertEquals(patientId, slot.patientId)
-            assertEquals(0, slot.queue)
-        }
-
-        // first location has the same amount of free slots as before
-        handleRequest(HttpMethod.Get, "${Routes.vaccinationSlots}/filter?locationId=${locationId1}") {
-            authorize()
-        }.run {
-            expectStatus(HttpStatusCode.OK)
-            val slots = receive<List<VaccinationSlotDtoOut>>()
-            assertEquals(19, slots.size)
-        }
-
-        // second location has one free slot less
-        handleRequest(HttpMethod.Get, "${Routes.vaccinationSlots}/filter?locationId=${locationId2}") {
-            authorize()
-        }.run {
-            expectStatus(HttpStatusCode.OK)
-            val slots = receive<List<VaccinationSlotDtoOut>>()
-            assertEquals(39, slots.size)
         }
 
         // get slots - default
@@ -407,7 +350,7 @@ class VaccinationSlotRoutesTest : ServerTestBase() {
         }.run {
             expectStatus(HttpStatusCode.OK)
             val slots = receive<List<VaccinationSlotDtoOut>>()
-            assertEquals(58, slots.size)
+            assertEquals(59, slots.size)
         }
 
         // get slots - ALL
@@ -425,7 +368,7 @@ class VaccinationSlotRoutesTest : ServerTestBase() {
         }.run {
             expectStatus(HttpStatusCode.OK)
             val slots = receive<List<VaccinationSlotDtoOut>>()
-            assertEquals(58, slots.size)
+            assertEquals(59, slots.size)
         }
 
         // get slots - OCCUPIED
@@ -434,7 +377,7 @@ class VaccinationSlotRoutesTest : ServerTestBase() {
         }.run {
             expectStatus(HttpStatusCode.OK)
             val slots = receive<List<VaccinationSlotDtoOut>>()
-            assertEquals(2, slots.size)
+            assertEquals(1, slots.size)
         }
 
         // get slots - ALL with given patient
@@ -443,25 +386,7 @@ class VaccinationSlotRoutesTest : ServerTestBase() {
         }.run {
             expectStatus(HttpStatusCode.OK)
             val slots = receive<List<VaccinationSlotDtoOut>>()
-            assertEquals(2, slots.size)
-        }
-
-        // get slots - FREE - there will be one more
-        handleRequest(HttpMethod.Get, "${Routes.vaccinationSlots}/filter?status=${VaccinationSlotStatus.ONLY_FREE}") {
-            authorize()
-        }.run {
-            expectStatus(HttpStatusCode.OK)
-            val slots = receive<List<VaccinationSlotDtoOut>>()
-            assertEquals(58, slots.size)
-        }
-
-        // get slots - OCCUPIED - there will be one less
-        handleRequest(HttpMethod.Get, "${Routes.vaccinationSlots}/filter?status=${VaccinationSlotStatus.ONLY_OCCUPIED}") {
-            authorize()
-        }.run {
-            expectStatus(HttpStatusCode.OK)
-            val slots = receive<List<VaccinationSlotDtoOut>>()
-            assertEquals(2, slots.size)
+            assertEquals(1, slots.size)
         }
     }
 }

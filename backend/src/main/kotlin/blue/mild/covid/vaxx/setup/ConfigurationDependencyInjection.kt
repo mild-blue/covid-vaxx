@@ -75,7 +75,7 @@ fun DI.MainBuilder.bindConfiguration() {
     bind<RateLimitConfigurationDto>() with singleton {
         RateLimitConfigurationDto(
             enableRateLimiting = getEnvOrLogDefault(EnvVariables.ENABLE_RATE_LIMITING, "true").toBoolean(),
-            rateLimit = getEnvOrLogDefault(EnvVariables.RATE_LIMIT, "100").toLong(),
+            rateLimit = getEnvOrLogDefault(EnvVariables.RATE_LIMIT, "50000").toLong(),
             rateLimitDuration = getEnvOrLogDefault(EnvVariables.RATE_LIMIT_DURATION_MINUTES, "60")
                 .let { Duration.ofMinutes(it.toLong()) }
         )
@@ -108,6 +108,10 @@ fun DI.MainBuilder.bindConfiguration() {
 
     bind<Boolean>(EnvVariables.ENABLE_ISIN_REGISTRATION) with singleton {
         getEnvOrLogDefault(EnvVariables.ENABLE_ISIN_REGISTRATION, "false").toBoolean()
+    }
+
+    bind<Boolean>(EnvVariables.ENABLE_ISIN_PATIENT_VALIDATION) with singleton {
+        getEnvOrLogDefault(EnvVariables.ENABLE_ISIN_PATIENT_VALIDATION, "false").toBoolean()
     }
 
     bind<IsinConfigurationDto>() with singleton {

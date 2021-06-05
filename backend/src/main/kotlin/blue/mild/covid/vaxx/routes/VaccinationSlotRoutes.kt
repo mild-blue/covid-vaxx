@@ -3,8 +3,6 @@ package blue.mild.covid.vaxx.routes
 import blue.mild.covid.vaxx.dao.model.EntityId
 import blue.mild.covid.vaxx.dao.model.UserRole
 import blue.mild.covid.vaxx.dto.request.CreateVaccinationSlotsDtoIn
-import blue.mild.covid.vaxx.dto.request.PatientVaccinationSlotSelectionDtoIn
-import blue.mild.covid.vaxx.dto.request.query.BookVaccinationSlotsQueryDtoIn
 import blue.mild.covid.vaxx.dto.request.query.MultipleVaccinationSlotsQueryDtoIn
 import blue.mild.covid.vaxx.dto.response.VaccinationSlotDtoOut
 import blue.mild.covid.vaxx.extensions.closestDI
@@ -66,28 +64,6 @@ fun NormalOpenAPIRoute.vaccinationSlotRoutes() {
                 logger.info { "Found ${slots.size} records." }
 
                 respond(slots)
-            }
-
-            route("book").post<BookVaccinationSlotsQueryDtoIn, VaccinationSlotDtoOut, PatientVaccinationSlotSelectionDtoIn, UserPrincipal>(
-                info(
-                    "Book a vaccination slot for given patient by given params. First available slot is selected. " +
-                            "Filters by and clause. Empty values select ALL."
-                )
-            ) { slotsQuery, patientDtoIn ->
-                val principal = principal()
-                logger.info { "User ${principal.userId} reserves query: $slotsQuery for ${patientDtoIn}." }
-
-                val slot = vaccinationSlotService.bookSlotForPatient(
-                    slotId = slotsQuery.id,
-                    locationId = slotsQuery.locationId,
-                    patientId = patientDtoIn.patientId,
-                    from = slotsQuery.from,
-                    to = slotsQuery.to
-                )
-
-                logger.info { "Slot $slot booked for the patient ${patientDtoIn.patientId}." }
-
-                respond(slot)
             }
         }
     }
