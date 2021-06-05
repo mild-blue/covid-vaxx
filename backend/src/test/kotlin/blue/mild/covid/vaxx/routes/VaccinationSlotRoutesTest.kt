@@ -333,7 +333,7 @@ class VaccinationSlotRoutesTest : ServerTestBase() {
         // create patient
         val patientId = runBlocking {
             patientRepository.savePatient(
-                "alice", "alice", 12345, "alice", "1", "1", "email", InsuranceCompany.CPZP, "indication", "remoteHost", mapOf(), false
+                "alice", "alice", 12345, "alice", "1", "1", "email", InsuranceCompany.CPZP, "indication", "remoteHost", mapOf(), null
             )
         }
         val patientDtoIn = PatientVaccinationSlotSelectionDtoIn(patientId)

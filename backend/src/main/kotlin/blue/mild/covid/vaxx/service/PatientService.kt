@@ -89,7 +89,7 @@ class PatientService(
     /**
      * Saves patient to the database and return its id.
      */
-    suspend fun savePatient(registrationDto: ContextAware<PatientRegistrationDtoIn>, isIsinValidated: Boolean): EntityId {
+    suspend fun savePatient(registrationDto: ContextAware<PatientRegistrationDtoIn>, isinId: String?): EntityId {
         val registration = registrationDto.payload
         logger.debug { "Registering patient ${registration.email}." }
 
@@ -109,7 +109,7 @@ class PatientService(
             indication = registration.indication?.trim(),
             remoteHost = registrationDto.remoteHost,
             answers = registration.answers.associate { it.questionId to it.value },
-            isIsinValidated = isIsinValidated
+            isinId = isinId
         ).also { patientId ->
             logger.debug { "Patient ${registration.email} saved under id $patientId." }
         }

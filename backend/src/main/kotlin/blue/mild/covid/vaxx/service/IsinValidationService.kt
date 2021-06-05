@@ -47,29 +47,39 @@ class IsinValidationService(
     }
 
     suspend fun validatePatientIsin(registrationDto: PatientRegistrationDtoIn): IsinValidationResultDto {
+        val firstName = registrationDto.firstName.trim().uppercase(Locale.getDefault())
+        val lastName = registrationDto.lastName.trim().uppercase(Locale.getDefault())
+        val personalNumber = registrationDto.personalNumber.normalizePersonalNumber()
+
         val response = runCatching {
             getPatientResponse(
-                jmeno = registrationDto.firstName.trim().uppercase(Locale.getDefault()),
-                prijmeni = registrationDto.lastName.trim().uppercase(Locale.getDefault()),
-                rodneCislo = registrationDto.personalNumber.normalizePersonalNumber()
+                jmeno = firstName,
+                prijmeni = lastName,
+                rodneCislo = personalNumber
             )
         }.getOrElse {
-            logger.error(it) { "Getting data from isin server failed" }
+            logger.error(it) {
+                "Getting data from isin server failed for patient ${firstName}/${lastName}/${personalNumber}"
+            }
             return IsinValidationResultDto( status = IsinValidationResultStatus.WAS_NOT_VERIFIED )
         }
 
         val json = response.receive<JsonNode>()
+        val result = json.get("vysledek")?.textValue()
+        val resultMessage = json.get("vysledekZprava")?.textValue()
+        val patientId = json.get("pacient")?.get("id")?.textValue()
 
-        val result = json.get("vysledek").textValue()
-
-        logger.debug { "Isin result: ${result}, message: ${json.get("vysledekZprava").textValue()}" }
+        logger.debug {
+            "Data from ISIN for patient ${firstName}/${lastName}/${personalNumber}: " +
+            "result=${result}, resultMessage=${resultMessage}, patientId=${patientId}"
+        }
 
         return when (result) {
             VyhledaniPacientaResult.PacientNalezen.name,
             VyhledaniPacientaResult.NalezenoVicePacientu.name ->
                 IsinValidationResultDto(
                     status = IsinValidationResultStatus.PATIENT_FOUND,
-                    patientId = json.get("pacient").get("id").textValue()
+                    patientId = patientId
                 )
             VyhledaniPacientaResult.PacientNebylNalezen.name,
             VyhledaniPacientaResult.ChybaVstupnichDat.name ->

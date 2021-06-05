@@ -9,4 +9,5 @@ object DatabaseTypeLength {
     const val REMOTE_HOST = 45 // for size see https://stackoverflow.com/a/166157/7169288
     const val ROLE = 16
     const val BODY_PART = 17
+    const val PATIENT_ISIN_ID = 12
 }

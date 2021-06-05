@@ -121,7 +121,7 @@ class PatientRepository(
         indication: String?,
         remoteHost: String,
         answers: Map<EntityId, Boolean>,
-        isIsinValidated: Boolean
+        isinId: String?
     ): EntityId = newSuspendedTransaction {
         val patientId = Patients.insert {
             it[Patients.firstName] = firstName
@@ -134,7 +134,7 @@ class PatientRepository(
             it[Patients.insuranceCompany] = insuranceCompany
             it[Patients.indication] = indication
             it[Patients.remoteHost] = remoteHost
-            it[Patients.isIsinValidated] = isIsinValidated
+            it[Patients.isinId] = isinId
         }[Patients.id]
 
         val now = instantTimeProvider.now()
