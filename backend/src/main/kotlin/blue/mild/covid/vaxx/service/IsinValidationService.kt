@@ -35,7 +35,7 @@ class IsinValidationService(
         Chyba
     }
 
-    suspend fun validatePatient(registrationDto: PatientRegistrationDtoIn): IsinValidationResultDto {
+    override suspend fun validatePatient(registrationDto: PatientRegistrationDtoIn): IsinValidationResultDto {
         val firstName = registrationDto.firstName.trim().uppercase(Locale.getDefault())
         val lastName = registrationDto.lastName.trim().uppercase(Locale.getDefault())
         val personalNumber = registrationDto.personalNumber.normalizePersonalNumber()

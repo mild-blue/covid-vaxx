@@ -31,7 +31,7 @@ suspend fun PatientRepository.generatePatientInDatabase(): PatientDtoOut {
         indication = patient.indication?.trim(),
         remoteHost = "0.0.0.0",
         answers = patient.answers.associate { it.questionId to it.value },
-        isIsinValidated = false
+        isinId = null
     )
 
     return requireNotNull(getAndMapById(patientId)) { "The patient was not created!" }
