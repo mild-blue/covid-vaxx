@@ -136,6 +136,7 @@ fun DI.MainBuilder.registerClasses() {
     bind<HttpClient>(isinHttpClientTag) with singleton {
         val mapper = instance<ObjectMapper>()
 
+        @Suppress("MagicNumber") // carefully chosen constant
         val isinTimeOutMillis = 15000L
         HttpClient(Apache) {
             install(JsonFeature) {

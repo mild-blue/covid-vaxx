@@ -29,6 +29,7 @@ private val logger = createLogger("ExceptionHandler")
 /**
  * Registers exception handling.
  */
+@Suppress("LongMethod") // it's fine as this is part of KTor
 fun Application.installExceptionHandling() {
     install(StatusPages) {
         exception<InsufficientRightsException> {
