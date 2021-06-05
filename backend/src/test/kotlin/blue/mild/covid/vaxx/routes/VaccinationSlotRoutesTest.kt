@@ -203,6 +203,7 @@ class VaccinationSlotRoutesTest : ServerTestBase() {
         zipCode = 1600,
         district = "Praha 6",
         personalNumber = generatePersonalNumber(),
+        insuranceNumber = null,
         phoneNumber = PhoneNumberDtoIn("721680111", "CZ"),
         email = "${UUID.randomUUID()}@mild.blue",
         insuranceCompany = InsuranceCompany.values().random(),
@@ -333,7 +334,7 @@ class VaccinationSlotRoutesTest : ServerTestBase() {
         // create patient
         val patientId = runBlocking {
             patientRepository.savePatient(
-                "alice", "alice", 12345, "alice", "1", "1", "email", InsuranceCompany.CPZP, "indication", "remoteHost", mapOf(), null
+                "alice", "alice", 12345, "alice", "1", "1", null,"email", InsuranceCompany.CPZP, "indication", "remoteHost", mapOf(), null
             )
         }
         val patientDtoIn = PatientVaccinationSlotSelectionDtoIn(patientId)
