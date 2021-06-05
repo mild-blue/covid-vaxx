@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
 import { Component } from '@angular/core';
 import { Router } from '@angular/router';
 import { PatientService } from '@app/services/patient/patient.service';
@@ -6,7 +5,7 @@ import { environment } from '@environments/environment';
 import { PatientData } from '@app/model/PatientData';
 import { ConfirmationService } from '@app/services/confirmation/confirmation.service';
 import { RegistrationConfirmation } from '@app/model/RegistrationConfirmation';
-import { defaultLocation, defaultMapLocation, VaccinationLocation } from '@app/model/VaccinationLocation';
+import { defaultMapLocation, MapLocation } from '@app/model/VaccinationLocation';
 
 @Component({
   selector: 'app-registration-done',
@@ -17,9 +16,6 @@ export class RegistrationDoneComponent {
 
   public patientData?: PatientData;
   public confirmation?: RegistrationConfirmation;
-  public location?: VaccinationLocation;
-
-  public loading: boolean = false;
   public companyEmail: string = environment.companyEmail;
 
   constructor(private _router: Router,
@@ -28,7 +24,7 @@ export class RegistrationDoneComponent {
     this._patientService.patientObservable.subscribe(patient => this.patientData = patient);
     this._confirmationService.confirmationObservable.subscribe(confirmation => {
       this.confirmation = confirmation;
-      this._initLocation();
+      this._initMap();
     });
   }
 
@@ -36,39 +32,26 @@ export class RegistrationDoneComponent {
     this._router.navigate(['/registration']);
   }
 
-  private async _initLocation() {
-    if (!this.confirmation) {
-      return;
-    }
-
-    this.loading = true;
-    try {
-      this.location = await this._confirmationService.getLocation(this.confirmation.locationId);
-    } catch (e) {
-      // just show default location, do not alert error
-      this.location = defaultLocation;
-    } finally {
-      this.loading = false;
-
-      // Init map afterwards
-      this._initMap();
-    }
-  }
-
   private _initMap(): void {
-    if (!this.location) {
+    if (!this.confirmation?.location) {
+      RegistrationDoneComponent._renderMap(defaultMapLocation);
       return;
     }
 
-    new window.SMap.Geocoder(this.location.address, RegistrationDoneComponent._handleGeocodingResult.bind(this));
+    new window.SMap.Geocoder(this.confirmation.location.address, RegistrationDoneComponent._handleGeocodingResult.bind(this));
   }
 
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   private static _handleGeocodingResult(geocoder: any): void {
     const results = geocoder.getResults()[0].results;
     const mapLocation = results.length ? results[0].coords : defaultMapLocation;
 
+    RegistrationDoneComponent._renderMap(mapLocation);
+  }
+
+  private static _renderMap(location: MapLocation): void {
     // Basics
-    const center = window.SMap.Coords.fromWGS84(mapLocation.x, mapLocation.y);
+    const center = window.SMap.Coords.fromWGS84(location.x, location.y);
     const zoom = 17;
 
     // Marker

@@ -9,16 +9,13 @@
  * https://openapi-generator.tech
  * Do not edit the class manually.
  */
-import { PersonnelDtoOut } from './personnelDtoOut';
+import { VaccinationSlotDtoOut } from './vaccinationSlotDtoOut';
+import { LocationDtoOut } from './locationDtoOut';
 
 
-export interface DataCorrectnessConfirmationDetailDtoOut {
-  checked: string;
-  dataAreCorrect: boolean;
-  doctor: PersonnelDtoOut;
-  id: string;
-  notes?: string | null;
-  nurse?: PersonnelDtoOut;
+export interface PatientRegistrationResponseDtoOut {
+  location: LocationDtoOut;
   patientId: string;
+  slot: VaccinationSlotDtoOut;
 }
 
