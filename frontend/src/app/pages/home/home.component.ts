@@ -90,7 +90,7 @@ export class HomeComponent {
       firstName: '',
       lastName: '',
       personalNumber: '',
-      insuranceCompany: undefined,
+      insuranceCompany: '',
       phoneNumber: '',
       email: '',
       zipCode: '',

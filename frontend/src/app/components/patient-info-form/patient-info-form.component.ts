@@ -2,6 +2,7 @@ import { Component, EventEmitter, Input, OnInit, Output } from '@angular/core';
 import { InsuranceCompany } from '@app/model/InsuranceCompany';
 import { ControlContainer, FormControl, FormGroup, NgForm, ValidationErrors, Validators } from '@angular/forms';
 import { PatientData, patientDataLabels } from '@app/model/PatientData';
+import { InsuranceService } from '@app/services/insurance/insurance.service';
 
 @Component({
   selector: 'app-patient-info-form',
@@ -17,7 +18,7 @@ export class PatientInfoFormComponent implements OnInit {
   @Output() missingInfo: EventEmitter<string[]> = new EventEmitter<string[]>();
   @Output() patientUpdated: EventEmitter<PatientData> = new EventEmitter<PatientData>();
 
-  public allInsuranceCompanies: string[] = Object.values(InsuranceCompany);
+  public allInsuranceCompanies: InsuranceCompany[] = [];
   public minVaccinationDate = new Date('1/1/2020');
   public maxVaccinationDate = new Date();
 
@@ -33,7 +34,7 @@ export class PatientInfoFormComponent implements OnInit {
     indication: new FormControl('')
   });
 
-  constructor() {
+  constructor(private _insuranceService: InsuranceService) {
     this.form.valueChanges.subscribe(() => {
 
       // Pass invalid info to parent component
@@ -48,7 +49,6 @@ export class PatientInfoFormComponent implements OnInit {
 
       this.missingInfo.emit(invalid);
       this.patientUpdated.emit(this.form.value);
-
     });
   }
 
@@ -68,6 +68,16 @@ export class PatientInfoFormComponent implements OnInit {
       district: this.patient.district,
       indication: this.patient.indication ?? null
     });
+
+    this._initInsuranceCompanies();
+  }
+
+  private async _initInsuranceCompanies(): Promise<void> {
+    try {
+      this.allInsuranceCompanies = await this._insuranceService.getInsuranceCompanies();
+    } catch (e) {
+      // ignore error
+    }
   }
 
   public isControlInvalid(controlName: string): boolean {

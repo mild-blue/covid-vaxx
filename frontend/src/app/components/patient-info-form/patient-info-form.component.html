@@ -23,8 +23,11 @@
         <app-form-field label="Zdravotní pojišťovna *" note="Vyberte ze seznamu zdravotních pojišťoven"
                         [invalid]="isControlInvalid('insuranceCompany')" [errors]="getControlErrors('insuranceCompany')">
           <mat-select formControlName="insuranceCompany" placeholder="Vyberte Vaší zdravotní pojišťovnu" required>
-            <mat-option *ngFor="let insuranceCompany of allInsuranceCompanies" [value]="insuranceCompany">
-              {{insuranceCompany}}
+            <mat-option *ngFor="let insuranceCompany of allInsuranceCompanies" [value]="insuranceCompany.code">
+              {{insuranceCompany.name}} - {{insuranceCompany.csFullName}}
+              <ng-container *ngIf="insuranceCompany.numericCode">
+                ({{insuranceCompany.numericCode}})
+              </ng-container>
             </mat-option>
           </mat-select>
         </app-form-field>

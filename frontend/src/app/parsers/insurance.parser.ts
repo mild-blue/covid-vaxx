@@ -1,6 +1,11 @@
-import { InsuranceCompany } from '@app/model/InsuranceCompany';
+import { InsuranceCompany, insuranceNumericCodeMap } from '@app/model/InsuranceCompany';
+import { InsuranceCompanyDetailsDtoOut } from '@app/generated';
 
-export const parseInsuranceCompany = (data: string): InsuranceCompany | undefined => {
-  const key = Object.keys(InsuranceCompany).find(v => InsuranceCompany[v as keyof typeof InsuranceCompany] === data);
-  return InsuranceCompany[key as keyof typeof InsuranceCompany];
+export const parseInsuranceCompany = (data: InsuranceCompanyDetailsDtoOut): InsuranceCompany => {
+  return {
+    code: data.code,
+    numericCode: insuranceNumericCodeMap[data.code] ?? undefined,
+    csFullName: data.csFullName,
+    name: data.name
+  };
 };
