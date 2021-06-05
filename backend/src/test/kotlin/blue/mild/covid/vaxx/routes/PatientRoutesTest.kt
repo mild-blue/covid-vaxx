@@ -72,6 +72,7 @@ class PatientRoutesTest : ServerTestBase() {
     }
 
     @Test
+    @Suppress("LongMethod") // complete crud, long method is fine here
     fun `complete crud on patient`() = withTestApplication {
         val createSlots = CreateVaccinationSlotsDtoIn(
             locationId = locationId,
