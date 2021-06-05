@@ -65,20 +65,20 @@ fun NormalOpenAPIRoute.patientRoutes() {
 
             val isinValidationResult = isinValidationService.validatePatientIsin(patientRegistration)
 
-            val isIsinValidated: Boolean = when (isinValidationResult.status) {
+            val patientIsinId: String? = when (isinValidationResult.status) {
                 IsinValidationResultStatus.PATIENT_FOUND ->
-                    true
+                    isinValidationResult.patientId
                 IsinValidationResultStatus.PATIENT_NOT_FOUND ->
                     throw IsinValidationException(isinValidationResult)
                 IsinValidationResultStatus.WAS_NOT_VERIFIED -> {
                     logger.warn { "Patient was not validated in isin due to some problem. Skipping isin validation." }
-                    false
+                    null
                 }
             }
 
             logger.debug { "Isin validation ended. Saving registration." }
 
-            val patientId = patientService.savePatient(asContextAware(patientRegistration), isIsinValidated)
+            val patientId = patientService.savePatient(asContextAware(patientRegistration), patientIsinId)
             logger.info { "Patient saved to the database with id: ${patientId}. Booking slot." }
             try {
                 val slot = vaccinationSlotService.bookSlotForPatient(patientId)

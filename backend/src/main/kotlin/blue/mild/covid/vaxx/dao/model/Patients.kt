@@ -71,5 +71,5 @@ object Patients : ManagedTable("patients") {
     /**
      * Patient was validated in isin
      */
-    val isIsinValidated = bool("is_isin_validated")
+    val isinId = varchar("isin_id", DatabaseTypeLength.PATIENT_ISIN_ID).nullable()
 }
