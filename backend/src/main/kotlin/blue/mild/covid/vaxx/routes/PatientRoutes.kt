@@ -12,7 +12,7 @@ import blue.mild.covid.vaxx.dto.request.query.PatientIdDtoIn
 import blue.mild.covid.vaxx.dto.response.OK
 import blue.mild.covid.vaxx.dto.response.Ok
 import blue.mild.covid.vaxx.dto.response.PatientDtoOut
-import blue.mild.covid.vaxx.dto.response.VaccinationSlotDtoOut
+import blue.mild.covid.vaxx.dto.response.PatientRegistrationResponseDtoOut
 import blue.mild.covid.vaxx.error.IsinValidationException
 import blue.mild.covid.vaxx.extensions.asContextAware
 import blue.mild.covid.vaxx.extensions.closestDI
@@ -55,7 +55,7 @@ fun NormalOpenAPIRoute.patientRoutes() {
     val patientValidation by closestDI().instance<PatientValidationService>()
 
     route(Routes.patient) {
-        post<CaptchaVerificationDtoIn, VaccinationSlotDtoOut, PatientRegistrationDtoIn>(
+        post<CaptchaVerificationDtoIn, PatientRegistrationResponseDtoOut, PatientRegistrationDtoIn>(
             info("Save patient registration to the database.")
         ) { (recaptchaToken), patientRegistration ->
             logger.info { "Patient registration request. Executing captcha verification." }
@@ -81,7 +81,7 @@ fun NormalOpenAPIRoute.patientRoutes() {
             val patientId = patientService.savePatient(asContextAware(patientRegistration), patientIsinId)
             logger.info { "Patient saved to the database with id: ${patientId}. Booking slot." }
 
-            val slot = runCatching {
+            val (slot, location) = runCatching {
                 val slot = vaccinationSlotService.bookSlotForPatient(patientId)
                     .toRoundedSlot() // display rounded data
 
@@ -99,7 +99,7 @@ fun NormalOpenAPIRoute.patientRoutes() {
                         location = location
                     )
                 )
-                slot
+                slot to location
             }.onFailure {
                 logger.error {
                     "It was not possible to complete registration process for patient $patientId -" +
@@ -109,8 +109,13 @@ fun NormalOpenAPIRoute.patientRoutes() {
             }.getOrThrow()
             logger.info { "Registration successful for patient $patientId." }
 
-            // TODO maybe return something more reasonable then just the slot dto
-            respond(slot)
+            respond(
+                PatientRegistrationResponseDtoOut(
+                    patientId = patientId,
+                    slot = slot,
+                    location = location
+                )
+            )
         }
     }
 

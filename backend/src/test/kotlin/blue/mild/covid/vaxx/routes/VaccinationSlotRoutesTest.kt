@@ -8,6 +8,7 @@ import blue.mild.covid.vaxx.dto.request.CreateVaccinationSlotsDtoIn
 import blue.mild.covid.vaxx.dto.request.LocationDtoIn
 import blue.mild.covid.vaxx.dto.request.PhoneNumberDtoIn
 import blue.mild.covid.vaxx.dto.request.query.VaccinationSlotStatus
+import blue.mild.covid.vaxx.dto.response.PatientRegistrationResponseDtoOut
 import blue.mild.covid.vaxx.dto.response.VaccinationSlotDtoOut
 import blue.mild.covid.vaxx.generators.generatePatientRegistrationDto
 import blue.mild.covid.vaxx.service.LocationService
@@ -180,7 +181,7 @@ class VaccinationSlotRoutesTest : ServerTestBase() {
                         jsonBody(patient)
                     }.run {
                         expectStatus(HttpStatusCode.OK)
-                        receive<VaccinationSlotDtoOut>()
+                        receive<PatientRegistrationResponseDtoOut>()
                     }
                 }
             }.awaitAll()
@@ -188,7 +189,7 @@ class VaccinationSlotRoutesTest : ServerTestBase() {
 
         assertEquals(totalSlots, bookedSlots.size)
         // check that each slot was booked just once
-        bookedSlots.groupBy({ it.id }, { it.patientId })
+        bookedSlots.groupBy({ it.slot.id }, { it.patientId })
             .forEach { (_, patientId) ->
                 assertEquals(1, patientId.count())
             }
