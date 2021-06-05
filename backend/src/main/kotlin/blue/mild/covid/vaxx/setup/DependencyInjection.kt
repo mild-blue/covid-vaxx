@@ -14,7 +14,6 @@ import blue.mild.covid.vaxx.extensions.createLogger
 import blue.mild.covid.vaxx.security.ddos.CaptchaVerificationService
 import blue.mild.covid.vaxx.security.ddos.RequestVerificationService
 import blue.mild.covid.vaxx.service.DataCorrectnessService
-import blue.mild.covid.vaxx.service.DummyPatientValidationService
 import blue.mild.covid.vaxx.service.IsinRegistrationService
 import blue.mild.covid.vaxx.service.IsinValidationService
 import blue.mild.covid.vaxx.service.LocationService
@@ -32,6 +31,7 @@ import blue.mild.covid.vaxx.service.VaccinationSlotService
 import blue.mild.covid.vaxx.service.ValidationService
 import blue.mild.covid.vaxx.service.dummy.DummyMailService
 import blue.mild.covid.vaxx.service.dummy.DummyMedicalRegistrationService
+import blue.mild.covid.vaxx.service.dummy.DummyPatientValidationService
 import blue.mild.covid.vaxx.service.dummy.DummyRequestVerificationService
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.fasterxml.jackson.databind.SerializationFeature
