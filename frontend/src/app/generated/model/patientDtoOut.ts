@@ -33,14 +33,15 @@ export interface PatientDtoOut {
   vaccinationSlotDtoOut?: VaccinationSlotDtoOut;
   zipCode: number;
 }
+
 export enum PatientDtoOutInsuranceCompanyEnum {
-    Vzp = 'VZP',
-    Vozp = 'VOZP',
-    Cpzp = 'CPZP',
-    Ozp = 'OZP',
-    Zps = 'ZPS',
-    Zpmv = 'ZPMV',
-    Rbp = 'RBP'
+  Vzp = 'VZP',
+  Vozp = 'VOZP',
+  Cpzp = 'CPZP',
+  Ozp = 'OZP',
+  Zps = 'ZPS',
+  Zpmv = 'ZPMV',
+  Rbp = 'RBP'
 };
 
 

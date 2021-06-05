@@ -98,32 +98,32 @@ export class Configuration {
       return undefined;
     }
 
-        const type = accepts.find((x: string) => this.isJsonMime(x));
-        if (type === undefined) {
-            return accepts[0];
-        }
-        return type;
+    const type = accepts.find((x: string) => this.isJsonMime(x));
+    if (type === undefined) {
+      return accepts[0];
     }
+    return type;
+  }
 
-    /**
-     * Check if the given MIME is a JSON MIME.
-     * JSON MIME examples:
-     *   application/json
-     *   application/json; charset=UTF8
-     *   APPLICATION/JSON
-     *   application/vnd.company+json
-     * @param mime - MIME (Multipurpose Internet Mail Extensions)
-     * @return True if the given MIME is JSON, false otherwise.
-     */
-    public isJsonMime(mime: string): boolean {
-        const jsonMime: RegExp = new RegExp('^(application\/json|[^;/ \t]+\/[^;/ \t]+[+]json)[ \t]*(;.*)?$', 'i');
-        return mime !== null && (jsonMime.test(mime) || mime.toLowerCase() === 'application/json-patch+json');
-    }
+  /**
+   * Check if the given MIME is a JSON MIME.
+   * JSON MIME examples:
+   *   application/json
+   *   application/json; charset=UTF8
+   *   APPLICATION/JSON
+   *   application/vnd.company+json
+   * @param mime - MIME (Multipurpose Internet Mail Extensions)
+   * @return True if the given MIME is JSON, false otherwise.
+   */
+  public isJsonMime(mime: string): boolean {
+    const jsonMime: RegExp = new RegExp('^(application\/json|[^;/ \t]+\/[^;/ \t]+[+]json)[ \t]*(;.*)?$', 'i');
+    return mime !== null && (jsonMime.test(mime) || mime.toLowerCase() === 'application/json-patch+json');
+  }
 
-    public lookupCredential(key: string): string | undefined {
-      const value = this.credentials[key];
-      return typeof value === 'function'
-        ? value()
-        : value;
-    }
+  public lookupCredential(key: string): string | undefined {
+    const value = this.credentials[key];
+    return typeof value === 'function'
+      ? value()
+      : value;
+  }
 }

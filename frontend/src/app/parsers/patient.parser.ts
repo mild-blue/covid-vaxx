@@ -10,6 +10,7 @@ export const parsePatient = (data: PatientDtoOut, questions: AnsweredQuestion[])
 
   return {
     ...data,
+    insuranceNumber: undefined, // TODOO
     zipCode: data.zipCode ? zipCodePipe.transform(`${data.zipCode}`) : '',
     questionnaire: answeredQuestions.filter(notEmpty),
     insuranceCompany: parseInsuranceCompany(data.insuranceCompany),

@@ -22,19 +22,21 @@ export interface PatientRegistrationDtoIn {
   firstName: string;
   indication?: string | null;
   insuranceCompany: PatientRegistrationDtoInInsuranceCompanyEnum;
+  insuranceNumber?: string | null;
   lastName: string;
-  personalNumber: string;
+  personalNumber?: string | null;
   phoneNumber: PhoneNumberDtoIn;
   zipCode: number;
 }
+
 export enum PatientRegistrationDtoInInsuranceCompanyEnum {
-    Vzp = 'VZP',
-    Vozp = 'VOZP',
-    Cpzp = 'CPZP',
-    Ozp = 'OZP',
-    Zps = 'ZPS',
-    Zpmv = 'ZPMV',
-    Rbp = 'RBP'
+  Vzp = 'VZP',
+  Vozp = 'VOZP',
+  Cpzp = 'CPZP',
+  Ozp = 'OZP',
+  Zps = 'ZPS',
+  Zpmv = 'ZPMV',
+  Rbp = 'RBP'
 };
 
 

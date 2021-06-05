@@ -25,14 +25,15 @@ export interface PatientUpdateDtoIn {
   phoneNumber?: PhoneNumberDtoIn;
   zipCode?: number | null;
 }
+
 export enum PatientUpdateDtoInInsuranceCompanyEnum {
-    Vzp = 'VZP',
-    Vozp = 'VOZP',
-    Cpzp = 'CPZP',
-    Ozp = 'OZP',
-    Zps = 'ZPS',
-    Zpmv = 'ZPMV',
-    Rbp = 'RBP'
+  Vzp = 'VZP',
+  Vozp = 'VOZP',
+  Cpzp = 'CPZP',
+  Ozp = 'OZP',
+  Zps = 'ZPS',
+  Zpmv = 'ZPMV',
+  Rbp = 'RBP'
 };
 
 
