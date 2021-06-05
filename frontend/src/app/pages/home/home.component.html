@@ -1,4 +1,5 @@
 <app-header title="Dotazník před očkováním proti nemoci COVID-19"></app-header>
+<app-progress-loading [show]="loading"></app-progress-loading>
 
 <main>
   <mat-horizontal-stepper #stepper [linear]="true">
@@ -75,7 +76,7 @@
             Předchozí krok
           </button>
           <button (click)="submit()"
-                  [disabled]="!thirdStep.completed"
+                  [disabled]="!thirdStep.completed || loading"
                   color="primary" mat-raised-button matStepperNext>
             Odeslat požadavek
             <mat-icon>done</mat-icon>
