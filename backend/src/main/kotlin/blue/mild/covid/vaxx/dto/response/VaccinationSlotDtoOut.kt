@@ -29,6 +29,7 @@ data class VaccinationSlotDtoOut(
                 this.from.atOffset(getFromWithOffset()).minute.toString().padStart(2, '0')
     }
 
+    @Suppress("MagicNumber") // we want to show +15 minutes to user
     fun toRoundedSlot() = copy(
         to = to.plus(15, ChronoUnit.MINUTES).truncatedTo(ChronoUnit.MINUTES)
     )
