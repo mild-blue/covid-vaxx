@@ -153,8 +153,8 @@ open class ServerTestBase(needsDatabase: Boolean = true) : DatabaseTestBase(need
     protected val defaultPrincipal = UserPrincipal(
         userId = DatabaseData.admin.id,
         userRole = DatabaseData.admin.role,
-        vaccineSerialNumber = "",
-        nurseId = null
+        vaccineSerialNumber = "some data",
+        nurseId = DatabaseData.nurses.first().id
     )
 
     protected fun TestApplicationRequest.authorize(principal: UserPrincipal = defaultPrincipal) {

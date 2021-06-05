@@ -76,8 +76,9 @@ class DataCorrectnessRoutesTest : ServerTestBase() {
 
         // TODO #255 implement me!
         // verify that the patient1 really has the data correctness confirmation
-        // by calling the API and requesting data for patient1.id
-        // hind: see first part of the test
+        // by calling the API and requesting data for patient1.id and expecting Ok status
+        // and then comparing correctnessId with the ID you received in the test
+        // hint: see first part of the test
     }
 
 }

@@ -28,6 +28,8 @@ import org.kodein.di.instance
 import java.time.Instant
 import java.util.UUID
 import kotlin.test.assertEquals
+import kotlin.test.assertNull
+import kotlin.test.assertTrue
 
 
 class VaccinationSlotRoutesTest : ServerTestBase() {
@@ -79,7 +81,7 @@ class VaccinationSlotRoutesTest : ServerTestBase() {
             durationMillis = 100000,
             bandwidth = 2,
         )
-
+        // create slots
         handleRequest(HttpMethod.Post, Routes.vaccinationSlots) {
             authorize()
             jsonBody(createSlots)
@@ -87,6 +89,25 @@ class VaccinationSlotRoutesTest : ServerTestBase() {
             expectStatus(HttpStatusCode.OK)
             val slots = receive<List<EntityId>>()
             assertEquals(40, slots.size)
+        }
+
+        // only authorized users can get slots
+        handleRequest(HttpMethod.Get, "${Routes.vaccinationSlots}/filter").run { expectStatus(HttpStatusCode.Unauthorized) }
+
+        // get created slots
+        handleRequest(HttpMethod.Get, "${Routes.vaccinationSlots}/filter") {
+            authorize()
+        }.run {
+            expectStatus(HttpStatusCode.OK)
+            val slots = receive<List<VaccinationSlotDtoOut>>()
+            assertEquals(40, slots.size)
+            slots.forEach { slot ->
+                assertEquals(createSlots.locationId, slot.locationId)
+                assertNull(slot.patientId)
+                assertTrue { slot.from >= createSlots.from }
+                assertTrue { slot.to <= createSlots.to }
+                assertEquals(createSlots.durationMillis, slot.to.toEpochMilli() - slot.from.toEpochMilli())
+            }
         }
     }
 
