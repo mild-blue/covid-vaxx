@@ -10,13 +10,14 @@ export const parsePatient = (data: PatientDtoOut, questions: AnsweredQuestion[])
 
   return {
     ...data,
-    insuranceNumber: undefined, // TODOO
     zipCode: data.zipCode ? zipCodePipe.transform(`${data.zipCode}`) : '',
     questionnaire: answeredQuestions.filter(notEmpty),
     insuranceCompany: parseInsuranceCompany(data.insuranceCompany),
     vaccinatedOn: data.vaccinated?.vaccinatedOn ? new Date(data.vaccinated.vaccinatedOn) : undefined,
     verified: !!data.dataCorrect?.dataAreCorrect,
-    indication: data.indication ?? ''
+    indication: data.indication ?? '',
+    personalNumber: data.personalNumber ?? '',
+    insuranceNumber: data.insuranceCompany ?? ''
   };
 };
 
