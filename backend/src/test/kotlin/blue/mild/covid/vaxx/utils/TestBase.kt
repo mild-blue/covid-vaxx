@@ -150,7 +150,7 @@ open class ServerTestBase(needsDatabase: Boolean = true) : DatabaseTestBase(need
         return mapper.readValue(content)
     }
 
-    private val defaultPrincipal = UserPrincipal(
+    protected val defaultPrincipal = UserPrincipal(
         userId = DatabaseData.admin.id,
         userRole = DatabaseData.admin.role,
         vaccineSerialNumber = "",

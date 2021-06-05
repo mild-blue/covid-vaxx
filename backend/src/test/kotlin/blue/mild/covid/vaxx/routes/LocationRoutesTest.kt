@@ -46,7 +46,7 @@ class LocationRoutesTest : ServerTestBase() {
         // once that is ready delete @Disabled annotation and TODO
 
         // hint - see test "add location"
-        TODO("Implement me.")
+        TODO("#256 Implement me.")
     }
 
     @Test
@@ -60,6 +60,13 @@ class LocationRoutesTest : ServerTestBase() {
             email = "location-1@test.com",
             notes = "location-1 - note"
         )
+
+        // verify that you need auth for that
+        handleRequest(HttpMethod.Post, Routes.locations) {
+            jsonBody(location)
+        }.run {
+            expectStatus(HttpStatusCode.Unauthorized)
+        }
 
         val locationId = handleRequest(HttpMethod.Post, Routes.locations) {
             authorize()
@@ -78,7 +85,6 @@ class LocationRoutesTest : ServerTestBase() {
             assertEquals(location.address, response.address)
             assertEquals(location.zipCode, response.zipCode)
             assertEquals(location.district, response.district)
-            // MartinLlama: Figure out how to compare phone numbers
             assertEquals(location.phoneNumber?.number, response.phoneNumber)
             assertEquals(location.email, response.email)
             assertEquals(location.notes, response.notes)

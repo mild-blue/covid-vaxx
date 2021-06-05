@@ -49,14 +49,14 @@ fun NormalOpenAPIRoute.vaccinationRoutes() {
                 info("Register that the patient was vaccinated. Returns vaccination detail.")
             ) { _, request ->
                 val principal = principal()
-                logger.debug { "User ${principal.userId} vaccinated patient ${request.patientId}." }
+                logger.info { "User ${principal.userId} vaccinated patient ${request.patientId}." }
 
                 val vaccinationId = vaccinationService.addVaccination(asContextAware(request))
                 val vaccination = vaccinationService.get(vaccinationId)
 
-                logger.debug { "Vaccination was successful, registering in the medical system." }
+                logger.info { "Vaccination was successful, registering in the medical system." }
                 medicalRegistrationService.registerPatientsVaccination(vaccination.toPatientVaccinationDetailDto())
-                logger.debug { "Job sent successfully." }
+                logger.info { "Job sent successfully." }
 
                 respond(vaccination)
             }

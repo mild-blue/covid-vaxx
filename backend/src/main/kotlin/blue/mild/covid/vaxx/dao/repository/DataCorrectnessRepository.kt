@@ -65,6 +65,7 @@ class DataCorrectnessRepository {
                 ?.let {
                     DataCorrectnessConfirmationDetailDtoOut(
                         id = it[PatientDataCorrectnessConfirmation.id],
+                        patientId = it[PatientDataCorrectnessConfirmation.patientId],
                         checked = it[PatientDataCorrectnessConfirmation.created],
                         dataAreCorrect = it[PatientDataCorrectnessConfirmation.dataAreCorrect],
                         notes = it[PatientDataCorrectnessConfirmation.notes],
