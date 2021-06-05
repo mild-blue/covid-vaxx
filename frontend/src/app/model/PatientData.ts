@@ -4,6 +4,7 @@ import { AnsweredQuestion } from '@app/model/AnsweredQuestion';
 export interface PatientData {
   firstName: string;
   lastName: string;
+  isForeigner: boolean;
   personalNumber?: string;
   insuranceNumber?: string;
   email: string;

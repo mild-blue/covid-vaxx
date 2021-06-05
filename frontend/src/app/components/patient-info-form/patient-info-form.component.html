@@ -14,22 +14,22 @@
 
       <div class="row">
         <div>
-          <mat-button-toggle-group name="isForeigner" [value]="isForeigner">
-            <mat-button-toggle [value]="false" (click)="isForeigner = false">Jsem občan ČR</mat-button-toggle>
-            <mat-button-toggle [value]="true" (click)="isForeigner = true">Jsem cizinec</mat-button-toggle>
+          <mat-button-toggle-group name="isForeigner" [value]="patient.isForeigner">
+            <mat-button-toggle [value]="false" (click)="patient.isForeigner = false;">Jsem občan ČR</mat-button-toggle>
+            <mat-button-toggle [value]="true" (click)="patient.isForeigner = true;">Jsem cizinec</mat-button-toggle>
           </mat-button-toggle-group>
         </div>
       </div>
 
       <div class="row">
-        <app-form-field label="Rodné číslo *" note="Rodné číslo ve formátu RRMMDD/ČČČ(Č)" *ngIf="!isForeigner"
+        <app-form-field label="Rodné číslo *" note="Rodné číslo ve formátu RRMMDD/ČČČ(Č)" *ngIf="!patient.isForeigner"
                         [invalid]="isControlInvalid('personalNumber')" [errors]="getControlErrors('personalNumber')">
           <input formControlName="personalNumber" name="personalNumber" placeholder="Vaše rodné číslo"
                  mask="000000/0009" [showMaskTyped]="patient.personalNumber === undefined || patient.personalNumber.length < 10"
                  required appPersonalNumberValidator>
         </app-form-field>
 
-        <app-form-field label="Číslo pojištěnce *" note="Rodné číslo nebo číslo na kartičce zdravotní pojišťovny" *ngIf="isForeigner"
+        <app-form-field label="Číslo pojištěnce *" note="Rodné číslo nebo číslo na kartičce zdravotní pojišťovny" *ngIf="patient.isForeigner"
                         [invalid]="isControlInvalid('insuranceNumber')" [errors]="getControlErrors('insuranceNumber')">
           <input formControlName="insuranceNumber" name="insuranceNumber" placeholder="Vaše číslo pojištěnce" required maxlength="256">
         </app-form-field>

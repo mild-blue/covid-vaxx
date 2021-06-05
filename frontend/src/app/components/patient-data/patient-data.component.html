@@ -15,16 +15,16 @@
         </mat-label>
       </app-patient-data-item>
       <mat-divider></mat-divider>
-      <app-patient-data-item *ngIf="patientData.personalNumber">
+      <app-patient-data-item *ngIf="!patientData.isForeigner">
         <mat-label>Rodné číslo:</mat-label>
         <mat-label *ngIf="patientData.personalNumber else unspecified;">
           {{ patientData.personalNumber }}
         </mat-label>
       </app-patient-data-item>
-      <app-patient-data-item *ngIf="patientData.insuranceNumber">
+      <app-patient-data-item *ngIf="patientData.isForeigner">
         <mat-label>Číslo pojištěnce:</mat-label>
         <mat-label *ngIf="patientData.insuranceNumber else unspecified;">
-          {{ patientData.personalNumber }}
+          {{ patientData.insuranceNumber }}
         </mat-label>
       </app-patient-data-item>
       <mat-divider></mat-divider>

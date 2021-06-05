@@ -17,7 +17,8 @@ export const parsePatient = (data: PatientDtoOut, questions: AnsweredQuestion[])
     verified: !!data.dataCorrect?.dataAreCorrect,
     indication: data.indication ?? '',
     personalNumber: data.personalNumber ?? '',
-    insuranceNumber: data.insuranceCompany ?? ''
+    insuranceNumber: data.insuranceNumber ?? '',
+    isForeigner: !!data.personalNumber
   };
 };
 

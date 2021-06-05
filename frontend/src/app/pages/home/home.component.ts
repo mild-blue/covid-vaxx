@@ -84,7 +84,9 @@ export class HomeComponent {
     return {
       firstName: '',
       lastName: '',
+      isForeigner: false,
       personalNumber: '',
+      insuranceNumber: '',
       insuranceCompany: undefined,
       phoneNumber: '',
       email: '',

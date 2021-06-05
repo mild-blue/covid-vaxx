@@ -20,7 +20,6 @@ export class PatientInfoFormComponent implements OnInit {
   public allInsuranceCompanies: string[] = Object.values(InsuranceCompany);
   public minVaccinationDate = new Date('1/1/2020');
   public maxVaccinationDate = new Date();
-  public isForeigner: boolean = false;
 
   public form: FormGroup = new FormGroup({
     firstName: new FormControl('', [Validators.required]),
@@ -37,6 +36,9 @@ export class PatientInfoFormComponent implements OnInit {
 
   constructor() {
     this.form.valueChanges.subscribe(() => {
+      if (!this.patient) {
+        return;
+      }
 
       // Pass invalid info to parent component
       const invalid = [];
@@ -45,8 +47,8 @@ export class PatientInfoFormComponent implements OnInit {
       for (const name in controls) {
         if (controls[name].invalid) {
           if (
-            (name === 'personalNumber' && !this.isForeigner) ||
-            (name === 'insuranceNumber' && this.isForeigner) ||
+            (name === 'personalNumber' && !this.patient.isForeigner) ||
+            (name === 'insuranceNumber' && this.patient.isForeigner) ||
             (name !== 'personalNumber' && name !== 'insuranceNumber')
           ) {
             invalid.push(patientDataLabels[name]);

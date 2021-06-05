@@ -27,8 +27,8 @@ const fromPatientToPartialGenerated = (patient: PatientData): PatientPartialData
   return {
     firstName: patient.firstName.trim(),
     lastName: patient.lastName.trim(),
-    personalNumber: patient.personalNumber?.trim(),
-    insuranceNumber: patient.insuranceNumber?.trim(),
+    personalNumber: !patient.isForeigner ? patient.personalNumber?.trim() : undefined,
+    insuranceNumber: patient.isForeigner ? patient.insuranceNumber?.trim() : undefined,
     email: patient.email.trim(),
     phoneNumber: parsePhoneNumber(patient.phoneNumber.trim()),
     zipCode: +patient.zipCode.replace(' ', ''),
