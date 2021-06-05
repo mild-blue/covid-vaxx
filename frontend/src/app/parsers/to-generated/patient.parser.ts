@@ -1,13 +1,19 @@
-import { AnswerDtoOut, PatientRegistrationDtoIn, PatientUpdateDtoIn, PhoneNumberDtoIn } from '../../generated';
+import {
+  AnswerDtoOut,
+  PatientRegistrationDtoIn,
+  PatientRegistrationDtoInInsuranceCompanyEnum,
+  PatientUpdateDtoIn,
+  PatientUpdateDtoInInsuranceCompanyEnum,
+  PhoneNumberDtoIn
+} from '../../generated';
 import { fromQuestionToAnswerGenerated } from './question.parser';
-import { fromInsuranceToInsuranceGenerated, fromInsuranceToUpdateInsuranceGenerated } from '@app/parsers/to-generated/insurance.parse';
 import { PatientData } from '@app/model/PatientData';
 import { ParsedNumber, parseNumber } from 'libphonenumber-js';
 
 export const fromPatientToRegistrationGenerated = (patient: PatientData, agreement: boolean, confirmation: boolean, gdpr: boolean): PatientRegistrationDtoIn => {
   return {
     ...fromPatientToPartialGenerated(patient),
-    insuranceCompany: fromInsuranceToInsuranceGenerated(patient.insuranceCompany),
+    insuranceCompany: patient.insuranceCompany as PatientRegistrationDtoInInsuranceCompanyEnum,
     confirmation: {
       covid19VaccinationAgreement: agreement,
       healthStateDisclosureConfirmation: confirmation,
@@ -19,7 +25,7 @@ export const fromPatientToRegistrationGenerated = (patient: PatientData, agreeme
 export const fromPatientToUpdateGenerated = (patient: PatientData): PatientUpdateDtoIn => {
   return {
     ...fromPatientToPartialGenerated(patient),
-    insuranceCompany: fromInsuranceToUpdateInsuranceGenerated(patient.insuranceCompany)
+    insuranceCompany: patient.insuranceCompany as PatientUpdateDtoInInsuranceCompanyEnum
   };
 };
 
