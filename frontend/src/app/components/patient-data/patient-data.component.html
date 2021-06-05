@@ -92,7 +92,7 @@
 
   <mat-card>
     <mat-card-content>
-      <ng-container *ngFor="let q of patientData.questionnaire; let i = index">
+      <ng-container *ngFor="let q of patientData.questionnaire">
         <app-patient-data-item>
           <mat-label>{{ q.label }}</mat-label>
           <mat-label *ngIf="q.answer !== undefined else unspecified;">

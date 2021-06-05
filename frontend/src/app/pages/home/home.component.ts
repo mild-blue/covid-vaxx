@@ -25,6 +25,8 @@ export class HomeComponent {
   public confirmationCheckboxValue: boolean = false;
   public gdprCheckboxValue: boolean = false;
 
+  public loading: boolean = false;
+
   constructor(private _route: ActivatedRoute,
               private _router: Router,
               private _formBuilder: FormBuilder,
@@ -62,6 +64,7 @@ export class HomeComponent {
       return;
     }
 
+    this.loading = true;
     try {
       const token = await this._recaptchaV3Service.execute('patientRegistration').toPromise();
       this._confirmationService.registrationConfirmation = await this._patientService.savePatientInfo(
@@ -74,6 +77,8 @@ export class HomeComponent {
       this._router.navigate(['/registration-done']);
     } catch (e) {
       this._alertService.error(e.message);
+    } finally {
+      this.loading = false;
     }
   }
 
