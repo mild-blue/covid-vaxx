@@ -1,4 +1,3 @@
-import { InsuranceCompany } from '@app/model/InsuranceCompany';
 import { AnsweredQuestion } from '@app/model/AnsweredQuestion';
 
 export interface PatientData {
@@ -9,7 +8,7 @@ export interface PatientData {
   phoneNumber: string;
   district: string;
   zipCode: string;
-  insuranceCompany?: InsuranceCompany;
+  insuranceCompany: string;
   questionnaire: AnsweredQuestion[];
 
   indication?: string;
