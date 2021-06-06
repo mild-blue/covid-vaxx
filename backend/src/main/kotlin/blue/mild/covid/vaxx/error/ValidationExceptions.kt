@@ -22,4 +22,4 @@ data class IsinValidationException(
 class EmptyUpdateException : ValidationException("No data given for the update.")
 
 class NoPersonalAndInsuranceNumberException :
-    ValidationException("Personal number or insurance number have to be specified.")
+    ValidationException("Personal number or insurance number has to be specified.")

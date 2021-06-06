@@ -29,7 +29,7 @@
                  required appPersonalNumberValidator>
         </app-form-field>
 
-        <app-form-field label="Číslo pojištěnce *" note="Rodné číslo nebo číslo na kartičce zdravotní pojišťovny" *ngIf="patient.isForeigner"
+        <app-form-field label="Číslo pojištěnce *" note="Číslo pojištěnce uvedené na kartičce zdravotní pojišťovny" *ngIf="patient.isForeigner"
                         [invalid]="isControlInvalid('insuranceNumber')" [errors]="getControlErrors('insuranceNumber')">
           <input formControlName="insuranceNumber" name="insuranceNumber" placeholder="Vaše číslo pojištěnce" required maxlength="256">
         </app-form-field>
