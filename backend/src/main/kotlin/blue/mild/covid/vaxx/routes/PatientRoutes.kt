@@ -69,11 +69,11 @@ fun NormalOpenAPIRoute.patientRoutes() {
                 val patientValidationResult = patientValidation.validatePatient(patientRegistration)
 
                 when (patientValidationResult.status) {
-                    patientValidationResult.PATIENT_FOUND ->
+                    PatientValidationResult.PATIENT_FOUND ->
                         patientValidationResult.patientId
-                    patientValidationResult.PATIENT_NOT_FOUND ->
+                    PatientValidationResult.PATIENT_NOT_FOUND ->
                         throw IsinValidationException(patientValidationResult)
-                    patientValidationResult.WAS_NOT_VERIFIED -> {
+                    PatientValidationResult.WAS_NOT_VERIFIED -> {
                         logger.warn { "Patient was not validated in isin due to some problem. Skipping isin validation." }
                         null
                     }
