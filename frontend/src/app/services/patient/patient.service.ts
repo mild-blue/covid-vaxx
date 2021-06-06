@@ -5,13 +5,13 @@ import { HttpClient, HttpParams, HttpResponse } from '@angular/common/http';
 import { Patient } from '@app/model/Patient';
 import { parsePatient } from '@app/parsers/patient.parser';
 import { QuestionService } from '@app/services/question/question.service';
-import { PatientDtoOut, VaccinationSlotDtoOut } from '@app/generated';
+import { PatientDtoOut, PatientRegistrationResponseDtoOut } from '@app/generated';
 import { PatientData } from '@app/model/PatientData';
 import { fromPatientToRegistrationGenerated, fromPatientToUpdateGenerated } from '@app/parsers/to-generated/patient.parser';
 import { BodyPart } from '@app/model/enums/BodyPart';
 import { BehaviorSubject, Observable } from 'rxjs';
 import { RegistrationConfirmation } from '@app/model/RegistrationConfirmation';
-import { parseVaccinationSlotToRegistrationConfirmation } from '@app/parsers/registration.parser';
+import { parseRegistrationResponseToRegistrationConfirmation } from '@app/parsers/registration.parser';
 
 @Injectable({
   providedIn: 'root'
@@ -37,12 +37,12 @@ export class PatientService {
     const params = new HttpParams().set('captcha', token);
     this._patientSubject.next(patient);
 
-    return this._http.post<VaccinationSlotDtoOut>(
+    return this._http.post<PatientRegistrationResponseDtoOut>(
       `${environment.apiUrl}/patient`,
       fromPatientToRegistrationGenerated(patient, agreement, confirmation, gdpr),
       { params }
     ).pipe(
-      map(parseVaccinationSlotToRegistrationConfirmation)
+      map(parseRegistrationResponseToRegistrationConfirmation)
     ).toPromise();
   }
 

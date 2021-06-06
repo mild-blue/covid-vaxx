@@ -1,6 +1,6 @@
 package blue.mild.covid.vaxx.security.ddos
 
-import blue.mild.covid.vaxx.utils.createLogger
+import blue.mild.covid.vaxx.extensions.createLogger
 import io.ktor.application.ApplicationCall
 import io.ktor.application.ApplicationCallPipeline
 import io.ktor.application.ApplicationFeature

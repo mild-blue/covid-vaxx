@@ -1,7 +1,7 @@
 @file:Suppress("TooManyFunctions")
 package blue.mild.covid.vaxx.isin
 
-import blue.mild.covid.vaxx.utils.createLogger
+import blue.mild.covid.vaxx.extensions.createLogger
 import com.fasterxml.jackson.databind.JsonNode
 import io.ktor.client.HttpClient
 import io.ktor.client.HttpClientConfig
@@ -317,19 +317,18 @@ fun main() {
         }
 
         // typOckovaniKod a indikace - copy-paste z prikladu
-        val vakcinaceId = (
-                vytvorVakcinaci(
-                    isinClient,
-                    VytvorNeboZmenVakcinaci(
-                        pacientId = idPacienta,
-                        typOckovaniKod = "CO19",
-                        indikace=listOf("C03", "J01"),
-                        pracovnik = pracovnik,
-                        // {"errors":[{"fieldName":"IndikaceJina","message":"Jiná popis je povinné pole"}]}
-                        // podle dokumentace to neni povinny parametr
-                        indikaceJina = "Nejaky nahodny duvod - ma to byt"
-                    )
-                ) ?: "fix_for_test")
+        val vakcinaceId = vytvorVakcinaci(
+            isinClient,
+            VytvorNeboZmenVakcinaci(
+                pacientId = idPacienta,
+                typOckovaniKod = "CO19",
+                indikace = listOf("C03", "J01"),
+                pracovnik = pracovnik,
+                // {"errors":[{"fieldName":"IndikaceJina","message":"Jiná popis je povinné pole"}]}
+                // podle dokumentace to neni povinny parametr
+                indikaceJina = "Nejaky nahodny duvod - ma to byt"
+            )
+        )
             ?: throw IllegalArgumentException("Vaccination creation failed, no vaccitaion id was returned")
 
         println("vakcinaceId: ${vakcinaceId}")

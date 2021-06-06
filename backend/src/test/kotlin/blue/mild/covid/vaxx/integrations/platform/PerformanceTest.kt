@@ -1,6 +1,6 @@
 package blue.mild.covid.vaxx.integrations.platform
 
-import blue.mild.covid.vaxx.utils.createLogger
+import blue.mild.covid.vaxx.extensions.createLogger
 import kotlinx.coroutines.runBlocking
 
 private val logger = createLogger("PerformanceTest")

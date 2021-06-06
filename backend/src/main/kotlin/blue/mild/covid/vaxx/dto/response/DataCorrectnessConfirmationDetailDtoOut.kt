@@ -5,6 +5,7 @@ import java.time.Instant
 
 data class DataCorrectnessConfirmationDetailDtoOut(
     val id: EntityId,
+    val patientId: EntityId,
     val checked: Instant,
     val doctor: PersonnelDtoOut,
     val nurse: PersonnelDtoOut?,

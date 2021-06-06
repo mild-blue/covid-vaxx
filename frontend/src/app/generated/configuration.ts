@@ -98,15 +98,15 @@ export class Configuration {
       return undefined;
     }
 
-        const type = accepts.find((x: string) => this.isJsonMime(x));
-        if (type === undefined) {
-            return accepts[0];
-        }
-        return type;
+    const type = accepts.find((x: string) => this.isJsonMime(x));
+    if (type === undefined) {
+      return accepts[0];
     }
+    return type;
+  }
 
-    /**
-     * Check if the given MIME is a JSON MIME.
+  /**
+   * Check if the given MIME is a JSON MIME.
      * JSON MIME examples:
      *   application/json
      *   application/json; charset=UTF8

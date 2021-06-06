@@ -40,7 +40,6 @@ enum class EnvVariables {
     MAIL_SUBJECT,
 
 
-
     /**
      * From which path should backend serve static
      * frontend files. Set during Docker Image build.
@@ -156,5 +155,10 @@ enum class EnvVariables {
     /**
      * Use production ISIN to register vaccinations.
      */
-    ENABLE_ISIN_REGISTRATION
+    ENABLE_ISIN_REGISTRATION,
+
+    /**
+     * Use ISIN to validate patients data.
+     */
+    ENABLE_ISIN_PATIENT_VALIDATION
 }

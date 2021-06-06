@@ -1,8 +1,8 @@
 package blue.mild.covid.vaxx.integrations
 
+import blue.mild.covid.vaxx.extensions.createLogger
 import blue.mild.covid.vaxx.integrations.platform.RequestMetric
 import blue.mild.covid.vaxx.integrations.platform.requestDurationInSeconds
-import blue.mild.covid.vaxx.utils.createLogger
 
 private val logger = createLogger("Test")
 
