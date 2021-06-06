@@ -16,10 +16,10 @@ Content-Type: application/json
 Authorization: Bearer {{auth_token}}
 
 {
-  "address": "Testovaci 123",
+  "address": "Strossmayerovo náměstí 4",
   "district": "Praha 7",
   "email": "ockovani@praha7.cz",
-  "notes": "Testovaci mistnost",
+  "notes": "ZŠ Strossmayerovo náměstí",
   "phoneNumber": {
     "countryCode": "CZ",
     "number": "734521840"
@@ -35,10 +35,10 @@ Authorization: Bearer {{auth_token}}
 
 {
   "locationId": "{{location_id}}",
-  "from": "2021-06-07T13:00:00.00000000Z",
-  "to": "2021-06-07T20:00:00.00000000Z",
-  "bandwidth": 2,
-  "durationMillis": 120000
+  "from": "2021-06-18T13:00:00.00000000Z",
+  "to": "2021-06-18T20:00:00.00000000Z",
+  "bandwidth": 4,
+  "durationMillis": 75600
 }
 
 ###

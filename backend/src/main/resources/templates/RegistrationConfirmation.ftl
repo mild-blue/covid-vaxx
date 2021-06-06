@@ -344,8 +344,8 @@
                                 <div class="text-author">
                                     <p>Dobrý den,</p>
                                     <p>
-                                        byly Vám vytvořeny rezervace na očkování v místě ${emailRequestDto.location.address}
-                                        dne ${emailRequestDto.slot.date()} v ${emailRequestDto.slot.time()}.
+                                        byla Vám vytvořena rezervace na očkování v místě ${emailRequestDto.location.address},
+                                        dne ${emailRequestDto.slot.date()} v ${emailRequestDto.slot.time()} (první dávka) a dne 16.7.2021 v ${emailRequestDto.slot.time()} (druhá dávka).
                                     </p>
 
                                     <strong>Dodržujte zásady:</strong>
