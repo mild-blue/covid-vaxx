@@ -33,7 +33,8 @@ const fromPatientToPartialGenerated = (patient: PatientData): PatientPartialData
   return {
     firstName: patient.firstName.trim(),
     lastName: patient.lastName.trim(),
-    personalNumber: patient.personalNumber.trim(),
+    personalNumber: !patient.isForeigner ? patient.personalNumber?.trim() : undefined,
+    insuranceNumber: patient.isForeigner ? patient.insuranceNumber?.trim() : undefined,
     email: patient.email.trim(),
     phoneNumber: parsePhoneNumber(patient.phoneNumber.trim()),
     zipCode: +patient.zipCode.replace(' ', ''),
@@ -55,7 +56,8 @@ const parsePhoneNumber = (value: string): PhoneNumberDtoIn => {
 interface PatientPartialDataGenerated {
   firstName: string;
   lastName: string;
-  personalNumber: string;
+  personalNumber?: string;
+  insuranceNumber?: string;
   email: string;
   phoneNumber: PhoneNumberDtoIn;
   district: string;

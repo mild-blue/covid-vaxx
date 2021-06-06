@@ -8,7 +8,7 @@ sealed class ValidationException(
 
 data class PropertyValidationException(
     val parameterName: String,
-    val parameterValue: Any
+    val parameterValue: Any?
 ) : ValidationException("Parameter $parameterName = $parameterValue is not valid.")
 
 data class EmptyStringException(
@@ -21,4 +21,5 @@ data class IsinValidationException(
 
 data class EmptyUpdateException(override val message: String = "No data given for the update.") : ValidationException(message)
 
-
+class NoPersonalAndInsuranceNumberException :
+    ValidationException("Personal number or insurance number has to be specified.")

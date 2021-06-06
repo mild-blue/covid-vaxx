@@ -36,9 +36,10 @@ class IsinValidationService(
     }
 
     override suspend fun validatePatient(registrationDto: PatientRegistrationDtoIn): IsinValidationResultDto {
-        val firstName = registrationDto.firstName.trim().uppercase(Locale.getDefault())
-        val lastName = registrationDto.lastName.trim().uppercase(Locale.getDefault())
-        val personalNumber = registrationDto.personalNumber.normalizePersonalNumber()
+        val firstName = registrationDto.firstName
+        val lastName = registrationDto.lastName
+        val personalNumber = registrationDto.personalNumber
+            ?: throw IllegalArgumentException("Personal number cannot be null for ISIN validation")
 
         val response = runCatching {
             getPatientResponse(
@@ -83,7 +84,11 @@ class IsinValidationService(
     }
 
     private suspend fun getPatientResponse(jmeno: String, prijmeni: String, rodneCislo: String): HttpResponse {
-        val url = createIsinURL(URL_NAJDI_PACIENTA, parameters = listOf(jmeno, prijmeni, rodneCislo))
+        val firstName = jmeno.trim().uppercase(Locale.getDefault())
+        val lastName = prijmeni.trim().uppercase(Locale.getDefault())
+        val personalNumber = rodneCislo.normalizePersonalNumber()
+
+        val url = createIsinURL(URL_NAJDI_PACIENTA, parameters = listOf(firstName, lastName, personalNumber))
         return isinClient.get(url)
     }
 

@@ -24,8 +24,9 @@ export interface PatientDtoOut {
   id: string;
   indication?: string | null;
   insuranceCompany: PatientDtoOutInsuranceCompanyEnum;
+  insuranceNumber?: string | null;
   lastName: string;
-  personalNumber: string;
+  personalNumber?: string | null;
   phoneNumber: string;
   registeredOn: string;
   registrationEmailSentOn?: string | null;
@@ -33,14 +34,15 @@ export interface PatientDtoOut {
   vaccinationSlotDtoOut?: VaccinationSlotDtoOut;
   zipCode: number;
 }
+
 export enum PatientDtoOutInsuranceCompanyEnum {
-    Vzp = 'VZP',
-    Vozp = 'VOZP',
-    Cpzp = 'CPZP',
-    Ozp = 'OZP',
-    Zps = 'ZPS',
-    Zpmv = 'ZPMV',
-    Rbp = 'RBP'
+  Vzp = 'VZP',
+  Vozp = 'VOZP',
+  Cpzp = 'CPZP',
+  Ozp = 'OZP',
+  Zps = 'ZPS',
+  Zpmv = 'ZPMV',
+  Rbp = 'RBP'
 };
 
 

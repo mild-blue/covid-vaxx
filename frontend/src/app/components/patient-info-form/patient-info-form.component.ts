@@ -25,7 +25,8 @@ export class PatientInfoFormComponent implements OnInit {
   public form: FormGroup = new FormGroup({
     firstName: new FormControl('', [Validators.required]),
     lastName: new FormControl('', [Validators.required]),
-    personalNumber: new FormControl('', [Validators.required]),
+    personalNumber: new FormControl('', []),
+    insuranceNumber: new FormControl('', []),
     insuranceCompany: new FormControl('', [Validators.required]),
     phoneNumber: new FormControl('', [Validators.required]),
     email: new FormControl('', [Validators.required]),
@@ -36,6 +37,9 @@ export class PatientInfoFormComponent implements OnInit {
 
   constructor(private _insuranceService: InsuranceService) {
     this.form.valueChanges.subscribe(() => {
+      if (!this.patient) {
+        return;
+      }
 
       // Pass invalid info to parent component
       const invalid = [];
@@ -43,7 +47,13 @@ export class PatientInfoFormComponent implements OnInit {
 
       for (const name in controls) {
         if (controls[name].invalid) {
-          invalid.push(patientDataLabels[name]);
+          if (
+            (name === 'personalNumber' && !this.patient.isForeigner) ||
+            (name === 'insuranceNumber' && this.patient.isForeigner) ||
+            (name !== 'personalNumber' && name !== 'insuranceNumber')
+          ) {
+            invalid.push(patientDataLabels[name]);
+          }
         }
       }
 
@@ -60,7 +70,8 @@ export class PatientInfoFormComponent implements OnInit {
     this.form.setValue({
       firstName: this.patient.firstName,
       lastName: this.patient.lastName,
-      personalNumber: this.patient.personalNumber,
+      personalNumber: this.patient.personalNumber ?? null,
+      insuranceNumber: this.patient.insuranceNumber ?? null,
       insuranceCompany: this.patient.insuranceCompany ?? null,
       phoneNumber: this.patient.phoneNumber,
       email: this.patient.email,

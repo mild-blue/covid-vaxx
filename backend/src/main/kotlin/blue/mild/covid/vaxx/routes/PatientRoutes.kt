@@ -63,21 +63,25 @@ fun NormalOpenAPIRoute.patientRoutes() {
             }
             captchaService.verify(recaptchaToken, request.determineRealIp())
             logger.info { "Captcha token verified. Validating ISIN." }
-            // TODO  maybe validate received input before actually using ISIN
-            val patientValidationResult = patientValidation.validatePatient(patientRegistration)
 
-            val patientIsinId: String? = when (patientValidationResult.status) {
-                PatientValidationResult.PATIENT_FOUND ->
-                    patientValidationResult.patientId
-                PatientValidationResult.PATIENT_NOT_FOUND ->
-                    throw IsinValidationException(patientValidationResult)
-                PatientValidationResult.WAS_NOT_VERIFIED -> {
-                    logger.warn { "Patient was not validated in isin due to some problem. Skipping isin validation." }
-                    null
+            val patientIsinId: String? = if (patientRegistration.personalNumber != null) {
+                // TODO  maybe validate received input before actually using ISIN
+                val patientValidationResult = patientValidation.validatePatient(patientRegistration)
+
+                when (patientValidationResult.status) {
+                    PatientValidationResult.PATIENT_FOUND ->
+                        patientValidationResult.patientId
+                    PatientValidationResult.PATIENT_NOT_FOUND ->
+                        throw IsinValidationException(patientValidationResult)
+                    PatientValidationResult.WAS_NOT_VERIFIED -> {
+                        logger.warn { "Patient was not validated in isin due to some problem. Skipping isin validation." }
+                        null
+                    }
                 }
+            } else {
+                logger.debug { "Personal number not set. Skipping isin validation" }
+                null
             }
-
-            logger.info { "ISIN validation completed. Saving registration." }
 
             // TODO maybe run this in the transaction and then do rollback
             val patientId = patientService.savePatient(asContextAware(patientRegistration), patientIsinId)

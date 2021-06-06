@@ -3,7 +3,9 @@ import { AnsweredQuestion } from '@app/model/AnsweredQuestion';
 export interface PatientData {
   firstName: string;
   lastName: string;
-  personalNumber: string;
+  isForeigner: boolean;
+  personalNumber?: string;
+  insuranceNumber?: string;
   email: string;
   phoneNumber: string;
   district: string;
@@ -22,6 +24,7 @@ export const patientDataLabels: { [key: string]: string; } = {
   firstName: 'jméno',
   lastName: 'příjmení',
   personalNumber: 'rodné číslo',
+  insuranceNumber: 'číslo pojištěnce',
   insuranceCompany: 'zdravotní pojišťovna',
   phoneNumber: 'telefonní číslo',
   email: 'e-mail',

@@ -14,7 +14,10 @@ export const parsePatient = (data: PatientDtoOut, questions: AnsweredQuestion[])
     insuranceCompany: data.insuranceCompany,
     vaccinatedOn: data.vaccinated?.vaccinatedOn ? new Date(data.vaccinated.vaccinatedOn) : undefined,
     verified: !!data.dataCorrect?.dataAreCorrect,
-    indication: data.indication ?? ''
+    indication: data.indication ?? '',
+    personalNumber: data.personalNumber ?? '',
+    insuranceNumber: data.insuranceNumber ?? '',
+    isForeigner: !data.personalNumber
   };
 };
 

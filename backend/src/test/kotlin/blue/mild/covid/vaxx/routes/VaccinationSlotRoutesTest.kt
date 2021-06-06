@@ -268,7 +268,7 @@ class VaccinationSlotRoutesTest : ServerTestBase() {
         // create patient
         val patientId = runBlocking {
             patientRepository.savePatient(
-                "alice", "alice", 12345, "alice", "1", "1", "email", InsuranceCompany.CPZP, "indication", "remoteHost", mapOf(), null
+                "alice", "alice", 12345, "alice", "1", "1", null,"email", InsuranceCompany.CPZP, "indication", "remoteHost", mapOf(), null
             )
         }
         // reserve slot - it should be the first one

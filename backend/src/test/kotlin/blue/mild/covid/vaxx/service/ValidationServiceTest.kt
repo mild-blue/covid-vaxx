@@ -281,6 +281,7 @@ class ValidationServiceTest {
             zipCode = 16000,
             district = "Praha 6",
             personalNumber = generatePersonalNumber(),
+            insuranceNumber = null,
             phoneNumber = generateValidCzPhoneNumber(),
             email = "john@mild.blue",
             insuranceCompany = InsuranceCompany.ZPMV,
