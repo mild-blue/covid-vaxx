@@ -19,8 +19,10 @@ export class ErrorInterceptor implements HttpInterceptor {
 
       const error = err.error;
       const requestId = error?.requestId;
+      const serverMessage = error?.message;
 
-      const defaultMessage = 'Něco se pokazilo. Zkuste to prosím znovu.';
+      const defaultMessageSuffix = serverMessage ? ` Zpráva ze serveru: "${serverMessage}".` : '';
+      const defaultMessage = `Něco se pokazilo. Zkuste to prosím znovu.${defaultMessageSuffix}`;
       const defaultSubject = 'Problém na webu';
 
       let message = defaultMessage;
