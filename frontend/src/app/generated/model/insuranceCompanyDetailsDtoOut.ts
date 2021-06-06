@@ -15,6 +15,7 @@ export interface InsuranceCompanyDetailsDtoOut {
   code: InsuranceCompanyDetailsDtoOutCodeEnum;
   csFullName: string;
   name: string;
+  numericCode: number;
 }
 
 export enum InsuranceCompanyDetailsDtoOutCodeEnum {
