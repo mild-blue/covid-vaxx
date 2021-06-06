@@ -148,6 +148,25 @@ class VaccinationSlotRoutesTest : ServerTestBase() {
         }.run {
             expectStatus(HttpStatusCode.Conflict)
         }
+
+        // set offset for the queue this should allow new slots creation
+        val validNewSlots = createSlots.copy(queueOffset = createSlots.bandwidth)
+        handleRequest(HttpMethod.Post, Routes.vaccinationSlots) {
+            authorize()
+            jsonBody(validNewSlots)
+        }.run {
+            expectStatus(HttpStatusCode.OK)
+            val slots = receive<List<EntityId>>()
+            assertEquals(20, slots.size)
+        }
+
+        handleRequest(HttpMethod.Get, "${Routes.vaccinationSlots}/filter") {
+            authorize()
+        }.run {
+            expectStatus(HttpStatusCode.OK)
+            val slots = receive<List<VaccinationSlotDtoOut>>()
+            assertEquals(40, slots.size)
+        }
     }
 
     @Test
