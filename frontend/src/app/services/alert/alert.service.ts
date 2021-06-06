@@ -19,9 +19,10 @@ export class AlertService {
 
   public error(message: string): void {
     this._snackBar.openFromComponent(ErrorComponent, {
-      duration: 4000,
+      duration: 0,
       data: {
-        html: message
+        html: message,
+        duration: 4000
       },
       panelClass: 'error-snack-bar'
     });
