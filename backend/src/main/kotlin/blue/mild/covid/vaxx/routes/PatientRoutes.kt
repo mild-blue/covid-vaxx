@@ -64,9 +64,7 @@ fun NormalOpenAPIRoute.patientRoutes() {
             logger.debug { "Captcha token verified. Validating isin." }
 
             val patientIsinId: String? = if (patientRegistration.personalNumber != null) {
-                val isinValidationResult = isinValidationService.validatePatientIsin(
-                    patientRegistration.firstName, patientRegistration.lastName, patientRegistration.personalNumber
-                )
+                val isinValidationResult = isinValidationService.validatePatientIsin(patientRegistration)
 
                 when (isinValidationResult.status) {
                     IsinValidationResultStatus.PATIENT_FOUND ->

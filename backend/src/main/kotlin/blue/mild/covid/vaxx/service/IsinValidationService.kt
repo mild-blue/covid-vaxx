@@ -46,9 +46,12 @@ class IsinValidationService(
         Chyba
     }
 
-    suspend fun validatePatientIsin(
-        firstName: String, lastName: String, personalNumber: String
-    ): IsinValidationResultDto {
+    suspend fun validatePatientIsin(registrationDto: PatientRegistrationDtoIn): IsinValidationResultDto {
+        val firstName = registrationDto.firstName
+        val lastName = registrationDto.lastName
+        val personalNumber = registrationDto.personalNumber
+            ?: throw IllegalArgumentException("Personal number cannot be null for ISIN validation")
+
         val response = runCatching {
             getPatientResponse(
                 jmeno = firstName,
