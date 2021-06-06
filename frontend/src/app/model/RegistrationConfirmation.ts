@@ -1,8 +1,8 @@
+import { VaccinationSlot } from '@app/model/VaccinationSlot';
+import { VaccinationLocation } from '@app/model/VaccinationLocation';
+
 export interface RegistrationConfirmation {
-  id: string;
-  from: Date;
-  to: Date;
-  queue: number;
-  locationId: string;
   patientId?: string;
+  slot: VaccinationSlot;
+  location: VaccinationLocation;
 }

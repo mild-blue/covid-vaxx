@@ -14,16 +14,10 @@ import blue.mild.covid.vaxx.error.NoVaccinationSlotsFoundException
 import blue.mild.covid.vaxx.error.entityNotFound
 import blue.mild.covid.vaxx.utils.defaultPostgresFrom
 import blue.mild.covid.vaxx.utils.defaultPostgresTo
-import kotlinx.coroutines.sync.Mutex
-import kotlinx.coroutines.sync.withLock
 import mu.KLogging
 import org.jetbrains.exposed.sql.Column
 import org.jetbrains.exposed.sql.Op
-import org.jetbrains.exposed.sql.SqlExpressionBuilder
 import org.jetbrains.exposed.sql.and
-import org.jetbrains.exposed.sql.select
-import org.jetbrains.exposed.sql.transactions.experimental.newSuspendedTransaction
-import org.jetbrains.exposed.sql.update
 import pw.forst.katlib.validate
 import pw.forst.katlib.whenFalse
 import java.time.Instant
@@ -44,20 +38,23 @@ class VaccinationSlotService(
         validate(createDto.to >= createDto.from.plusMillis(createDto.durationMillis)) {
             throw InvalidSlotCreationRequest("Specified time range is not valid.", createDto)
         }
+        return generateSlots(createDto)
+    }
 
-        locationRepository.locationIdExists(createDto.locationId)
-            .whenFalse { throw entityNotFound<Locations>(Locations::id, createDto.locationId) }
+    private suspend fun generateSlots(slotsDto: CreateVaccinationSlotsDtoIn): List<EntityId> {
+        locationRepository.locationIdExists(slotsDto.locationId)
+            .whenFalse { throw entityNotFound<Locations>(Locations::id, slotsDto.locationId) }
 
-        val availableTime = createDto.to.toEpochMilli() - createDto.from.toEpochMilli()
-        val slotsCount = (availableTime / createDto.durationMillis).toInt()
+        val availableTime = slotsDto.to.toEpochMilli() - slotsDto.from.toEpochMilli()
+        val slotsCount = (availableTime / slotsDto.durationMillis).toInt()
 
         val slots = (0 until slotsCount).flatMap { slotId ->
-            (0 until createDto.bandwidth).map { queue ->
-                val from = createDto.from.plusMillis(slotId * createDto.durationMillis)
-                val to = from.plusMillis(createDto.durationMillis)
+            (0 until slotsDto.bandwidth).map { queue ->
+                val from = slotsDto.from.plusMillis(slotId * slotsDto.durationMillis)
+                val to = from.plusMillis(slotsDto.durationMillis)
 
                 VaccinationSlotDto(
-                    locationId = createDto.locationId,
+                    locationId = slotsDto.locationId,
                     queue = queue,
                     from = from,
                     to = to,
@@ -78,15 +75,14 @@ class VaccinationSlotService(
         patientId: EntityId? = null,
         from: Instant? = null,
         to: Instant? = null,
-        status: VaccinationSlotStatus? = null,
-        limit: Int? = null
+        status: VaccinationSlotStatus? = null
     ): List<VaccinationSlotDtoOut> {
         val fromI = from ?: defaultPostgresFrom
         val toI = to ?: defaultPostgresTo
 
         val usedStatus = status ?: if (slotId == null) DEFAULT_STATUS else VaccinationSlotStatus.ALL
 
-        val filter: SqlExpressionBuilder.() -> Op<Boolean> = {
+        return vaccinationSlotRepository.getAndMap {
             Op.TRUE
                 .andWithIfNotEmpty(slotId, VaccinationSlots.id)
                 .andWithIfNotEmpty(locationId, VaccinationSlots.locationId)
@@ -101,72 +97,16 @@ class VaccinationSlotService(
                     }
                 }
         }
-
-        return vaccinationSlotRepository.getAndMap(filter, limit)
     }
-
-
-    private val slotsBookingMutex = Mutex()
-
-    /**
-     * Book a vaccination slot for the patient.
-     */
-    suspend fun bookSlotForPatient(patientId: EntityId) =
-    // TODO this is reeeeeaaaaallly poor man's solution, but it works.. see concurrent booking test
-    // we need to achieve atomic update in the database, but unfortunately postgres does not support limit on update
-    // and we don't want to block whole table..
-        // also transaction serialization didn't work for some reason
-        slotsBookingMutex.withLock {
-            newSuspendedTransaction {
-                VaccinationSlots
-                    .select { VaccinationSlots.patientId.isNull() }
-                    .limit(1)
-                    .singleOrNull()
-                    ?.getOrNull(VaccinationSlots.id)
-                    ?.let { slotId ->
-                        VaccinationSlots.update(
-                            where = { VaccinationSlots.id eq slotId and VaccinationSlots.patientId.isNull() },
-                            body = { it[VaccinationSlots.patientId] = patientId },
-                        ) == 1
-                    }
-            }
-        }.takeIf { it == true }?.let {
-            vaccinationSlotRepository.getAndMap({ VaccinationSlots.patientId eq patientId }, 1).singleOrNull()
-        } ?: throw NoVaccinationSlotsFoundException()
-
-
-    /**
-     * Book a vaccination slot for the patient with given requirements
-     * using AND clause. If property is null, we ignore it.
-     */
-    suspend fun bookSlotForPatient(
-        patientId: EntityId,
-        slotId: EntityId? = null,
-        locationId: EntityId? = null,
-        from: Instant? = null,
-        to: Instant? = null
-    ): VaccinationSlotDtoOut = slotsBookingMutex.withLock {
-        newSuspendedTransaction {
-            getSlotsByConjunctionOf(
-                slotId = slotId,
-                locationId = locationId,
-                from = from,
-                to = to,
-                status = VaccinationSlotStatus.ONLY_FREE,
-                // select a single slot
-                limit = 1
-            ).singleOrNull()?.let {
-                // book slot for the given patient
-                VaccinationSlots.update(
-                    where = { VaccinationSlots.id eq it.id and VaccinationSlots.patientId.isNull() },
-                    body = { it[VaccinationSlots.patientId] = patientId }
-                ) == 1
-            }?.takeIf { it }
-        }
-    }?.let { vaccinationSlotRepository.getAndMap({ VaccinationSlots.patientId eq patientId }, 1).singleOrNull() }
-        ?: throw NoVaccinationSlotsFoundException()
-
 
     private inline fun <reified T> Op<Boolean>.andWithIfNotEmpty(value: T?, column: Column<T>): Op<Boolean> =
         value?.let { and { column eq value } } ?: this
+
+    /**
+     * Book a vaccination slot for the patient. Tries five times to book a slot before failing to do so.
+     */
+    suspend fun bookSlotForPatient(patientId: EntityId) =
+        vaccinationSlotRepository.tryToBookSlotForPatient(patientId, attemptsLeft = 5)
+            ?: throw NoVaccinationSlotsFoundException()
 }
+

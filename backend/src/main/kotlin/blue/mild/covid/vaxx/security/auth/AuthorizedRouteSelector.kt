@@ -7,7 +7,7 @@ import io.ktor.routing.RoutingResolveContext
 /**
  * Routing selector for our role based authorization.
  */
-class AuthorizedRouteSelector(private val description: String) : RouteSelector(RouteSelectorEvaluation.qualityConstant) {
+class AuthorizedRouteSelector(private val description: String) : RouteSelector() {
     override fun evaluate(context: RoutingResolveContext, segmentIndex: Int) = RouteSelectorEvaluation.Constant
 
     override fun toString(): String = "(authorize ${description})"

@@ -2,40 +2,29 @@ package blue.mild.covid.vaxx.service
 
 import blue.mild.covid.vaxx.dto.config.IsinConfigurationDto
 import blue.mild.covid.vaxx.dto.internal.IsinValidationResultDto
-import blue.mild.covid.vaxx.dto.internal.IsinValidationResultStatus
+import blue.mild.covid.vaxx.dto.internal.PatientValidationResult
 import blue.mild.covid.vaxx.dto.request.PatientRegistrationDtoIn
 import blue.mild.covid.vaxx.utils.normalizePersonalNumber
 import com.fasterxml.jackson.databind.JsonNode
 import io.ktor.client.HttpClient
-import io.ktor.client.HttpClientConfig
 import io.ktor.client.call.receive
-import io.ktor.client.engine.apache.Apache
-import io.ktor.client.engine.apache.ApacheEngineConfig
-import io.ktor.client.features.HttpTimeout
-import io.ktor.client.features.json.JacksonSerializer
-import io.ktor.client.features.json.JsonFeature
 import io.ktor.client.request.get
 import io.ktor.client.statement.HttpResponse
 import mu.KLogging
-import org.apache.http.ssl.SSLContextBuilder
-import java.io.ByteArrayInputStream
-import java.security.KeyStore
-import java.util.Base64
 import java.util.Locale
 
-private const val URL_NAJDI_PACIENTA = "pacienti/VyhledatDleJmenoPrijmeniRc"
-
-private const val REQUEST_TIMEOUT_MILLIS: Long = 15000
 
 class IsinValidationService(
-    private val configuration: IsinConfigurationDto
-) {
-    private val isinClient = client(configuration)
+    private val configuration: IsinConfigurationDto,
+    private val isinClient: HttpClient
+) : PatientValidationService {
 
     private val userIdentification =
         "?pcz=${configuration.pracovnik.pcz}&pracovnikNrzpCislo=${configuration.pracovnik.nrzpCislo}"
 
-    private companion object : KLogging()
+    private companion object : KLogging() {
+        const val URL_NAJDI_PACIENTA = "pacienti/VyhledatDleJmenoPrijmeniRc"
+    }
 
     private enum class VyhledaniPacientaResult {
         PacientNalezen,
@@ -46,7 +35,7 @@ class IsinValidationService(
         Chyba
     }
 
-    suspend fun validatePatientIsin(registrationDto: PatientRegistrationDtoIn): IsinValidationResultDto {
+    override suspend fun validatePatient(registrationDto: PatientRegistrationDtoIn): IsinValidationResultDto {
         val firstName = registrationDto.firstName
         val lastName = registrationDto.lastName
         val personalNumber = registrationDto.personalNumber
@@ -60,9 +49,9 @@ class IsinValidationService(
             )
         }.getOrElse {
             logger.error(it) {
-                "Getting data from isin server failed for patient ${firstName}/${lastName}/${personalNumber}"
+                "Getting data from ISIN server failed for patient ${firstName}/${lastName}/${personalNumber}"
             }
-            return IsinValidationResultDto( status = IsinValidationResultStatus.WAS_NOT_VERIFIED )
+            return IsinValidationResultDto( status = PatientValidationResult.WAS_NOT_VERIFIED )
         }
 
         val json = response.receive<JsonNode>()
@@ -70,26 +59,26 @@ class IsinValidationService(
         val resultMessage = json.get("vysledekZprava")?.textValue()
         val patientId = json.get("pacient")?.get("id")?.textValue()
 
-        logger.debug {
+        logger.info {
             "Data from ISIN for patient ${firstName}/${lastName}/${personalNumber}: " +
-            "result=${result}, resultMessage=${resultMessage}, patientId=${patientId}"
+            "result=${result}, resultMessage=${resultMessage}, patientId=${patientId}."
         }
 
         return when (result) {
             VyhledaniPacientaResult.PacientNalezen.name,
             VyhledaniPacientaResult.NalezenoVicePacientu.name ->
                 IsinValidationResultDto(
-                    status = IsinValidationResultStatus.PATIENT_FOUND,
+                    status = PatientValidationResult.PATIENT_FOUND,
                     patientId = patientId
                 )
             VyhledaniPacientaResult.PacientNebylNalezen.name,
             VyhledaniPacientaResult.ChybaVstupnichDat.name ->
                 IsinValidationResultDto(
-                    status = IsinValidationResultStatus.PATIENT_NOT_FOUND
+                    status = PatientValidationResult.PATIENT_NOT_FOUND
                 )
             else ->
                 IsinValidationResultDto(
-                    status = IsinValidationResultStatus.WAS_NOT_VERIFIED
+                    status = PatientValidationResult.WAS_NOT_VERIFIED
                 )
         }
     }
@@ -100,7 +89,7 @@ class IsinValidationService(
         val personalNumber = rodneCislo.normalizePersonalNumber()
 
         val url = createIsinURL(URL_NAJDI_PACIENTA, parameters = listOf(firstName, lastName, personalNumber))
-        return isinClient.get<HttpResponse>(url)
+        return isinClient.get(url)
     }
 
     private fun createIsinURL(
@@ -109,48 +98,7 @@ class IsinValidationService(
         parameters: List<Any> = listOf(),
         includeIdentification: Boolean = true
     ): String {
-        val parametersUrl = parameters.map { it.toString() }.joinToString(separator = "/")
+        val parametersUrl = parameters.joinToString(separator = "/") { it.toString() }
         return "$baseUrl/$requestUrl/$parametersUrl${if (includeIdentification) userIdentification else ""}"
     }
-
-    private fun client(
-        config: IsinConfigurationDto
-    ) =
-        HttpClient(Apache) {
-            install(JsonFeature) {
-                serializer = JacksonSerializer()
-            }
-
-            install(HttpTimeout) {
-                requestTimeoutMillis = REQUEST_TIMEOUT_MILLIS
-            }
-
-            configureCertificates(config)
-        }
-
-    private fun HttpClientConfig<ApacheEngineConfig>.configureCertificates(config: IsinConfigurationDto) {
-        engine {
-            customizeClient {
-                setSSLContext(
-                    SSLContextBuilder
-                        .create()
-                        .loadKeyMaterial(readStore(config), config.keyPass.toCharArray())
-                        .build()
-                )
-            }
-        }
-    }
-
-    private fun readStore(config: IsinConfigurationDto): KeyStore? =
-        runCatching {
-            ByteArrayInputStream(Base64.getDecoder().decode(config.certBase64)).use {
-                KeyStore.getInstance(config.storeType).apply {
-                    load(it, config.storePass.toCharArray())
-                }
-            }
-        }.onFailure {
-            logger.error(it) { "It was not possible to load key store!" }
-        }.onSuccess {
-            logger.debug { "KeyStore loaded." }
-        }.getOrNull()
 }

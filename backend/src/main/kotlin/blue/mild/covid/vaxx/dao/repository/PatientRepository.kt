@@ -103,6 +103,15 @@ class PatientRepository(
     ): List<PatientDtoOut> = newSuspendedTransaction { getAndMapPatients(where) }
 
     /**
+     * Gets and maps patient by given ID.
+     *
+     * Returns null if no patient was found.
+     */
+    suspend fun getAndMapById(patientId: EntityId): PatientDtoOut? =
+        getAndMapPatientsBy { Patients.id eq patientId }.singleOrNull()
+
+
+    /**
      * Saves the given data to the database as a new patient registration record.
      *
      * Note: use named parameters while using this method.

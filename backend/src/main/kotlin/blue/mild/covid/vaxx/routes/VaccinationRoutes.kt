@@ -8,11 +8,11 @@ import blue.mild.covid.vaxx.dto.response.VaccinationDetailDtoOut
 import blue.mild.covid.vaxx.dto.response.toPatientVaccinationDetailDto
 import blue.mild.covid.vaxx.extensions.asContextAware
 import blue.mild.covid.vaxx.extensions.closestDI
+import blue.mild.covid.vaxx.extensions.createLogger
 import blue.mild.covid.vaxx.security.auth.UserPrincipal
 import blue.mild.covid.vaxx.security.auth.authorizeRoute
 import blue.mild.covid.vaxx.service.MedicalRegistrationService
 import blue.mild.covid.vaxx.service.VaccinationService
-import blue.mild.covid.vaxx.utils.createLogger
 import com.papsign.ktor.openapigen.route.info
 import com.papsign.ktor.openapigen.route.path.auth.get
 import com.papsign.ktor.openapigen.route.path.auth.post
@@ -36,12 +36,16 @@ fun NormalOpenAPIRoute.vaccinationRoutes() {
             get<VaccinationIdDtoIn, VaccinationDetailDtoOut, UserPrincipal>(
                 info("Get vaccination detail by given vaccination id.")
             ) { (vaccinationId) ->
+                val userId = principal().userId
+                logger.info { "User $userId requested data about vaccination ID $vaccinationId." }
                 respond(vaccinationService.get(vaccinationId))
             }
 
             get<PatientIdQueryDtoIn, VaccinationDetailDtoOut, UserPrincipal>(
                 info("Get vaccination detail for given patient ID.")
             ) { (patientId) ->
+                val userId = principal().userId
+                logger.info { "User $userId requested vaccination data about patient with ID $patientId." }
                 respond(vaccinationService.getForPatient(patientId))
             }
 
@@ -49,14 +53,14 @@ fun NormalOpenAPIRoute.vaccinationRoutes() {
                 info("Register that the patient was vaccinated. Returns vaccination detail.")
             ) { _, request ->
                 val principal = principal()
-                logger.debug { "User ${principal.userId} vaccinated patient ${request.patientId}." }
+                logger.info { "User ${principal.userId} vaccinated patient ${request.patientId}." }
 
                 val vaccinationId = vaccinationService.addVaccination(asContextAware(request))
                 val vaccination = vaccinationService.get(vaccinationId)
 
-                logger.debug { "Vaccination was successful, registering in the medical system." }
+                logger.info { "Vaccination was successful, registering in the medical system." }
                 medicalRegistrationService.registerPatientsVaccination(vaccination.toPatientVaccinationDetailDto())
-                logger.debug { "Job sent successfully." }
+                logger.info { "Job sent successfully." }
 
                 respond(vaccination)
             }
