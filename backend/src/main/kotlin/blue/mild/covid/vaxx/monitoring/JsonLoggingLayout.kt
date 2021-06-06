@@ -24,8 +24,8 @@ class JsonLoggingLayout : LayoutBase<ILoggingEvent>() {
 
     override fun doLayout(event: ILoggingEvent): String {
         val finalMap: MutableMap<String, Any> = mutableMapOf(
-            "@timestamp" to formatTime(event),
-            "@message" to event.formattedMessage,
+            "timestamp" to formatTime(event),
+            "message" to event.formattedMessage,
             "logger" to event.loggerName
                 .takeLastWhile { it != '.' } // take only names without packages
                 .replace("\$Companion", ""), // delete static name from the logger name
