@@ -53,7 +53,13 @@
                 </mat-form-field>
                 <mat-form-field>
                   <mat-label>Číslo šarže vakcíny</mat-label>
-                  <input matInput formControlName="vaccine" placeholder="Zadejte číslo šarže vakcíny" required>
+                  <input matInput formControlName="vaccineSerialNumber" placeholder="Zadejte číslo šarže vakcíny" required>
+                </mat-form-field>
+                <mat-form-field>
+                  <mat-label>Datum expirace vakcíny</mat-label>
+                  <input matInput formControlName="vaccineExpiration" placeholder="Zadejte datum expirace vakcíny" required [matDatepicker]="picker">
+                  <mat-datepicker-toggle matSuffix [for]="picker"></mat-datepicker-toggle>
+                  <mat-datepicker #picker></mat-datepicker>
                 </mat-form-field>
               </div>
               <button (click)="login()"

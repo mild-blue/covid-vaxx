@@ -15,6 +15,7 @@ import { CredentialsDtoIn } from './credentialsDtoIn';
 export interface LoginDtoIn {
   credentials: CredentialsDtoIn;
   nurseId?: string | null;
+  vaccineExpiration: string;
   vaccineSerialNumber: string;
 }
 

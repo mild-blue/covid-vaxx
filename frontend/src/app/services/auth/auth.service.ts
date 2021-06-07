@@ -55,7 +55,7 @@ export class AuthService {
     );
   }
 
-  public login(email: string, password: string, vaccineSerialNumber: string, nurseId: string): Observable<User> {
+  public login(email: string, password: string, vaccineSerialNumber: string, vaccineExpiration: string, nurseId: string): Observable<User> {
 
     const body: LoginDtoIn = {
       credentials: {
@@ -63,6 +63,7 @@ export class AuthService {
         password
       },
       vaccineSerialNumber,
+      vaccineExpiration,
       nurseId
     };
 

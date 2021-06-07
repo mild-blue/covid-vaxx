@@ -1,5 +1,7 @@
 package blue.mild.covid.vaxx.dao.model
 
+import org.jetbrains.exposed.sql.`java-time`.date
+
 /**
  * Table that contains login requests.
  */
@@ -13,6 +15,11 @@ object UserLogins : ManagedTable("user_logins") {
      * Serial number of vaccine set during login.
      */
     val vaccineSerialNumber = varchar("vaccine_serial_number", DatabaseTypeLength.DEFAULT_STRING).nullable()
+
+    /**
+     * When the vaccine expires.
+     */
+    val vaccineExpiration = date("vaccine_expiration").nullable()
 
     /**
      * Name of the nurse.

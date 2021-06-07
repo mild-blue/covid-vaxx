@@ -70,6 +70,7 @@ class UserService(
             userId = userId,
             userRole = role,
             vaccineSerialNumber = login.vaccineSerialNumber.trim(),
+            vaccineExpiration = login.vaccineExpiration,
             nurseId = login.nurseId
         ).also {
             // log that the user had successful login
@@ -79,6 +80,7 @@ class UserService(
                 remoteHost = request.remoteHost,
                 callId = request.callId,
                 vaccineSerialNumber = it.vaccineSerialNumber,
+                vaccineExpiration = it.vaccineExpiration,
                 nurseId = it.nurseId
             )
         }
@@ -98,6 +100,7 @@ class UserService(
                 remoteHost = request.remoteHost,
                 callId = request.callId,
                 vaccineSerialNumber = request.payload.vaccineSerialNumber.trim(),
+                vaccineExpiration = request.payload.vaccineExpiration,
                 nurseId = if (nurseExists) request.payload.nurseId else null
             )
         }

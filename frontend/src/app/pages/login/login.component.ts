@@ -32,7 +32,8 @@ export class LoginComponent {
 
     this.nurseForm = this._formBuilder.group({
       nurseId: ['', Validators.required],
-      vaccine: ['', Validators.required]
+      vaccineSerialNumber: ['', Validators.required],
+      vaccineExpiration: ['', Validators.required]
     });
   }
 
@@ -75,9 +76,9 @@ export class LoginComponent {
 
     this.loading = true;
     const { username, password } = this.loginForm.controls;
-    const { nurseId, vaccine } = this.nurseForm.controls;
+    const { nurseId, vaccineSerialNumber, vaccineExpiration } = this.nurseForm.controls;
 
-    this._authService.login(username.value, password.value, vaccine.value, nurseId.value)
+    this._authService.login(username.value, password.value, vaccineSerialNumber.value, vaccineExpiration.value, nurseId.value)
     .pipe(
       first(),
       finalize(() => this.loading = false)
