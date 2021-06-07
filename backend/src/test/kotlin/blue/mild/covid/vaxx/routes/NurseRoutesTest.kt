@@ -16,6 +16,7 @@ import org.jetbrains.exposed.sql.transactions.transaction
 import org.junit.jupiter.api.Disabled
 import org.junit.jupiter.api.Test
 import org.kodein.di.instance
+import java.time.LocalDate
 import java.util.UUID
 import kotlin.test.assertEquals
 import kotlin.test.assertNotNull
@@ -60,7 +61,10 @@ class NurseRoutesTest : ServerTestBase() {
         // try to create nurse as Doctor
         handleRequest(HttpMethod.Put, Routes.nurse) {
             // we can safely use ID that exists with different role
-            authorize(UserPrincipal(DatabaseData.admin.id, UserRole.DOCTOR, "", null))
+            authorize(UserPrincipal(
+                DatabaseData.admin.id, UserRole.DOCTOR,
+                "", LocalDate.now(),null
+            ))
             jsonBody(nurseToCreate)
         }.run {
             expectStatus(HttpStatusCode.Forbidden)
