@@ -46,8 +46,14 @@ export class PatientService {
     ).toPromise();
   }
 
-  public async findPatientByPersonalNumber(personalNumber: string): Promise<Patient> {
-    const params = new HttpParams().set('personalNumber', personalNumber.trim());
+  public async findPatientByPersonalOrInsuranceNumber(personalNumber?: string, insuranceNumber?: string): Promise<Patient> {
+    if ((personalNumber === undefined) === (insuranceNumber === undefined)) {
+      throw Error('Personal number or insurance number has to be provided');
+    }
+
+    const params = personalNumber !== undefined
+      ? new HttpParams().set('personalNumber', personalNumber.trim())
+      : new HttpParams().set('insuranceNumber', insuranceNumber?.trim() ?? '');
 
     return this._http.get<PatientDtoOut>(
       `${environment.apiUrl}/admin/patient`,
