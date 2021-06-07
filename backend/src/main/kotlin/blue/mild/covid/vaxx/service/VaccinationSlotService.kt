@@ -50,12 +50,13 @@ class VaccinationSlotService(
 
         val slots = (0 until slotsCount).flatMap { slotId ->
             (0 until slotsDto.bandwidth).map { queue ->
+                val queueId = queue + slotsDto.queueOffset
                 val from = slotsDto.from.plusMillis(slotId * slotsDto.durationMillis)
                 val to = from.plusMillis(slotsDto.durationMillis)
 
                 VaccinationSlotDto(
                     locationId = slotsDto.locationId,
-                    queue = queue,
+                    queue = queueId,
                     from = from,
                     to = to,
                 )

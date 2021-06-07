@@ -27,5 +27,12 @@ data class CreateVaccinationSlotsDtoIn(
     /**
      * How long it takes to vaccinate single person.
      */
-    val durationMillis: Milliseconds
+    val durationMillis: Milliseconds,
+
+    /**
+     * First used queue id - when there are already "n" queues in the database
+     * for the given from/to time period and you want to use the same date interval,
+     * you need to set [queueOffset] to "n" to create new slots.
+     */
+    val queueOffset: Int = 0
 )
