@@ -72,6 +72,76 @@ class PatientRoutesTest : ServerTestBase() {
     }
 
     @Test
+    fun `foreigner and normal patient registration`() = withTestApplication {
+        val createSlots = CreateVaccinationSlotsDtoIn(
+            locationId = locationId,
+            from = Instant.ofEpochMilli(20),
+            to = Instant.ofEpochMilli(30),
+            durationMillis = 10,
+            bandwidth = 10,
+        )
+        val slotService by closestDI().instance<VaccinationSlotService>()
+        val slots = runBlocking { slotService.addSlots(createSlots) }
+        assertEquals(10, slots.size)
+
+        // create patient
+        val validRegistration = runBlocking { generatePatientRegistrationDto() }
+        handleRequest(HttpMethod.Post, patientRoute) {
+            jsonBody(validRegistration)
+        }.run {
+            expectStatus(HttpStatusCode.OK)
+            val registration = receive<PatientRegistrationResponseDtoOut>()
+            registration.patientId
+        }
+
+        // create another patient (so insuranceNumber is null two times)
+        val anotherValidRegistration = runBlocking { generatePatientRegistrationDto() }
+        handleRequest(HttpMethod.Post, patientRoute) {
+            jsonBody(anotherValidRegistration)
+        }.run {
+            expectStatus(HttpStatusCode.OK)
+            val registration = receive<PatientRegistrationResponseDtoOut>()
+            registration.patientId
+        }
+
+        // create foreigner
+        val validForeigner = validRegistration.copy(personalNumber = null, insuranceNumber = "something")
+        handleRequest(HttpMethod.Post, patientRoute) {
+            jsonBody(validForeigner)
+        }.run {
+            expectStatus(HttpStatusCode.OK)
+            val registration = receive<PatientRegistrationResponseDtoOut>()
+            registration.patientId
+        }
+
+        // create another foreigner
+        val validForeigner2 = validRegistration.copy(personalNumber = null, insuranceNumber = "something2")
+        handleRequest(HttpMethod.Post, patientRoute) {
+            jsonBody(validForeigner2)
+        }.run {
+            expectStatus(HttpStatusCode.OK)
+            val registration = receive<PatientRegistrationResponseDtoOut>()
+            registration.patientId
+        }
+
+        // verify that it is not possible to register patient without insuranceNumber AND personalNumber
+        val invalidForeigner = validForeigner.copy(personalNumber = null, insuranceNumber = null)
+        handleRequest(HttpMethod.Post, patientRoute) {
+            jsonBody(invalidForeigner)
+        }.run {
+            expectStatus(HttpStatusCode.BadRequest)
+        }
+
+        // verify that it is not possible to register two foreigners with the same insuranceNumber
+        val duplicate = runBlocking { generatePatientRegistrationDto() }.copy(insuranceNumber = validForeigner.insuranceNumber)
+        handleRequest(HttpMethod.Post, patientRoute) {
+            jsonBody(duplicate)
+        }.run {
+            expectStatus(HttpStatusCode.Conflict)
+        }
+    }
+
+    @Test
     @Suppress("LongMethod") // complete crud, long method is fine here
     fun `complete crud on patient`() = withTestApplication {
         val createSlots = CreateVaccinationSlotsDtoIn(
