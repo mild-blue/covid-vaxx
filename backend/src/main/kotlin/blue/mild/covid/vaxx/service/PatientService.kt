@@ -44,6 +44,15 @@ class PatientService(
             ?: throw entityNotFound<Patients>(Patients::personalNumber, patientPersonalNumber)
 
     /**
+     * Returns single patient with given insurance number or throws exception.
+     */
+    suspend fun getPatientByInsuranceNumber(patientInsuranceNumber: String): PatientDtoOut =
+        patientRepository.getAndMapPatientsBy {
+            Patients.insuranceNumber eq patientInsuranceNumber.trim()
+        }.singleOrNull()?.withSortedAnswers()
+            ?: throw entityNotFound<Patients>(Patients::insuranceNumber, patientInsuranceNumber)
+
+    /**
      * Filters the database with the conjunction (and clause) of the given properties.
      */
     suspend fun getPatientsByConjunctionOf(
