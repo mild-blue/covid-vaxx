@@ -239,6 +239,8 @@ class ValidationServiceTest {
             "hello123@mild.blue",
             "hello+world@mild.blue",
             "hello@mild.blue",
+            "Hello@mild.blue",
+            "eeLLo@mild.blue"
         ]
     )
     fun `test valid email`(validEmail: String) {
