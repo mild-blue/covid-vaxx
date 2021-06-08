@@ -22,6 +22,7 @@ import io.ktor.request.path
 import io.ktor.response.respond
 import io.ktor.util.pipeline.PipelineContext
 import org.jetbrains.exposed.exceptions.ExposedSQLException
+import pw.forst.katlib.stacktraceToString
 
 private val logger = createLogger("ExceptionHandler")
 
@@ -33,7 +34,7 @@ private val logger = createLogger("ExceptionHandler")
 fun Application.installExceptionHandling() {
     install(StatusPages) {
         exception<InsufficientRightsException> {
-            logger.warn(it) {
+            logger.warn(it.stacktraceToString()) {
                 call.principal<UserPrincipal>()
                     ?.let { user -> "${user.userId} tried to access resource \"${call.request.path()}\" that is not allowed." }
                     ?: "User without principals tried to access the resource ${call.request.path()}."
@@ -42,63 +43,63 @@ fun Application.installExceptionHandling() {
         }
 
         exception<CaptchaFailedException> {
-            logger.warn(it) { "Captcha verification failed - $it.¬" }
+            logger.warn(it.stacktraceToString()) { "Captcha verification failed - $it.¬" }
             call.errorResponse(HttpStatusCode.UnprocessableEntity, "Captcha verification failed.")
         }
 
         exception<AuthorizationException> {
-            logger.warn(it) { "Authorization failed - $it." }
+            logger.warn(it.stacktraceToString()) { "Authorization failed - $it." }
             call.respond(HttpStatusCode.Unauthorized)
         }
 
         exception<EntityNotFoundException> {
-            logger.warn(it) { "Entity was not found - $it." }
+            logger.warn(it.stacktraceToString()) { "Entity was not found - $it." }
             call.errorResponse(HttpStatusCode.NotFound, it.message)
         }
 
         exception<InvalidSlotCreationRequest> {
-            logger.error(it) { "Invalid slot creation request - $it." }
+            logger.error(it.stacktraceToString()) { "Invalid slot creation request - $it." }
             call.errorResponse(HttpStatusCode.BadRequest, it.message)
         }
 
         exception<NoVaccinationSlotsFoundException> {
-            logger.error(it) { "No vaccination slots found - $it." }
+            logger.error(it.stacktraceToString()) { "No vaccination slots found - $it." }
             call.errorResponse(HttpStatusCode.NotFound, it.message)
         }
 
         jsonExceptions()
 
         exception<IsinValidationException> {
-            logger.warn(it) { "ISIN validation failed - $it." }
+            logger.warn(it.stacktraceToString()) { "ISIN validation failed - $it." }
             call.errorResponse(HttpStatusCode.NotAcceptable, "Not acceptable: ${it.message}.")
         }
 
         // validation failed for some property
         exception<ValidationException> {
-            logger.warn(it) { "Validation exception - $it." }
+            logger.warn(it.stacktraceToString()) { "Validation exception - $it." }
             call.errorResponse(HttpStatusCode.BadRequest, "Bad request: ${it.message}.")
         }
 
         // open api serializer - missing parameters such as headers or query
         exception<OpenAPIRequiredFieldException> {
-            logger.error { "Missing data in request: ${it.message}." }
+            logger.error { "Missing data in request: ${it}." }
             call.errorResponse(HttpStatusCode.BadRequest, "Missing data in request: ${it.message}.")
         }
 
         // exception from exposed, during saving to the database
         exception<ExposedSQLException> {
             if (it.message?.contains("already exists", ignoreCase = true) == true) {
-                logger.warn(it) { "Requested entity already exists - ${it.message}." }
+                logger.warn(it.stacktraceToString()) { "Requested entity already exists - ${it.message}." }
                 call.errorResponse(HttpStatusCode.Conflict, "Entity already exists!.")
             } else {
-                logger.error(it) { "Unknown exposed SQL Exception." }
+                logger.error(it.stacktraceToString()) { "Unknown exposed SQL Exception." }
                 call.errorResponse(HttpStatusCode.BadRequest, "Bad request.")
             }
         }
 
         // generic error handling
         exception<Exception> {
-            logger.error(it) { "Unknown exception occurred in the application: ${it.message}." }
+            logger.error(it.stacktraceToString()) { "Unknown exception occurred in the application: ${it.message}." }
             call.errorResponse(
                 HttpStatusCode.InternalServerError,
                 "Server was unable to fulfill the request, please contact administrator with request ID: ${call.callId}."
@@ -114,25 +115,25 @@ private fun StatusPages.Configuration.jsonExceptions() {
 
     // wrong format of some property
     exception<InvalidFormatException> {
-        logger.error(it) { "Invalid data format." }
+        logger.error(it.stacktraceToString()) { "Invalid data format." }
         respond("Wrong data format.")
     }
 
     // server received JSON with additional properties it does not know
     exception<UnrecognizedPropertyException> {
-        logger.error(it) { "Unrecognized property in the JSON." }
+        logger.error(it.stacktraceToString()) { "Unrecognized property in the JSON." }
         respond("Unrecognized body property ${it.propertyName}.")
     }
 
     // missing data in the request
     exception<MissingKotlinParameterException> {
-        logger.error(it) { "Missing parameter in the request: ${it.message}." }
+        logger.error(it.stacktraceToString()) { "Missing parameter in the request: ${it.message}." }
         respond("Missing parameter: ${it.parameter}.")
     }
 
     // generic, catch-all exception from jackson serialization
     exception<JacksonException> {
-        logger.error(it) { "Could not deserialize data: ${it.message}." }
+        logger.error(it.stacktraceToString()) { "Could not deserialize data: ${it.message}." }
         respond("Bad request, could not deserialize data.")
     }
 }
