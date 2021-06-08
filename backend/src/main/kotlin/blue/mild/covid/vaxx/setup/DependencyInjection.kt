@@ -15,6 +15,7 @@ import blue.mild.covid.vaxx.security.ddos.CaptchaVerificationService
 import blue.mild.covid.vaxx.security.ddos.RequestVerificationService
 import blue.mild.covid.vaxx.service.DataCorrectnessService
 import blue.mild.covid.vaxx.service.IsinRegistrationService
+import blue.mild.covid.vaxx.service.IsinService
 import blue.mild.covid.vaxx.service.IsinValidationService
 import blue.mild.covid.vaxx.service.LocationService
 import blue.mild.covid.vaxx.service.MailJetEmailService
@@ -158,7 +159,9 @@ fun DI.MainBuilder.registerClasses() {
     bind<IsinRegistrationService>() with singleton { IsinRegistrationService(instance(), instance(), instance(), instance()) }
     bind<DummyMedicalRegistrationService>() with singleton { DummyMedicalRegistrationService() }
 
-    bind<IsinValidationService>() with singleton { IsinValidationService(instance(), instance(isinHttpClientTag)) }
+    bind<IsinService>() with singleton { IsinService(instance(), instance(isinHttpClientTag)) }
+
+    bind<IsinValidationService>() with singleton { IsinValidationService(instance()) }
     bind<DummyPatientValidationService>() with singleton { DummyPatientValidationService() }
 
     // select implementations based on the feature flags
