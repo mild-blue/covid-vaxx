@@ -124,7 +124,7 @@ class ValidationService(private val questionService: QuestionService) {
      * Throws [PropertyValidationException] if the value is invalid.
      */
     fun requireValidEmail(email: String) {
-        if (!isEmailValid(email.trim())) {
+        if (!isEmailValid(email.trim().lowercase())) {
             throw PropertyValidationException("email", email)
         }
     }

@@ -105,7 +105,7 @@ class PatientService(
             phoneNumber = registration.phoneNumber.formatPhoneNumber(),
             personalNumber = registration.personalNumber?.normalizePersonalNumber(),
             insuranceNumber = registration.insuranceNumber?.trim(),
-            email = registration.email.trim().lowercase(Locale.getDefault()),
+            email = registration.email.trim().lowercase(),
             insuranceCompany = registration.insuranceCompany,
             indication = registration.indication?.trim(),
             remoteHost = registrationDto.remoteHost,
