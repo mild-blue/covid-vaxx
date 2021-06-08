@@ -4,12 +4,12 @@
   padding: 2px 5px;
   border-radius: 4px;
 
-  &.no {
+  &.green {
     background: rgba($success, 0.2);
     color: $success;
   }
 
-  &.yes {
+  &.red {
     background: rgba($danger, 0.2);
     color: $danger;
   }
