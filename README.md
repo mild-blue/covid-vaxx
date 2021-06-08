@@ -1,4 +1,4 @@
-# COVID-19 vaccination app
+# Mild Blue COVID-19 vaccination app
 
 This web application was developed in cooperation with Prague 7 municipality and Prague 7 clinic to provide secure,
 user-friendly, fast, independent and reliable tool for the administration of COVID-19 vaccinations. The tool works
