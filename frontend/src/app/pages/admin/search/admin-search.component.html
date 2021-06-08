@@ -4,18 +4,34 @@
   <h1>Vyhledávání pacienta</h1>
   <mat-card>
     <mat-card-content>
-      <form (ngSubmit)="onSubmit()">
-        <mat-form-field class="">
+      <form (ngSubmit)="onSubmit()" #searchForm="ngForm">
+        <p>
+          <mat-button-toggle-group name="isForeigner" [value]="isForeigner">
+            <mat-button-toggle [value]="false" (click)="isForeigner = false;">Očkovaný je občan ČR</mat-button-toggle>
+            <mat-button-toggle [value]="true" (click)="isForeigner = true;">Cizinec</mat-button-toggle>
+          </mat-button-toggle-group>
+        </p>
+
+        <mat-form-field class="" *ngIf="!isForeigner">
           <mat-label>Rodné číslo očkovaného</mat-label>
           <input matInput [(ngModel)]="personalNumber"
                  placeholder="Zadejte rodné číslo"
                  name="personalNumber"
-                 #personalNumberInput="ngModel"
                  required maxlength="11" appPersonalNumberValidator>
           <mat-hint>Rodné číslo ve formátu RRMMDD/ČČČ(Č)</mat-hint>
         </mat-form-field>
+
+        <mat-form-field class="" *ngIf="isForeigner">
+          <mat-label>Číslo pojištěnce</mat-label>
+          <input matInput [(ngModel)]="insuranceNumber"
+                 placeholder="Zadejte číslo pojištěnce"
+                 name="insuranceNumber"
+                 required maxlength="256">
+          <mat-hint>Číslo pojištěnce uvedené na kartičce zdravotní pojišťovny</mat-hint>
+        </mat-form-field>
+
         <button color="primary"
-                [disabled]="personalNumberInput.invalid || submitted"
+                [disabled]="submitted || searchForm.form.invalid"
                 mat-raised-button>
           Vyhledat pacienta
         </button>
@@ -34,8 +50,9 @@
   <mat-card class="history">
     <div *ngFor="let query of searchHistory">
       <div class="history__item">
-        <span>{{ query }}</span>
-        <button (click)="findPatient(query)" mat-button color="primary">Hledat znovu</button>
+        <span>{{ query.search }} ({{ query.isForeigner ? 'cizinec' : 'občan ČR' }})</span>
+        <button (click)="findPatientForSearchHistory(query)"
+                mat-button color="primary">Hledat znovu</button>
       </div>
       <mat-divider></mat-divider>
     </div>

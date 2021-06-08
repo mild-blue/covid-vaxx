@@ -6,7 +6,8 @@ Content-Type: application/json
     "email": "vaxx@mild.blue",
     "password": "bluemild"
   },
-  "vaccineSerialNumber": "test"
+  "vaccineSerialNumber": "test",
+  "vaccineExpiration": "2024-06-04T00:00:00.000Z"
 }
 > {% client.global.set("auth_token", response.body["token"]); %}
 ###
@@ -47,10 +48,10 @@ POST {{url}}/patient?captcha=1234
 Content-Type: application/json
 
 {
-  "firstName": "j",
-  "lastName": "k",
-  "personalNumber": "9002030015",
-  "email": "kubant.jan@gmail.com",
+  "firstName": "Adéla",
+  "lastName": "Kostičková",
+  "personalNumber": "9151010385",
+  "email": "kubant.jan@example.com",
   "phoneNumber": {
     "countryCode": "CZ",
     "number": "602123534"

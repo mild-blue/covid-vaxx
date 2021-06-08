@@ -7,12 +7,13 @@ import blue.mild.covid.vaxx.dto.request.PatientRegistrationDtoIn
 import blue.mild.covid.vaxx.dto.request.PatientUpdateDtoIn
 import blue.mild.covid.vaxx.dto.request.query.CaptchaVerificationDtoIn
 import blue.mild.covid.vaxx.dto.request.query.MultiplePatientsQueryDtoIn
-import blue.mild.covid.vaxx.dto.request.query.PatientByPersonalNumberQueryDtoIn
+import blue.mild.covid.vaxx.dto.request.query.PatientByPersonalOrInsuranceNumberQueryDtoIn
 import blue.mild.covid.vaxx.dto.request.query.PatientIdDtoIn
 import blue.mild.covid.vaxx.dto.response.OK
 import blue.mild.covid.vaxx.dto.response.Ok
 import blue.mild.covid.vaxx.dto.response.PatientDtoOut
 import blue.mild.covid.vaxx.dto.response.PatientRegistrationResponseDtoOut
+import blue.mild.covid.vaxx.error.HttpParametersException
 import blue.mild.covid.vaxx.error.IsinValidationException
 import blue.mild.covid.vaxx.extensions.asContextAware
 import blue.mild.covid.vaxx.extensions.closestDI
@@ -41,7 +42,7 @@ import org.kodein.di.instance
 /**
  * Routes related to patient entity.
  */
-@Suppress("LongMethod") // this is routing, that's fine plus we need not to save
+@Suppress("LongMethod", "ThrowsCount", "ComplexMethod") // this is routing, that's fine plus we need not to save
 // patient in case any issue during processing happens
 fun NormalOpenAPIRoute.patientRoutes() {
     val logger = createLogger("PatientRoutes")
@@ -128,17 +129,36 @@ fun NormalOpenAPIRoute.patientRoutes() {
     // admin routes for registered users only
     authorizeRoute(requireOneOf = setOf(UserRole.ADMIN, UserRole.DOCTOR)) {
         route(Routes.adminSectionPatient) {
-            get<PatientByPersonalNumberQueryDtoIn, PatientDtoOut, UserPrincipal>(
-                info("Get patient by personal number.")
-            ) { (personalNumber) ->
+            get<PatientByPersonalOrInsuranceNumberQueryDtoIn, PatientDtoOut, UserPrincipal>(
+                info("Get patient by personal or insurance number.")
+            ) { patientQuery ->
                 val principal = principal()
                 if (logger.isDebugEnabled) {
-                    logger.debug { "User ${principal.userId} search by personalNumber=${personalNumber}." }
+                    logger.debug {
+                        "User ${principal.userId} search by personalNumber=${patientQuery.personalNumber} and " +
+                        "insuranceNumber=${patientQuery.insuranceNumber}."
+                    }
                 } else {
-                    logger.info { "User ${principal.userId} search by personal number." }
+                    logger.info { "User ${principal.userId} search by personal number or insurance number." }
                 }
 
-                val patient = patientService.getPatientByPersonalNumber(personalNumber)
+                val patient = when {
+                    patientQuery.personalNumber != null && patientQuery.insuranceNumber == null -> {
+                        patientService.getPatientByPersonalNumber(patientQuery.personalNumber)
+                    }
+                    patientQuery.personalNumber == null && patientQuery.insuranceNumber != null -> {
+                        patientService.getPatientByInsuranceNumber(patientQuery.insuranceNumber)
+                    }
+                    patientQuery.personalNumber != null && patientQuery.insuranceNumber != null -> {
+                        throw HttpParametersException("Personal number and insurance number cannot be specified in the same time.")
+                    }
+                    patientQuery.personalNumber == null && patientQuery.insuranceNumber == null -> {
+                        throw HttpParametersException("Personal number or insurance number has to be specified.")
+                    }
+                    else -> {
+                        throw NotImplementedError("This should not happen")
+                    }
+                }
                 logger.debug { "Patient found under id ${patient.id}." }
                 respond(patient)
             }

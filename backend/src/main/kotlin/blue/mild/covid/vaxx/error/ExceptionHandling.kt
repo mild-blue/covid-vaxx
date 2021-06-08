@@ -66,6 +66,11 @@ fun Application.installExceptionHandling() {
             call.errorResponse(HttpStatusCode.NotFound, it.message)
         }
 
+        exception<HttpParametersException> {
+            logger.error(it) { "Invalid HTTP parameters - $it." }
+            call.errorResponse(HttpStatusCode.BadRequest, it.message)
+        }
+
         jsonExceptions()
 
         exception<IsinValidationException> {
