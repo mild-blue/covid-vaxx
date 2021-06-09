@@ -10,5 +10,6 @@ data class DataCorrectnessConfirmationDetailDtoOut(
     val doctor: PersonnelDtoOut,
     val nurse: PersonnelDtoOut?,
     val dataAreCorrect: Boolean,
-    val notes: String?
+    val notes: String?,
+    val exportedToIsinOn: Instant?
 )

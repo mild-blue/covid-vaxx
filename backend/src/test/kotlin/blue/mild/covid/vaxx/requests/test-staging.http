@@ -99,5 +99,22 @@ Content-Type: application/json
     "gdprAgreement": true
   }
 }
+###
+
+GET {{url}}/admin/patient?personalNumber=9151010385
+Content-Type: application/json
+Authorization: Bearer {{auth_token}}
+
+> {% client.global.set("patient_id", response.body["id"]); %}
 
 ###
+
+POST {{url}}/admin/data-correctness
+Content-Type: application/json
+Authorization: Bearer {{auth_token}}
+
+{
+  "dataAreCorrect":true,
+  "notes":"note",
+  "patientId":"{{patient_id}}"
+}

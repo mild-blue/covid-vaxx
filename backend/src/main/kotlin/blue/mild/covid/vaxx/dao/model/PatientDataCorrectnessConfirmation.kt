@@ -1,5 +1,7 @@
 package blue.mild.covid.vaxx.dao.model
 
+import org.jetbrains.exposed.sql.`java-time`.timestamp
+
 object PatientDataCorrectnessConfirmation : ManagedTable("patient_data_correctness") {
     /**
      * Patient data that were checked.
@@ -25,4 +27,9 @@ object PatientDataCorrectnessConfirmation : ManagedTable("patient_data_correctne
      * Optional notes for the data check.
      */
     val notes = text("notes").nullable()
+
+    /**
+     * When was the patient data updated in ISIN.
+     */
+    val exportedToIsinOn = timestamp("exported_to_isin_on").nullable()
 }

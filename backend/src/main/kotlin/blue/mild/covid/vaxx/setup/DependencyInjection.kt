@@ -101,7 +101,7 @@ fun DI.MainBuilder.registerClasses() {
     bind<PatientService>() with singleton { PatientService(instance(), instance()) }
     bind<UserService>() with singleton { UserService(instance(), instance()) }
     bind<VaccinationService>() with singleton { VaccinationService(instance()) }
-    bind<DataCorrectnessService>() with singleton { DataCorrectnessService(instance()) }
+    bind<DataCorrectnessService>() with singleton { DataCorrectnessService(instance(), instance()) }
     bind<MailJetEmailService>() with singleton { MailJetEmailService(instance(), instance(), instance(), instance()) }
     bind<SystemStatisticsService>() with singleton { SystemStatisticsService() }
 
