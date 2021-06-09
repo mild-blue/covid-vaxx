@@ -19,7 +19,7 @@ class IsinValidationService(
         Chyba
     }
 
-    private companion object : KLogging() {}
+    private companion object : KLogging()
 
     override suspend fun validatePatient(registrationDto: PatientRegistrationDtoIn): IsinValidationResultDto {
         val firstName = registrationDto.firstName
