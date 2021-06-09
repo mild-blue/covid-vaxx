@@ -159,7 +159,7 @@ fun DI.MainBuilder.registerClasses() {
     bind<IsinRegistrationService>() with singleton { IsinRegistrationService(instance(), instance(), instance(), instance()) }
     bind<DummyMedicalRegistrationService>() with singleton { DummyMedicalRegistrationService() }
 
-    bind<IsinService>() with singleton { IsinService(instance(), instance(isinHttpClientTag)) }
+    bind<IsinService>() with singleton { IsinService(instance(), instance(isinHttpClientTag)) } // TODOO: do not use isin client in tests
 
     bind<IsinValidationService>() with singleton { IsinValidationService(instance()) }
     bind<DummyPatientValidationService>() with singleton { DummyPatientValidationService() }
