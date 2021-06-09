@@ -21,6 +21,7 @@ export interface VaccinationDetailDtoOut {
   patientId: string;
   vaccinatedOn: string;
   vaccinationId: string;
+  vaccineExpiration?: string | null;
   vaccineSerialNumber: string;
 }
 

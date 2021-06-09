@@ -51,6 +51,7 @@ class VaccinationService(
             bodyPart = vaxx.bodyPart,
             vaccinatedOn = vaxx.vaccinatedOn,
             vaccineSerialNumber = principal.vaccineSerialNumber.trim(),
+            vaccineExpiration = principal.vaccineExpiration,
             userPerformingVaccination = principal.userId,
             nurseId = principal.nurseId,
             notes = vaxx.notes?.trim()

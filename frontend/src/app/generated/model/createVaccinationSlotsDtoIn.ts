@@ -16,6 +16,7 @@ export interface CreateVaccinationSlotsDtoIn {
   durationMillis: number;
   from: string;
   locationId: string;
+  queueOffset: number;
   to: string;
 }
 

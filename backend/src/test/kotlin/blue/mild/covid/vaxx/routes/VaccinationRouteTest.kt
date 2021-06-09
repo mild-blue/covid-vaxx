@@ -17,6 +17,7 @@ import org.junit.jupiter.api.Test
 import org.kodein.di.DI
 import org.kodein.di.instance
 import java.time.Instant
+import java.time.LocalDate
 import java.time.temporal.ChronoUnit
 import java.util.UUID
 import kotlin.test.assertEquals
@@ -77,7 +78,8 @@ class VaccinationRouteTest : ServerTestBase() {
                 UserPrincipal(
                     userId = UUID.randomUUID(),
                     userRole = UserRole.DOCTOR,
-                    vaccineSerialNumber = ""
+                    vaccineSerialNumber = "",
+                    vaccineExpiration = LocalDate.now()
                 )
             )
         }.run {

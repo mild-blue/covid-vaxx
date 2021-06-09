@@ -14,6 +14,7 @@ import io.ktor.http.HttpStatusCode
 import io.ktor.server.testing.handleRequest
 import org.junit.jupiter.api.Disabled
 import org.junit.jupiter.api.Test
+import java.time.LocalDate
 import java.util.UUID
 import kotlin.test.assertEquals
 import kotlin.test.assertNotNull
@@ -40,7 +41,9 @@ class UserRoutesTest : ServerTestBase() {
 
         // try to register user with wrong role of Doctor as only Admin can access the endpoint
         handleRequest(HttpMethod.Post, Routes.userRegistration) {
-            authorize(UserPrincipal(UUID.randomUUID(), userRole = UserRole.DOCTOR, vaccineSerialNumber = ""))
+            authorize(UserPrincipal(
+                UUID.randomUUID(), userRole = UserRole.DOCTOR, vaccineSerialNumber = "", LocalDate.now()
+            ))
             jsonBody(user)
         }.run {
             expectStatus(HttpStatusCode.Forbidden)
@@ -61,7 +64,8 @@ class UserRoutesTest : ServerTestBase() {
         val validLogin = LoginDtoIn(
             credentials = CredentialsDtoIn(user.email, user.password),
             nurseId = DatabaseData.nurses.random().id,
-            vaccineSerialNumber = "#123"
+            vaccineSerialNumber = "#123",
+            vaccineExpiration =  LocalDate.now()
         )
         handleRequest(HttpMethod.Post, Routes.registeredUserLogin) {
             jsonBody(validLogin)
@@ -89,7 +93,8 @@ class UserRoutesTest : ServerTestBase() {
         val nonExistingUser = LoginDtoIn(
             credentials = CredentialsDtoIn("non-existing@email.com", "wrong-password"),
             nurseId = null,
-            vaccineSerialNumber = ""
+            vaccineSerialNumber = "",
+            vaccineExpiration = LocalDate.now()
         )
         handleRequest(HttpMethod.Post, Routes.registeredUserLogin) { jsonBody(nonExistingUser) }.run {
             expectStatus(HttpStatusCode.Unauthorized)
@@ -99,7 +104,8 @@ class UserRoutesTest : ServerTestBase() {
         val wrongPasswordLogin = LoginDtoIn(
             credentials = CredentialsDtoIn(DatabaseData.admin.email, UUID.randomUUID().toString()),
             nurseId = null,
-            vaccineSerialNumber = ""
+            vaccineSerialNumber = "",
+            vaccineExpiration = LocalDate.now()
         )
         handleRequest(HttpMethod.Post, Routes.registeredUserLogin) { jsonBody(wrongPasswordLogin) }.run {
             expectStatus(HttpStatusCode.Unauthorized)
@@ -112,7 +118,8 @@ class UserRoutesTest : ServerTestBase() {
         val existingUserNonExistingNurse = LoginDtoIn(
             credentials = CredentialsDtoIn(DatabaseData.admin.email, DatabaseData.admin.password),
             nurseId = nonExistingNurse,
-            vaccineSerialNumber = ""
+            vaccineSerialNumber = "",
+            vaccineExpiration = LocalDate.now()
         )
         handleRequest(HttpMethod.Post, Routes.registeredUserLogin) { jsonBody(existingUserNonExistingNurse) }.run {
             expectStatus(HttpStatusCode.Unauthorized)
@@ -122,7 +129,8 @@ class UserRoutesTest : ServerTestBase() {
         val validLogin = LoginDtoIn(
             credentials = CredentialsDtoIn(DatabaseData.admin.email, DatabaseData.admin.password),
             nurseId = DatabaseData.nurses.random().id,
-            vaccineSerialNumber = "#123"
+            vaccineSerialNumber = "#123",
+            vaccineExpiration = LocalDate.now()
         )
         handleRequest(HttpMethod.Post, Routes.registeredUserLogin) { jsonBody(validLogin) }.run {
             expectStatus(HttpStatusCode.OK)
