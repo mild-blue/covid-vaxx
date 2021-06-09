@@ -9,6 +9,7 @@ Content-Type: application/json
   "vaccineSerialNumber": "test"
 }
 > {% client.global.set("auth_token", response.body["token"]); %}
+
 ###
 
 POST {{url}}/admin/locations?captcha=1234
@@ -27,6 +28,7 @@ Authorization: Bearer {{auth_token}}
   "zipCode": 17000
 }
 > {% client.global.set("location_id", response.body["id"]); %}
+
 ###
 
 POST {{url}}/admin/vaccination-slots?captcha=1234
@@ -98,6 +100,21 @@ Content-Type: application/json
     "healthStateDisclosureConfirmation": true,
     "gdprAgreement": true
   }
+}
+
+###
+
+// register user
+POST {{url}}/admin/register?captcha=1234
+Content-Type: application/json
+Authorization: Bearer {{auth_token}}
+
+{
+  "firstName": "Petra",
+  "lastName": "Nováková",
+  "email": "petra@seznam.cz",
+  "password": "pass",
+  "role": "RECEPTIONIST"
 }
 
 ###
