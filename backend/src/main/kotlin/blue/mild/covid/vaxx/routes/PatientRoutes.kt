@@ -14,19 +14,11 @@ import blue.mild.covid.vaxx.dto.response.Ok
 import blue.mild.covid.vaxx.dto.response.PatientDtoOut
 import blue.mild.covid.vaxx.dto.response.PatientRegistrationResponseDtoOut
 import blue.mild.covid.vaxx.error.IsinValidationException
-import blue.mild.covid.vaxx.extensions.asContextAware
-import blue.mild.covid.vaxx.extensions.closestDI
-import blue.mild.covid.vaxx.extensions.createLogger
-import blue.mild.covid.vaxx.extensions.determineRealIp
-import blue.mild.covid.vaxx.extensions.request
+import blue.mild.covid.vaxx.extensions.*
 import blue.mild.covid.vaxx.security.auth.UserPrincipal
 import blue.mild.covid.vaxx.security.auth.authorizeRoute
 import blue.mild.covid.vaxx.security.ddos.RequestVerificationService
-import blue.mild.covid.vaxx.service.LocationService
-import blue.mild.covid.vaxx.service.MailService
-import blue.mild.covid.vaxx.service.PatientService
-import blue.mild.covid.vaxx.service.PatientValidationService
-import blue.mild.covid.vaxx.service.VaccinationSlotService
+import blue.mild.covid.vaxx.service.*
 import com.papsign.ktor.openapigen.route.info
 import com.papsign.ktor.openapigen.route.path.auth.delete
 import com.papsign.ktor.openapigen.route.path.auth.get
@@ -126,7 +118,7 @@ fun NormalOpenAPIRoute.patientRoutes() {
     }
 
     // admin routes for registered users only
-    authorizeRoute(requireOneOf = setOf(UserRole.ADMIN, UserRole.DOCTOR)) {
+    authorizeRoute(requireOneOf = setOf(UserRole.ADMIN, UserRole.DOCTOR, UserRole.RECEPTIONIST)) {
         route(Routes.adminSectionPatient) {
             get<PatientByPersonalNumberQueryDtoIn, PatientDtoOut, UserPrincipal>(
                 info("Get patient by personal number.")
