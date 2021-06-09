@@ -38,9 +38,9 @@ export class AlertService {
     }
   }
 
-  public noPatientFoundDialog(personalNumber: string): void {
+  public noPatientFoundDialog(personalOrInsuranceNumber: string, isForeigner: boolean): void {
     this._dialog.open(NoPatientFoundComponent, {
-      data: { personalNumber }
+      data: { personalOrInsuranceNumber, isForeigner }
     });
   }
 
