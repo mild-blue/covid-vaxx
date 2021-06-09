@@ -130,13 +130,13 @@ fun NormalOpenAPIRoute.patientRoutes() {
     authorizeRoute(requireOneOf = setOf(UserRole.ADMIN, UserRole.DOCTOR, UserRole.RECEPTIONIST)) {
         route(Routes.adminSectionPatient) {
             get<PatientByPersonalOrInsuranceNumberQueryDtoIn, PatientDtoOut, UserPrincipal>(
-                info("Get patient by personal or insurance number.")
+                info("Get patient by personal or insurance number. Requires ADMIN, DOCTOR or RECEPTIONIST role.")
             ) { patientQuery ->
                 val principal = principal()
                 if (logger.isDebugEnabled) {
                     logger.debug {
                         "User ${principal.userId} search by personalNumber=${patientQuery.personalNumber} and " +
-                        "insuranceNumber=${patientQuery.insuranceNumber}."
+                                "insuranceNumber=${patientQuery.insuranceNumber}."
                     }
                 } else {
                     logger.info { "User ${principal.userId} search by personal number or insurance number." }
@@ -164,7 +164,7 @@ fun NormalOpenAPIRoute.patientRoutes() {
             }
 
             get<PatientIdDtoIn, PatientDtoOut, UserPrincipal>(
-                info("Get patient by ID.")
+                info("Get patient by ID. Requires ADMIN, DOCTOR or RECEPTIONIST role.")
             ) { (patientId) ->
                 respond(patientService.getPatientById(patientId))
             }
@@ -181,7 +181,7 @@ fun NormalOpenAPIRoute.patientRoutes() {
             put<PatientIdDtoIn, PatientDtoOut, PatientUpdateDtoIn, UserPrincipal>(
                 info(
                     "Updates patient with given change set " +
-                            "- note you should send just the values that changed and not whole entity."
+                            "- note you should send just the values that changed and not whole entity. Requires ADMIN, DOCTOR or RECEPTIONIST role."
                 )
             ) { (patientId), updateDto ->
                 val principal = principal()
