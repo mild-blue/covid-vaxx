@@ -22,7 +22,7 @@ export class AlertService {
       duration: 0,
       data: {
         html: message,
-        duration: 4000
+        duration: 8000
       },
       panelClass: 'error-snack-bar'
     });
@@ -38,9 +38,9 @@ export class AlertService {
     }
   }
 
-  public noPatientFoundDialog(personalNumber: string): void {
+  public noPatientFoundDialog(personalOrInsuranceNumber: string, isForeigner: boolean): void {
     this._dialog.open(NoPatientFoundComponent, {
-      data: { personalNumber }
+      data: { personalOrInsuranceNumber, isForeigner }
     });
   }
 

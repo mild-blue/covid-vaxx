@@ -1,3 +1,4 @@
 export interface NoPatientFoundInterface {
-  personalNumber: string;
+  personalOrInsuranceNumber: string;
+  isForeigner: boolean;
 }

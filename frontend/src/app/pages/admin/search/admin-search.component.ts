@@ -50,8 +50,9 @@ export class AdminSearchComponent {
       this.patient = await this._patientService.findPatientByPersonalOrInsuranceNumber(personalNumber, insuranceNumber);
       this._searchHistoryService.saveSearch(personalNumber ?? insuranceNumber ?? '', personalNumber === undefined);
       this._updateSearchHistory();
+      // TODO: this condition is never met because if the patient is not found, exception is raised
       if (!this.patient) {
-        this._alertService.noPatientFoundDialog(personalNumber ?? 'aa');
+        this._alertService.noPatientFoundDialog(personalNumber  ?? insuranceNumber ?? '', personalNumber === undefined);
       } else {
         await this._router.navigate(['/admin/patient', this.patient.id]);
       }
