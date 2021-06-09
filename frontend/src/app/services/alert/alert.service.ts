@@ -22,7 +22,7 @@ export class AlertService {
       duration: 0,
       data: {
         html: message,
-        duration: 4000
+        duration: 8000
       },
       panelClass: 'error-snack-bar'
     });

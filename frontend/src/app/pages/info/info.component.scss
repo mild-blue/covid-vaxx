@@ -67,6 +67,10 @@ $icon-size: 40px;
     &:nth-child(5) {
       animation-delay: #{$animation-delay * 5}s;
     }
+
+    &:nth-child(6) {
+      animation-delay: #{$animation-delay * 6}s;
+    }
   }
 }
 
