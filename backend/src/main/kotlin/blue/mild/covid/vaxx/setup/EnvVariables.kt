@@ -153,12 +153,12 @@ enum class EnvVariables {
     RECAPTCHA_SECRET_KEY,
 
     /**
-     * Use production ISIN to register vaccinations.
-     */
-    ENABLE_ISIN_REGISTRATION,
-
-    /**
      * Use ISIN to validate patients data.
      */
-    ENABLE_ISIN_PATIENT_VALIDATION
+    ENABLE_ISIN_PATIENT_VALIDATION,
+
+    /**
+     * Use ISIN to validate and register patients and register vaccinations.
+     */
+    ENABLE_ISIN_CLIENT
 }

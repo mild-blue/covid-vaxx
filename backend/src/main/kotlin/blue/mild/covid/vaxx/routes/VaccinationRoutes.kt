@@ -5,13 +5,11 @@ import blue.mild.covid.vaxx.dto.request.VaccinationDtoIn
 import blue.mild.covid.vaxx.dto.request.query.PatientIdQueryDtoIn
 import blue.mild.covid.vaxx.dto.request.query.VaccinationIdDtoIn
 import blue.mild.covid.vaxx.dto.response.VaccinationDetailDtoOut
-import blue.mild.covid.vaxx.dto.response.toPatientVaccinationDetailDto
 import blue.mild.covid.vaxx.extensions.asContextAware
 import blue.mild.covid.vaxx.extensions.closestDI
 import blue.mild.covid.vaxx.extensions.createLogger
 import blue.mild.covid.vaxx.security.auth.UserPrincipal
 import blue.mild.covid.vaxx.security.auth.authorizeRoute
-import blue.mild.covid.vaxx.service.MedicalRegistrationService
 import blue.mild.covid.vaxx.service.VaccinationService
 import com.papsign.ktor.openapigen.route.info
 import com.papsign.ktor.openapigen.route.path.auth.get
@@ -29,7 +27,8 @@ fun NormalOpenAPIRoute.vaccinationRoutes() {
     val logger = createLogger("VaccinationRoutes")
 
     val vaccinationService by closestDI().instance<VaccinationService>()
-    val medicalRegistrationService by closestDI().instance<MedicalRegistrationService>()
+    // TODO register vaccination
+    // val isinService by closestDI().instance<IsinInterfaceService>()
 
     authorizeRoute(requireOneOf = setOf(UserRole.ADMIN, UserRole.DOCTOR)) {
         route(Routes.vaccination) {
@@ -59,7 +58,8 @@ fun NormalOpenAPIRoute.vaccinationRoutes() {
                 val vaccination = vaccinationService.get(vaccinationId)
 
                 logger.info { "Vaccination was successful, registering in the medical system." }
-                medicalRegistrationService.registerPatientsVaccination(vaccination.toPatientVaccinationDetailDto())
+                // TODO register vaccination
+                // isinService.registerPatientsVaccination(vaccination.toPatientVaccinationDetailDto())
                 logger.info { "Job sent successfully." }
 
                 respond(vaccination)

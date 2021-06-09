@@ -106,12 +106,12 @@ fun DI.MainBuilder.bindConfiguration() {
         )
     }
 
-    bind<Boolean>(EnvVariables.ENABLE_ISIN_REGISTRATION) with singleton {
-        getEnvOrLogDefault(EnvVariables.ENABLE_ISIN_REGISTRATION, "false").toBoolean()
-    }
-
     bind<Boolean>(EnvVariables.ENABLE_ISIN_PATIENT_VALIDATION) with singleton {
         getEnvOrLogDefault(EnvVariables.ENABLE_ISIN_PATIENT_VALIDATION, "false").toBoolean()
+    }
+
+    bind<Boolean>(EnvVariables.ENABLE_ISIN_CLIENT) with singleton {
+        getEnvOrLogDefault(EnvVariables.ENABLE_ISIN_CLIENT, "false").toBoolean()
     }
 
     bind<IsinConfigurationDto>() with singleton {

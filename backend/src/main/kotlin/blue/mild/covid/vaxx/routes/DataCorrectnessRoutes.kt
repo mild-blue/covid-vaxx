@@ -11,7 +11,7 @@ import blue.mild.covid.vaxx.extensions.createLogger
 import blue.mild.covid.vaxx.security.auth.UserPrincipal
 import blue.mild.covid.vaxx.security.auth.authorizeRoute
 import blue.mild.covid.vaxx.service.DataCorrectnessService
-import blue.mild.covid.vaxx.service.IsinService
+import blue.mild.covid.vaxx.service.IsinInterfaceService
 import blue.mild.covid.vaxx.service.PatientService
 import com.papsign.ktor.openapigen.route.info
 import com.papsign.ktor.openapigen.route.path.auth.get
@@ -30,7 +30,7 @@ fun NormalOpenAPIRoute.dataCorrectnessRoutes() {
 
     val dataCorrectnessService by closestDI().instance<DataCorrectnessService>()
     val patientService by closestDI().instance<PatientService>()
-    val isinService by closestDI().instance<IsinService>()
+    val isinService by closestDI().instance<IsinInterfaceService>()
 
     authorizeRoute {
         route(Routes.dataCorrectness) {

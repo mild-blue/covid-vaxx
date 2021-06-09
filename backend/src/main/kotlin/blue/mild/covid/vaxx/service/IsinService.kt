@@ -22,7 +22,7 @@ import java.util.Locale
 class IsinService(
     private val configuration: IsinConfigurationDto,
     private val isinClient: HttpClient
-) {
+) : IsinInterfaceService {
 
     private val userIdentification =
         "?pcz=${configuration.pracovnik.pcz}&pracovnikNrzpCislo=${configuration.pracovnik.nrzpCislo}"
@@ -32,7 +32,7 @@ class IsinService(
         const val URL_UPDATE_PATIENT_INFO = "pacienti/AktualizujKontaktniUdajePacienta";
     }
 
-    suspend fun getPatientByParameters(
+    override suspend fun getPatientByParameters(
         jmeno: String, prijmeni: String, rodneCislo: String
     ): IsinGetPatientByParametersResultDto {
         val firstName = jmeno.trim().uppercase(Locale.getDefault())
@@ -50,7 +50,7 @@ class IsinService(
         )
     }
 
-    suspend fun tryExportPatientContactInfo(patient: PatientDtoOut, notes: String?): Boolean {
+    override suspend fun tryExportPatientContactInfo(patient: PatientDtoOut, notes: String?): Boolean {
         return if (patient.isinId != null) {
             runCatching {
                 val contactInfoOut = exportPatientContactInfo(
@@ -85,7 +85,7 @@ class IsinService(
         }
     }
 
-    suspend fun exportPatientContactInfo(contactInfo: IsinPostPatientContactInfoDtoIn): IsinPostPatientContactInfoDto {
+    private suspend fun exportPatientContactInfo(contactInfo: IsinPostPatientContactInfoDtoIn): IsinPostPatientContactInfoDto {
         val url = createIsinURL(URL_UPDATE_PATIENT_INFO)
         val data = if (contactInfo.pracovnik == null)
             contactInfo.copy(pracovnik = configuration.pracovnik)
