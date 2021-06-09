@@ -2,10 +2,10 @@ package blue.mild.covid.vaxx.service.dummy
 
 import blue.mild.covid.vaxx.dto.internal.IsinGetPatientByParametersResultDto
 import blue.mild.covid.vaxx.dto.response.PatientDtoOut
-import blue.mild.covid.vaxx.service.IsinInterfaceService
+import blue.mild.covid.vaxx.service.IsinServiceInterface
 import mu.KLogging
 
-class DummyIsinService : IsinInterfaceService {
+class DummyIsinService : IsinServiceInterface {
 
     private companion object : KLogging()
 

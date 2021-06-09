@@ -14,7 +14,7 @@ import blue.mild.covid.vaxx.extensions.createLogger
 import blue.mild.covid.vaxx.security.ddos.CaptchaVerificationService
 import blue.mild.covid.vaxx.security.ddos.RequestVerificationService
 import blue.mild.covid.vaxx.service.DataCorrectnessService
-import blue.mild.covid.vaxx.service.IsinInterfaceService
+import blue.mild.covid.vaxx.service.IsinServiceInterface
 import blue.mild.covid.vaxx.service.IsinService
 import blue.mild.covid.vaxx.service.IsinValidationService
 import blue.mild.covid.vaxx.service.LocationService
@@ -171,7 +171,7 @@ fun DI.MainBuilder.registerClasses() {
     registerProductionOrDummy<PatientValidationService, IsinValidationService, DummyPatientValidationService>(
         EnvVariables.ENABLE_ISIN_PATIENT_VALIDATION
     )
-    registerProductionOrDummy<IsinInterfaceService, IsinService, DummyIsinService>(
+    registerProductionOrDummy<IsinServiceInterface, IsinService, DummyIsinService>(
         EnvVariables.ENABLE_ISIN_CLIENT
     )
 }

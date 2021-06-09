@@ -22,7 +22,7 @@ import java.util.Locale
 class IsinService(
     private val configuration: IsinConfigurationDto,
     private val isinClient: HttpClient
-) : IsinInterfaceService {
+) : IsinServiceInterface {
 
     private val userIdentification =
         "?pcz=${configuration.pracovnik.pcz}&pracovnikNrzpCislo=${configuration.pracovnik.nrzpCislo}"

@@ -7,7 +7,7 @@ import mu.KLogging
 
 
 class IsinValidationService(
-    private val isinService: IsinService
+    private val isinService: IsinServiceInterface
 ) : PatientValidationService {
 
     private enum class VyhledaniPacientaResult {
@@ -42,7 +42,7 @@ class IsinValidationService(
 
         logger.info {
             "Data from ISIN for patient ${firstName}/${lastName}/${personalNumber}: " +
-                    "result=${result.result}, resultMessage=${result.resultMessage}, patientId=${result.patientId}."
+            "result=${result.result}, resultMessage=${result.resultMessage}, patientId=${result.patientId}."
         }
 
         return when (result.result) {

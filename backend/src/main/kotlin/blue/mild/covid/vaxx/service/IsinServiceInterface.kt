@@ -3,7 +3,7 @@ package blue.mild.covid.vaxx.service
 import blue.mild.covid.vaxx.dto.internal.IsinGetPatientByParametersResultDto
 import blue.mild.covid.vaxx.dto.response.PatientDtoOut
 
-interface IsinInterfaceService {
+interface IsinServiceInterface {
     suspend fun getPatientByParameters(
         jmeno: String, prijmeni: String, rodneCislo: String
     ): IsinGetPatientByParametersResultDto
