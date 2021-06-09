@@ -30,6 +30,7 @@ import org.kodein.di.ktor.closestDI
 import org.kodein.di.ktor.di
 import org.kodein.di.singleton
 import java.time.Duration
+import java.time.LocalDate
 import kotlin.test.assertEquals
 import kotlin.test.assertNotNull
 
@@ -154,6 +155,7 @@ open class ServerTestBase(needsDatabase: Boolean = true) : DatabaseTestBase(need
         userId = DatabaseData.admin.id,
         userRole = DatabaseData.admin.role,
         vaccineSerialNumber = "some data",
+        vaccineExpiration = LocalDate.now(),
         nurseId = DatabaseData.nurses.first().id
     )
 

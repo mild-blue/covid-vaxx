@@ -16,6 +16,7 @@ import org.jetbrains.exposed.sql.select
 import org.jetbrains.exposed.sql.transactions.experimental.newSuspendedTransaction
 import org.jetbrains.exposed.sql.update
 import java.time.Instant
+import java.time.LocalDate
 
 @Suppress("LongParameterList") // it's a repository, we're fine with this
 class VaccinationRepository {
@@ -27,6 +28,7 @@ class VaccinationRepository {
         bodyPart: VaccinationBodyPart,
         vaccinatedOn: Instant,
         vaccineSerialNumber: String,
+        vaccineExpiration: LocalDate,
         userPerformingVaccination: EntityId,
         nurseId: EntityId? = null,
         notes: String? = null
@@ -36,6 +38,7 @@ class VaccinationRepository {
             it[Vaccinations.bodyPart] = bodyPart
             it[Vaccinations.vaccinatedOn] = vaccinatedOn
             it[Vaccinations.vaccineSerialNumber] = vaccineSerialNumber
+            it[Vaccinations.vaccineExpiration] = vaccineExpiration
             it[Vaccinations.userPerformingVaccination] = userPerformingVaccination
             it[Vaccinations.nurseId] = nurseId
             it[Vaccinations.notes] = notes
@@ -57,6 +60,7 @@ class VaccinationRepository {
         bodyPart: VaccinationBodyPart? = null,
         vaccinatedOn: Instant? = null,
         vaccineSerialNumber: String? = null,
+        vaccineExpiration: LocalDate? = null,
         userPerformingVaccination: EntityId? = null,
         nurseId: EntityId? = null,
         notes: String? = null,
@@ -64,7 +68,7 @@ class VaccinationRepository {
     ): Boolean = newSuspendedTransaction {
         val isUpdateNecessary =
             bodyPart ?: vaccinatedOn
-            ?: vaccineSerialNumber ?: userPerformingVaccination
+            ?: vaccineSerialNumber ?: vaccineExpiration ?: userPerformingVaccination
             ?: nurseId ?: notes ?: exportedToIsinOn
 
         // if so, perform update query
@@ -76,6 +80,7 @@ class VaccinationRepository {
                         updateIfNotNull(bodyPart, Vaccinations.bodyPart)
                         updateIfNotNull(vaccinatedOn, Vaccinations.vaccinatedOn)
                         updateIfNotNull(vaccineSerialNumber, Vaccinations.vaccineSerialNumber)
+                        updateIfNotNull(vaccineExpiration, Vaccinations.vaccineExpiration)
                         updateIfNotNull(userPerformingVaccination, Vaccinations.userPerformingVaccination)
                         updateIfNotNull(nurseId, Vaccinations.nurseId)
                         updateIfNotNull(notes, Vaccinations.notes)
@@ -113,6 +118,7 @@ class VaccinationRepository {
                         bodyPart = it[Vaccinations.bodyPart],
                         vaccinatedOn = it[Vaccinations.vaccinatedOn],
                         vaccineSerialNumber = it[Vaccinations.vaccineSerialNumber],
+                        vaccineExpiration = it[Vaccinations.vaccineExpiration],
                         doctor = PersonnelDtoOut(
                             id = it[Users.id],
                             firstName = it[Users.firstName],

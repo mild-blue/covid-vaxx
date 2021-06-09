@@ -12,3 +12,5 @@ data class EntityNotFoundException(val entityName: String, val parameterName: St
 data class InvalidSlotCreationRequest(override val message: String, val entity: CreateVaccinationSlotsDtoIn) : Exception(message)
 
 data class NoVaccinationSlotsFoundException(override val message: String = "No slots available for given query.") : Exception(message)
+
+data class HttpParametersException(override val message: String) : Exception(message)

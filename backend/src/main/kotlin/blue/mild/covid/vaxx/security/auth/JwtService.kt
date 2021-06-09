@@ -7,9 +7,12 @@ import com.auth0.jwt.JWT
 import com.auth0.jwt.JWTVerifier
 import com.auth0.jwt.algorithms.Algorithm
 import io.ktor.auth.jwt.JWTCredential
+import io.ktor.http.toHttpDateString
 import mu.KLogging
 import pw.forst.katlib.applyIf
 import pw.forst.katlib.toUuid
+import java.time.LocalDate
+import java.time.format.DateTimeFormatter
 import java.util.Date
 
 /**
@@ -24,6 +27,7 @@ class JwtService(
         const val ROLE = "role"
         const val NURSE = "nurse"
         const val VACCINATION_SERIAL_NUMBER = "vaxxserial"
+        const val VACCINATION_EXPIRATION = "vaxxexpir"
     }
 
     /**
@@ -47,6 +51,7 @@ class JwtService(
             .withSubject(principal.userId.toString())
             .withClaim(ROLE, principal.userRole.name)
             .withClaim(VACCINATION_SERIAL_NUMBER, principal.vaccineSerialNumber.trim())
+            .withClaim(VACCINATION_EXPIRATION, principal.vaccineExpiration.format(DateTimeFormatter.ISO_LOCAL_DATE))
             .applyIf(principal.nurseId != null) {
                 withClaim(NURSE, principal.nurseId.toString())
             }
@@ -64,7 +69,11 @@ class JwtService(
                     userId = subject.toUuid(),
                     userRole = UserRole.valueOf(claims.getValue(ROLE).asString()),
                     nurseId = claims[NURSE]?.takeIf { !it.isNull }?.asString()?.toUuid(),
-                    vaccineSerialNumber = claims.getValue(VACCINATION_SERIAL_NUMBER).asString()
+                    vaccineSerialNumber = claims.getValue(VACCINATION_SERIAL_NUMBER).asString(),
+                    vaccineExpiration = LocalDate.parse(
+                        claims.getValue(VACCINATION_EXPIRATION).asString(),
+                        DateTimeFormatter.ISO_LOCAL_DATE
+                    )
                 )
             }
         }.getOrElse { throw InvalidJwtException("Invalid JWT!") }

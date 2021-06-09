@@ -1,5 +1,7 @@
 package blue.mild.covid.vaxx.dao.model
 
+import blue.mild.covid.vaxx.dao.model.UserLogins.nullable
+import org.jetbrains.exposed.sql.`java-time`.date
 import org.jetbrains.exposed.sql.`java-time`.timestamp
 
 /**
@@ -25,6 +27,13 @@ object Vaccinations : ManagedTable("vaccinations") {
      * Vaccine serial number set during login.
      */
     val vaccineSerialNumber = varchar("vaccine_serial_number", DatabaseTypeLength.DEFAULT_STRING)
+
+    /**
+     * Vaccine expiration date set during login.
+     *
+     * It is nullable because of the migration but it should always be set in newer versions.
+     */
+    val vaccineExpiration = date("vaccine_expiration").nullable()
 
     /**
      * What user administered vaccine.

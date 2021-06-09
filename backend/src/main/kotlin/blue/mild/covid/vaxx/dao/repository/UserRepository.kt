@@ -8,6 +8,7 @@ import org.jetbrains.exposed.sql.ResultRow
 import org.jetbrains.exposed.sql.insert
 import org.jetbrains.exposed.sql.select
 import org.jetbrains.exposed.sql.transactions.experimental.newSuspendedTransaction
+import java.time.LocalDate
 
 @Suppress("LongParameterList") // it's a repository, we're fine with this
 class UserRepository {
@@ -51,11 +52,13 @@ class UserRepository {
         remoteHost: String,
         callId: String?,
         vaccineSerialNumber: String? = null,
+        vaccineExpiration: LocalDate? = null,
         nurseId: EntityId? = null
     ): EntityId = newSuspendedTransaction {
         UserLogins.insert {
             it[UserLogins.userId] = userId
             it[UserLogins.vaccineSerialNumber] = vaccineSerialNumber
+            it[UserLogins.vaccineExpiration] = vaccineExpiration
             it[UserLogins.nurseId] = nurseId
             it[UserLogins.success] = success
             it[UserLogins.remoteHost] = remoteHost
