@@ -107,6 +107,9 @@ dependencies {
     // validation
     implementation("com.googlecode.libphonenumber", "libphonenumber", "8.12.23")
 
+    // excel data import
+    implementation("org.apache.poi", "poi-ooxml", "3.17")
+
     // tests
     testImplementation("io.mockk", "mockk", "1.11.0")
 
