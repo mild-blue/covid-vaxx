@@ -10,6 +10,7 @@ Content-Type: application/json
   "vaccineExpiration": "2024-06-04T00:00:00.000Z"
 }
 > {% client.global.set("auth_token", response.body["token"]); %}
+
 ###
 
 POST {{url}}/admin/locations?captcha=1234
@@ -28,6 +29,7 @@ Authorization: Bearer {{auth_token}}
   "zipCode": 17000
 }
 > {% client.global.set("location_id", response.body["id"]); %}
+
 ###
 
 POST {{url}}/admin/vaccination-slots?captcha=1234
@@ -38,8 +40,9 @@ Authorization: Bearer {{auth_token}}
   "locationId": "{{location_id}}",
   "from": "2021-06-18T13:00:00.00000000Z",
   "to": "2021-06-18T20:00:00.00000000Z",
-  "bandwidth": 4,
-  "durationMillis": 75600
+  "bandwidth": 5,
+  "durationMillis": 75600,
+  "queueOffset": 4
 }
 
 ###
@@ -98,6 +101,21 @@ Content-Type: application/json
     "healthStateDisclosureConfirmation": true,
     "gdprAgreement": true
   }
+}
+
+###
+
+// register user
+POST {{url}}/admin/register?captcha=1234
+Content-Type: application/json
+Authorization: Bearer {{auth_token}}
+
+{
+  "firstName": "Petra",
+  "lastName": "Nováková",
+  "email": "petra@seznam.cz",
+  "password": "pass",
+  "role": "RECEPTIONIST"
 }
 
 ###

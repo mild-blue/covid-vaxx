@@ -48,10 +48,10 @@ fun NormalOpenAPIRoute.dataCorrectnessRoutes() {
         }
     }
 
-    authorizeRoute(requireOneOf = setOf(UserRole.ADMIN, UserRole.DOCTOR)) {
+    authorizeRoute(requireOneOf = setOf(UserRole.ADMIN, UserRole.DOCTOR, UserRole.RECEPTIONIST)) {
         route(Routes.dataCorrectness) {
             post<Unit, DataCorrectnessConfirmationDetailDtoOut, DataCorrectnessDtoIn, UserPrincipal>(
-                info("Register that the data about patient are correct. Requires DOCTOR role.")
+                info("Register that the data about patient are correct. Requires ADMIN, DOCTOR or RECEPTIONIST role.")
             ) { _, request ->
                 val principal = principal()
                 logger.info { "User ${principal.userId} verified data for ${request.patientId} with result ${request.dataAreCorrect}." }

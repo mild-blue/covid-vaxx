@@ -373,7 +373,7 @@
                                         Na portálu <a href="https://ocko.uzis.cz" target="_blank">ocko.uzis.cz</a> (Očkovací portál občana) lze certifikát stáhnout a vytisknout.
                                         Certifikát Vám bude zároveň poslán e-mailem, který jste zadávali při registraci na očkování (zkontrolujte pro jistotu i složku Spam či Hromadné).
                                         <br>
-                                        V případě dotazů se obraťte na infolinku Prahy 7 každý všední den od 8:00 do 16:00 hodin na čísle: ${emailRequestDto.location.phoneNumber}. V případě dotazů technického typu napište email na ockovani@mild.blue.
+                                        V případě dotazů se obraťte na infolinku Prahy 7 každý všední den od 8:00 do 16:00 hodin na telefon ${emailRequestDto.location.phoneNumber} nebo na email ockovani@praha7.cz.
                                     </p>
                                     <p>
                                         Aktuality najdete na: <a href="https://www.praha7.cz/ockovani" target="_blank">www.praha7.cz/ockovani</a>

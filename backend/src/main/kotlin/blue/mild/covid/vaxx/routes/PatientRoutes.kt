@@ -131,10 +131,10 @@ fun NormalOpenAPIRoute.patientRoutes() {
     }
 
     // admin routes for registered users only
-    authorizeRoute(requireOneOf = setOf(UserRole.ADMIN, UserRole.DOCTOR)) {
+    authorizeRoute(requireOneOf = setOf(UserRole.ADMIN, UserRole.DOCTOR, UserRole.RECEPTIONIST)) {
         route(Routes.adminSectionPatient) {
             get<PatientByPersonalOrInsuranceNumberQueryDtoIn, PatientDtoOut, UserPrincipal>(
-                info("Get patient by personal or insurance number.")
+                info("Get patient by personal or insurance number. Requires ADMIN, DOCTOR or RECEPTIONIST role.")
             ) { patientQuery ->
                 val principal = principal()
                 if (logger.isDebugEnabled) {
@@ -168,7 +168,7 @@ fun NormalOpenAPIRoute.patientRoutes() {
             }
 
             get<PatientIdDtoIn, PatientDtoOut, UserPrincipal>(
-                info("Get patient by ID.")
+                info("Get patient by ID. Requires ADMIN, DOCTOR or RECEPTIONIST role.")
             ) { (patientId) ->
                 respond(patientService.getPatientById(patientId))
             }
@@ -185,7 +185,7 @@ fun NormalOpenAPIRoute.patientRoutes() {
             put<PatientIdDtoIn, PatientDtoOut, PatientUpdateDtoIn, UserPrincipal>(
                 info(
                     "Updates patient with given change set " +
-                            "- note you should send just the values that changed and not whole entity."
+                            "- note you should send just the values that changed and not whole entity. Requires ADMIN, DOCTOR or RECEPTIONIST role."
                 )
             ) { (patientId), updateDto ->
                 val principal = principal()
