@@ -5,11 +5,14 @@ import blue.mild.covid.vaxx.dto.request.VaccinationDtoIn
 import blue.mild.covid.vaxx.dto.request.query.PatientIdQueryDtoIn
 import blue.mild.covid.vaxx.dto.request.query.VaccinationIdDtoIn
 import blue.mild.covid.vaxx.dto.response.VaccinationDetailDtoOut
+import blue.mild.covid.vaxx.dto.response.toPatientVaccinationDetailDto
 import blue.mild.covid.vaxx.extensions.asContextAware
 import blue.mild.covid.vaxx.extensions.closestDI
 import blue.mild.covid.vaxx.extensions.createLogger
 import blue.mild.covid.vaxx.security.auth.UserPrincipal
 import blue.mild.covid.vaxx.security.auth.authorizeRoute
+import blue.mild.covid.vaxx.service.IsinServiceInterface
+import blue.mild.covid.vaxx.service.PatientService
 import blue.mild.covid.vaxx.service.VaccinationService
 import com.papsign.ktor.openapigen.route.info
 import com.papsign.ktor.openapigen.route.path.auth.get
@@ -27,8 +30,8 @@ fun NormalOpenAPIRoute.vaccinationRoutes() {
     val logger = createLogger("VaccinationRoutes")
 
     val vaccinationService by closestDI().instance<VaccinationService>()
-    // TODO register vaccination
-    // val isinService by closestDI().instance<IsinInterfaceService>()
+    val patientService by closestDI().instance<PatientService>()
+    val isinService by closestDI().instance<IsinServiceInterface>()
 
     authorizeRoute(requireOneOf = setOf(UserRole.ADMIN, UserRole.DOCTOR)) {
         route(Routes.vaccination) {
@@ -55,11 +58,20 @@ fun NormalOpenAPIRoute.vaccinationRoutes() {
                 logger.info { "User ${principal.userId} vaccinated patient ${request.patientId}." }
 
                 val vaccinationId = vaccinationService.addVaccination(asContextAware(request))
-                val vaccination = vaccinationService.get(vaccinationId)
 
                 logger.info { "Vaccination was successful, registering in the medical system." }
-                // TODO register vaccination
-                // isinService.registerPatientsVaccination(vaccination.toPatientVaccinationDetailDto())
+
+                val vaccination = vaccinationService.get(vaccinationId)
+                val patient = patientService.getPatientById(request.patientId)
+
+                // Try to export vaccinatino to ISIN
+                val wasExportedToIsin = isinService.tryCreateVaccinationAndDose(
+                    vaccination.toPatientVaccinationDetailDto(),
+                    patient = patient
+                )
+                if (wasExportedToIsin)
+                    vaccinationService.exportedToIsin(vaccinationId)
+
                 logger.info { "Job sent successfully." }
 
                 respond(vaccination)

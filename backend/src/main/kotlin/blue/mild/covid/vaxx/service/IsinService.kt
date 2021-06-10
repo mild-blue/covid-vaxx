@@ -1,9 +1,15 @@
 package blue.mild.covid.vaxx.service
 
+import blue.mild.covid.vaxx.dao.model.VaccinationBodyPart
 import blue.mild.covid.vaxx.dto.config.IsinConfigurationDto
 import blue.mild.covid.vaxx.dto.internal.IsinGetPatientByParametersResultDto
 import blue.mild.covid.vaxx.dto.internal.IsinPostPatientContactInfoDto
 import blue.mild.covid.vaxx.dto.internal.IsinPostPatientContactInfoDtoIn
+import blue.mild.covid.vaxx.dto.internal.IsinVaccinationCreateOrUpdateDtoIn
+import blue.mild.covid.vaxx.dto.internal.IsinVaccinationDoseCreateOrUpdateDtoIn
+import blue.mild.covid.vaxx.dto.internal.IsinVaccinationDoseDto
+import blue.mild.covid.vaxx.dto.internal.IsinVaccinationDto
+import blue.mild.covid.vaxx.dto.internal.StoreVaccinationRequestDto
 import blue.mild.covid.vaxx.dto.response.PatientDtoOut
 import blue.mild.covid.vaxx.utils.normalizePersonalNumber
 import com.fasterxml.jackson.databind.JsonNode
@@ -17,6 +23,8 @@ import io.ktor.http.ContentType
 import io.ktor.http.contentType
 import mu.KLogging
 import java.net.URL
+import java.time.LocalTime
+import java.time.ZoneId
 import java.util.Locale
 
 
@@ -31,6 +39,8 @@ class IsinService(
     private companion object : KLogging() {
         const val URL_GET_PATIENT_BY_PARAMETERS = "pacienti/VyhledatDleJmenoPrijmeniRc";
         const val URL_UPDATE_PATIENT_INFO = "pacienti/AktualizujKontaktniUdajePacienta";
+        const val URL_CREATE_OR_CHANGE_VACCINATION = "vakcinace/VytvorNeboZmenVakcinaci";
+        const val URL_CREATE_OR_CHANGE_DOSE = "vakcinace/VytvorNeboZmenDavku";
     }
 
     override suspend fun getPatientByParameters(
@@ -95,6 +105,103 @@ class IsinService(
             contactInfo.copy(pracovnik = configuration.pracovnik)
         else
             contactInfo
+
+        logger.info { "Executing ISIN HTTP call." }
+        return isinClient.post<HttpResponse>(url) {
+            contentType(ContentType.Application.Json)
+            accept(ContentType.Application.Json)
+            body = data
+        }.receive()
+    }
+
+    override suspend fun tryCreateVaccinationAndDose(
+        vaccination: StoreVaccinationRequestDto,
+        patient: PatientDtoOut
+    ): Boolean {
+        if (patient.isinId == null) {
+            logger.info("No ISIN ID provided for patient ${patient.id}. Skipping vaccination creating in ISIN.")
+            return false
+        }
+        if (vaccination.vaccineExpiration == null) {
+            logger.info("No vaccine expiration provided for vaccination ${vaccination.vaccinationId}. Skipping vaccination creating in ISIN.")
+            return false
+        }
+
+        val vaccinationExpirationInstant = vaccination.vaccineExpiration.atTime(LocalTime.MIDNIGHT).atZone(ZoneId.systemDefault()).toInstant();
+
+        val indication = if (patient.indication == null || patient.indication.isBlank())
+            "J01"
+        else
+            patient.indication
+
+        return runCatching {
+            val isinVaccination = createVaccination(
+                IsinVaccinationCreateOrUpdateDtoIn(
+                    id = null,
+                    pacientId = patient.isinId,
+                    typOckovaniKod = "CO19",
+                    indikace = listOf(indication),
+                    indikaceJina = configuration.indikaceJina
+                )
+            )
+
+            if (isinVaccination.id == null) {
+                throw NoSuchFieldException("We expect ISIN return non null vaccination id from create vaccination api call")
+            }
+
+            logger.debug("Creating vaccination in ISIN was successful for patient with ISIN ID ${patient.isinId}.")
+            logger.debug("Data obtained from ISIN: $isinVaccination")
+
+            val dose = createVaccinationDose(
+                IsinVaccinationDoseCreateOrUpdateDtoIn(
+                    id = null,
+                    vakcinaceId = isinVaccination.id,
+                    ockovaciLatkaKod = configuration.ockovaciLatkaKod,
+                    datumVakcinace = vaccination.vaccinatedOn,
+                    typVykonuKod = null,
+                    sarze = vaccination.vaccineSerialNumber,
+                    aplikacniCestaKod = "IM",
+                    mistoAplikaceKod = if (vaccination.bodyPart == VaccinationBodyPart.DOMINANT_HAND) "DP" else "NP",
+                    expirace = vaccinationExpirationInstant,
+                    poznamka = vaccination.notes,
+                    stav = null
+                )
+            )
+
+            logger.debug("Creating vaccination dose in ISIN was successful for patient with ISIN ID ${patient.isinId}.")
+            logger.debug("Data obtained from ISIN: $dose")
+
+            logger.info("Exporting vaccination to ISIN was successful for patient with ISIN ID ${patient.isinId}.")
+            true
+        }.getOrElse {
+            logger.error(it) {
+                "Exporting vaccination to ISIN failed for patient with ISIN ID ${patient.isinId}"
+            }
+            false
+        }
+    }
+
+    private suspend fun createVaccination(vaccinationDtoIn: IsinVaccinationCreateOrUpdateDtoIn): IsinVaccinationDto {
+        val url = createIsinURL(URL_CREATE_OR_CHANGE_VACCINATION)
+        val data = if (vaccinationDtoIn.pracovnik == null)
+            vaccinationDtoIn.copy(pracovnik = configuration.pracovnik)
+        else
+            vaccinationDtoIn
+
+        logger.info { "Executing ISIN HTTP call." }
+        return isinClient.post<HttpResponse>(url) {
+            contentType(ContentType.Application.Json)
+            accept(ContentType.Application.Json)
+            body = data
+        }.receive()
+    }
+
+    private suspend fun createVaccinationDose(vaccinationDoseDtoIn: IsinVaccinationDoseCreateOrUpdateDtoIn): IsinVaccinationDoseDto {
+        val url = createIsinURL(URL_CREATE_OR_CHANGE_DOSE)
+        val data = if (vaccinationDoseDtoIn.pracovnik == null)
+            vaccinationDoseDtoIn.copy(pracovnik = configuration.pracovnik)
+        else
+            vaccinationDoseDtoIn
 
         logger.info { "Executing ISIN HTTP call." }
         return isinClient.post<HttpResponse>(url) {

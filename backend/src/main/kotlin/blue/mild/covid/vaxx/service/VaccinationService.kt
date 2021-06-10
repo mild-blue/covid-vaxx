@@ -7,11 +7,13 @@ import blue.mild.covid.vaxx.dto.internal.ContextAware
 import blue.mild.covid.vaxx.dto.request.VaccinationDtoIn
 import blue.mild.covid.vaxx.dto.response.VaccinationDetailDtoOut
 import blue.mild.covid.vaxx.error.entityNotFound
+import pw.forst.katlib.TimeProvider
 import pw.forst.katlib.whenFalse
 import java.time.Instant
 
 class VaccinationService(
-    private val vaccinationRepository: VaccinationRepository
+    private val vaccinationRepository: VaccinationRepository,
+    private val instantTimeProvider: TimeProvider<Instant>
 ) {
     /**
      * Returns [VaccinationDetailDtoOut] if the patient was vaccinated.
@@ -30,7 +32,7 @@ class VaccinationService(
     /**
      * Register in database that [vaccinationId] was exported to ISIN.
      */
-    suspend fun exportedToIsin(vaccinationId: EntityId, storedOn: Instant) {
+    suspend fun exportedToIsin(vaccinationId: EntityId, storedOn: Instant = instantTimeProvider.now()) {
         vaccinationRepository.updateVaccination(
             vaccinationId = vaccinationId,
             exportedToIsinOn = storedOn
