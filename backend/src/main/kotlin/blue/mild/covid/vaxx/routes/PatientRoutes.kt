@@ -63,11 +63,13 @@ fun NormalOpenAPIRoute.patientRoutes() {
                 "Patient registration request - personal number ${patientRegistration.personalNumber}. Executing captcha verification."
             }
             captchaService.verify(recaptchaToken, request.determineRealIp())
-            logger.info { "Captcha token verified. Validating ISIN." }
+            logger.info { "Captcha token verified." }
 
             val patientIsinId: String? = if (patientRegistration.personalNumber != null) {
+                logger.info { "Validating patient in the ISIN." }
                 // TODO  maybe validate received input before actually using ISIN
                 val patientValidationResult = patientValidation.validatePatient(patientRegistration)
+                logger.info { "Validation completed." }
 
                 when (patientValidationResult.status) {
                     PatientValidationResult.PATIENT_FOUND ->
@@ -75,15 +77,16 @@ fun NormalOpenAPIRoute.patientRoutes() {
                     PatientValidationResult.PATIENT_NOT_FOUND ->
                         throw IsinValidationException(patientValidationResult)
                     PatientValidationResult.WAS_NOT_VERIFIED -> {
-                        logger.warn { "Patient was not validated in isin due to some problem. Skipping isin validation." }
+                        logger.warn { "Patient was not validated in isin due to some problem. Skipping ISIN validation." }
                         null
                     }
                 }
             } else {
-                logger.debug { "Personal number not set. Skipping isin validation" }
+                logger.info { "Personal number not set. Skipping ISIN validation" }
                 null
             }
 
+            logger.info { "Saving patient to the database." }
             // TODO maybe run this in the transaction and then do rollback
             val patientId = patientService.savePatient(asContextAware(patientRegistration), patientIsinId)
             logger.info { "Patient saved to the database with id: ${patientId}. Booking slot." }
@@ -114,6 +117,7 @@ fun NormalOpenAPIRoute.patientRoutes() {
                 }
                 patientService.deletePatientById(patientId)
             }.getOrThrow()
+
             logger.info { "Registration successful for patient $patientId." }
 
             respond(
@@ -136,7 +140,7 @@ fun NormalOpenAPIRoute.patientRoutes() {
                 if (logger.isDebugEnabled) {
                     logger.debug {
                         "User ${principal.userId} search by personalNumber=${patientQuery.personalNumber} and " +
-                        "insuranceNumber=${patientQuery.insuranceNumber}."
+                                "insuranceNumber=${patientQuery.insuranceNumber}."
                     }
                 } else {
                     logger.info { "User ${principal.userId} search by personal number or insurance number." }

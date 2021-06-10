@@ -11,7 +11,7 @@ import io.ktor.client.call.receive
 import io.ktor.client.request.get
 import io.ktor.client.statement.HttpResponse
 import mu.KLogging
-import java.util.Locale
+import java.net.URL
 
 
 class IsinValidationService(
@@ -41,27 +41,28 @@ class IsinValidationService(
         val personalNumber = registrationDto.personalNumber
             ?: throw IllegalArgumentException("Personal number cannot be null for ISIN validation")
 
-        val response = runCatching {
+        val json = runCatching {
             getPatientResponse(
-                jmeno = firstName,
-                prijmeni = lastName,
-                rodneCislo = personalNumber
-            )
-        }.getOrElse {
+                firstName = firstName,
+                lastName = lastName,
+                personalNumber = personalNumber
+            ).receive<JsonNode>()
+        }.onSuccess {
+            logger.info { "Data retrieval from ISIN - success." }
+        }.onFailure {
+            logger.warn { "Data retrieval from ISIN - failure." }
             logger.error(it) {
                 "Getting data from ISIN server failed for patient ${firstName}/${lastName}/${personalNumber}"
             }
-            return IsinValidationResultDto( status = PatientValidationResult.WAS_NOT_VERIFIED )
-        }
+        }.getOrNull() ?: return IsinValidationResultDto(status = PatientValidationResult.WAS_NOT_VERIFIED)
 
-        val json = response.receive<JsonNode>()
         val result = json.get("vysledek")?.textValue()
         val resultMessage = json.get("vysledekZprava")?.textValue()
         val patientId = json.get("pacient")?.get("id")?.textValue()
 
         logger.info {
             "Data from ISIN for patient ${firstName}/${lastName}/${personalNumber}: " +
-            "result=${result}, resultMessage=${resultMessage}, patientId=${patientId}."
+                    "result=${result}, resultMessage=${resultMessage}, patientId=${patientId}."
         }
 
         return when (result) {
@@ -83,22 +84,36 @@ class IsinValidationService(
         }
     }
 
-    private suspend fun getPatientResponse(jmeno: String, prijmeni: String, rodneCislo: String): HttpResponse {
-        val firstName = jmeno.trim().uppercase(Locale.getDefault())
-        val lastName = prijmeni.trim().uppercase(Locale.getDefault())
-        val personalNumber = rodneCislo.normalizePersonalNumber()
+    private suspend fun getPatientResponse(firstName: String, lastName: String, personalNumber: String): HttpResponse {
+        val url = createIsinURL(
+            URL_NAJDI_PACIENTA,
+            parameters = listOf(
+                firstName.trim().uppercase(),
+                lastName.trim().uppercase(),
+                personalNumber.normalizePersonalNumber()
+            )
+        )
 
-        val url = createIsinURL(URL_NAJDI_PACIENTA, parameters = listOf(firstName, lastName, personalNumber))
+        if (!url.isUrl()) {
+            // we want to print that to the log as well as we're facing a stack overflow somewhere here
+            logger.warn { "Created ISIN URL for patient is not valid URL! - $url." }
+            throw IllegalStateException("Created ISIN URL for patient is not valid URL! - $url.")
+        }
+        logger.info { "Executing ISIN HTTP call." }
         return isinClient.get(url)
     }
+
+    private fun String.isUrl() = runCatching {
+        URL(this).toURI()
+    }.isSuccess
 
     private fun createIsinURL(
         requestUrl: String,
         baseUrl: String = configuration.rootUrl,
-        parameters: List<Any> = listOf(),
+        parameters: List<String> = listOf(),
         includeIdentification: Boolean = true
     ): String {
-        val parametersUrl = parameters.joinToString(separator = "/") { it.toString() }
+        val parametersUrl = parameters.joinToString(separator = "/")
         return "$baseUrl/$requestUrl/$parametersUrl${if (includeIdentification) userIdentification else ""}"
     }
 }
