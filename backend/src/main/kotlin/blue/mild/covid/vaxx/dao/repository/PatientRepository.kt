@@ -38,6 +38,7 @@ class PatientRepository(
      *
      * Note: use named parameters while using this method.
      */
+    @Suppress("ComplexMethod") // that's fine here
     suspend fun updatePatientChangeSet(
         id: EntityId,
         firstName: String? = null,

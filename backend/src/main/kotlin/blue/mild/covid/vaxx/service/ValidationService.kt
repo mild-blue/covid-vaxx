@@ -76,6 +76,7 @@ class ValidationService(private val questionService: QuestionService) {
      * does not pass the validation process.
      * Throws [EmptyUpdateException] if [changeSet] does not contain not null value.
      */
+    @Suppress("ComplexMethod") // that's fine here
     fun requireValidPatientUpdate(changeSet: PatientUpdateDtoIn) {
         changeSet.firstName?.also { requireNotEmptyString("firstName", it) }
         changeSet.lastName?.also { requireNotEmptyString("lastName", it) }
