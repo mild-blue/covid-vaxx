@@ -72,6 +72,21 @@
         </app-patient-data-item>
         <mat-divider></mat-divider>
         <app-patient-data-item>
+          <mat-label>Čas rezervace:</mat-label>
+          <mat-label *ngIf="patientData.vaccinationSlotDtoOut else unspecified;">
+            {{ patientData.vaccinationSlotDtoOut.from | date:'H:mm'}} -
+            {{ patientData.vaccinationSlotDtoOut.to | date:'H:mm, EEEE, d. MMMM y ' }}
+          </mat-label>
+        </app-patient-data-item>
+        <mat-divider></mat-divider>
+        <app-patient-data-item>
+          <mat-label>Validováno v ISIN:</mat-label>
+          <mat-label>
+            <app-chip [value]="!!patientData.isinId"></app-chip>
+          </mat-label>
+        </app-patient-data-item>
+        <mat-divider></mat-divider>
+        <app-patient-data-item>
           <mat-label>Ověření údajů proběhlo:</mat-label>
           <mat-label>
             <app-chip [value]="!!patientData.verified"></app-chip>
