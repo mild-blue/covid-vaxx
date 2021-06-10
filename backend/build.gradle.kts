@@ -76,7 +76,7 @@ dependencies {
 
     // logging
     implementation("io.github.microutils", "kotlin-logging", "2.0.6")
-    implementation("ch.qos.logback", "logback-classic", "1.2.3")
+    implementation("ch.qos.logback", "logback-classic", "1.3.0-alpha5")
     // if-else in logback.xml
     implementation("org.codehaus.janino", "janino", "3.1.3")
 
