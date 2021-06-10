@@ -49,8 +49,10 @@ class IsinValidationService(
             logger.info { "Data retrieval from ISIN - success." }
         }.onFailure {
             logger.warn { "Data retrieval from ISIN - failure." }
-            // TODO we think that this is the place which produces stack overflow
-            logger.error(it) {
+            // TODO #287 we think that this is the place which produces stack overflow
+            val wrappingException =
+                Exception("An exception ${it.javaClass.canonicalName} was thrown! - ${it.message}\n${it.stackTraceToString()}")
+            logger.error(wrappingException) {
                 "Getting data from ISIN server failed for patient ${firstName}/${lastName}/${personalNumber}"
             }
         }.getOrNull() ?: return IsinValidationResultDto(status = PatientValidationResult.WAS_NOT_VERIFIED)
