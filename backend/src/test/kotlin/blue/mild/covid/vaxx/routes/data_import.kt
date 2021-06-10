@@ -1,4 +1,4 @@
-package blue.mild.covid.vaxx.isin
+package blue.mild.covid.vaxx.routes
 
 import blue.mild.covid.vaxx.dao.model.EntityId
 import blue.mild.covid.vaxx.dao.model.InsuranceCompany
@@ -6,16 +6,48 @@ import blue.mild.covid.vaxx.dto.request.AnswerDtoIn
 import blue.mild.covid.vaxx.dto.request.ConfirmationDtoIn
 import blue.mild.covid.vaxx.dto.request.PatientRegistrationDtoIn
 import blue.mild.covid.vaxx.dto.request.PhoneNumberDtoIn
+import com.google.gson.Gson
+import io.ktor.client.*
+import io.ktor.client.call.*
+import io.ktor.client.features.*
+import io.ktor.client.request.*
+import io.ktor.client.statement.*
+import io.ktor.http.*
 import org.apache.poi.xssf.usermodel.XSSFWorkbook
 import java.io.File
 import java.io.FileInputStream
 
 
-fun main() {
-    println("Using environment: ")
+const val url = "https://covid-vaxx.test.mild.blue/api/patient?captcha=1234"
+val httpClient = HttpClient()
+
+suspend fun main() {
+
+    val patients = getData()
+    var i = 1
+    for (patient in patients) {
+        val patientText = Gson().toJson(patient)
+
+        try {
+            savePatient(patientText)
+        } catch (e: ClientRequestException) {
+            if (e.toString().contains("Problem occurred during ISIN validation")) {
+                val patientText2 = patientText.replace("personalNumber", "insuranceNumber")
+                savePatient(patientText2)
+            }
+        }
+        println(i++)
+    }
+
+
+}
+
+fun getData(): List<PatientRegistrationDtoIn> {
     val excelFile =
         FileInputStream(File("D:\\odrive\\GDMildTK\\Shared with Me\\Leadership\\pacienti_poliklinka_6_11.xlsx"))
     val workbook = XSSFWorkbook(excelFile)
+
+    val patients = mutableListOf<PatientRegistrationDtoIn>()
 
     val answers = listOf(
         AnswerDtoIn(
@@ -58,6 +90,7 @@ fun main() {
         gdprAgreement = true
     )
 
+
     val sheet = workbook.getSheet("rezervace")
     val rows = sheet.iterator()
     while (rows.hasNext()) {
@@ -76,30 +109,60 @@ fun main() {
             else
             -> InsuranceCompany.VZP
         }
-        val phoneNumner = PhoneNumberDtoIn(
-            number = currentRow.getCell(2).toString().substring(4),
-            countryCode = currentRow.getCell(2).toString().substring(0, 4)
-        )
-        val patientRegistrationDtoIn = PatientRegistrationDtoIn(
-            firstName = currentRow.getCell(0).toString(),
-            lastName = currentRow.getCell(1).toString(),
-            answers = answers,
-            confirmation = confirmation,
-            district = currentRow.getCell(11).toString(),
-            email = currentRow.getCell(3).toString(),
-            insuranceCompany = insuranceCompany,
-            insuranceNumber = null,
-            personalNumber = currentRow.getCell(9).toString(),
-            phoneNumber = phoneNumner,
-            zipCode = currentRow.getCell(12).toString().replace(" ","").toInt(),
-
+        val phoneNumber = (if (currentRow.getCell(2).toString().substring(0, 4) == "+420") {
+            "CZ"
+        } else {
+            null
+        })?.let {
+            PhoneNumberDtoIn(
+                number = currentRow.getCell(2).toString().substring(4),
+                countryCode = it
             )
+        }
+        val email = if (currentRow.getCell(3).toString() == "") {
+            "prosim@vyplnit.nyni"
+        } else {
+            currentRow.getCell(3).toString()
+        }
+        val patientRegistrationDtoIn = phoneNumber?.let {
+            PatientRegistrationDtoIn(
+                firstName = currentRow.getCell(0).toString(),
+                lastName = currentRow.getCell(1).toString(),
+                answers = answers,
+                confirmation = confirmation,
+                district = currentRow.getCell(11).toString(),
+                email =email,
+                insuranceCompany = insuranceCompany,
+                insuranceNumber = null,
+                personalNumber = currentRow.getCell(9).toString(),
+                phoneNumber = it,
+                zipCode = currentRow.getCell(12).toString().replace(" ", "").toInt(),
+
+                )
+        }
 
 
-        println(patientRegistrationDtoIn)
+//        println(patientRegistrationDtoIn)
+        if (patientRegistrationDtoIn != null) {
+            patients.add(patientRegistrationDtoIn)
+        }
+
     }
 
     workbook.close()
     excelFile.close()
+
+    return patients
+
+}
+
+suspend fun savePatient(patientRegistrationDtoIn: String) {
+    return httpClient.post<HttpResponse>(url) {
+        contentType(ContentType.Application.Json)
+        accept(ContentType.Application.Json)
+        body = patientRegistrationDtoIn
+    }.receive()
+
+
 }
 

@@ -110,6 +110,9 @@ dependencies {
     // excel data import
     implementation("org.apache.poi", "poi-ooxml", "3.17")
 
+    // Gson
+    implementation ("com.google.code.gson","gson","2.8.5")
+
     // tests
     testImplementation("io.mockk", "mockk", "1.11.0")
 
