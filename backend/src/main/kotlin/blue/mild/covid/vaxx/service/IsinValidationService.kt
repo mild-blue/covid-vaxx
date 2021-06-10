@@ -7,9 +7,7 @@ import blue.mild.covid.vaxx.dto.request.PatientRegistrationDtoIn
 import blue.mild.covid.vaxx.utils.normalizePersonalNumber
 import com.fasterxml.jackson.databind.JsonNode
 import io.ktor.client.HttpClient
-import io.ktor.client.call.receive
 import io.ktor.client.request.get
-import io.ktor.client.statement.HttpResponse
 import mu.KLogging
 import java.net.URL
 
@@ -46,7 +44,7 @@ class IsinValidationService(
                 firstName = firstName,
                 lastName = lastName,
                 personalNumber = personalNumber
-            ).receive<JsonNode>()
+            )
         }.onSuccess {
             logger.info { "Data retrieval from ISIN - success." }
         }.onFailure {
@@ -84,7 +82,7 @@ class IsinValidationService(
         }
     }
 
-    private suspend fun getPatientResponse(firstName: String, lastName: String, personalNumber: String): HttpResponse {
+    private suspend fun getPatientResponse(firstName: String, lastName: String, personalNumber: String): JsonNode {
         val url = createIsinURL(
             URL_NAJDI_PACIENTA,
             parameters = listOf(
