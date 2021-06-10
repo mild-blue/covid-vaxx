@@ -17,7 +17,9 @@ export const parsePatient = (data: PatientDtoOut, questions: AnsweredQuestion[])
     indication: data.indication ?? '',
     personalNumber: data.personalNumber ?? '',
     insuranceNumber: data.insuranceNumber ?? '',
-    isForeigner: !data.personalNumber
+    isForeigner: !data.personalNumber,
+    vaccinationSlotDtoOut: data.vaccinationSlotDtoOut,
+    isinId: data.isinId ?? undefined
   };
 };
 

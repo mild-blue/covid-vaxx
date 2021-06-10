@@ -1,4 +1,5 @@
 import { AnsweredQuestion } from '@app/model/AnsweredQuestion';
+import { VaccinationSlotDtoOut } from '@app/generated';
 
 export interface PatientData {
   firstName: string;
@@ -16,6 +17,8 @@ export interface PatientData {
   indication?: string;
   verified?: boolean;
   vaccinatedOn?: Date;
+  vaccinationSlotDtoOut?: VaccinationSlotDtoOut;
+  isinId?: string;
 
   [key: string]: undefined | unknown;
 }

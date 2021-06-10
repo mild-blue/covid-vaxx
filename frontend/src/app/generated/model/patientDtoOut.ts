@@ -25,6 +25,7 @@ export interface PatientDtoOut {
   indication?: string | null;
   insuranceCompany: PatientDtoOutInsuranceCompanyEnum;
   insuranceNumber?: string | null;
+  isinId?: string | null;
   lastName: string;
   personalNumber?: string | null;
   phoneNumber: string;

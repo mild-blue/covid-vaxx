@@ -16,6 +16,7 @@ export interface DataCorrectnessConfirmationDetailDtoOut {
   checked: string;
   dataAreCorrect: boolean;
   doctor: PersonnelDtoOut;
+  exportedToIsinOn?: string | null;
   id: string;
   notes?: string | null;
   nurse?: PersonnelDtoOut;
