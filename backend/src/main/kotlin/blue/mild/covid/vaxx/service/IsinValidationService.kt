@@ -49,6 +49,7 @@ class IsinValidationService(
             logger.info { "Data retrieval from ISIN - success." }
         }.onFailure {
             logger.warn { "Data retrieval from ISIN - failure." }
+            // TODO we think that this is the place which produces stack overflow
             logger.error(it) {
                 "Getting data from ISIN server failed for patient ${firstName}/${lastName}/${personalNumber}"
             }
