@@ -29,9 +29,9 @@ class IsinValidationService(
 
         val result = runCatching {
             isinService.getPatientByParameters(
-                jmeno = firstName,
-                prijmeni = lastName,
-                rodneCislo = personalNumber
+                firstName = firstName,
+                lastName = lastName,
+                personalNumber = personalNumber
             )
         }.getOrElse {
             logger.error(it) {

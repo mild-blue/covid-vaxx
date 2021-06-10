@@ -10,9 +10,11 @@ class DummyIsinService : IsinServiceInterface {
     private companion object : KLogging()
 
     override suspend fun getPatientByParameters(
-        jmeno: String, prijmeni: String, rodneCislo: String
+        firstName: String,
+        lastName: String,
+        personalNumber: String
     ): IsinGetPatientByParametersResultDto {
-        logger.warn { "NOT GETTING patient ${jmeno}/${prijmeni}/${rodneCislo} from ISIN. This should not be in the production." }
+        logger.warn { "NOT GETTING patient ${firstName}/${lastName}/${personalNumber} from ISIN. This should not be in the production." }
         return IsinGetPatientByParametersResultDto("PacientNebylNalezen", null, null)
     }
 
