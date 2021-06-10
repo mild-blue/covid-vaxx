@@ -16,6 +16,7 @@ import io.ktor.client.statement.HttpResponse
 import io.ktor.http.ContentType
 import io.ktor.http.contentType
 import mu.KLogging
+import java.net.URL
 import java.util.Locale
 
 
@@ -42,6 +43,7 @@ class IsinService(
             lastName.trim().uppercase(Locale.getDefault()),
             personalNumber.normalizePersonalNumber()
         ))
+        logger.info { "Executing ISIN HTTP call." }
         val response =  isinClient.get<HttpResponse>(url)
         val json = response.receive<JsonNode>()
 
@@ -94,6 +96,7 @@ class IsinService(
         else
             contactInfo
 
+        logger.info { "Executing ISIN HTTP call." }
         return isinClient.post<HttpResponse>(url) {
             contentType(ContentType.Application.Json)
             accept(ContentType.Application.Json)
@@ -101,13 +104,23 @@ class IsinService(
         }.receive()
     }
 
+    private fun String.isUrl() = runCatching {
+        URL(this).toURI()
+    }.isSuccess
+
     private fun createIsinURL(
         requestUrl: String,
         baseUrl: String = configuration.rootUrl,
-        parameters: List<Any> = listOf(),
+        parameters: List<String> = listOf(),
         includeIdentification: Boolean = true
     ): String {
-        val parametersUrl = parameters.joinToString(separator = "/") { it.toString() }
-        return "$baseUrl/$requestUrl/$parametersUrl${if (includeIdentification) userIdentification else ""}"
+        val parametersUrl = parameters.joinToString(separator = "/")
+        val url = "$baseUrl/$requestUrl/$parametersUrl${if (includeIdentification) userIdentification else ""}"
+        if (!url.isUrl()) {
+            // we want to print that to the log as well as we're facing a stack overflow somewhere here
+            logger.warn { "Created ISIN URL for patient is not valid URL! - $url." }
+            throw IllegalStateException("Created ISIN URL for patient is not valid URL! - $url.")
+        }
+        return url
     }
 }

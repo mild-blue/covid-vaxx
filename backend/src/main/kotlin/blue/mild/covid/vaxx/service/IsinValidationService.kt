@@ -33,12 +33,14 @@ class IsinValidationService(
                 lastName = lastName,
                 personalNumber = personalNumber
             )
-        }.getOrElse {
+        }.onSuccess {
+            logger.info { "Data retrieval from ISIN - success." }
+        }.onFailure {
+            logger.warn { "Data retrieval from ISIN - failure." }
             logger.error(it) {
                 "Getting data from ISIN server failed for patient ${firstName}/${lastName}/${personalNumber}"
             }
-            return IsinValidationResultDto(status = PatientValidationResult.WAS_NOT_VERIFIED)
-        }
+        }.getOrNull() ?: return IsinValidationResultDto(status = PatientValidationResult.WAS_NOT_VERIFIED)
 
         logger.info {
             "Data from ISIN for patient ${firstName}/${lastName}/${personalNumber}: " +
