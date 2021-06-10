@@ -20,6 +20,7 @@ export interface PatientUpdateDtoIn {
   firstName?: string | null;
   indication?: string | null;
   insuranceCompany?: PatientUpdateDtoInInsuranceCompanyEnum | null;
+  insuranceNumber?: string | null;
   lastName?: string | null;
   personalNumber?: string | null;
   phoneNumber?: PhoneNumberDtoIn;

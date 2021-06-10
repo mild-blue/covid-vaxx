@@ -269,7 +269,7 @@ export class DefaultService {
   }
 
   /**
-   * Register that the data about patient are correct. Requires DOCTOR role.
+   * Register that the data about patient are correct. Requires ADMIN, DOCTOR or RECEPTIONIST role.
    * @param dataCorrectnessDtoIn
    * @param observe set whether or not to return the data Observable as the body, response or events. defaults to returning the body.
    * @param reportProgress flag to report request and response progress.
@@ -616,23 +616,25 @@ export class DefaultService {
   }
 
   /**
-   * Get patient by personal number.
+   * Get patient by personal or insurance number. Requires ADMIN, DOCTOR or RECEPTIONIST role.
    * @param personalNumber Patient personal number
+   * @param insuranceNumber Patient insurance number
    * @param observe set whether or not to return the data Observable as the body, response or events. defaults to returning the body.
    * @param reportProgress flag to report request and response progress.
    */
-  public apiAdminPatientGet(personalNumber: string, observe?: 'body', reportProgress?: boolean, options?: { httpHeaderAccept?: 'application/json' }): Observable<PatientDtoOut>;
-  public apiAdminPatientGet(personalNumber: string, observe?: 'response', reportProgress?: boolean, options?: { httpHeaderAccept?: 'application/json' }): Observable<HttpResponse<PatientDtoOut>>;
-  public apiAdminPatientGet(personalNumber: string, observe?: 'events', reportProgress?: boolean, options?: { httpHeaderAccept?: 'application/json' }): Observable<HttpEvent<PatientDtoOut>>;
-  public apiAdminPatientGet(personalNumber: string, observe: any = 'body', reportProgress: boolean = false, options?: { httpHeaderAccept?: 'application/json' }): Observable<any> {
-    if (personalNumber === null || personalNumber === undefined) {
-      throw new Error('Required parameter personalNumber was null or undefined when calling apiAdminPatientGet.');
-    }
+  public apiAdminPatientGet(personalNumber?: string, insuranceNumber?: string, observe?: 'body', reportProgress?: boolean, options?: { httpHeaderAccept?: 'application/json' }): Observable<PatientDtoOut>;
+  public apiAdminPatientGet(personalNumber?: string, insuranceNumber?: string, observe?: 'response', reportProgress?: boolean, options?: { httpHeaderAccept?: 'application/json' }): Observable<HttpResponse<PatientDtoOut>>;
+  public apiAdminPatientGet(personalNumber?: string, insuranceNumber?: string, observe?: 'events', reportProgress?: boolean, options?: { httpHeaderAccept?: 'application/json' }): Observable<HttpEvent<PatientDtoOut>>;
+  public apiAdminPatientGet(personalNumber?: string, insuranceNumber?: string, observe: any = 'body', reportProgress: boolean = false, options?: { httpHeaderAccept?: 'application/json' }): Observable<any> {
 
     let queryParameters = new HttpParams({ encoder: this.encoder });
     if (personalNumber !== undefined && personalNumber !== null) {
       queryParameters = this.addToHttpParams(queryParameters,
         <any>personalNumber, 'personalNumber');
+    }
+    if (insuranceNumber !== undefined && insuranceNumber !== null) {
+      queryParameters = this.addToHttpParams(queryParameters,
+        <any>insuranceNumber, 'insuranceNumber');
     }
 
     let headers = this.defaultHeaders;
@@ -727,7 +729,7 @@ export class DefaultService {
   }
 
   /**
-   * Get patient by ID.
+   * Get patient by ID. Requires ADMIN, DOCTOR or RECEPTIONIST role.
    * @param id Patient ID
    * @param observe set whether or not to return the data Observable as the body, response or events. defaults to returning the body.
    * @param reportProgress flag to report request and response progress.
@@ -779,7 +781,7 @@ export class DefaultService {
   }
 
   /**
-   * Updates patient with given change set - note you should send just the values that changed and not whole entity.
+   * Updates patient with given change set - note you should send just the values that changed and not whole entity. Requires ADMIN, DOCTOR or RECEPTIONIST role.
    * @param id Patient ID
    * @param patientUpdateDtoIn
    * @param observe set whether or not to return the data Observable as the body, response or events. defaults to returning the body.
