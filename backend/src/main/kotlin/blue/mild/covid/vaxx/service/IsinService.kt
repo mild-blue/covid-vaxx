@@ -23,6 +23,8 @@ import io.ktor.http.ContentType
 import io.ktor.http.contentType
 import mu.KLogging
 import java.net.URL
+import java.net.URLEncoder
+import java.nio.charset.StandardCharsets
 import java.time.LocalTime
 import java.time.ZoneId
 import java.util.Locale
@@ -34,7 +36,7 @@ class IsinService(
 ) : IsinServiceInterface {
 
     private val userIdentification =
-        "?pcz=${configuration.pracovnik.pcz}&pracovnikNrzpCislo=${configuration.pracovnik.nrzpCislo}"
+        "?pcz=${encodeValue(configuration.pracovnik.pcz)}&pracovnikNrzpCislo=${encodeValue(configuration.pracovnik.nrzpCislo)}"
 
     private companion object : KLogging() {
         const val URL_GET_PATIENT_BY_PARAMETERS = "pacienti/VyhledatDleJmenoPrijmeniRc";
@@ -114,6 +116,7 @@ class IsinService(
         }.receive()
     }
 
+    @Suppress("ReturnCount")
     override suspend fun tryCreateVaccinationAndDose(
         vaccination: StoreVaccinationRequestDto,
         patient: PatientDtoOut
@@ -221,7 +224,7 @@ class IsinService(
         parameters: List<String> = listOf(),
         includeIdentification: Boolean = true
     ): String {
-        val parametersUrl = parameters.joinToString(separator = "/")
+        val parametersUrl = parameters.map{encodeValue(it)}.joinToString(separator = "/")
         val url = "$baseUrl/$requestUrl/$parametersUrl${if (includeIdentification) userIdentification else ""}"
         if (!url.isUrl()) {
             // we want to print that to the log as well as we're facing a stack overflow somewhere here
@@ -229,5 +232,9 @@ class IsinService(
             throw IllegalStateException("Created ISIN URL for patient is not valid URL! - $url.")
         }
         return url
+    }
+
+    private fun encodeValue(value: String): String? {
+        return URLEncoder.encode(value, StandardCharsets.UTF_8.toString()).replace("+", "%20")
     }
 }
