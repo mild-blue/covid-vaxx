@@ -3,8 +3,8 @@ Content-Type: application/json
 
 {
   "credentials": {
-    "email": "vaxx@mild.blue",
-    "password": "bluemild"
+    "email": "{{user}}",
+    "password": "{{password}}"
   },
   "vaccineSerialNumber": "test",
   "vaccineExpiration": "2024-06-04T00:00:00.000Z"
@@ -12,6 +12,15 @@ Content-Type: application/json
 > {% client.global.set("auth_token", response.body["token"]); %}
 
 ###
+# Add admin in case you are running the request on previous staging/production
+GET {{url}}/statistics
+Content-Type: application/json
+Authorization: Bearer {{auth_token}}
+
+
+
+###
+
 
 POST {{url}}/admin/locations?captcha=1234
 Content-Type: application/json

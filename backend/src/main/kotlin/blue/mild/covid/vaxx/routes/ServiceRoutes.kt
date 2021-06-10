@@ -46,9 +46,7 @@ fun NormalOpenAPIRoute.serviceRoutes() {
         }
     }
 
-    authorizeRoute(requireOneOf = setOf(UserRole.ADMIN)) {
-        route(Routes.systemStatistics).get<SystemStatisticsFilterDtoIn, SystemStatisticsDtoOut, UserPrincipal> { query ->
-            respond(systemStatisticsService.getSystemStatistics(query))
-        }
+    route(Routes.systemStatistics).get<SystemStatisticsFilterDtoIn, SystemStatisticsDtoOut> { query ->
+        respond(systemStatisticsService.getSystemStatistics(query))
     }
 }
