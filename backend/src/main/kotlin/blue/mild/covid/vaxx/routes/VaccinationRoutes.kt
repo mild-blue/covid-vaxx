@@ -59,12 +59,12 @@ fun NormalOpenAPIRoute.vaccinationRoutes() {
 
                 val vaccinationId = vaccinationService.addVaccination(asContextAware(request))
 
-                logger.info { "Vaccination was successful, registering in the medical system." }
+                logger.info { "Vaccination was successful, exporting to ISIN." }
 
                 val vaccination = vaccinationService.get(vaccinationId)
                 val patient = patientService.getPatientById(request.patientId)
 
-                // Try to export vaccinatino to ISIN
+                // Try to export vaccination to ISIN
                 val wasExportedToIsin = isinService.tryCreateVaccinationAndDose(
                     vaccination.toPatientVaccinationDetailDto(),
                     patient = patient

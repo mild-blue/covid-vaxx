@@ -55,7 +55,7 @@ class IsinService(
             lastName.trim().uppercase(Locale.getDefault()),
             personalNumber.normalizePersonalNumber()
         ))
-        logger.info { "Executing ISIN HTTP call." }
+        logger.info { "Executing ISIN HTTP call ${URL_GET_PATIENT_BY_PARAMETERS}." }
         val response =  isinClient.get<HttpResponse>(url)
         val json = response.receive<JsonNode>()
 
@@ -108,7 +108,7 @@ class IsinService(
         else
             contactInfo
 
-        logger.info { "Executing ISIN HTTP call." }
+        logger.info { "Executing ISIN HTTP call ${URL_UPDATE_PATIENT_INFO}." }
         return isinClient.post<HttpResponse>(url) {
             contentType(ContentType.Application.Json)
             accept(ContentType.Application.Json)
@@ -132,8 +132,9 @@ class IsinService(
 
         val vaccinationExpirationInstant = vaccination.vaccineExpiration.atTime(LocalTime.MIDNIGHT).atZone(ZoneId.systemDefault()).toInstant();
 
+        val defaultIndication = "J01"
         val indication = if (patient.indication == null || patient.indication.isBlank())
-            "J01"
+            defaultIndication
         else
             patient.indication
 
@@ -144,7 +145,7 @@ class IsinService(
                     pacientId = patient.isinId,
                     typOckovaniKod = "CO19",
                     indikace = listOf(indication),
-                    indikaceJina = configuration.indikaceJina
+                    indikaceJina = if (indication == defaultIndication) configuration.indikaceJina else null
                 )
             )
 
@@ -161,7 +162,7 @@ class IsinService(
                     vakcinaceId = isinVaccination.id,
                     ockovaciLatkaKod = configuration.ockovaciLatkaKod,
                     datumVakcinace = vaccination.vaccinatedOn,
-                    typVykonuKod = null,
+                    typVykonuKod = "1",
                     sarze = vaccination.vaccineSerialNumber,
                     aplikacniCestaKod = "IM",
                     mistoAplikaceKod = if (vaccination.bodyPart == VaccinationBodyPart.DOMINANT_HAND) "DP" else "NP",
@@ -184,6 +185,7 @@ class IsinService(
         }
     }
 
+    // TODO share logic with createVaccinationDose function
     private suspend fun createVaccination(vaccinationDtoIn: IsinVaccinationCreateOrUpdateDtoIn): IsinVaccinationDto {
         val url = createIsinURL(URL_CREATE_OR_CHANGE_VACCINATION)
         val data = if (vaccinationDtoIn.pracovnik == null)
@@ -191,7 +193,7 @@ class IsinService(
         else
             vaccinationDtoIn
 
-        logger.info { "Executing ISIN HTTP call." }
+        logger.info { "Executing ISIN HTTP call ${URL_CREATE_OR_CHANGE_VACCINATION}." }
         return isinClient.post<HttpResponse>(url) {
             contentType(ContentType.Application.Json)
             accept(ContentType.Application.Json)
@@ -199,6 +201,7 @@ class IsinService(
         }.receive()
     }
 
+    // TODO share logic with createVaccination function
     private suspend fun createVaccinationDose(vaccinationDoseDtoIn: IsinVaccinationDoseCreateOrUpdateDtoIn): IsinVaccinationDoseDto {
         val url = createIsinURL(URL_CREATE_OR_CHANGE_DOSE)
         val data = if (vaccinationDoseDtoIn.pracovnik == null)
@@ -206,7 +209,7 @@ class IsinService(
         else
             vaccinationDoseDtoIn
 
-        logger.info { "Executing ISIN HTTP call." }
+        logger.info { "Executing ISIN HTTP call ${URL_CREATE_OR_CHANGE_DOSE}." }
         return isinClient.post<HttpResponse>(url) {
             contentType(ContentType.Application.Json)
             accept(ContentType.Application.Json)
