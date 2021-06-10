@@ -46,6 +46,7 @@ class PatientRepository(
         district: String? = null,
         phoneNumber: String? = null,
         personalNumber: String? = null,
+        insuranceNumber: String? = null,
         email: String? = null,
         insuranceCompany: InsuranceCompany? = null,
         indication: String? = null,
@@ -56,7 +57,7 @@ class PatientRepository(
         val isPatientEntityUpdateNecessary =
             firstName ?: lastName
             ?: district ?: zipCode
-            ?: phoneNumber ?: personalNumber ?: email
+            ?: phoneNumber ?: personalNumber ?: insuranceNumber ?: email
             ?: insuranceCompany ?: registrationEmailSent ?: indication
         // if so, perform update query
         val patientUpdated = if (isPatientEntityUpdateNecessary != null) {
@@ -70,6 +71,7 @@ class PatientRepository(
                         updateIfNotNull(district, Patients.district)
                         updateIfNotNull(phoneNumber, Patients.phoneNumber)
                         updateIfNotNull(personalNumber, Patients.personalNumber)
+                        updateIfNotNull(insuranceNumber, Patients.insuranceNumber)
                         updateIfNotNull(email, Patients.email)
                         updateIfNotNull(insuranceCompany, Patients.insuranceCompany)
                         updateIfNotNull(indication, Patients.indication)

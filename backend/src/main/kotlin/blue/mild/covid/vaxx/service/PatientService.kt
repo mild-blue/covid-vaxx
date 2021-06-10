@@ -88,6 +88,7 @@ class PatientService(
             district = changeSet.district?.trim(),
             phoneNumber = changeSet.phoneNumber?.formatPhoneNumber(),
             personalNumber = changeSet.personalNumber?.let { it.normalizePersonalNumber() },
+            insuranceNumber = changeSet.insuranceNumber?.trim(),
             email = changeSet.email?.trim()?.lowercase(Locale.getDefault()),
             insuranceCompany = changeSet.insuranceCompany,
             indication = changeSet.indication?.trim(),

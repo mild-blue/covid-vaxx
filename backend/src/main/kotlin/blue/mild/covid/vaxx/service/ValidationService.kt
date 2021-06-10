@@ -80,6 +80,7 @@ class ValidationService(private val questionService: QuestionService) {
         changeSet.firstName?.also { requireNotEmptyString("firstName", it) }
         changeSet.lastName?.also { requireNotEmptyString("lastName", it) }
         changeSet.district?.also { requireNotEmptyString("district", it) }
+        changeSet.insuranceNumber?.also { requireNotEmptyString("insuranceNumber", it) }
 
         // now check specific cases
         changeSet.zipCode?.also(::requireValidZipCode)
@@ -90,7 +91,7 @@ class ValidationService(private val questionService: QuestionService) {
         // now check that at least one property is changed, so we don't perform useless update
         changeSet.firstName ?: changeSet.lastName
         ?: changeSet.district ?: changeSet.zipCode
-        ?: changeSet.personalNumber ?: changeSet.email
+        ?: changeSet.personalNumber ?: changeSet.insuranceNumber ?: changeSet.email
         ?: changeSet.answers?.takeIf { it.isNotEmpty() }
         ?: changeSet.indication
         ?: throw EmptyUpdateException()
