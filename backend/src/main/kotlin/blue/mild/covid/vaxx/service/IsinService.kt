@@ -1,9 +1,15 @@
 package blue.mild.covid.vaxx.service
 
+import blue.mild.covid.vaxx.dao.model.VaccinationBodyPart
 import blue.mild.covid.vaxx.dto.config.IsinConfigurationDto
 import blue.mild.covid.vaxx.dto.internal.IsinGetPatientByParametersResultDto
 import blue.mild.covid.vaxx.dto.internal.IsinPostPatientContactInfoDto
 import blue.mild.covid.vaxx.dto.internal.IsinPostPatientContactInfoDtoIn
+import blue.mild.covid.vaxx.dto.internal.IsinVaccinationCreateOrUpdateDtoIn
+import blue.mild.covid.vaxx.dto.internal.IsinVaccinationDoseCreateOrUpdateDtoIn
+import blue.mild.covid.vaxx.dto.internal.IsinVaccinationDoseDto
+import blue.mild.covid.vaxx.dto.internal.IsinVaccinationDto
+import blue.mild.covid.vaxx.dto.internal.StoreVaccinationRequestDto
 import blue.mild.covid.vaxx.dto.response.PatientDtoOut
 import blue.mild.covid.vaxx.utils.normalizePersonalNumber
 import com.fasterxml.jackson.databind.JsonNode
@@ -17,6 +23,10 @@ import io.ktor.http.ContentType
 import io.ktor.http.contentType
 import mu.KLogging
 import java.net.URL
+import java.net.URLEncoder
+import java.nio.charset.StandardCharsets
+import java.time.LocalTime
+import java.time.ZoneId
 import java.util.Locale
 
 
@@ -26,11 +36,13 @@ class IsinService(
 ) : IsinServiceInterface {
 
     private val userIdentification =
-        "?pcz=${configuration.pracovnik.pcz}&pracovnikNrzpCislo=${configuration.pracovnik.nrzpCislo}"
+        "?pcz=${encodeValue(configuration.pracovnik.pcz)}&pracovnikNrzpCislo=${encodeValue(configuration.pracovnik.nrzpCislo)}"
 
     private companion object : KLogging() {
         const val URL_GET_PATIENT_BY_PARAMETERS = "pacienti/VyhledatDleJmenoPrijmeniRc";
         const val URL_UPDATE_PATIENT_INFO = "pacienti/AktualizujKontaktniUdajePacienta";
+        const val URL_CREATE_OR_CHANGE_VACCINATION = "vakcinace/VytvorNeboZmenVakcinaci";
+        const val URL_CREATE_OR_CHANGE_DOSE = "vakcinace/VytvorNeboZmenDavku";
     }
 
     override suspend fun getPatientByParameters(
@@ -43,7 +55,7 @@ class IsinService(
             lastName.trim().uppercase(Locale.getDefault()),
             personalNumber.normalizePersonalNumber()
         ))
-        logger.info { "Executing ISIN HTTP call." }
+        logger.info { "Executing ISIN HTTP call ${URL_GET_PATIENT_BY_PARAMETERS}." }
         val response =  isinClient.get<HttpResponse>(url)
         val json = response.receive<JsonNode>()
 
@@ -96,7 +108,108 @@ class IsinService(
         else
             contactInfo
 
-        logger.info { "Executing ISIN HTTP call." }
+        logger.info { "Executing ISIN HTTP call ${URL_UPDATE_PATIENT_INFO}." }
+        return isinClient.post<HttpResponse>(url) {
+            contentType(ContentType.Application.Json)
+            accept(ContentType.Application.Json)
+            body = data
+        }.receive()
+    }
+
+    @Suppress("ReturnCount")
+    override suspend fun tryCreateVaccinationAndDose(
+        vaccination: StoreVaccinationRequestDto,
+        patient: PatientDtoOut
+    ): Boolean {
+        if (patient.isinId == null) {
+            logger.info("No ISIN ID provided for patient ${patient.id}. Skipping vaccination creating in ISIN.")
+            return false
+        }
+        if (vaccination.vaccineExpiration == null) {
+            logger.info("No vaccine expiration provided for vaccination ${vaccination.vaccinationId}. Skipping vaccination creating in ISIN.")
+            return false
+        }
+
+        val vaccinationExpirationInstant = vaccination.vaccineExpiration.atTime(LocalTime.MIDNIGHT).atZone(ZoneId.systemDefault()).toInstant();
+
+        val defaultIndication = "J01"
+        val indication = if (patient.indication == null || patient.indication.isBlank())
+            defaultIndication
+        else
+            patient.indication
+
+        return runCatching {
+            val isinVaccination = createVaccination(
+                IsinVaccinationCreateOrUpdateDtoIn(
+                    id = null,
+                    pacientId = patient.isinId,
+                    typOckovaniKod = "CO19",
+                    indikace = listOf(indication),
+                    indikaceJina = if (indication == defaultIndication) configuration.indikaceJina else null
+                )
+            )
+
+            if (isinVaccination.id == null) {
+                throw NoSuchFieldException("We expect ISIN return non null vaccination id from create vaccination api call")
+            }
+
+            logger.debug("Creating vaccination in ISIN was successful for patient with ISIN ID ${patient.isinId}.")
+            logger.debug("Data obtained from ISIN: $isinVaccination")
+
+            val dose = createVaccinationDose(
+                IsinVaccinationDoseCreateOrUpdateDtoIn(
+                    id = null,
+                    vakcinaceId = isinVaccination.id,
+                    ockovaciLatkaKod = configuration.ockovaciLatkaKod,
+                    datumVakcinace = vaccination.vaccinatedOn,
+                    typVykonuKod = "1",
+                    sarze = vaccination.vaccineSerialNumber,
+                    aplikacniCestaKod = "IM",
+                    mistoAplikaceKod = if (vaccination.bodyPart == VaccinationBodyPart.DOMINANT_HAND) "DP" else "NP",
+                    expirace = vaccinationExpirationInstant,
+                    poznamka = vaccination.notes,
+                    stav = null
+                )
+            )
+
+            logger.debug("Creating vaccination dose in ISIN was successful for patient with ISIN ID ${patient.isinId}.")
+            logger.debug("Data obtained from ISIN: $dose")
+
+            logger.info("Exporting vaccination to ISIN was successful for patient with ISIN ID ${patient.isinId}.")
+            true
+        }.getOrElse {
+            logger.error(it) {
+                "Exporting vaccination to ISIN failed for patient with ISIN ID ${patient.isinId}"
+            }
+            false
+        }
+    }
+
+    // TODO share logic with createVaccinationDose function
+    private suspend fun createVaccination(vaccinationDtoIn: IsinVaccinationCreateOrUpdateDtoIn): IsinVaccinationDto {
+        val url = createIsinURL(URL_CREATE_OR_CHANGE_VACCINATION)
+        val data = if (vaccinationDtoIn.pracovnik == null)
+            vaccinationDtoIn.copy(pracovnik = configuration.pracovnik)
+        else
+            vaccinationDtoIn
+
+        logger.info { "Executing ISIN HTTP call ${URL_CREATE_OR_CHANGE_VACCINATION}." }
+        return isinClient.post<HttpResponse>(url) {
+            contentType(ContentType.Application.Json)
+            accept(ContentType.Application.Json)
+            body = data
+        }.receive()
+    }
+
+    // TODO share logic with createVaccination function
+    private suspend fun createVaccinationDose(vaccinationDoseDtoIn: IsinVaccinationDoseCreateOrUpdateDtoIn): IsinVaccinationDoseDto {
+        val url = createIsinURL(URL_CREATE_OR_CHANGE_DOSE)
+        val data = if (vaccinationDoseDtoIn.pracovnik == null)
+            vaccinationDoseDtoIn.copy(pracovnik = configuration.pracovnik)
+        else
+            vaccinationDoseDtoIn
+
+        logger.info { "Executing ISIN HTTP call ${URL_CREATE_OR_CHANGE_DOSE}." }
         return isinClient.post<HttpResponse>(url) {
             contentType(ContentType.Application.Json)
             accept(ContentType.Application.Json)
@@ -114,7 +227,7 @@ class IsinService(
         parameters: List<String> = listOf(),
         includeIdentification: Boolean = true
     ): String {
-        val parametersUrl = parameters.joinToString(separator = "/")
+        val parametersUrl = parameters.map{encodeValue(it)}.joinToString(separator = "/")
         val url = "$baseUrl/$requestUrl/$parametersUrl${if (includeIdentification) userIdentification else ""}"
         if (!url.isUrl()) {
             // we want to print that to the log as well as we're facing a stack overflow somewhere here
@@ -122,5 +235,9 @@ class IsinService(
             throw IllegalStateException("Created ISIN URL for patient is not valid URL! - $url.")
         }
         return url
+    }
+
+    private fun encodeValue(value: String): String? {
+        return URLEncoder.encode(value, StandardCharsets.UTF_8.toString()).replace("+", "%20")
     }
 }

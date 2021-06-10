@@ -28,5 +28,15 @@ data class IsinConfigurationDto(
      * Output while generating the certificate:
      * Warning:  Different store and key passwords not supported for PKCS12 KeyStores. Ignoring user-specified -keypass value.
      */
-    val keyPass: String = storePass
+    val keyPass: String = storePass,
+
+    /**
+     * Parameter sent to ISIN route /api/v1/vakcinace/VytvorNeboZmenDavku
+     */
+    val ockovaciLatkaKod: String,
+
+    /**
+     * Parameter sent to ISIN route /api/v1/vakcinace/VytvorNeboZmenVakcinaci
+     */
+    val indikaceJina: String
 )

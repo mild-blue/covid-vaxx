@@ -140,7 +140,9 @@ fun DI.MainBuilder.bindConfiguration() {
             storePass = certPassword,
             certBase64 = getEnvOrLogDefault(EnvVariables.ISIN_CERT_BASE64, ""),
             storeType = getEnvOrLogDefault(EnvVariables.ISIN_STORE_TYPE, "JKS"),
-            keyPass = certPassword
+            keyPass = certPassword,
+            ockovaciLatkaKod = getEnvOrLogDefault(EnvVariables.ISIN_OCKOVACI_LATKA_KOD, "CO01"),
+            indikaceJina = getEnvOrLogDefault(EnvVariables.ISIN_INDIKACE_JINA, "Lidé ve věku 16+")
         )
     }
 }

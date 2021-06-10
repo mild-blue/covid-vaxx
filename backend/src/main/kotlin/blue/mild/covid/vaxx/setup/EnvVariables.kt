@@ -24,6 +24,8 @@ enum class EnvVariables {
     ISIN_CERT_BASE64,
     ISIN_CERT_PASSWORD,
     ISIN_STORE_TYPE,
+    ISIN_OCKOVACI_LATKA_KOD,
+    ISIN_INDIKACE_JINA,
 
     // TODO certificate password decryption
     // KMS_KEY_ID,
