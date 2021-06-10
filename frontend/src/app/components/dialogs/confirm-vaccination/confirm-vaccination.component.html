@@ -8,6 +8,7 @@
   <h3>Poznámka</h3>
   <mat-form-field floatLabel="never">
     <textarea matInput
+              [(ngModel)]="note"
               cdkTextareaAutosize
               placeholder="Zanechte poznámku"
               #autosize="cdkTextareaAutosize"
