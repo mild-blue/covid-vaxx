@@ -11,6 +11,7 @@ export class ChipComponent {
   @Input() falseLabel: string = 'Ne';
   @Input() trueLabel: string = 'Ano';
   @Input() undefinedLabel: string = 'Neuvedeno';
+  @Input() yesIsGreen: boolean = true;
 
   constructor() {
   }

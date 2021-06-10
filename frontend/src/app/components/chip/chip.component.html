@@ -1,6 +1,6 @@
 <div class="chip"
-     [class.no]="value === false"
-     [class.yes]="value === true"
+     [class.green]="value === yesIsGreen"
+     [class.red]="value === !yesIsGreen"
      [class.maybe]="value === undefined">
   {{ value === true ? trueLabel : '' }}
   {{ value === false ? falseLabel : '' }}

@@ -11,6 +11,8 @@ import blue.mild.covid.vaxx.extensions.createLogger
 import blue.mild.covid.vaxx.security.auth.UserPrincipal
 import blue.mild.covid.vaxx.security.auth.authorizeRoute
 import blue.mild.covid.vaxx.service.DataCorrectnessService
+import blue.mild.covid.vaxx.service.IsinServiceInterface
+import blue.mild.covid.vaxx.service.PatientService
 import com.papsign.ktor.openapigen.route.info
 import com.papsign.ktor.openapigen.route.path.auth.get
 import com.papsign.ktor.openapigen.route.path.auth.post
@@ -27,6 +29,8 @@ fun NormalOpenAPIRoute.dataCorrectnessRoutes() {
     val logger = createLogger("DataCorrectnessRoutes")
 
     val dataCorrectnessService by closestDI().instance<DataCorrectnessService>()
+    val patientService by closestDI().instance<PatientService>()
+    val isinService by closestDI().instance<IsinServiceInterface>()
 
     authorizeRoute {
         route(Routes.dataCorrectness) {
@@ -56,7 +60,11 @@ fun NormalOpenAPIRoute.dataCorrectnessRoutes() {
                 val principal = principal()
                 logger.info { "User ${principal.userId} verified data for ${request.patientId} with result ${request.dataAreCorrect}." }
 
-                val correctnessId = dataCorrectnessService.registerCorrectness(asContextAware(request))
+                // Try to export patient information in ISIN
+                val patient = patientService.getPatientById(request.patientId)
+                val wasExportedToIsin = isinService.tryExportPatientContactInfo(patient, notes=request.notes)
+
+                val correctnessId = dataCorrectnessService.registerCorrectness(asContextAware(request), wasExportedToIsin)
                 logger.info { "Correctness saved successfully under id $correctnessId." }
                 respond(dataCorrectnessService.get(correctnessId))
             }

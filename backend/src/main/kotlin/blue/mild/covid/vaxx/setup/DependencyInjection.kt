@@ -14,12 +14,12 @@ import blue.mild.covid.vaxx.extensions.createLogger
 import blue.mild.covid.vaxx.security.ddos.CaptchaVerificationService
 import blue.mild.covid.vaxx.security.ddos.RequestVerificationService
 import blue.mild.covid.vaxx.service.DataCorrectnessService
-import blue.mild.covid.vaxx.service.IsinRegistrationService
+import blue.mild.covid.vaxx.service.IsinServiceInterface
+import blue.mild.covid.vaxx.service.IsinService
 import blue.mild.covid.vaxx.service.IsinValidationService
 import blue.mild.covid.vaxx.service.LocationService
 import blue.mild.covid.vaxx.service.MailJetEmailService
 import blue.mild.covid.vaxx.service.MailService
-import blue.mild.covid.vaxx.service.MedicalRegistrationService
 import blue.mild.covid.vaxx.service.PasswordHashProvider
 import blue.mild.covid.vaxx.service.PatientService
 import blue.mild.covid.vaxx.service.PatientValidationService
@@ -29,8 +29,8 @@ import blue.mild.covid.vaxx.service.UserService
 import blue.mild.covid.vaxx.service.VaccinationService
 import blue.mild.covid.vaxx.service.VaccinationSlotService
 import blue.mild.covid.vaxx.service.ValidationService
+import blue.mild.covid.vaxx.service.dummy.DummyIsinService
 import blue.mild.covid.vaxx.service.dummy.DummyMailService
-import blue.mild.covid.vaxx.service.dummy.DummyMedicalRegistrationService
 import blue.mild.covid.vaxx.service.dummy.DummyPatientValidationService
 import blue.mild.covid.vaxx.service.dummy.DummyRequestVerificationService
 import com.fasterxml.jackson.databind.ObjectMapper
@@ -100,7 +100,7 @@ fun DI.MainBuilder.registerClasses() {
     bind<PatientService>() with singleton { PatientService(instance(), instance()) }
     bind<UserService>() with singleton { UserService(instance(), instance()) }
     bind<VaccinationService>() with singleton { VaccinationService(instance()) }
-    bind<DataCorrectnessService>() with singleton { DataCorrectnessService(instance()) }
+    bind<DataCorrectnessService>() with singleton { DataCorrectnessService(instance(), instance()) }
     bind<MailJetEmailService>() with singleton { MailJetEmailService(instance(), instance(), instance(), instance()) }
     bind<SystemStatisticsService>() with singleton { SystemStatisticsService() }
 
@@ -155,25 +155,24 @@ fun DI.MainBuilder.registerClasses() {
     bind<CaptchaVerificationService>() with singleton { CaptchaVerificationService(instance(), instance()) }
     bind<DummyRequestVerificationService>() with singleton { DummyRequestVerificationService() }
 
-    bind<IsinRegistrationService>() with singleton { IsinRegistrationService(instance(), instance(), instance(), instance()) }
-    bind<DummyMedicalRegistrationService>() with singleton { DummyMedicalRegistrationService() }
+    bind<IsinService>() with singleton { IsinService(instance(), instance(isinHttpClientTag)) }
+    bind<DummyIsinService>() with singleton { DummyIsinService() }
 
-    bind<IsinValidationService>() with singleton { IsinValidationService(instance(), instance(isinHttpClientTag)) }
+    bind<IsinValidationService>() with singleton { IsinValidationService(instance()) }
     bind<DummyPatientValidationService>() with singleton { DummyPatientValidationService() }
 
     // select implementations based on the feature flags
-    registerProductionOrDummy<MedicalRegistrationService, IsinRegistrationService, DummyMedicalRegistrationService>(
-        EnvVariables.ENABLE_ISIN_REGISTRATION
-    )
     registerProductionOrDummy<RequestVerificationService, CaptchaVerificationService, DummyRequestVerificationService>(
         EnvVariables.ENABLE_RECAPTCHA_VERIFICATION
     )
     registerProductionOrDummy<MailService, MailJetEmailService, DummyMailService>(
         EnvVariables.ENABLE_MAIL_SERVICE
     )
-
     registerProductionOrDummy<PatientValidationService, IsinValidationService, DummyPatientValidationService>(
         EnvVariables.ENABLE_ISIN_PATIENT_VALIDATION
+    )
+    registerProductionOrDummy<IsinServiceInterface, IsinService, DummyIsinService>(
+        EnvVariables.ENABLE_ISIN_CLIENT
     )
 }
 

@@ -7,9 +7,12 @@ import blue.mild.covid.vaxx.dto.internal.ContextAware
 import blue.mild.covid.vaxx.dto.request.DataCorrectnessDtoIn
 import blue.mild.covid.vaxx.dto.response.DataCorrectnessConfirmationDetailDtoOut
 import blue.mild.covid.vaxx.error.entityNotFound
+import pw.forst.katlib.TimeProvider
+import java.time.Instant
 
 class DataCorrectnessService(
-    private val dataCorrectnessRepository: DataCorrectnessRepository
+    private val dataCorrectnessRepository: DataCorrectnessRepository,
+    private val instantTimeProvider: TimeProvider<Instant>
 ) {
     /**
      * Returns [DataCorrectnessConfirmationDetailDtoOut] if the patient's data was verified.
@@ -28,18 +31,25 @@ class DataCorrectnessService(
     /**
      * Store that the patient's data were verified.
      */
-    suspend fun registerCorrectness(request: ContextAware.AuthorizedContext<DataCorrectnessDtoIn>): EntityId {
+    suspend fun registerCorrectness(request: ContextAware.AuthorizedContext<DataCorrectnessDtoIn>, wasExportedToIsin: Boolean): EntityId {
         // todo perform some validation
 
         val dataCorrectness = request.payload
         val principal = request.principal
+
+        val exportedToIsinOn = if (wasExportedToIsin) {
+            instantTimeProvider.now()
+        } else {
+            null
+        }
 
         return dataCorrectnessRepository.registerCorrectness(
             patientId = dataCorrectness.patientId,
             userPerformedCheck = principal.userId,
             nurseId = principal.nurseId,
             dataAreCorrect = dataCorrectness.dataAreCorrect,
-            notes = dataCorrectness.notes?.trim()
+            notes = dataCorrectness.notes?.trim(),
+            exportedToIsinOn = exportedToIsinOn
         )
     }
 }

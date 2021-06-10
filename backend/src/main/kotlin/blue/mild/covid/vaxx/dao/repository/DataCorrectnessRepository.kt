@@ -14,6 +14,7 @@ import org.jetbrains.exposed.sql.leftJoin
 import org.jetbrains.exposed.sql.select
 import org.jetbrains.exposed.sql.transactions.experimental.newSuspendedTransaction
 import org.jetbrains.exposed.sql.update
+import java.time.Instant
 
 @Suppress("LongParameterList") // it's a repository, we're fine with this
 class DataCorrectnessRepository {
@@ -26,7 +27,8 @@ class DataCorrectnessRepository {
         userPerformedCheck: EntityId,
         nurseId: EntityId?,
         dataAreCorrect: Boolean,
-        notes: String? = null
+        notes: String? = null,
+        exportedToIsinOn: Instant? = null
     ): EntityId = newSuspendedTransaction {
         val id = PatientDataCorrectnessConfirmation.insert {
             it[PatientDataCorrectnessConfirmation.patientId] = patientId
@@ -34,6 +36,7 @@ class DataCorrectnessRepository {
             it[PatientDataCorrectnessConfirmation.nurseId] = nurseId
             it[PatientDataCorrectnessConfirmation.dataAreCorrect] = dataAreCorrect
             it[PatientDataCorrectnessConfirmation.notes] = notes
+            it[PatientDataCorrectnessConfirmation.exportedToIsinOn] = exportedToIsinOn
         }[PatientDataCorrectnessConfirmation.id]
         // now set backref
         Patients.update(
@@ -81,6 +84,7 @@ class DataCorrectnessRepository {
                             lastName = it[Nurses.lastName],
                             email = it[Nurses.email]
                         ) else null,
+                        exportedToIsinOn = it[PatientDataCorrectnessConfirmation.exportedToIsinOn]
                     )
                 }
         }

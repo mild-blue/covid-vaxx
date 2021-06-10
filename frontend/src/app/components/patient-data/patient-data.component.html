@@ -102,7 +102,7 @@
         <app-patient-data-item>
           <mat-label>{{ q.label }}</mat-label>
           <mat-label *ngIf="q.answer !== undefined else unspecified;">
-            <app-chip [value]="q.answer"></app-chip>
+            <app-chip [value]="q.answer" [yesIsGreen]="false"></app-chip>
           </mat-label>
         </app-patient-data-item>
         <mat-divider></mat-divider>
