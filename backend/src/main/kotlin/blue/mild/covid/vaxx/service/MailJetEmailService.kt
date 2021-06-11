@@ -49,22 +49,29 @@ class MailJetEmailService(
     private fun sendMailBlocking(emailRequest: PatientEmailRequestDto) {
         logger.debug { "Sending an email to ${emailRequest.email}." }
 
-        val response = client.post(buildEmailRequest(emailRequest))
-
-        if (response.status != SUCCESS) {
-            // TODO consider putting it back to the channel for retry
-            logger.error { "Sending email to ${emailRequest.email} was not successful details: ${response.data}." }
-        } else {
-            logger.debug { "Email to ${emailRequest.email} sent successfully." }
-            // save information about email sent to the database
-            // we want to keep this transaction on this thread, so we don't suspend it
-            transaction {
-                Patients.update({ Patients.id eq emailRequest.patientId }) {
-                    it[registrationEmailSent] = nowProvider.now()
+        runCatching { client.post(buildEmailRequest(emailRequest)) }
+            .onFailure {
+                // TODO maybe put that back to the queue
+                logger.error(it) { "Sending email to ${emailRequest.email} has thrown an exception." }
+            }.getOrNull()
+            ?.also {
+                if (it.status != SUCCESS) {
+                    logger.error {
+                        "Sending email to ${emailRequest.email}, patient id ${emailRequest.patientId} was not successful details: ${it.data}."
+                    }
                 }
             }
-            logger.info { "Registration mail sent for patient ${emailRequest.patientId}." }
-        }
+            ?.takeIf { it.status == SUCCESS }
+            ?.also {
+                // save information about email sent to the database
+                // we want to keep this transaction on this thread, so we don't suspend it
+                transaction {
+                    Patients.update({ Patients.id eq emailRequest.patientId }) {
+                        it[registrationEmailSent] = nowProvider.now()
+                    }
+                }
+                logger.info { "Registration mail sent for patient ${emailRequest.patientId}." }
+            }
     }
 
     private fun buildEmailRequest(emailRequest: PatientEmailRequestDto): MailjetRequest? {
@@ -90,7 +97,7 @@ class MailJetEmailService(
                                         JSONObject()
                                             .put("Email", emailRequest.email)
                                             .put("Name", "${emailRequest.firstName} ${emailRequest.lastName}")
-                                    // TODO add slot information from emailRequest.slot
+                                        // TODO add slot information from emailRequest.slot
                                     )
                             )
                             .put(Emailv31.Message.SUBJECT, mailJetConfig.subject)
