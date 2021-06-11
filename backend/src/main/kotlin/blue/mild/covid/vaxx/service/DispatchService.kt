@@ -29,8 +29,12 @@ abstract class DispatchService<T>(private val nThreads: Int) {
         // create a single coroutine, that will handle all emails
         GlobalScope.launch(dispatcher) {
             while (true) {
-                val work = channel.receive()
-                dispatch(work)
+                runCatching {
+                    val work = channel.receive()
+                    dispatch(work)
+                }.onFailure {
+                    logger.error(it) { "An exception during work dispatch!" }
+                }
             }
         }
     }
