@@ -15,6 +15,7 @@ object Routes {
     val statusHealth = "$status/health"
 
     val systemStatistics = adminRoute("statistics")
+    val runIsinJob = adminRoute("run-isin-job")
 
     val registeredUserLogin = adminRoute("login")
     val userRegistration = adminRoute("register")

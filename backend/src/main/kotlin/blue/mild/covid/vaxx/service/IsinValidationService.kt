@@ -2,7 +2,6 @@ package blue.mild.covid.vaxx.service
 
 import blue.mild.covid.vaxx.dto.internal.IsinValidationResultDto
 import blue.mild.covid.vaxx.dto.internal.PatientValidationResult
-import blue.mild.covid.vaxx.dto.request.PatientRegistrationDtoIn
 import mu.KLogging
 
 
@@ -21,12 +20,11 @@ class IsinValidationService(
 
     private companion object : KLogging()
 
-    override suspend fun validatePatient(registrationDto: PatientRegistrationDtoIn): IsinValidationResultDto {
-        val firstName = registrationDto.firstName
-        val lastName = registrationDto.lastName
-        val personalNumber = registrationDto.personalNumber
-            ?: throw IllegalArgumentException("Personal number cannot be null for ISIN validation")
-
+    override suspend fun validatePatient(
+        firstName: String,
+        lastName: String,
+        personalNumber: String
+    ): IsinValidationResultDto {
         val result = runCatching {
             isinService.getPatientByParameters(
                 firstName = firstName,

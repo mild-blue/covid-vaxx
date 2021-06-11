@@ -64,7 +64,7 @@ class PatientRoutesTest : ServerTestBase() {
         bind<PatientValidationService>() with singleton {
             val service = mockk<PatientValidationService>()
             coEvery {
-                service.validatePatient(any())
+                service.validatePatient(any(), any(), any())
             } returns IsinValidationResultDto(PatientValidationResult.PATIENT_FOUND, "10")
 
             service
@@ -309,7 +309,11 @@ class PatientRoutesTest : ServerTestBase() {
         println(validationService.hashCode())
 
         coEvery {
-            validationService.validatePatient(validRegistration)
+            validationService.validatePatient(
+                validRegistration.firstName,
+                validRegistration.lastName,
+                validRegistration.personalNumber ?: ""
+            )
         } returns IsinValidationResultDto(PatientValidationResult.PATIENT_NOT_FOUND)
 
         handleRequest(HttpMethod.Post, patientRoute) {

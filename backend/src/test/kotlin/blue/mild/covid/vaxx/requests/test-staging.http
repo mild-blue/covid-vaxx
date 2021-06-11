@@ -138,3 +138,16 @@ Authorization: Bearer {{auth_token}}
 }
 
 ###
+
+POST {{url}}/admin/run-isin-job
+Content-Type: application/json
+Authorization: Bearer {{auth_token}}
+
+{
+  "exportPatientsInfo": true,
+  "exportVaccinations": true,
+  "validatePatients": true,
+
+  "patientsCount": null,
+  "patientsOffset": 0
+}

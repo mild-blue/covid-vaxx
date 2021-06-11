@@ -2,12 +2,14 @@ package blue.mild.covid.vaxx.service
 
 import blue.mild.covid.vaxx.dao.model.EntityId
 import blue.mild.covid.vaxx.dao.model.PatientDataCorrectnessConfirmation
+import blue.mild.covid.vaxx.dao.model.Vaccinations
 import blue.mild.covid.vaxx.dao.repository.DataCorrectnessRepository
 import blue.mild.covid.vaxx.dto.internal.ContextAware
 import blue.mild.covid.vaxx.dto.request.DataCorrectnessDtoIn
 import blue.mild.covid.vaxx.dto.response.DataCorrectnessConfirmationDetailDtoOut
 import blue.mild.covid.vaxx.error.entityNotFound
 import pw.forst.katlib.TimeProvider
+import pw.forst.katlib.whenFalse
 import java.time.Instant
 
 class DataCorrectnessService(
@@ -51,5 +53,16 @@ class DataCorrectnessService(
             notes = dataCorrectness.notes?.trim(),
             exportedToIsinOn = exportedToIsinOn
         )
+    }
+
+
+    /**
+     * Register in database that [correctnessId] was exported to ISIN.
+     */
+    suspend fun exportedToIsin(correctnessId: EntityId, storedOn: Instant = instantTimeProvider.now()) {
+        dataCorrectnessRepository.updateCorrectness(
+            correctnessId = correctnessId,
+            exportedToIsinOn = storedOn
+        ).whenFalse { throw entityNotFound<Vaccinations>(PatientDataCorrectnessConfirmation::id, PatientDataCorrectnessConfirmation) }
     }
 }
