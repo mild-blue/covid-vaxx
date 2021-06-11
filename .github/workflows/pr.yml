@@ -44,9 +44,9 @@ jobs:
       - name: Execute Detekt
         run: |
           cd backend
-          ./gradlew detekt
+          ./gradlew detekt --info
 
       - name: Execute Unit tests
         run: |
           cd backend
-          ./gradlew test
+          ./gradlew test --info

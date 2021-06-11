@@ -98,7 +98,7 @@ fun NormalOpenAPIRoute.patientRoutes() {
                 val location = locationService.getLocationById(slot.locationId)
 
                 logger.info { "Slot booked: ${slot.id} for patient $patientId - registration completed." }
-                logger.debug { "Adding email to the queue." }
+
                 emailService.sendEmail(
                     PatientEmailRequestDto(
                         firstName = patientRegistration.firstName,
