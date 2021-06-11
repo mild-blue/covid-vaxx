@@ -13,6 +13,7 @@ import org.jetbrains.exposed.sql.update
 import org.json.JSONArray
 import org.json.JSONObject
 import pw.forst.katlib.TimeProvider
+import pw.forst.katlib.whenNull
 import java.io.StringWriter
 import java.time.Instant
 import freemarker.template.Configuration as FreemarkerConfiguration
@@ -46,8 +47,12 @@ class MailJetEmailService(
         sendMailBlocking(work)
     }
 
-    private fun sendMailBlocking(emailRequest: PatientEmailRequestDto) {
-        logger.debug { "Sending an email to ${emailRequest.email}." }
+    private suspend fun sendMailBlocking(emailRequest: PatientEmailRequestDto) {
+        if (emailRequest.attemptLeft == 0) {
+            logger.error { "Not executing email request \"$emailRequest\" - attempts left 0!" }
+        }
+
+        logger.info { "Sending an email to ${emailRequest.email}." }
 
         runCatching { client.post(buildEmailRequest(emailRequest)) }
             .onFailure {
@@ -60,8 +65,7 @@ class MailJetEmailService(
                         "Sending email to ${emailRequest.email}, patient id ${emailRequest.patientId} was not successful details: ${it.data}."
                     }
                 }
-            }
-            ?.takeIf { it.status == SUCCESS }
+            }?.takeIf { it.status == SUCCESS }
             ?.also {
                 // save information about email sent to the database
                 // we want to keep this transaction on this thread, so we don't suspend it
@@ -71,6 +75,8 @@ class MailJetEmailService(
                     }
                 }
                 logger.info { "Registration mail sent for patient ${emailRequest.patientId}." }
+            }.whenNull {
+                dispatch(emailRequest.copy(attemptLeft = emailRequest.attemptLeft - 1))
             }
     }
 
