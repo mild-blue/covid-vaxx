@@ -39,6 +39,8 @@ import org.kodein.di.instance
 /**
  * Registers prometheus data.
  */
+// TODO move functionality somewhere else
+@Suppress("LongMethod", "ComplexMethod")
 fun NormalOpenAPIRoute.serviceRoutes() {
     val version by closestDI().instance<ApplicationInformationDtoOut>()
     val systemStatisticsService by closestDI().instance<SystemStatisticsService>()
@@ -75,6 +77,7 @@ fun NormalOpenAPIRoute.serviceRoutes() {
     }
 
     // TODO move functionality somewhere else
+    @Suppress("LongMethod", "ComplexCondition", "ComplexMethod")
     authorizeRoute(requireOneOf = setOf(UserRole.ADMIN)) {
         route(Routes.runIsinJob).post<Unit, IsinJobDtoOut, IsinJobDtoIn, UserPrincipal>(
             info(
@@ -138,7 +141,8 @@ fun NormalOpenAPIRoute.serviceRoutes() {
 
                 // 2. If data are correct but not exported to ISIN -> try export to isin
                 logger.debug("Checking correctness exported to ISIN of patient ${patient.id}")
-                if (isinJobDto.exportPatientsInfo && patient.dataCorrect != null && patient.dataCorrect.dataAreCorrect && patient.dataCorrect.exportedToIsinOn == null) {
+                if (isinJobDto.exportPatientsInfo && patient.dataCorrect != null && patient.dataCorrect.dataAreCorrect &&
+                    patient.dataCorrect.exportedToIsinOn == null) {
                     val wasExported = isinService.tryExportPatientContactInfo(patient, notes= patient.dataCorrect.notes)
 
                     if (wasExported) {
