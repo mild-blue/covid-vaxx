@@ -40,12 +40,8 @@ class ServiceRoutesTest : ServerTestBase() {
 
     @Test
     fun `system analytics should respond with correct data`() = withTestApplication {
-        handleRequest(HttpMethod.Get, Routes.systemStatistics).run {
-            expectStatus(HttpStatusCode.Unauthorized)
-        }
-
         val expected = SystemStatisticsDtoOut(0, 0, 0, 0, 0, 0)
-        handleRequest(HttpMethod.Get, Routes.systemStatistics) { authorize() }.run {
+        handleRequest(HttpMethod.Get, Routes.systemStatistics).run {
             expectStatus(HttpStatusCode.OK)
             assertEquals(expected, receive())
         }
