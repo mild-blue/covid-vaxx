@@ -1,3 +1,4 @@
+@file:Suppress("TooManyFunctions") // this is framework installation, that's ok
 package blue.mild.covid.vaxx.setup
 
 import blue.mild.covid.vaxx.dao.model.DatabaseSetup
