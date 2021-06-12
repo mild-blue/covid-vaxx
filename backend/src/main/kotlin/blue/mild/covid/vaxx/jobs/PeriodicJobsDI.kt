@@ -46,7 +46,7 @@ private fun registerIfEnvEnabled(variable: EnvVariables, jobFactory: () -> Perio
 
 private fun repeatedEmailJob(job: EmailRetryJob) = PeriodicJob(
     name = requireNotNull(job::class.simpleName) { "Classes do have a name." },
-    delay = 1,
+    delay = 1, // once in an hour we try to send the emails
     unit = TimeUnit.HOURS,
     job = job
 )

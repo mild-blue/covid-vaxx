@@ -25,6 +25,12 @@ class EmailRetryJob(private val emailService: MailService, private val locationS
         val marker: Marker = MarkerFactory.getMarker("job:${EmailRetryJob::class.simpleName}")
     }
 
+    /**
+     * This is not an optimal implementation, it can happen that the person will get two e-mails.
+     *
+     * The situation is that the patient registered exactly in the same moment when he/she was registered
+     * and before the first email was sent.
+     */
     override fun execute(): Unit = runBlocking {
         logger.debug(marker) { "Fetching locations." }
         val locations = getLocationsMap()
