@@ -14,7 +14,7 @@ object Routes {
     val status = apiName("status")
     val statusHealth = "$status/health"
 
-    val systemStatistics = adminRoute("statistics")
+    val systemStatistics = apiName("statistics")
 
     val registeredUserLogin = adminRoute("login")
     val userRegistration = adminRoute("register")
