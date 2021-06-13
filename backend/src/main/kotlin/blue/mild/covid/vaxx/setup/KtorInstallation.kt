@@ -1,3 +1,4 @@
+@file:Suppress("TooManyFunctions") // this is framework installation, that's ok
 package blue.mild.covid.vaxx.setup
 
 import blue.mild.covid.vaxx.dao.model.DatabaseSetup
@@ -9,6 +10,8 @@ import blue.mild.covid.vaxx.dto.response.ApplicationInformationDtoOut
 import blue.mild.covid.vaxx.error.installExceptionHandling
 import blue.mild.covid.vaxx.extensions.createLogger
 import blue.mild.covid.vaxx.extensions.determineRealIp
+import blue.mild.covid.vaxx.jobs.JobsRegistrationService
+import blue.mild.covid.vaxx.jobs.registerPeriodicJobs
 import blue.mild.covid.vaxx.monitoring.AMAZON_TRACE
 import blue.mild.covid.vaxx.monitoring.CALL_ID
 import blue.mild.covid.vaxx.monitoring.PATH
@@ -76,7 +79,9 @@ fun Application.init() = runCatching {
         bindConfiguration()
         registerJwtAuth()
         registerClasses()
+        registerPeriodicJobs()
     }
+
     setupDiAwareApplication()
 }.onFailure {
     installationLogger.error(it) { "It was not possible to start the application." }
@@ -95,6 +100,13 @@ fun Application.setupDiAwareApplication() {
     installFrameworks()
     // configure routing
     installRouting()
+    // enable periodic jobs
+    enablePeriodicJobs()
+}
+
+private fun Application.enablePeriodicJobs() {
+    val registrationService by closestDI().instance<JobsRegistrationService>()
+    registrationService.registerAllJobs()
 }
 
 private fun Application.installRouting() {

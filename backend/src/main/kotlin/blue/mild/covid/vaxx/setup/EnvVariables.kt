@@ -162,5 +162,12 @@ enum class EnvVariables {
     /**
      * Use ISIN to validate and register patients and register vaccinations.
      */
-    ENABLE_ISIN_CLIENT
+    ENABLE_ISIN_CLIENT,
+
+    /**
+     * Enable cron job [blue.mild.covid.vaxx.jobs.EmailRetryJob].
+     *
+     * By default are all jobs disabled.
+     */
+    ENABLE_PERIODIC_EMAIL_RETRY
 }

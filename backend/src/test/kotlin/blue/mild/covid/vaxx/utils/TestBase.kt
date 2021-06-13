@@ -3,6 +3,7 @@ package blue.mild.covid.vaxx.utils
 import blue.mild.covid.vaxx.dao.model.DatabaseSetup
 import blue.mild.covid.vaxx.dto.config.DatabaseConfigurationDto
 import blue.mild.covid.vaxx.dto.config.RateLimitConfigurationDto
+import blue.mild.covid.vaxx.jobs.registerPeriodicJobs
 import blue.mild.covid.vaxx.security.auth.JwtService
 import blue.mild.covid.vaxx.security.auth.UserPrincipal
 import blue.mild.covid.vaxx.security.auth.registerJwtAuth
@@ -45,6 +46,7 @@ open class DiAwareTestBase {
         bindConfiguration()
         registerJwtAuth()
         registerClasses()
+        registerPeriodicJobs()
 
         // disable migration on startup, instead migrate during tests
         bind<Boolean>("should-migrate") with singleton { false }
