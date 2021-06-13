@@ -242,7 +242,7 @@ class PatientRoutesTest : ServerTestBase() {
             from = Instant.ofEpochMilli(from),
             to = Instant.ofEpochMilli(to),
             durationMillis = 100000L,
-            bandwidth = 7,
+            bandwidth = 10,
         )
 
         val vaccinationSlotService by closestDI().instance<VaccinationSlotService>()
