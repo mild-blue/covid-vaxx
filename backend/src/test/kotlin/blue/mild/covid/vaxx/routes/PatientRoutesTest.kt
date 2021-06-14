@@ -227,6 +227,7 @@ class PatientRoutesTest : ServerTestBase() {
             assertTrue { patients.isEmpty() }
         }
 
+        // the patient is no longer in db
         handleRequest(HttpMethod.Get, "${Routes.adminSectionPatient}/$patientId") {
             authorize()
         }.run {
