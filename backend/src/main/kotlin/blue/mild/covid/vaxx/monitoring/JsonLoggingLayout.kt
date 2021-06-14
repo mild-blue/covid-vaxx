@@ -29,8 +29,12 @@ class JsonLoggingLayout : LayoutBase<ILoggingEvent>() {
             "logger" to event.loggerName
                 .takeLastWhile { it != '.' } // take only names without packages
                 .replace("\$Companion", ""), // delete static name from the logger name
-            "level" to (event.level.levelStr ?: event.level.levelInt)
+            "level" to (event.level.levelStr ?: event.level.levelInt),
         )
+        // add marker to the final json
+        event.marker?.name?.also {
+            finalMap["marker"] = it
+        }
         // include all MDCs
         event.mdcPropertyMap.forEach { (key, entry) -> finalMap[key] = entry }
         // if this was an exception, include necessary data

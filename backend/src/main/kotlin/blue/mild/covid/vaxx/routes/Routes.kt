@@ -14,8 +14,7 @@ object Routes {
     val status = apiName("status")
     val statusHealth = "$status/health"
 
-    val systemStatistics = adminRoute("statistics")
-    val runIsinJob = adminRoute("run-isin-job")
+    val systemStatistics = apiName("statistics")
 
     val registeredUserLogin = adminRoute("login")
     val userRegistration = adminRoute("register")
@@ -30,6 +29,8 @@ object Routes {
     val adminSectionPatient = adminRoute("patient")
     val vaccination = adminRoute("vaccination")
     val nurse = adminRoute("nurse")
+
+    val runIsinJob = adminRoute("run-isin-job")
 
     val dataCorrectness = adminRoute("data-correctness")
 

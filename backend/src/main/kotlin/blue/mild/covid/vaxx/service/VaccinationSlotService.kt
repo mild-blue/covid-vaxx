@@ -104,10 +104,10 @@ class VaccinationSlotService(
         value?.let { and { column eq value } } ?: this
 
     /**
-     * Book a vaccination slot for the patient. Tries five times to book a slot before failing to do so.
+     * Book a vaccination slot for the patient.
      */
     suspend fun bookSlotForPatient(patientId: EntityId) =
-        vaccinationSlotRepository.tryToBookSlotForPatient(patientId, attemptsLeft = 5)
+        vaccinationSlotRepository.tryToBookSlotForPatient(patientId)
             ?: throw NoVaccinationSlotsFoundException()
 }
 
