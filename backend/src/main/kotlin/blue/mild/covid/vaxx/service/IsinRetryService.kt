@@ -20,6 +20,7 @@ class IsinRetryService(
 
     private companion object : KLogging()
 
+    @Suppress("ComplexCondition", "ComplexMethod") // this is complex job, it is ok here
     suspend fun runIsinRetry(isinJobDto: IsinJobDtoIn): IsinJobDtoOut {
         val stats = IsinJobDtoOut()
 
@@ -32,8 +33,8 @@ class IsinRetryService(
             logger.debug("Checking ISIN id of patient ${patient.id}")
 
             // 1. If patient has personal number but ISIN id is not set -> try ISIN validation
-            val isinId = if (!patient.isinId.isNullOrBlank()) {
-                patient.isinId
+            val updatedPatient = if (!patient.isinId.isNullOrBlank()) {
+                patient
             } else if (isinJobDto.validatePatients && !patient.personalNumber.isNullOrBlank() ) {
                 logger.info("Patient ${patient.id} has personal number but no ISIN id. Validating in ISIN...")
 
@@ -44,22 +45,22 @@ class IsinRetryService(
                 } else {
                     stats.validatedPatientsErrors++;
                 }
-                newIsinPatientId
+                patient.copy(isinId = newIsinPatientId)
             } else {
-                null
+                patient.copy(isinId = null)
             }
 
-            if (isinId.isNullOrBlank()) continue
+            if (updatedPatient.isinId.isNullOrBlank()) continue
 
             // 2. If data are correct but not exported to ISIN -> try export to isin
-            logger.debug("Checking correctness exported to ISIN of patient ${patient.id}")
+            logger.debug("Checking correctness exported to ISIN of patient ${updatedPatient.id}")
             if (
                 isinJobDto.exportPatientsInfo &&
-                patient.dataCorrect != null &&
-                patient.dataCorrect.dataAreCorrect &&
-                patient.dataCorrect.exportedToIsinOn == null
+                updatedPatient.dataCorrect != null &&
+                updatedPatient.dataCorrect.dataAreCorrect &&
+                updatedPatient.dataCorrect.exportedToIsinOn == null
             ) {
-                val wasExported = retryPatientContactInfoExport(patient)
+                val wasExported = retryPatientContactInfoExport(updatedPatient)
 
                 if (wasExported) {
                     stats.exportedPatientsInfoSuccess++
@@ -69,8 +70,8 @@ class IsinRetryService(
             }
 
             // 3. If vaccinated but not vaccination is not exported to ISIN -> try export vaccination to isin
-            if (isinJobDto.exportVaccinations && patient.vaccinated != null && patient.vaccinated.exportedToIsinOn == null) {
-                val wasExported = retryPatientVaccinationCreation(patient)
+            if (isinJobDto.exportVaccinations && updatedPatient.vaccinated != null && updatedPatient.vaccinated.exportedToIsinOn == null) {
+                val wasExported = retryPatientVaccinationCreation(updatedPatient)
 
                 if (wasExported) {
                     stats.exportedVaccinationsSuccess++

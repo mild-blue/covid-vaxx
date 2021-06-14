@@ -31,8 +31,6 @@ import org.kodein.di.instance
 /**
  * Registers prometheus data.
  */
-// TODO move functionality somewhere else
-@Suppress("LongMethod", "ComplexMethod")
 fun NormalOpenAPIRoute.serviceRoutes() {
     val version by closestDI().instance<ApplicationInformationDtoOut>()
     val systemStatisticsService by closestDI().instance<SystemStatisticsService>()
