@@ -60,11 +60,16 @@ class IsinService(
         val response =  isinClient.get<HttpResponse>(url)
         val json = response.receive<JsonNode>()
 
-        return IsinGetPatientByParametersResultDto(
+        val result = IsinGetPatientByParametersResultDto(
             result = json.get("vysledek").textValue(),
             resultMessage = json.get("vysledekZprava")?.textValue(),
             patientId = json.get("pacient")?.get("id")?.textValue()
         )
+        logger.info {
+            "Data from ISIN for patient ${firstName} ${lastName}, personalNumber=${personalNumber}: " +
+            "result=${result.result}, resultMessage=${result.resultMessage}, patientId=${result.patientId}."
+        }
+        return result
     }
 
     override suspend fun getForeignerByInsuranceNumber(
@@ -77,11 +82,16 @@ class IsinService(
         val response =  isinClient.get<HttpResponse>(url)
         val json = response.receive<JsonNode>()
 
-        return IsinGetPatientByParametersResultDto(
+        val result = IsinGetPatientByParametersResultDto(
             result = json.get("vysledek").textValue(),
             resultMessage = json.get("vysledekZprava")?.textValue(),
             patientId = json.get("pacient")?.get("id")?.textValue()
         )
+        logger.info {
+            "Data from ISIN for foreigner insuranceNumber=${insuranceNumber}: " +
+            "result=${result.result}, resultMessage=${result.resultMessage}, patientId=${result.patientId}."
+        }
+        return result
     }
 
     override suspend fun tryExportPatientContactInfo(patient: PatientDtoOut, notes: String?): Boolean {

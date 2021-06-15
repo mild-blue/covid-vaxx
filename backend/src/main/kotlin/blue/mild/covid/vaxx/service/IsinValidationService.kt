@@ -34,19 +34,11 @@ class IsinValidationService(
                     lastName = lastName,
                     personalNumber = personalNumber
                 )
-                logger.info {
-                    "Data from ISIN for patient ${firstName}/${lastName}/${personalNumber}: " +
-                    "result=${result.result}, resultMessage=${result.resultMessage}, patientId=${result.patientId}."
-                }
                 convertResult(result)
             } else if (insuranceNumber != null){
                 val byInsuranceNumberResult = isinService.getForeignerByInsuranceNumber(
                     insuranceNumber = insuranceNumber
                 )
-                logger.info {
-                    "Data from ISIN for foreigner ${insuranceNumber}: " +
-                    "result=${byInsuranceNumberResult.result}, resultMessage=${byInsuranceNumberResult.resultMessage}, patientId=${byInsuranceNumberResult.patientId}."
-                }
                 val validationResult = convertResult(byInsuranceNumberResult)
                 if (validationResult.status == PatientValidationResult.PATIENT_FOUND) {
                     validationResult
@@ -60,10 +52,6 @@ class IsinValidationService(
                         lastName = lastName,
                         personalNumber = insuranceNumber
                     )
-                    logger.info {
-                        "Data from ISIN for patient (foreigner) ${firstName}/${lastName}/${insuranceNumber}: " +
-                        "result=${byPersonalNumberResult.result}, resultMessage=${byPersonalNumberResult.resultMessage}, patientId=${byPersonalNumberResult.patientId}."
-                    }
                     convertResult(byPersonalNumberResult)
                 }
             } else {
