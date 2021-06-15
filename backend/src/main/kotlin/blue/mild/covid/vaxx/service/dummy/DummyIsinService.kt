@@ -19,6 +19,13 @@ class DummyIsinService : IsinServiceInterface {
         return IsinGetPatientByParametersResultDto("PacientNebylNalezen", null, null)
     }
 
+    override suspend fun getForeignerByInsuranceNumber(
+        insuranceNumber: String
+    ): IsinGetPatientByParametersResultDto {
+        logger.warn { "NOT GETTING foreigner ${insuranceNumber} from ISIN. This should not be in the production." }
+        return IsinGetPatientByParametersResultDto("PacientNebylNalezen", null, null)
+    }
+
     override suspend fun tryExportPatientContactInfo(
         patient: PatientDtoOut,
         notes: String?

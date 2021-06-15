@@ -40,6 +40,7 @@ class IsinService(
 
     private companion object : KLogging() {
         const val URL_GET_PATIENT_BY_PARAMETERS = "pacienti/VyhledatDleJmenoPrijmeniRc";
+        const val URL_GET_FOREIGNER_BY_INSURANCE_NUMBER = "pacienti/VyhledatCizinceDleCislaPojistence";
         const val URL_UPDATE_PATIENT_INFO = "pacienti/AktualizujKontaktniUdajePacienta";
         const val URL_CREATE_OR_CHANGE_VACCINATION = "vakcinace/VytvorNeboZmenVakcinaci";
         const val URL_CREATE_OR_CHANGE_DOSE = "vakcinace/VytvorNeboZmenDavku";
@@ -56,6 +57,23 @@ class IsinService(
             personalNumber.normalizePersonalNumber()
         ))
         logger.info { "Executing ISIN HTTP call ${URL_GET_PATIENT_BY_PARAMETERS}." }
+        val response =  isinClient.get<HttpResponse>(url)
+        val json = response.receive<JsonNode>()
+
+        return IsinGetPatientByParametersResultDto(
+            result = json.get("vysledek").textValue(),
+            resultMessage = json.get("vysledekZprava")?.textValue(),
+            patientId = json.get("pacient")?.get("id")?.textValue()
+        )
+    }
+
+    override suspend fun getForeignerByInsuranceNumber(
+        insuranceNumber: String
+    ): IsinGetPatientByParametersResultDto {
+        val url = createIsinURL(URL_GET_FOREIGNER_BY_INSURANCE_NUMBER, parameters = listOf(
+            insuranceNumber.trim()
+        ))
+        logger.info { "Executing ISIN HTTP call ${URL_GET_FOREIGNER_BY_INSURANCE_NUMBER}." }
         val response =  isinClient.get<HttpResponse>(url)
         val json = response.receive<JsonNode>()
 
