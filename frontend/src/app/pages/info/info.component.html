@@ -8,7 +8,16 @@
         <img src="assets/vaccine-icon.svg" alt="Vaccine icon">
         <p>
           Sedmička a Poliklinika Prahy 7 pro vás zajistily možnost očkování proti nemoci COVID-19 vakcínou Comirnaty od společnosti
-          <strong>Pfizer/BioNTech</strong>.
+          <strong>Pfizer/BioNTech</strong>. <br>
+
+          <ng-container *ngIf="statistics">
+            <ng-container *ngIf="statistics.availableSlots > 0">
+              Zbývá <strong>{{statistics.availableSlots}} volných termínů</strong>.
+            </ng-container>
+            <ng-container *ngIf="statistics.availableSlots == 0">
+              Bohužel už není <strong>žádný volný termín</strong>.
+            </ng-container>
+          </ng-container>
         </p>
       </div>
       <div class="welcome__item">
@@ -58,7 +67,8 @@
       <mat-icon>favorite_border</mat-icon>
     </h3>
 
-    <button class="mt-30" color="primary" mat-raised-button routerLink="/registration">
+    <button class="mt-30" color="primary" mat-raised-button routerLink="/registration"
+            [disabled]="statistics === undefined || statistics.availableSlots == 0">
       Registrovat se k očkování
       <mat-icon>arrow_forward</mat-icon>
     </button>
