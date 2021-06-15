@@ -12,7 +12,8 @@ class DummyPatientValidationService : PatientValidationService {
     override suspend fun validatePatient(
         firstName: String,
         lastName: String,
-        personalNumber: String
+        personalNumber: String?,
+        insuranceNumber: String?
     ): PatientValidationResultDto {
         logger.warn { "NOT VERIFYING patient ${personalNumber}. This should not be in the production." }
         return IsinValidationResultDto(PatientValidationResult.WAS_NOT_VERIFIED)

@@ -65,29 +65,30 @@ fun NormalOpenAPIRoute.patientRoutes() {
             captchaService.verify(recaptchaToken, request.determineRealIp())
             logger.info { "Captcha token verified." }
 
-            val patientIsinId: String? = if (patientRegistration.personalNumber != null) {
-                logger.info { "Validating patient in the ISIN." }
-                // TODO  maybe validate received input before actually using ISIN
-                val patientValidationResult = patientValidation.validatePatient(
-                    patientRegistration.firstName,
-                    patientRegistration.lastName,
-                    patientRegistration.personalNumber
-                )
-                logger.info { "Validation completed." }
+            logger.info { "Validating patient in the ISIN." }
+            // TODO  maybe validate received input before actually using ISIN
+            val patientValidationResult = patientValidation.validatePatient(
+                patientRegistration.firstName,
+                patientRegistration.lastName,
+                patientRegistration.personalNumber,
+                patientRegistration.insuranceNumber
+            )
+            logger.info { "Validation completed." }
 
-                when (patientValidationResult.status) {
-                    PatientValidationResult.PATIENT_FOUND ->
-                        patientValidationResult.patientId
-                    PatientValidationResult.PATIENT_NOT_FOUND ->
+            val patientIsinId: String? = when (patientValidationResult.status) {
+                PatientValidationResult.PATIENT_FOUND ->
+                    patientValidationResult.patientId
+                PatientValidationResult.PATIENT_NOT_FOUND ->
+                    if (patientRegistration.personalNumber != null) {
                         throw IsinValidationException(patientValidationResult)
-                    PatientValidationResult.WAS_NOT_VERIFIED -> {
-                        logger.warn { "Patient was not validated in isin due to some problem. Skipping ISIN validation." }
+                    } else {
+                        logger.warn { "Patient was not found in ISIN. Not raising error because the patient was a foreigner. Skipping ISIN validation." }
                         null
                     }
+                PatientValidationResult.WAS_NOT_VERIFIED -> {
+                    logger.warn { "Patient was not validated in isin due to some problem. Skipping ISIN validation." }
+                    null
                 }
-            } else {
-                logger.info { "Personal number not set. Skipping ISIN validation" }
-                null
             }
 
             logger.info { "Saving patient to the database." }
