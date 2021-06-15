@@ -52,14 +52,15 @@ class PatientRepository(
         insuranceCompany: InsuranceCompany? = null,
         indication: String? = null,
         answers: Map<EntityId, Boolean>? = null,
-        registrationEmailSent: Instant? = null
+        registrationEmailSent: Instant? = null,
+        isinId: String? = null
     ): Boolean = newSuspendedTransaction {
         // check if any property is not null
         val isPatientEntityUpdateNecessary =
             firstName ?: lastName
             ?: district ?: zipCode
             ?: phoneNumber ?: personalNumber ?: insuranceNumber ?: email
-            ?: insuranceCompany ?: registrationEmailSent ?: indication
+            ?: insuranceCompany ?: registrationEmailSent ?: indication ?: isinId
         // if so, perform update query
         val patientUpdated = if (isPatientEntityUpdateNecessary != null) {
             Patients.update(
@@ -77,6 +78,7 @@ class PatientRepository(
                         updateIfNotNull(insuranceCompany, Patients.insuranceCompany)
                         updateIfNotNull(indication, Patients.indication)
                         updateIfNotNull(registrationEmailSent, Patients.registrationEmailSent)
+                        updateIfNotNull(isinId, Patients.isinId)
                     }
                 }
             )
@@ -102,8 +104,10 @@ class PatientRepository(
      * If no clause is given, it returns and maps whole database.
      */
     suspend fun getAndMapPatientsBy(
-        where: (SqlExpressionBuilder.() -> Op<Boolean>)? = null
-    ): List<PatientDtoOut> = newSuspendedTransaction { getAndMapPatients(where) }
+        where: (SqlExpressionBuilder.() -> Op<Boolean>)? = null,
+        n: Int? = null,
+        offset: Long = 0
+    ): List<PatientDtoOut> = newSuspendedTransaction { getAndMapPatients(where, n, offset) }
 
     /**
      * Gets and maps patient by given ID.
@@ -111,7 +115,7 @@ class PatientRepository(
      * Returns null if no patient was found.
      */
     suspend fun getAndMapById(patientId: EntityId): PatientDtoOut? =
-        getAndMapPatientsBy { Patients.id eq patientId }.singleOrNull()
+        getAndMapPatientsBy( { Patients.id eq patientId } ).singleOrNull()
 
 
     /**
@@ -176,13 +180,14 @@ class PatientRepository(
         newSuspendedTransaction { Patients.deleteWhere(op = where) }
 
 
-    private fun getAndMapPatients(where: (SqlExpressionBuilder.() -> Op<Boolean>)? = null) =
+    private fun getAndMapPatients(where: (SqlExpressionBuilder.() -> Op<Boolean>)? = null, n: Int? = null, offset: Long = 0) =
         Patients
             .leftJoin(Answers, { id }, { patientId })
             .leftJoin(Vaccinations, { Patients.vaccination }, { id })
             .leftJoin(PatientDataCorrectnessConfirmation, { Patients.dataCorrectness }, { id })
             .leftJoin(VaccinationSlots, { Patients.id }, { patientId })
             .let { if (where != null) it.select(where) else it.selectAll() }
+            .let { if (n != null) it.limit(n, offset) else it }
             .toList() // eager fetch all data from the database
             .let { data ->
                 val answers = data.groupBy({ it[Patients.id] }, { it.mapAnswer() })
@@ -225,14 +230,18 @@ class PatientRepository(
     private fun ResultRow.mapDataCorrect() = getOrNull(PatientDataCorrectnessConfirmation.id)?.let {
         DataCorrectnessConfirmationDtoOut(
             id = this[PatientDataCorrectnessConfirmation.id],
-            dataAreCorrect = this[PatientDataCorrectnessConfirmation.dataAreCorrect]
+            dataAreCorrect = this[PatientDataCorrectnessConfirmation.dataAreCorrect],
+            exportedToIsinOn = this[PatientDataCorrectnessConfirmation.exportedToIsinOn],
+            notes = this[PatientDataCorrectnessConfirmation.notes]
         )
     }
 
     private fun ResultRow.mapVaccinated() = getOrNull(Vaccinations.id)?.let {
         VaccinationDtoOut(
             id = this[Vaccinations.id],
-            vaccinatedOn = this[Vaccinations.vaccinatedOn]
+            vaccinatedOn = this[Vaccinations.vaccinatedOn],
+            exportedToIsinOn = this[Vaccinations.exportedToIsinOn],
+            notes = this[Vaccinations.notes]
         )
     }
 

@@ -5,5 +5,7 @@ import java.time.Instant
 
 data class VaccinationDtoOut(
     val id: EntityId,
-    val vaccinatedOn: Instant
+    val vaccinatedOn: Instant,
+    val exportedToIsinOn: Instant?,
+    val notes: String?
 )

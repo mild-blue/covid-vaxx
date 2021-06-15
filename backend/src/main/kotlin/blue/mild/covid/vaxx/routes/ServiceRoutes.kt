@@ -2,18 +2,24 @@ package blue.mild.covid.vaxx.routes
 
 import blue.mild.covid.vaxx.dao.model.DatabaseSetup
 import blue.mild.covid.vaxx.dao.model.UserRole
+import blue.mild.covid.vaxx.dto.request.IsinJobDtoIn
 import blue.mild.covid.vaxx.dto.request.query.SystemStatisticsFilterDtoIn
 import blue.mild.covid.vaxx.dto.response.ApplicationInformationDtoOut
+import blue.mild.covid.vaxx.dto.response.IsinJobDtoOut
 import blue.mild.covid.vaxx.dto.response.ServiceHealthDtoOut
 import blue.mild.covid.vaxx.dto.response.SystemStatisticsDtoOut
 import blue.mild.covid.vaxx.extensions.closestDI
+import blue.mild.covid.vaxx.extensions.createLogger
+import blue.mild.covid.vaxx.extensions.determineRealIp
 import blue.mild.covid.vaxx.extensions.request
 import blue.mild.covid.vaxx.extensions.respondWithStatus
 import blue.mild.covid.vaxx.security.auth.UserPrincipal
 import blue.mild.covid.vaxx.security.auth.authorizeRoute
+import blue.mild.covid.vaxx.service.IsinRetryService
 import blue.mild.covid.vaxx.service.SystemStatisticsService
 import com.papsign.ktor.openapigen.route.info
-import com.papsign.ktor.openapigen.route.path.auth.get
+import com.papsign.ktor.openapigen.route.path.auth.post
+import com.papsign.ktor.openapigen.route.path.auth.principal
 import com.papsign.ktor.openapigen.route.path.normal.NormalOpenAPIRoute
 import com.papsign.ktor.openapigen.route.path.normal.get
 import com.papsign.ktor.openapigen.route.response.respond
@@ -28,6 +34,9 @@ import org.kodein.di.instance
 fun NormalOpenAPIRoute.serviceRoutes() {
     val version by closestDI().instance<ApplicationInformationDtoOut>()
     val systemStatisticsService by closestDI().instance<SystemStatisticsService>()
+    val isinRetryService by closestDI().instance<IsinRetryService>()
+
+    val logger = createLogger("ServiceRoute")
 
     /**
      * Send data about version.
@@ -48,5 +57,22 @@ fun NormalOpenAPIRoute.serviceRoutes() {
 
     route(Routes.systemStatistics).get<SystemStatisticsFilterDtoIn, SystemStatisticsDtoOut> { query ->
         respond(systemStatisticsService.getSystemStatistics(query))
+    }
+
+    authorizeRoute(requireOneOf = setOf(UserRole.ADMIN)) {
+        route(Routes.runIsinJob).post<Unit, IsinJobDtoOut, IsinJobDtoIn, UserPrincipal>(
+            info(
+                "Checks patients where ISIN was failed and run isin client again."
+            )
+        ) { _, isinJobDto ->
+            val principal = principal()
+            logger.info {
+                "Run ISIN job by ${principal.userId} from host ${request.determineRealIp()}."
+            }
+
+            val stats = isinRetryService.runIsinRetry(isinJobDto)
+
+            respond(stats)
+        }
     }
 }

@@ -13,6 +13,8 @@
 
 export interface DataCorrectnessConfirmationDtoOut {
   dataAreCorrect: boolean;
+  exportedToIsinOn?: string | null;
   id: string;
+  notes?: string | null;
 }
 
