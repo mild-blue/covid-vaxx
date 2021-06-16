@@ -227,9 +227,12 @@ class PatientRoutesTest : ServerTestBase() {
             assertTrue { patients.isEmpty() }
         }
 
-        // TODO #262 implement this - check that the patient was indeed deleted
-        // call endpoint with patient ID and check that the response is 404 - Not Found
-        // hint - see and try to understand what we're doing in the previous lines
+        // the patient is no longer in db
+        handleRequest(HttpMethod.Get, "${Routes.adminSectionPatient}/$patientId") {
+            authorize()
+        }.run {
+            expectStatus(HttpStatusCode.NotFound)
+        }
     }
 
 

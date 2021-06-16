@@ -44,11 +44,14 @@ export class AdminEditComponent extends AdminPatientAbstractComponent implements
       return;
     }
 
+    this.loading = true;
     try {
       await this._patientService.updatePatient(this.patient);
       this._alertService.successDialog('Data pacienta byla úspěšně uložena.', this._routeBack.bind(this));
     } catch (e) {
       this._alertService.error(e.message);
+    } finally {
+      this.loading = false;
     }
   }
 
