@@ -59,7 +59,7 @@ Content-Type: application/json
 {
   "firstName": "Tomáš",
   "lastName": "Kos",
-  "insuranceNumber": "8612052186",
+  "insuranceNumber": "1234567890",
   "email": "kubant.jan@example.com",
   "phoneNumber": {
     "countryCode": "CZ",
@@ -110,26 +110,8 @@ Content-Type: application/json
 }
 ###
 
-GET {{url}}/admin/patient?personalOrInsuranceNumber=8612052184
-Content-Type: application/json
-Authorization: Bearer {{auth_token}}
-
-> {% client.global.set("patient_id", response.body["id"]); %}
-
-###
-
-POST {{url}}/admin/data-correctness
-Content-Type: application/json
-Authorization: Bearer {{auth_token}}
-
-{
-  "dataAreCorrect":true,
-  "notes":"note",
-  "patientId":"{{patient_id}}"
-}
-###
-
-GET {{url}}/admin/patient?personalNumber=9151010385
+// find patient
+GET {{url}}/admin/patient?personalOrInsuranceNumber=1234567989
 Content-Type: application/json
 Authorization: Bearer {{auth_token}}
 

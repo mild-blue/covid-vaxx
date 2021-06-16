@@ -1,5 +1,6 @@
 package blue.mild.covid.vaxx.service
 
+import blue.mild.covid.vaxx.dao.model.DatabaseTypeLength
 import blue.mild.covid.vaxx.dao.model.EntityId
 import blue.mild.covid.vaxx.dao.model.Patients
 import blue.mild.covid.vaxx.dao.repository.PatientRepository
@@ -7,6 +8,7 @@ import blue.mild.covid.vaxx.dto.internal.ContextAware
 import blue.mild.covid.vaxx.dto.request.PatientRegistrationDtoIn
 import blue.mild.covid.vaxx.dto.request.PatientUpdateDtoIn
 import blue.mild.covid.vaxx.dto.response.PatientDtoOut
+import blue.mild.covid.vaxx.error.EntityNotFoundException
 import blue.mild.covid.vaxx.error.entityNotFound
 import blue.mild.covid.vaxx.utils.formatPhoneNumber
 import blue.mild.covid.vaxx.utils.normalizePersonalNumber
@@ -53,17 +55,18 @@ class PatientService(
     /**
      * Returns single patient with given personal or insurance number or throws exception.
      */
-    @Suppress("MagicNumber") // 11 is the maximal length of a Czech personal number
     suspend fun getPatientByPersonalOrInsuranceNumber(patientPersonalOrInsuranceNumber: String): PatientDtoOut {
-        // TODO write Kotlin...
         // TODO theoretically, there could be a patient with an insurance number same as personal number of some other patient.
         //  In this case, we cannot find the patient with the personal number.
         var patient = getPatientByInsuranceNumber(patientPersonalOrInsuranceNumber)
-        if (patient == null && patientPersonalOrInsuranceNumber.length <= 11) {
+        if (patient == null && patientPersonalOrInsuranceNumber.length <= DatabaseTypeLength.PERSONAL_NUMBER) {
             patient = getPatientByPersonalNumber(patientPersonalOrInsuranceNumber)
         }
-        // TODO we could throw Patients::insuranceNumber, patientPersonalOrInsuranceNumber as well
-        return patient ?: throw entityNotFound<Patients>(Patients::personalNumber, patientPersonalOrInsuranceNumber)
+        return patient ?: throw EntityNotFoundException(
+            "Patient",
+            "personal or insurance number",
+            patientPersonalOrInsuranceNumber
+        )
     }
 
     /**

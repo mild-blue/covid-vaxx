@@ -147,7 +147,7 @@ fun NormalOpenAPIRoute.patientRoutes() {
                 val patient =
                     patientService.getPatientByPersonalOrInsuranceNumber(patientQuery.personalOrInsuranceNumber)
 
-                logger.debug { "Patient found under id ${patient.id}." }
+                logger.info { "Patient found under id ${patient.id}." }
                 respond(patient)
             }
 

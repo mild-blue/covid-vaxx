@@ -74,7 +74,7 @@ data class InputPacient(
 private val patients = mapOf(
     IsinEnvironment.PUBLIC to InputPacient("Jan", "Kubant", "1234567890"),
     IsinEnvironment.TEST to InputPacient("VICTOR", "BUDIUC", "8208258201"),
-    IsinEnvironment.PRODUCTION to InputPacient("Josef", "Navratil", "8405073820"),
+    IsinEnvironment.PRODUCTION to InputPacient("Josef", "Navratil", "1234567890"),
 )
 
 // Dummy class to wrap data around paracovnik
