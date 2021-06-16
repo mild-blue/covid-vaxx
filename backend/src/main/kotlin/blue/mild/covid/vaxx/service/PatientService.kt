@@ -53,9 +53,11 @@ class PatientService(
     /**
      * Returns single patient with given personal or insurance number or throws exception.
      */
+    @Suppress("MagicNumber") // 11 is the maximal length of a Czech personal number
     suspend fun getPatientByPersonalOrInsuranceNumber(patientPersonalOrInsuranceNumber: String): PatientDtoOut {
         // TODO write Kotlin...
-        // TODO theoretically, there could be a patient with an insurance number same as personal number of some other patient. In this case, we cannot find the patient with the personal number.
+        // TODO theoretically, there could be a patient with an insurance number same as personal number of some other patient.
+        //  In this case, we cannot find the patient with the personal number.
         var patient = getPatientByInsuranceNumber(patientPersonalOrInsuranceNumber)
         if (patient == null && patientPersonalOrInsuranceNumber.length <= 11) {
             patient = getPatientByPersonalNumber(patientPersonalOrInsuranceNumber)
