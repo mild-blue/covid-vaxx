@@ -9,6 +9,8 @@ export * from './dataCorrectnessConfirmationDtoOut';
 export * from './dataCorrectnessDtoIn';
 export * from './entityIdDtoOut';
 export * from './insuranceCompanyDetailsDtoOut';
+export * from './isinJobDtoIn';
+export * from './isinJobDtoOut';
 export * from './locationDtoIn';
 export * from './locationDtoOut';
 export * from './loginDtoIn';

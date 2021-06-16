@@ -89,4 +89,30 @@ class DataCorrectnessRepository {
                 }
         }
 
+
+    /**
+     * Updates correctness entity with id [correctnessId].
+     */
+    suspend fun updateCorrectness(
+        correctnessId: EntityId,
+        notes: String? = null,
+        exportedToIsinOn: Instant? = null
+    ): Boolean = newSuspendedTransaction {
+        val isUpdateNecessary =
+            notes ?: exportedToIsinOn
+
+        // if so, perform update query
+        val correctnessUpdated = if (isUpdateNecessary != null) {
+            PatientDataCorrectnessConfirmation.update(
+                where = { PatientDataCorrectnessConfirmation.id eq correctnessId },
+                body = { row ->
+                    row.apply {
+                        updateIfNotNull(notes, PatientDataCorrectnessConfirmation.notes)
+                        updateIfNotNull(exportedToIsinOn, PatientDataCorrectnessConfirmation.exportedToIsinOn)
+                    }
+                }
+            )
+        } else 0
+        correctnessUpdated == 1
+    }
 }

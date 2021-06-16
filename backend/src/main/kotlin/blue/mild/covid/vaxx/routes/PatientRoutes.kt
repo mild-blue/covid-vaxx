@@ -68,7 +68,11 @@ fun NormalOpenAPIRoute.patientRoutes() {
             val patientIsinId: String? = if (patientRegistration.personalNumber != null) {
                 logger.info { "Validating patient in the ISIN." }
                 // TODO  maybe validate received input before actually using ISIN
-                val patientValidationResult = patientValidation.validatePatient(patientRegistration)
+                val patientValidationResult = patientValidation.validatePatient(
+                    patientRegistration.firstName,
+                    patientRegistration.lastName,
+                    patientRegistration.personalNumber
+                )
                 logger.info { "Validation completed." }
 
                 when (patientValidationResult.status) {

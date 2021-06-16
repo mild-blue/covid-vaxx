@@ -47,7 +47,7 @@ class PatientService(
      * Returns single patient with given insurance number or throws exception.
      */
     suspend fun getPatientByInsuranceNumber(patientInsuranceNumber: String): PatientDtoOut =
-        patientRepository.getAndMapPatientsBy {
+        patientRepository.getAndMapPatientsBy{
             Patients.insuranceNumber eq patientInsuranceNumber.trim()
         }.singleOrNull()?.withSortedAnswers()
             ?: throw entityNotFound<Patients>(Patients::insuranceNumber, patientInsuranceNumber)
@@ -58,9 +58,14 @@ class PatientService(
     suspend fun getPatientsByConjunctionOf(
         email: String? = null,
         phoneNumber: String? = null,
-        vaccinated: Boolean? = null
+        vaccinated: Boolean? = null,
+        n: Int? = null,
+        offset: Long = 0
     ): List<PatientDtoOut> =
-        patientRepository.getAndMapPatientsBy {
+        patientRepository.getAndMapPatientsBy(
+            n = n,
+            offset = offset
+        ){
             Op.TRUE
                 .andWithIfNotEmpty(email?.removeAllWhitespaces()?.lowercase(Locale.getDefault()), Patients.email)
                 .andWithIfNotEmpty(phoneNumber?.removeAllWhitespaces(), Patients.phoneNumber)

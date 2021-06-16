@@ -11,10 +11,12 @@
  */
 
 
-export interface VaccinationDtoOut {
-  exportedToIsinOn?: string | null;
-  id: string;
-  notes?: string | null;
-  vaccinatedOn: string;
+export interface IsinJobDtoOut {
+  exportedPatientsInfoErrors: number;
+  exportedPatientsInfoSuccess: number;
+  exportedVaccinationsErrors: number;
+  exportedVaccinationsSuccess: number;
+  validatedPatientsErrors: number;
+  validatedPatientsSuccess: number;
 }
 
