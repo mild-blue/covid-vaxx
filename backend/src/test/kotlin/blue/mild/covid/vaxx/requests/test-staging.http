@@ -3,7 +3,7 @@ Content-Type: application/json
 
 {
   "credentials": {
-    "email": "{{user}}",
+    "email": "{{email}}",
     "password": "{{password}}"
   },
   "vaccineSerialNumber": "test",
