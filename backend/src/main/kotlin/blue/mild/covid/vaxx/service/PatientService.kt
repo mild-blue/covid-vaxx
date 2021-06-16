@@ -57,7 +57,7 @@ class PatientService(
      */
     suspend fun getPatientByPersonalOrInsuranceNumber(patientPersonalOrInsuranceNumber: String): PatientDtoOut {
         // TODO theoretically, there could be a patient with an insurance number same as personal number of some other patient.
-        //  In this case, we cannot find the patient with the personal number.
+        //  In this case, we cannot find the patient with the personal number. https://github.com/mild-blue/covid-vaxx/issues/329
         var patient = getPatientByInsuranceNumber(patientPersonalOrInsuranceNumber)
         if (patient == null && patientPersonalOrInsuranceNumber.length <= DatabaseTypeLength.PERSONAL_NUMBER) {
             patient = getPatientByPersonalNumber(patientPersonalOrInsuranceNumber)
