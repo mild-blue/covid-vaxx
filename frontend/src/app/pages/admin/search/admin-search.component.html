@@ -5,29 +5,13 @@
   <mat-card>
     <mat-card-content>
       <form (ngSubmit)="onSubmit()" #searchForm="ngForm">
-        <p>
-          <mat-button-toggle-group name="isForeigner" [value]="isForeigner">
-            <mat-button-toggle [value]="false" (click)="isForeigner = false;">Očkovaný je občan ČR</mat-button-toggle>
-            <mat-button-toggle [value]="true" (click)="isForeigner = true;">Cizinec</mat-button-toggle>
-          </mat-button-toggle-group>
-        </p>
-
-        <mat-form-field class="" *ngIf="!isForeigner">
-          <mat-label>Rodné číslo očkovaného</mat-label>
-          <input matInput [(ngModel)]="personalNumber"
-                 placeholder="Zadejte rodné číslo"
-                 name="personalNumber"
-                 required maxlength="11" appPersonalNumberValidator>
-          <mat-hint>Rodné číslo ve formátu RRMMDD/ČČČ(Č)</mat-hint>
-        </mat-form-field>
-
-        <mat-form-field class="" *ngIf="isForeigner">
-          <mat-label>Číslo pojištěnce</mat-label>
-          <input matInput [(ngModel)]="insuranceNumber"
-                 placeholder="Zadejte číslo pojištěnce"
-                 name="insuranceNumber"
-                 required maxlength="256">
-          <mat-hint>Číslo pojištěnce uvedené na kartičce zdravotní pojišťovny</mat-hint>
+        <mat-form-field>
+          <mat-label>Rodné číslo nebo číslo pojištěnce očkovaného</mat-label>
+          <input matInput [(ngModel)]="searchQuery"
+                 placeholder="Zadejte rodné číslo nebo číslo pojištěnce"
+                 name="searchQuery"
+                 required>
+          <mat-hint>Rodné číslo ve formátu RRMMDD/ČČČ(Č) nebo číslo pojištěnce uvedené na kartičce zdravotní pojišťovny</mat-hint>
         </mat-form-field>
 
         <button color="primary"
@@ -41,8 +25,7 @@
 
   <div class="history__header">
     <h3>Historie vyhledávání</h3>
-    <button *ngIf="searchHistory.length"
-            (click)="clearHistory()" mat-button color="warn">
+    <button *ngIf="searchHistory.length" (click)="clearHistory()" mat-button color="warn">
       Vymazat historii
     </button>
   </div>
@@ -50,9 +33,10 @@
   <mat-card class="history">
     <div *ngFor="let query of searchHistory">
       <div class="history__item">
-        <span>{{ query.search }} ({{ query.isForeigner ? 'cizinec' : 'občan ČR' }})</span>
-        <button (click)="findPatientForSearchHistory(query)"
-                mat-button color="primary">Hledat znovu</button>
+        <span>{{ query.search }}</span>
+        <button (click)="findPatientForSearchHistory(query)" mat-button color="primary">
+          Hledat znovu
+        </button>
       </div>
       <mat-divider></mat-divider>
     </div>
