@@ -13,21 +13,12 @@ import blue.mild.covid.vaxx.dto.response.OK
 import blue.mild.covid.vaxx.dto.response.Ok
 import blue.mild.covid.vaxx.dto.response.PatientDtoOut
 import blue.mild.covid.vaxx.dto.response.PatientRegistrationResponseDtoOut
-import blue.mild.covid.vaxx.error.HttpParametersException
 import blue.mild.covid.vaxx.error.IsinValidationException
-import blue.mild.covid.vaxx.extensions.asContextAware
-import blue.mild.covid.vaxx.extensions.closestDI
-import blue.mild.covid.vaxx.extensions.createLogger
-import blue.mild.covid.vaxx.extensions.determineRealIp
-import blue.mild.covid.vaxx.extensions.request
+import blue.mild.covid.vaxx.extensions.*
 import blue.mild.covid.vaxx.security.auth.UserPrincipal
 import blue.mild.covid.vaxx.security.auth.authorizeRoute
 import blue.mild.covid.vaxx.security.ddos.RequestVerificationService
-import blue.mild.covid.vaxx.service.LocationService
-import blue.mild.covid.vaxx.service.MailService
-import blue.mild.covid.vaxx.service.PatientService
-import blue.mild.covid.vaxx.service.PatientValidationService
-import blue.mild.covid.vaxx.service.VaccinationSlotService
+import blue.mild.covid.vaxx.service.*
 import com.papsign.ktor.openapigen.route.info
 import com.papsign.ktor.openapigen.route.path.auth.delete
 import com.papsign.ktor.openapigen.route.path.auth.get
@@ -139,30 +130,15 @@ fun NormalOpenAPIRoute.patientRoutes() {
                 val principal = principal()
                 if (logger.isDebugEnabled) {
                     logger.debug {
-                        "User ${principal.userId} search by personalNumber=${patientQuery.personalNumber} and " +
-                                "insuranceNumber=${patientQuery.insuranceNumber}."
+                        "User ${principal.userId} search by personal or insurance number=${patientQuery.personalOrInsuranceNumber}."
                     }
                 } else {
                     logger.info { "User ${principal.userId} search by personal number or insurance number." }
                 }
 
-                val patient = when {
-                    patientQuery.personalNumber != null && patientQuery.insuranceNumber == null -> {
-                        patientService.getPatientByPersonalNumber(patientQuery.personalNumber)
-                    }
-                    patientQuery.personalNumber == null && patientQuery.insuranceNumber != null -> {
-                        patientService.getPatientByInsuranceNumber(patientQuery.insuranceNumber)
-                    }
-                    patientQuery.personalNumber != null && patientQuery.insuranceNumber != null -> {
-                        throw HttpParametersException("Personal number and insurance number cannot be specified in the same time.")
-                    }
-                    patientQuery.personalNumber == null && patientQuery.insuranceNumber == null -> {
-                        throw HttpParametersException("Personal number or insurance number has to be specified.")
-                    }
-                    else -> {
-                        throw NotImplementedError("This should not happen")
-                    }
-                }
+                val patient =
+                    patientService.getPatientByPersonalOrInsuranceNumber(patientQuery.personalOrInsuranceNumber)
+
                 logger.debug { "Patient found under id ${patient.id}." }
                 respond(patient)
             }

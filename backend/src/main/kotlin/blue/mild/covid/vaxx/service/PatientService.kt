@@ -37,20 +37,32 @@ class PatientService(
     /**
      * Returns single patient with given personal number or throws exception.
      */
-    suspend fun getPatientByPersonalNumber(patientPersonalNumber: String): PatientDtoOut =
+    private suspend fun getPatientByPersonalNumber(patientPersonalNumber: String): PatientDtoOut? =
         patientRepository.getAndMapPatientsBy {
             Patients.personalNumber eq patientPersonalNumber.normalizePersonalNumber()
         }.singleOrNull()?.withSortedAnswers()
-            ?: throw entityNotFound<Patients>(Patients::personalNumber, patientPersonalNumber)
 
     /**
      * Returns single patient with given insurance number or throws exception.
      */
-    suspend fun getPatientByInsuranceNumber(patientInsuranceNumber: String): PatientDtoOut =
+    private suspend fun getPatientByInsuranceNumber(patientInsuranceNumber: String): PatientDtoOut? =
         patientRepository.getAndMapPatientsBy {
             Patients.insuranceNumber eq patientInsuranceNumber.trim()
         }.singleOrNull()?.withSortedAnswers()
-            ?: throw entityNotFound<Patients>(Patients::insuranceNumber, patientInsuranceNumber)
+
+    /**
+     * Returns single patient with given personal or insurance number or throws exception.
+     */
+    suspend fun getPatientByPersonalOrInsuranceNumber(patientPersonalOrInsuranceNumber: String): PatientDtoOut {
+        // TODO write Kotlin...
+        // TODO theoretically, there could be a patient with an insurance number same as personal number of some other patient. In this case, we cannot find the patient with the personal number.
+        var patient = getPatientByInsuranceNumber(patientPersonalOrInsuranceNumber)
+        if (patient == null && patientPersonalOrInsuranceNumber.length <= 11) {
+            patient = getPatientByPersonalNumber(patientPersonalOrInsuranceNumber)
+        }
+        // TODO we could throw Patients::insuranceNumber, patientPersonalOrInsuranceNumber as well
+        return patient ?: throw entityNotFound<Patients>(Patients::personalNumber, patientPersonalOrInsuranceNumber)
+    }
 
     /**
      * Filters the database with the conjunction (and clause) of the given properties.
