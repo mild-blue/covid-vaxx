@@ -312,7 +312,8 @@ class PatientRoutesTest : ServerTestBase() {
             validationService.validatePatient(
                 validRegistration.firstName,
                 validRegistration.lastName,
-                validRegistration.personalNumber ?: ""
+                validRegistration.personalNumber,
+                validRegistration.insuranceNumber
             )
         } returns IsinValidationResultDto(PatientValidationResult.PATIENT_NOT_FOUND)
 
