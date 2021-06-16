@@ -6,5 +6,10 @@ fun interface PatientValidationService {
     /**
      * Validates patient against medical system service.
      */
-    suspend fun validatePatient(firstName: String, lastName: String, personalNumber: String): PatientValidationResultDto
+    suspend fun validatePatient(
+        firstName: String,
+        lastName: String,
+        personalNumber: String?,
+        insuranceNumber: String?
+    ): PatientValidationResultDto
 }

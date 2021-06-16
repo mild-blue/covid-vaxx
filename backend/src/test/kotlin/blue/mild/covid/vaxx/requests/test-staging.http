@@ -57,9 +57,9 @@ POST {{url}}/patient?captcha=1234
 Content-Type: application/json
 
 {
-  "firstName": "Tomáš",
-  "lastName": "Kos",
-  "insuranceNumber": "1234567890",
+  "firstName": "Adéla",
+  "lastName": "Kostičková",
+  "personalNumber": "9151010385",
   "email": "kubant.jan@example.com",
   "phoneNumber": {
     "countryCode": "CZ",
@@ -128,7 +128,6 @@ Authorization: Bearer {{auth_token}}
   "notes":"note",
   "patientId":"{{patient_id}}"
 }
-
 
 ###
 
