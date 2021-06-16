@@ -25,8 +25,9 @@ export class PatientInfoFormComponent implements OnInit {
   public form: FormGroup = new FormGroup({
     firstName: new FormControl('', [Validators.required]),
     lastName: new FormControl('', [Validators.required]),
-    personalNumber: new FormControl('', []),
-    insuranceNumber: new FormControl('', []),
+    isForeigner: new FormControl(false),
+    personalNumber: new FormControl(''),
+    insuranceNumber: new FormControl(''),
     insuranceCompany: new FormControl('', [Validators.required]),
     phoneNumber: new FormControl('', [Validators.required]),
     email: new FormControl('', [Validators.required]),
@@ -44,16 +45,15 @@ export class PatientInfoFormComponent implements OnInit {
       // Pass invalid info to parent component
       const invalid = [];
       const controls = this.form.controls;
+      const isForeigner = controls.isForeigner?.value === true;
 
       for (const name in controls) {
-        if (controls[name].invalid) {
-          if (
-            (name === 'personalNumber' && !this.patient.isForeigner) ||
-            (name === 'insuranceNumber' && this.patient.isForeigner) ||
-            (name !== 'personalNumber' && name !== 'insuranceNumber')
-          ) {
-            invalid.push(patientDataLabels[name]);
-          }
+        const isPersonalNumberInvalid = name === 'personalNumber' && !isForeigner && (controls[name].invalid || !controls[name].value);
+        const isInsuranceNumberInvalid = name === 'insuranceNumber' && isForeigner && (controls[name].invalid || !controls[name].value);
+        const isOtherControlInvalid = name !== 'personalNumber' && name !== 'insuranceNumber' && controls[name].invalid;
+
+        if (isOtherControlInvalid || isPersonalNumberInvalid || isInsuranceNumberInvalid) {
+          invalid.push(patientDataLabels[name]);
         }
       }
 
@@ -70,6 +70,7 @@ export class PatientInfoFormComponent implements OnInit {
     this.form.setValue({
       firstName: this.patient.firstName,
       lastName: this.patient.lastName,
+      isForeigner: this.patient.isForeigner,
       personalNumber: this.patient.personalNumber ?? null,
       insuranceNumber: this.patient.insuranceNumber ?? null,
       insuranceCompany: this.patient.insuranceCompany ?? null,
