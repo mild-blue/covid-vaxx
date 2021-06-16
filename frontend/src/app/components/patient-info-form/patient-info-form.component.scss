@@ -32,12 +32,11 @@ mat-card {
   padding: 30px;
 }
 
-
-mat-button-toggle-group {
-  margin-bottom: 15px;
-}
-
 mat-button-toggle {
+  &-group {
+    margin-bottom: 26px;
+  }
+
   &.mat-button-toggle-checked {
     background-color: rgba($success, 0.2);
     color: $success;

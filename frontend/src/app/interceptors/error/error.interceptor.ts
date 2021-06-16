@@ -37,8 +37,10 @@ export class ErrorInterceptor implements HttpInterceptor {
         message = 'Přístup byl odmítnut.';
         emailSubject = 'Požadavek na udělení přístupu';
       } else if (err.status === 404) {
-        // TODO Pres href a lepe. Mame na to uz button
-        message = 'Je nám líto, ale Vašemu dotazu nic neodpovídá. Zkontrolujte prosím, že zadáváte správné údaje. Případně nechte pacienta znovu registrovat na ockovani.praha7.cz.';
+        const url = 'ockovani.praha7.cz';
+        message = 'Je nám líto, ale Vašemu dotazu nic neodpovídá. ' +
+          'Zkontrolujte prosím, že zadáváte správné údaje. ' +
+          `Případně nechte pacienta znovu registrovat na <a href="${url}" target="_blank">${url}</a>.<br><br>`;
       } else if (err.status === 406) {
         message = 'Nepodařila se validace Vaší osoby v registru osob. Prosím, zkontrolujte, že máte zadané spávné jméno, příjmení a rodné číslo.';
       } else if (err.status === 409) {
