@@ -104,10 +104,10 @@ class PatientRepository(
      * If no clause is given, it returns and maps whole database.
      */
     suspend fun getAndMapPatientsBy(
-        where: (SqlExpressionBuilder.() -> Op<Boolean>)? = null,
         n: Int? = null,
-        offset: Long = 0
-    ): List<PatientDtoOut> = newSuspendedTransaction { getAndMapPatients(where, n, offset) }
+        offset: Long = 0,
+        where: (SqlExpressionBuilder.() -> Op<Boolean>)? = null
+    ): List<PatientDtoOut> = newSuspendedTransaction { getAndMapPatients(n, offset, where) }
 
     /**
      * Gets and maps patient by given ID.
@@ -115,7 +115,7 @@ class PatientRepository(
      * Returns null if no patient was found.
      */
     suspend fun getAndMapById(patientId: EntityId): PatientDtoOut? =
-        getAndMapPatientsBy( { Patients.id eq patientId } ).singleOrNull()
+        getAndMapPatientsBy { Patients.id eq patientId }.singleOrNull()
 
 
     /**
@@ -180,7 +180,7 @@ class PatientRepository(
         newSuspendedTransaction { Patients.deleteWhere(op = where) }
 
 
-    private fun getAndMapPatients(where: (SqlExpressionBuilder.() -> Op<Boolean>)? = null, n: Int? = null, offset: Long = 0) =
+    private fun getAndMapPatients(n: Int? = null, offset: Long = 0, where: (SqlExpressionBuilder.() -> Op<Boolean>)? = null) =
         Patients
             .leftJoin(Answers, { id }, { patientId })
             .leftJoin(Vaccinations, { Patients.vaccination }, { id })

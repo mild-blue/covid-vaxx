@@ -1,12 +1,12 @@
 package blue.mild.covid.vaxx.dto.response
 
 data class IsinJobDtoOut(
-    var validatedPatientsSuccess: Int = 0,
-    var validatedPatientsErrors: Int = 0,
+    val validatedPatientsSuccess: Int,
+    val validatedPatientsErrors: Int,
 
-    var exportedPatientsInfoSuccess: Int = 0,
-    var exportedPatientsInfoErrors: Int = 0,
+    val exportedPatientsInfoSuccess: Int,
+    val exportedPatientsInfoErrors: Int,
 
-    var exportedVaccinationsSuccess: Int = 0,
-    var exportedVaccinationsErrors: Int = 0
+    val exportedVaccinationsSuccess: Int,
+    val exportedVaccinationsErrors: Int
 )
