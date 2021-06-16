@@ -57,8 +57,7 @@ class IsinService(
             personalNumber.normalizePersonalNumber()
         ))
         logger.info { "Executing ISIN HTTP call ${URL_GET_PATIENT_BY_PARAMETERS}." }
-        val response =  isinClient.get<HttpResponse>(url)
-        val json = response.receive<JsonNode>()
+        val json =  isinClient.get<JsonNode>(url)
 
         val result = IsinGetPatientByParametersResultDto(
             result = json.get("vysledek").textValue(),
@@ -79,8 +78,7 @@ class IsinService(
             insuranceNumber.trim()
         ))
         logger.info { "Executing ISIN HTTP call ${URL_GET_FOREIGNER_BY_INSURANCE_NUMBER}." }
-        val response =  isinClient.get<HttpResponse>(url)
-        val json = response.receive<JsonNode>()
+        val json =  isinClient.get<JsonNode>(url)
 
         val result = IsinGetPatientByParametersResultDto(
             result = json.get("vysledek").textValue(),

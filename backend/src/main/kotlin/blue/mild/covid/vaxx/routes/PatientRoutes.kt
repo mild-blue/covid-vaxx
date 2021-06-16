@@ -65,8 +65,15 @@ fun NormalOpenAPIRoute.patientRoutes() {
             captchaService.verify(recaptchaToken, request.determineRealIp())
             logger.info { "Captcha token verified." }
 
+            logger.info { "Validating data." }
+            if (patientRegistration.personalNumber == null && patientRegistration.insuranceNumber == null) {
+                throw IllegalArgumentException(
+                    "Both personal and insurance numbers are not set for patient " +
+                    "${patientRegistration.firstName} ${patientRegistration.lastName}. "
+                )
+            }
+
             logger.info { "Validating patient in the ISIN." }
-            // TODO  maybe validate received input before actually using ISIN
             val patientValidationResult = patientValidation.validatePatient(
                 patientRegistration.firstName,
                 patientRegistration.lastName,
