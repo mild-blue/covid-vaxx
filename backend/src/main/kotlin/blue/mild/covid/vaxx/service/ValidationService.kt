@@ -131,7 +131,7 @@ class ValidationService(private val questionService: QuestionService) {
         }
     }
 
-    fun requireValidPersonalOrInsuranceNumber(personalNumber: String?, insuranceNumber: String?) {
+    private fun requireValidPersonalOrInsuranceNumber(personalNumber: String?, insuranceNumber: String?) {
         if (personalNumber != null && personalNumber.isNotBlank())
             requireValidPersonalNumber(personalNumber)
         else if (insuranceNumber != null && insuranceNumber.isNotBlank()){

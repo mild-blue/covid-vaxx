@@ -14,6 +14,7 @@ import blue.mild.covid.vaxx.dto.response.Ok
 import blue.mild.covid.vaxx.dto.response.PatientDtoOut
 import blue.mild.covid.vaxx.dto.response.PatientRegistrationResponseDtoOut
 import blue.mild.covid.vaxx.error.IsinValidationException
+import blue.mild.covid.vaxx.error.NoPersonalAndInsuranceNumberException
 import blue.mild.covid.vaxx.extensions.asContextAware
 import blue.mild.covid.vaxx.extensions.closestDI
 import blue.mild.covid.vaxx.extensions.createLogger
@@ -66,10 +67,7 @@ fun NormalOpenAPIRoute.patientRoutes() {
 
             logger.info { "Validating data." }
             if (patientRegistration.personalNumber == null && patientRegistration.insuranceNumber == null) {
-                throw IllegalArgumentException(
-                    "Both personal and insurance numbers are not set for patient " +
-                    "${patientRegistration.firstName} ${patientRegistration.lastName}. "
-                )
+                throw NoPersonalAndInsuranceNumberException()
             }
 
             logger.info { "Validating patient in the ISIN." }
