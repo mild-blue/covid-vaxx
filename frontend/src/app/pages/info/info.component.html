@@ -67,11 +67,20 @@
       <mat-icon>favorite_border</mat-icon>
     </h3>
 
-    <button class="mt-30" color="primary" mat-raised-button routerLink="/registration"
-            [disabled]="statistics === undefined || statistics.availableSlots == 0">
-      Registrovat se k očkování
-      <mat-icon>arrow_forward</mat-icon>
-    </button>
+    <ng-container *ngIf="statistics !== undefined">
+      <ng-container *ngIf="statistics.availableSlots > 0 else content">
+        <button class="mt-30" color="primary" mat-raised-button routerLink="/registration">
+          Registrovat se k očkování
+          <mat-icon>arrow_forward</mat-icon>
+        </button>
+      </ng-container>
+
+      <ng-template #content>
+        <button class="mt-30" color="primary" mat-raised-button routerLink="/registration" [disabled]="true">
+          Bohužel už není žádný volný termín
+        </button>
+      </ng-template>
+    </ng-container>
   </app-container>
 
 </main>
