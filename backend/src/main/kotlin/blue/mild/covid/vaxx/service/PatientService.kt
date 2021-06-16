@@ -30,7 +30,7 @@ class PatientService(
      * Returns patient with given ID.
      */
     suspend fun getPatientById(patientId: EntityId): PatientDtoOut =
-        patientRepository.getAndMapPatientsBy( { Patients.id eq patientId } )
+        patientRepository.getAndMapPatientsBy { Patients.id eq patientId }
             .singleOrNull()
             ?.withSortedAnswers() ?: throw entityNotFound<Patients>(Patients::id, patientId)
 
@@ -38,18 +38,18 @@ class PatientService(
      * Returns single patient with given personal number or throws exception.
      */
     suspend fun getPatientByPersonalNumber(patientPersonalNumber: String): PatientDtoOut =
-        patientRepository.getAndMapPatientsBy( {
+        patientRepository.getAndMapPatientsBy {
             Patients.personalNumber eq patientPersonalNumber.normalizePersonalNumber()
-        }).singleOrNull()?.withSortedAnswers()
+        }.singleOrNull()?.withSortedAnswers()
             ?: throw entityNotFound<Patients>(Patients::personalNumber, patientPersonalNumber)
 
     /**
      * Returns single patient with given insurance number or throws exception.
      */
     suspend fun getPatientByInsuranceNumber(patientInsuranceNumber: String): PatientDtoOut =
-        patientRepository.getAndMapPatientsBy( {
+        patientRepository.getAndMapPatientsBy{
             Patients.insuranceNumber eq patientInsuranceNumber.trim()
-        }).singleOrNull()?.withSortedAnswers()
+        }.singleOrNull()?.withSortedAnswers()
             ?: throw entityNotFound<Patients>(Patients::insuranceNumber, patientInsuranceNumber)
 
     /**
@@ -63,22 +63,21 @@ class PatientService(
         offset: Long = 0
     ): List<PatientDtoOut> =
         patientRepository.getAndMapPatientsBy(
-            {
-                Op.TRUE
-                    .andWithIfNotEmpty(email?.removeAllWhitespaces()?.lowercase(Locale.getDefault()), Patients.email)
-                    .andWithIfNotEmpty(phoneNumber?.removeAllWhitespaces(), Patients.phoneNumber)
-                    .let { query ->
-                        vaccinated?.let {
-                            query.and(
-                                if (vaccinated) Patients.vaccination.isNotNull()
-                                else Patients.vaccination.isNull()
-                            )
-                        } ?: query
-                    }
-            },
             n = n,
             offset = offset
-        ).sorted()
+        ){
+            Op.TRUE
+                .andWithIfNotEmpty(email?.removeAllWhitespaces()?.lowercase(Locale.getDefault()), Patients.email)
+                .andWithIfNotEmpty(phoneNumber?.removeAllWhitespaces(), Patients.phoneNumber)
+                .let { query ->
+                    vaccinated?.let {
+                        query.and(
+                            if (vaccinated) Patients.vaccination.isNotNull()
+                            else Patients.vaccination.isNull()
+                        )
+                    } ?: query
+                }
+        }.sorted()
 
     /**
      * Updates patient with given change set.

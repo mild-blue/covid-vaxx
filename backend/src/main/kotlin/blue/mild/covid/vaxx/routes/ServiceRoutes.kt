@@ -62,7 +62,7 @@ fun NormalOpenAPIRoute.serviceRoutes() {
     authorizeRoute(requireOneOf = setOf(UserRole.ADMIN)) {
         route(Routes.runIsinJob).post<Unit, IsinJobDtoOut, IsinJobDtoIn, UserPrincipal>(
             info(
-                "Checks patients where ISIN was failed and run isin client again."
+                "Checks patients where ISIN has failed and run ISIN client again."
             )
         ) { _, isinJobDto ->
             val principal = principal()
