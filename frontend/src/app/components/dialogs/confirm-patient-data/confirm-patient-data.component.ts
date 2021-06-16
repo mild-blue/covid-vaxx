@@ -14,11 +14,13 @@ export class ConfirmPatientDataComponent implements AbstractConfirmInterface {
   onConfirm: EventEmitter<string> = new EventEmitter<string>();
 
   public note: string = '';
+  public confirmDisabled: boolean = false;
 
   constructor(private _ngZone: NgZone) {
   }
 
   confirm(): void {
+    this.confirmDisabled = true;
     this.onConfirm.emit(this.note);
   }
 

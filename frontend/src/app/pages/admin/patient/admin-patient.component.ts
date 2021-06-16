@@ -42,12 +42,15 @@ export class AdminPatientComponent extends AdminPatientAbstractComponent impleme
       return;
     }
 
+    this.loading = true;
     try {
       await this._patientService.verifyPatient(this.patient, note);
       this._alertService.successDialog('Údaje pacienta byly ověřeny.');
       this.patient.verified = true;
     } catch (e) {
       this._alertService.error(e.message);
+    } finally {
+      this.loading = false;
     }
   }
 
@@ -56,11 +59,14 @@ export class AdminPatientComponent extends AdminPatientAbstractComponent impleme
       return;
     }
 
+    this.loading = true;
     try {
       await this._patientService.confirmVaccination(this.patient.id, confirmation.bodyPart, confirmation.note);
       this._alertService.successDialog('Očkování bylo zaznamenáno.', this.initPatient.bind(this));
     } catch (e) {
       this._alertService.error(e.message);
+    } finally {
+      this.loading = false;
     }
   }
 }

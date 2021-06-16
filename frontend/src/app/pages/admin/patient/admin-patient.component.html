@@ -15,12 +15,14 @@
   </app-warning>
 
   <div *ngIf="patient" class="buttons">
-    <button *ngIf="!patient.verified" mat-raised-button (click)="verify()" color="success">
+    <button *ngIf="!patient.verified" mat-raised-button
+            (click)="verify()" color="success" [disabled]="loading">
       Potvrdit správnost údajů
       <mat-icon>check</mat-icon>
     </button>
 
-    <button *ngIf="patient.verified && !patient.vaccinatedOn" mat-raised-button (click)="vaccinate()" color="accent">
+    <button *ngIf="patient.verified && !patient.vaccinatedOn" mat-raised-button
+            (click)="vaccinate()" color="accent" [disabled]="loading">
       Potvrdit proběhlé očkování
       <mat-icon>health_and_safety</mat-icon>
     </button>
