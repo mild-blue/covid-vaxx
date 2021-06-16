@@ -88,7 +88,7 @@ class IsinRetryService(
                 }
             }
 
-            // 3. If vaccinated but not vaccination is not exported to ISIN -> try export vaccination to isin
+            // 3. If vaccinated but vaccination is not exported to ISIN -> try export vaccination to ISIN
             if (isinJobDto.exportVaccinations && updatedPatient.vaccinated != null && updatedPatient.vaccinated.exportedToIsinOn == null) {
                 logger.debug("Retrying to create vaccination of patient ${updatedPatient.id} in ISIN")
                 val wasCreated = retryPatientVaccinationCreation(updatedPatient)
