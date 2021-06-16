@@ -44,7 +44,7 @@ class IsinValidationService(
                     validationResult
                 } else {
                     logger.info {
-                        "Foreigner was not found in ISIN by insurance number ${insuranceNumber}. Trying to found the " +
+                        "Foreigner was not found in ISIN by insurance number ${insuranceNumber}. Trying to find the " +
                         "patient by first name, last name and personal number "
                     }
                     val byPersonalNumberResult = isinService.getPatientByParameters(
