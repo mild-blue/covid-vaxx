@@ -11,13 +11,12 @@ import { Router } from '@angular/router';
   styleUrls: ['./admin-search.component.scss']
 })
 export class AdminSearchComponent {
-  public isForeigner: boolean = false;
-  public personalNumber?: string;
-  public insuranceNumber?: string;
+
   public patient?: Patient;
+  public searchQuery?: string;
 
   // We do not use getter for search history because it was not working properly in template looping
-  public searchHistory: { search: string; isForeigner: boolean; }[] = this._updateSearchHistory();
+  public searchHistory: { search: string; }[] = this._updateSearchHistory();
 
   public loading: boolean = false;
   public submitted: boolean = false;
@@ -29,48 +28,34 @@ export class AdminSearchComponent {
   }
 
   public async onSubmit(): Promise<void> {
-    if (this.isForeigner) {
-      if (!this.insuranceNumber) {
-        return;
-      }
-      await this.findPatient(undefined, this.insuranceNumber);
-    } else {
-      if (!this.personalNumber) {
-        return;
-      }
-      await this.findPatient(this.personalNumber, undefined);
-    }
+    await this.findPatient(this.searchQuery);
   }
 
-  public async findPatient(personalNumber?: string, insuranceNumber?: string): Promise<void> {
+  public async findPatient(searchQuery?: string): Promise<void> {
+    if (!searchQuery) {
+      return;
+    }
+
     this.submitted = true;
     this.loading = true;
 
     try {
-      this.patient = await this._patientService.findPatientByPersonalOrInsuranceNumber(personalNumber, insuranceNumber);
-      this._searchHistoryService.saveSearch(personalNumber ?? insuranceNumber ?? '', personalNumber === undefined);
+      this.patient = await this._patientService.findPatientByPersonalOrInsuranceNumber(searchQuery);
+      this._searchHistoryService.saveSearch(searchQuery);
       this._updateSearchHistory();
-      // TODO: this condition is never met because if the patient is not found, exception is raised
-      if (!this.patient) {
-        this._alertService.noPatientFoundDialog(personalNumber  ?? insuranceNumber ?? '', personalNumber === undefined);
-      } else {
-        await this._router.navigate(['/admin/patient', this.patient.id]);
-      }
+
+      await this._router.navigate(['/admin/patient', this.patient.id]);
     } catch (e) {
       this._alertService.error(e.message);
     } finally {
       this.loading = false;
       this.submitted = false;
-      this.personalNumber = '';
+      this.searchQuery = '';
     }
   }
 
-  public async findPatientForSearchHistory(query: { search: string; isForeigner: boolean; }): Promise<void> {
-    if (query.isForeigner) {
-      await this.findPatient(undefined, query.search);
-    } else {
-      await this.findPatient(query.search, undefined);
-    }
+  public async findPatientForSearchHistory(query: { search: string; }): Promise<void> {
+    await this.findPatient(query.search);
   }
 
   public clearHistory(): void {
@@ -78,7 +63,7 @@ export class AdminSearchComponent {
     this._updateSearchHistory();
   }
 
-  private _updateSearchHistory(): { search: string; isForeigner: boolean; }[] {
+  private _updateSearchHistory(): { search: string; }[] {
     this.searchHistory = this._searchHistoryService.searchHistory;
     return this.searchHistory;
   }

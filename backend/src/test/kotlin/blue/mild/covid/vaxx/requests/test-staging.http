@@ -17,10 +17,7 @@ GET {{url}}/statistics
 Content-Type: application/json
 Authorization: Bearer {{auth_token}}
 
-
-
 ###
-
 
 POST {{url}}/admin/locations?captcha=1234
 Content-Type: application/json
@@ -47,11 +44,11 @@ Authorization: Bearer {{auth_token}}
 
 {
   "locationId": "{{location_id}}",
-  "from": "2021-06-18T13:00:00.00000000Z",
-  "to": "2021-06-18T20:00:00.00000000Z",
-  "bandwidth": 5,
-  "durationMillis": 75600,
-  "queueOffset": 4
+  "from": "2021-06-11T05:00:00.00000000Z",
+  "to": "2021-06-11T10:45:00.00000000Z",
+  "bandwidth": 1,
+  "durationMillis": 300000,
+  "queueOffset": 0
 }
 
 ###
@@ -60,9 +57,9 @@ POST {{url}}/patient?captcha=1234
 Content-Type: application/json
 
 {
-  "firstName": "Adéla",
-  "lastName": "Kostičková",
-  "personalNumber": "9151010385",
+  "firstName": "Tomáš",
+  "lastName": "Kos",
+  "insuranceNumber": "1234567890",
   "email": "kubant.jan@example.com",
   "phoneNumber": {
     "countryCode": "CZ",
@@ -113,7 +110,8 @@ Content-Type: application/json
 }
 ###
 
-GET {{url}}/admin/patient?personalNumber=9151010385
+// find patient
+GET {{url}}/admin/patient?personalOrInsuranceNumber=1234567989
 Content-Type: application/json
 Authorization: Bearer {{auth_token}}
 
@@ -130,6 +128,7 @@ Authorization: Bearer {{auth_token}}
   "notes":"note",
   "patientId":"{{patient_id}}"
 }
+
 
 ###
 

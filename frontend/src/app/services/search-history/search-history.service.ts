@@ -15,8 +15,8 @@ export class SearchHistoryService {
     return searches.map(data => JSON.parse(data));
   }
 
-  public saveSearch(search: string, isForeigner: boolean): void {
-    const data = JSON.stringify({ search, isForeigner });
+  public saveSearch(search: string): void {
+    const data = JSON.stringify({ search });
     const storageValues = localStorage.getItem(this._searchHistoryKey);
 
     if (!storageValues) {

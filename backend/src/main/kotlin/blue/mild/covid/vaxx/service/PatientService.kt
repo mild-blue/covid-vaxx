@@ -1,5 +1,6 @@
 package blue.mild.covid.vaxx.service
 
+import blue.mild.covid.vaxx.dao.model.DatabaseTypeLength
 import blue.mild.covid.vaxx.dao.model.EntityId
 import blue.mild.covid.vaxx.dao.model.Patients
 import blue.mild.covid.vaxx.dao.repository.PatientRepository
@@ -7,6 +8,7 @@ import blue.mild.covid.vaxx.dto.internal.ContextAware
 import blue.mild.covid.vaxx.dto.request.PatientRegistrationDtoIn
 import blue.mild.covid.vaxx.dto.request.PatientUpdateDtoIn
 import blue.mild.covid.vaxx.dto.response.PatientDtoOut
+import blue.mild.covid.vaxx.error.EntityNotFoundException
 import blue.mild.covid.vaxx.error.entityNotFound
 import blue.mild.covid.vaxx.utils.formatPhoneNumber
 import blue.mild.covid.vaxx.utils.normalizePersonalNumber
@@ -37,20 +39,35 @@ class PatientService(
     /**
      * Returns single patient with given personal number or throws exception.
      */
-    suspend fun getPatientByPersonalNumber(patientPersonalNumber: String): PatientDtoOut =
+    private suspend fun getPatientByPersonalNumber(patientPersonalNumber: String): PatientDtoOut? =
         patientRepository.getAndMapPatientsBy {
             Patients.personalNumber eq patientPersonalNumber.normalizePersonalNumber()
         }.singleOrNull()?.withSortedAnswers()
-            ?: throw entityNotFound<Patients>(Patients::personalNumber, patientPersonalNumber)
 
     /**
      * Returns single patient with given insurance number or throws exception.
      */
-    suspend fun getPatientByInsuranceNumber(patientInsuranceNumber: String): PatientDtoOut =
-        patientRepository.getAndMapPatientsBy{
+    private suspend fun getPatientByInsuranceNumber(patientInsuranceNumber: String): PatientDtoOut? =
+        patientRepository.getAndMapPatientsBy {
             Patients.insuranceNumber eq patientInsuranceNumber.trim()
         }.singleOrNull()?.withSortedAnswers()
-            ?: throw entityNotFound<Patients>(Patients::insuranceNumber, patientInsuranceNumber)
+
+    /**
+     * Returns single patient with given personal or insurance number or throws exception.
+     */
+    suspend fun getPatientByPersonalOrInsuranceNumber(patientPersonalOrInsuranceNumber: String): PatientDtoOut {
+        // TODO theoretically, there could be a patient with an insurance number same as personal number of some other patient.
+        //  In this case, we cannot find the patient with the personal number. https://github.com/mild-blue/covid-vaxx/issues/329
+        var patient = getPatientByInsuranceNumber(patientPersonalOrInsuranceNumber)
+        if (patient == null && patientPersonalOrInsuranceNumber.length <= DatabaseTypeLength.PERSONAL_NUMBER) {
+            patient = getPatientByPersonalNumber(patientPersonalOrInsuranceNumber)
+        }
+        return patient ?: throw EntityNotFoundException(
+            "Patient",
+            "personal or insurance number",
+            patientPersonalOrInsuranceNumber
+        )
+    }
 
     /**
      * Filters the database with the conjunction (and clause) of the given properties.

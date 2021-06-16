@@ -167,7 +167,7 @@ class PatientRoutesTest : ServerTestBase() {
         }
 
         // get patient by personal number
-        handleRequest(HttpMethod.Get, "${Routes.adminSectionPatient}?personalNumber=${validRegistration.personalNumber}") {
+        handleRequest(HttpMethod.Get, "${Routes.adminSectionPatient}?personalOrInsuranceNumber=${validRegistration.personalNumber}") {
             authorize()
         }.run {
             expectStatus(HttpStatusCode.OK)

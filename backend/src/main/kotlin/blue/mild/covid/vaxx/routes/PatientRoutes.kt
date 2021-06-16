@@ -13,7 +13,6 @@ import blue.mild.covid.vaxx.dto.response.OK
 import blue.mild.covid.vaxx.dto.response.Ok
 import blue.mild.covid.vaxx.dto.response.PatientDtoOut
 import blue.mild.covid.vaxx.dto.response.PatientRegistrationResponseDtoOut
-import blue.mild.covid.vaxx.error.HttpParametersException
 import blue.mild.covid.vaxx.error.IsinValidationException
 import blue.mild.covid.vaxx.extensions.asContextAware
 import blue.mild.covid.vaxx.extensions.closestDI
@@ -143,31 +142,16 @@ fun NormalOpenAPIRoute.patientRoutes() {
                 val principal = principal()
                 if (logger.isDebugEnabled) {
                     logger.debug {
-                        "User ${principal.userId} search by personalNumber=${patientQuery.personalNumber} and " +
-                                "insuranceNumber=${patientQuery.insuranceNumber}."
+                        "User ${principal.userId} search by personal or insurance number=${patientQuery.personalOrInsuranceNumber}."
                     }
                 } else {
                     logger.info { "User ${principal.userId} search by personal number or insurance number." }
                 }
 
-                val patient = when {
-                    patientQuery.personalNumber != null && patientQuery.insuranceNumber == null -> {
-                        patientService.getPatientByPersonalNumber(patientQuery.personalNumber)
-                    }
-                    patientQuery.personalNumber == null && patientQuery.insuranceNumber != null -> {
-                        patientService.getPatientByInsuranceNumber(patientQuery.insuranceNumber)
-                    }
-                    patientQuery.personalNumber != null && patientQuery.insuranceNumber != null -> {
-                        throw HttpParametersException("Personal number and insurance number cannot be specified in the same time.")
-                    }
-                    patientQuery.personalNumber == null && patientQuery.insuranceNumber == null -> {
-                        throw HttpParametersException("Personal number or insurance number has to be specified.")
-                    }
-                    else -> {
-                        throw NotImplementedError("This should not happen")
-                    }
-                }
-                logger.debug { "Patient found under id ${patient.id}." }
+                val patient =
+                    patientService.getPatientByPersonalOrInsuranceNumber(patientQuery.personalOrInsuranceNumber)
+
+                logger.info { "Patient found under id ${patient.id}." }
                 respond(patient)
             }
 
