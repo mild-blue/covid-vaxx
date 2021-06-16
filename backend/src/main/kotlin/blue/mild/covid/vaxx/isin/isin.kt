@@ -41,12 +41,12 @@ private const val PUBLIC_ROOT = "https://apidoc.uzis.cz/api/v1"
 private const val TEST_ROOT = "https://apitest.uzis.cz/api/v1"
 private const val PRODUCTION_ROOT = "https://api.uzis.cz/api/v1"
 
-// 000 je pro polikliniky - neni to placeholder
+// 000 je poradove cislo zarizeni - neni to placeholder
 // https://nrpzs.uzis.cz/detail-66375-clinicum-a-s.html#fndtn-detail_uzis
 private const val PCZ = "000"
-private const val NRZP_CISLO = "184070832"
+private const val NRZP_CISLO = "123456789"
 // rodne cislo pracovnika je z PDFka
-private val pracovnikO = Pracovnik(pcz = PCZ, nrzpCislo = NRZP_CISLO, rodneCislo = "9910190015")
+private val pracovnikO = Pracovnik(pcz = PCZ, nrzpCislo = NRZP_CISLO, rodneCislo = "1234567890")
 private const val URL_VYTVOR_NEBO_ZMEN_VAKCINACI = "vakcinace/VytvorNeboZmenVakcinaci"
 private const val URL_VYTVOR_NEBO_ZMEN_DAVKU = "vakcinace/VytvorNeboZmenDavku"
 private const val URL_ZMEN_STAV_VAKCINACE = "vakcinace/ZmenStavVakcinace"
@@ -72,9 +72,9 @@ data class InputPacient(
     val rodneCislo: String
 )
 private val patients = mapOf(
-    IsinEnvironment.PUBLIC to InputPacient("Jan", "Kubant", "9002030015"),
+    IsinEnvironment.PUBLIC to InputPacient("Jan", "Kubant", "1234567890"),
     IsinEnvironment.TEST to InputPacient("VICTOR", "BUDIUC", "8208258201"),
-    IsinEnvironment.PRODUCTION to InputPacient("Jan", "Kubant", "9002030015"),
+    IsinEnvironment.PRODUCTION to InputPacient("Josef", "Navratil", "8405073820"),
 )
 
 // Dummy class to wrap data around paracovnik
@@ -105,7 +105,7 @@ private val userIdentification = "?pcz=${pracovnik.pcz}&pracovnikNrzpCislo=${pra
 
 private val configuration = KeyStoreConfiguration(
     storePass = getEnv("ISIN_STORE_PASS") ?: "",
-    storePath = getEnv("ISIN_STORE_PATH") ?: "/home/honza/Desktop/rgu_ws_44797362.pfx",
+    storePath = getEnv("ISIN_STORE_PATH") ?: "/path/to/isin/certificate.pfx",
     storeType = getEnv("ISIN_STORE_TYPE") ?: "JKS",
     keyPass = getEnv("ISIN_KEY_PASS") ?: ""
 )
