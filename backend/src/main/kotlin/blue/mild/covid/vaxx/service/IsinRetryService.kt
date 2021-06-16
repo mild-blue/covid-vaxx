@@ -36,10 +36,10 @@ class IsinRetryService(
             offset = isinJobDto.patientsOffset.toLong()
         )
 
-        logger.debug("${patients.count()} patients will be processed.")
+        logger.info("${patients.count()} patients will be processed.")
 
         for (patient in patients) {
-            logger.debug("Checking ISIN id of patient ${patient.id}")
+            logger.info("Checking ISIN id of patient ${patient.id}")
 
             // 1. If patient has personal number but ISIN id is not set -> try ISIN validation
             val updatedPatient = if (!patient.isinId.isNullOrBlank()) {
@@ -69,7 +69,7 @@ class IsinRetryService(
             if (updatedPatient.isinId.isNullOrBlank()) continue
 
             // 2. If data are correct but not exported to ISIN -> try export to isin
-            logger.debug("Checking correctness exported to ISIN of patient ${updatedPatient.id}")
+            logger.info("Checking correctness exported to ISIN of patient ${updatedPatient.id}")
             if (
                 isinJobDto.exportPatientsInfo &&
                 updatedPatient.dataCorrect != null &&
@@ -90,7 +90,7 @@ class IsinRetryService(
 
             // 3. If vaccinated but vaccination is not exported to ISIN -> try export vaccination to ISIN
             if (isinJobDto.exportVaccinations && updatedPatient.vaccinated != null && updatedPatient.vaccinated.exportedToIsinOn == null) {
-                logger.debug("Retrying to create vaccination of patient ${updatedPatient.id} in ISIN")
+                logger.info("Retrying to create vaccination of patient ${updatedPatient.id} in ISIN")
                 val wasCreated = retryPatientVaccinationCreation(updatedPatient)
 
                 logger.info("Patient ${patient.id} vaccination was created in ISIN with result: ${wasCreated}")

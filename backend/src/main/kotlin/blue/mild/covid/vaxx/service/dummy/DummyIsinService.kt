@@ -16,7 +16,7 @@ class DummyIsinService : IsinServiceInterface {
         personalNumber: String
     ): IsinGetPatientByParametersResultDto {
         logger.warn { "NOT GETTING patient ${firstName}/${lastName}/${personalNumber} from ISIN. This should not be in the production." }
-        return IsinGetPatientByParametersResultDto("Chyba", null, null)
+        return IsinGetPatientByParametersResultDto("PouzitiDummyISIN", null, null)
     }
 
     override suspend fun tryExportPatientContactInfo(
