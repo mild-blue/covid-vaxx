@@ -24,6 +24,8 @@ import {
   DataCorrectnessDtoIn,
   EntityIdDtoOut,
   InsuranceCompanyDetailsDtoOut,
+  IsinJobDtoIn,
+  IsinJobDtoOut,
   LocationDtoIn,
   LocationDtoOut,
   LoginDtoIn,
@@ -903,6 +905,65 @@ export class DefaultService {
   }
 
   /**
+   * Checks patients where ISIN was failed and run isin client again.
+   * @param isinJobDtoIn
+   * @param observe set whether or not to return the data Observable as the body, response or events. defaults to returning the body.
+   * @param reportProgress flag to report request and response progress.
+   */
+  public apiAdminRunIsinJobPost(isinJobDtoIn?: IsinJobDtoIn, observe?: 'body', reportProgress?: boolean, options?: { httpHeaderAccept?: 'application/json' }): Observable<IsinJobDtoOut>;
+  public apiAdminRunIsinJobPost(isinJobDtoIn?: IsinJobDtoIn, observe?: 'response', reportProgress?: boolean, options?: { httpHeaderAccept?: 'application/json' }): Observable<HttpResponse<IsinJobDtoOut>>;
+  public apiAdminRunIsinJobPost(isinJobDtoIn?: IsinJobDtoIn, observe?: 'events', reportProgress?: boolean, options?: { httpHeaderAccept?: 'application/json' }): Observable<HttpEvent<IsinJobDtoOut>>;
+  public apiAdminRunIsinJobPost(isinJobDtoIn?: IsinJobDtoIn, observe: any = 'body', reportProgress: boolean = false, options?: { httpHeaderAccept?: 'application/json' }): Observable<any> {
+
+    let headers = this.defaultHeaders;
+
+    let credential: string | undefined;
+    // authentication (jwtAuth) required
+    credential = this.configuration.lookupCredential('jwtAuth');
+    if (credential) {
+      headers = headers.set('Authorization', 'Bearer ' + credential);
+    }
+
+    let httpHeaderAcceptSelected: string | undefined = options && options.httpHeaderAccept;
+    if (httpHeaderAcceptSelected === undefined) {
+      // to determine the Accept header
+      const httpHeaderAccepts: string[] = [
+        'application/json'
+      ];
+      httpHeaderAcceptSelected = this.configuration.selectHeaderAccept(httpHeaderAccepts);
+    }
+    if (httpHeaderAcceptSelected !== undefined) {
+      headers = headers.set('Accept', httpHeaderAcceptSelected);
+    }
+
+
+    // to determine the Content-Type header
+    const consumes: string[] = [
+      'application/json'
+    ];
+    const httpContentTypeSelected: string | undefined = this.configuration.selectHeaderContentType(consumes);
+    if (httpContentTypeSelected !== undefined) {
+      headers = headers.set('Content-Type', httpContentTypeSelected);
+    }
+
+    let responseType: 'text' | 'json' = 'json';
+    if (httpHeaderAcceptSelected && httpHeaderAcceptSelected.startsWith('text')) {
+      responseType = 'text';
+    }
+
+    return this.httpClient.post<IsinJobDtoOut>(`${this.configuration.basePath}/api/admin/run-isin-job`,
+      isinJobDtoIn,
+      {
+        responseType: <any>responseType,
+        withCredentials: this.configuration.withCredentials,
+        headers: headers,
+        observe: observe,
+        reportProgress: reportProgress
+      }
+    );
+  }
+
+  /**
    * Verify that the currently used token is valid. Returns 200 if token is correct, 401 otherwise.
    * @param observe set whether or not to return the data Observable as the body, response or events. defaults to returning the body.
    * @param reportProgress flag to report request and response progress.
@@ -939,66 +1000,6 @@ export class DefaultService {
 
     return this.httpClient.get<any>(`${this.configuration.basePath}/api/admin/self`,
       {
-        responseType: <any>responseType,
-        withCredentials: this.configuration.withCredentials,
-        headers: headers,
-        observe: observe,
-        reportProgress: reportProgress
-      }
-    );
-  }
-
-  /**
-   * @param from Date FROM which should system provide statistics.
-   * @param to Date TO which should system provide statistics.
-   * @param observe set whether or not to return the data Observable as the body, response or events. defaults to returning the body.
-   * @param reportProgress flag to report request and response progress.
-   */
-  public apiAdminStatisticsGet(from?: string, to?: string, observe?: 'body', reportProgress?: boolean, options?: { httpHeaderAccept?: 'application/json' }): Observable<SystemStatisticsDtoOut>;
-  public apiAdminStatisticsGet(from?: string, to?: string, observe?: 'response', reportProgress?: boolean, options?: { httpHeaderAccept?: 'application/json' }): Observable<HttpResponse<SystemStatisticsDtoOut>>;
-  public apiAdminStatisticsGet(from?: string, to?: string, observe?: 'events', reportProgress?: boolean, options?: { httpHeaderAccept?: 'application/json' }): Observable<HttpEvent<SystemStatisticsDtoOut>>;
-  public apiAdminStatisticsGet(from?: string, to?: string, observe: any = 'body', reportProgress: boolean = false, options?: { httpHeaderAccept?: 'application/json' }): Observable<any> {
-
-    let queryParameters = new HttpParams({ encoder: this.encoder });
-    if (from !== undefined && from !== null) {
-      queryParameters = this.addToHttpParams(queryParameters,
-        <any>from, 'from');
-    }
-    if (to !== undefined && to !== null) {
-      queryParameters = this.addToHttpParams(queryParameters,
-        <any>to, 'to');
-    }
-
-    let headers = this.defaultHeaders;
-
-    let credential: string | undefined;
-    // authentication (jwtAuth) required
-    credential = this.configuration.lookupCredential('jwtAuth');
-    if (credential) {
-      headers = headers.set('Authorization', 'Bearer ' + credential);
-    }
-
-    let httpHeaderAcceptSelected: string | undefined = options && options.httpHeaderAccept;
-    if (httpHeaderAcceptSelected === undefined) {
-      // to determine the Accept header
-      const httpHeaderAccepts: string[] = [
-        'application/json'
-      ];
-      httpHeaderAcceptSelected = this.configuration.selectHeaderAccept(httpHeaderAccepts);
-    }
-    if (httpHeaderAcceptSelected !== undefined) {
-      headers = headers.set('Accept', httpHeaderAcceptSelected);
-    }
-
-
-    let responseType: 'text' | 'json' = 'json';
-    if (httpHeaderAcceptSelected && httpHeaderAcceptSelected.startsWith('text')) {
-      responseType = 'text';
-    }
-
-    return this.httpClient.get<SystemStatisticsDtoOut>(`${this.configuration.basePath}/api/admin/statistics`,
-      {
-        params: queryParameters,
         responseType: <any>responseType,
         withCredentials: this.configuration.withCredentials,
         headers: headers,
@@ -1540,6 +1541,59 @@ export class DefaultService {
 
     return this.httpClient.get<Array<QuestionDtoOut>>(`${this.configuration.basePath}/api/questions`,
       {
+        responseType: <any>responseType,
+        withCredentials: this.configuration.withCredentials,
+        headers: headers,
+        observe: observe,
+        reportProgress: reportProgress
+      }
+    );
+  }
+
+  /**
+   * @param from Date FROM which should system provide statistics.
+   * @param to Date TO which should system provide statistics.
+   * @param observe set whether or not to return the data Observable as the body, response or events. defaults to returning the body.
+   * @param reportProgress flag to report request and response progress.
+   */
+  public apiStatisticsGet(from?: string, to?: string, observe?: 'body', reportProgress?: boolean, options?: { httpHeaderAccept?: 'application/json' }): Observable<SystemStatisticsDtoOut>;
+  public apiStatisticsGet(from?: string, to?: string, observe?: 'response', reportProgress?: boolean, options?: { httpHeaderAccept?: 'application/json' }): Observable<HttpResponse<SystemStatisticsDtoOut>>;
+  public apiStatisticsGet(from?: string, to?: string, observe?: 'events', reportProgress?: boolean, options?: { httpHeaderAccept?: 'application/json' }): Observable<HttpEvent<SystemStatisticsDtoOut>>;
+  public apiStatisticsGet(from?: string, to?: string, observe: any = 'body', reportProgress: boolean = false, options?: { httpHeaderAccept?: 'application/json' }): Observable<any> {
+
+    let queryParameters = new HttpParams({ encoder: this.encoder });
+    if (from !== undefined && from !== null) {
+      queryParameters = this.addToHttpParams(queryParameters,
+        <any>from, 'from');
+    }
+    if (to !== undefined && to !== null) {
+      queryParameters = this.addToHttpParams(queryParameters,
+        <any>to, 'to');
+    }
+
+    let headers = this.defaultHeaders;
+
+    let httpHeaderAcceptSelected: string | undefined = options && options.httpHeaderAccept;
+    if (httpHeaderAcceptSelected === undefined) {
+      // to determine the Accept header
+      const httpHeaderAccepts: string[] = [
+        'application/json'
+      ];
+      httpHeaderAcceptSelected = this.configuration.selectHeaderAccept(httpHeaderAccepts);
+    }
+    if (httpHeaderAcceptSelected !== undefined) {
+      headers = headers.set('Accept', httpHeaderAcceptSelected);
+    }
+
+
+    let responseType: 'text' | 'json' = 'json';
+    if (httpHeaderAcceptSelected && httpHeaderAcceptSelected.startsWith('text')) {
+      responseType = 'text';
+    }
+
+    return this.httpClient.get<SystemStatisticsDtoOut>(`${this.configuration.basePath}/api/statistics`,
+      {
+        params: queryParameters,
         responseType: <any>responseType,
         withCredentials: this.configuration.withCredentials,
         headers: headers,

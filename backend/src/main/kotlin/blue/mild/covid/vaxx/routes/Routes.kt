@@ -30,6 +30,8 @@ object Routes {
     val vaccination = adminRoute("vaccination")
     val nurse = adminRoute("nurse")
 
+    val runIsinJob = adminRoute("run-isin-job")
+
     val dataCorrectness = adminRoute("data-correctness")
 
     val cacheRefresh = adminRoute("cache-refresh")
