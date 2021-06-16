@@ -19,11 +19,13 @@ export class ConfirmVaccinationComponent implements AbstractConfirmInterface {
   public bodyParts: string[] = Object.values(BodyPart);
 
   public note: string = '';
+  public confirmDisabled: boolean = false;
 
   constructor(private _ngZone: NgZone) {
   }
 
   confirm(): void {
+    this.confirmDisabled = true;
     this.onConfirm.emit({ bodyPart: this.bodyPart, note: this.note });
   }
 

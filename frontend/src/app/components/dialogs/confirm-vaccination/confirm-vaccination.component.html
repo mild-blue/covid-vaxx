@@ -19,7 +19,7 @@
 
 <mat-dialog-actions>
   <button mat-button mat-dialog-close>Zrušit</button>
-  <button mat-raised-button color="success" mat-dialog-close (click)="confirm()">
+  <button mat-raised-button color="success" mat-dialog-close (click)="confirm()" [disabled]="confirmDisabled">
     Potvrdit očkování do {{ bodyPart | bodyPartInflected }}
     <mat-icon>check</mat-icon>
   </button>
