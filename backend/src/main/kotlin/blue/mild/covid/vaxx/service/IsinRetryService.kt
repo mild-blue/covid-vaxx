@@ -41,12 +41,12 @@ class IsinRetryService(
         for (patient in patients) {
             logger.info("Checking ISIN id of patient ${patient.id}")
 
-            // 1. If patient has personal number but ISIN id is not set -> try ISIN validation
+            // 1. If patient ISIN id is not set -> try ISIN validation
             val updatedPatient = if (!patient.isinId.isNullOrBlank()) {
                 logger.info("ISIN id of patient ${patient.id} is already set, skipping ISIN validation.")
                 patient
-            } else if (isinJobDto.validatePatients && !patient.personalNumber.isNullOrBlank() ) {
-                logger.info("Patient ${patient.id} has personal number but no ISIN id. Validating in ISIN.")
+            } else if (isinJobDto.validatePatients) {
+                logger.info("Patient ${patient.id} has no ISIN id. Validating in ISIN.")
 
                 val newIsinPatientId = retryPatientValidation(patient)
 
@@ -117,7 +117,8 @@ class IsinRetryService(
         val patientValidationResult = patientValidation.validatePatient(
             firstName = patient.firstName,
             lastName = patient.lastName,
-            personalNumber = patient.personalNumber ?: throw AssertionError { "Personal number cannot be null."},
+            personalNumber = patient.personalNumber,
+            insuranceNumber = patient.insuranceNumber
         )
 
         logger.info {

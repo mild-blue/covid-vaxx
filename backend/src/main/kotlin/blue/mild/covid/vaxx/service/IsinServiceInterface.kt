@@ -11,6 +11,10 @@ interface IsinServiceInterface {
         personalNumber: String
     ): IsinGetPatientByParametersResultDto
 
+    suspend fun getForeignerByInsuranceNumber(
+        insuranceNumber: String
+    ): IsinGetPatientByParametersResultDto
+
     suspend fun tryExportPatientContactInfo(
         patient: PatientDtoOut,
         notes: String?

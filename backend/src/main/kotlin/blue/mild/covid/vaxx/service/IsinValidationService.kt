@@ -1,5 +1,6 @@
 package blue.mild.covid.vaxx.service
 
+import blue.mild.covid.vaxx.dto.internal.IsinGetPatientByParametersResultDto
 import blue.mild.covid.vaxx.dto.internal.IsinValidationResultDto
 import blue.mild.covid.vaxx.dto.internal.PatientValidationResult
 import mu.KLogging
@@ -23,14 +24,43 @@ class IsinValidationService(
     override suspend fun validatePatient(
         firstName: String,
         lastName: String,
-        personalNumber: String
+        personalNumber: String?,
+        insuranceNumber: String?
     ): IsinValidationResultDto {
-        val result = runCatching {
-            isinService.getPatientByParameters(
-                firstName = firstName,
-                lastName = lastName,
-                personalNumber = personalNumber
-            )
+        return runCatching {
+            if (personalNumber != null) {
+                val result = isinService.getPatientByParameters(
+                    firstName = firstName,
+                    lastName = lastName,
+                    personalNumber = personalNumber
+                )
+                convertResult(result)
+            } else if (insuranceNumber != null){
+                val byInsuranceNumberResult = isinService.getForeignerByInsuranceNumber(
+                    insuranceNumber = insuranceNumber
+                )
+                val validationResult = convertResult(byInsuranceNumberResult)
+                if (validationResult.status == PatientValidationResult.PATIENT_FOUND) {
+                    validationResult
+                } else {
+                    logger.info {
+                        "Foreigner was not found in ISIN by insurance number ${insuranceNumber}. Trying to find the " +
+                        "patient by first name, last name and personal number "
+                    }
+                    val byPersonalNumberResult = isinService.getPatientByParameters(
+                        firstName = firstName,
+                        lastName = lastName,
+                        personalNumber = insuranceNumber
+                    )
+                    convertResult(byPersonalNumberResult)
+                }
+            } else {
+                logger.error {
+                    "Both personal and insurance numbers are not set for patient ${firstName} ${lastName}. " +
+                    "This should not happen. Skipping ISIN validation."
+                }
+                IsinValidationResultDto(status = PatientValidationResult.WAS_NOT_VERIFIED)
+            }
         }.onSuccess {
             logger.info { "Data retrieval from ISIN - success." }
         }.onFailure {
@@ -39,16 +69,15 @@ class IsinValidationService(
             val wrappingException =
                 Exception("An exception ${it.javaClass.canonicalName} was thrown! - ${it.message}\n${it.stackTraceToString()}")
             logger.error(wrappingException) {
-                "Getting data from ISIN server failed for patient ${firstName}/${lastName}/${personalNumber}"
+                "Getting data from ISIN server failed for patient ${firstName} ${lastName}, " +
+                "personalNumber=${personalNumber}, insuranceNumber=${insuranceNumber}"
             }
-        }.getOrNull() ?: return IsinValidationResultDto(status = PatientValidationResult.WAS_NOT_VERIFIED)
+        }.getOrNull() ?: IsinValidationResultDto(status = PatientValidationResult.WAS_NOT_VERIFIED)
 
-        logger.info {
-            "Data from ISIN for patient ${firstName}/${lastName}/${personalNumber}: " +
-            "result=${result.result}, resultMessage=${result.resultMessage}, patientId=${result.patientId}."
-        }
+    }
 
-        return when (result.result) {
+    private fun convertResult(result: IsinGetPatientByParametersResultDto): IsinValidationResultDto =
+        when (result.result) {
             VyhledaniPacientaResult.PacientNalezen.name,
             VyhledaniPacientaResult.NalezenoVicePacientu.name ->
                 IsinValidationResultDto(
@@ -65,5 +94,4 @@ class IsinValidationService(
                     status = PatientValidationResult.WAS_NOT_VERIFIED
                 )
         }
-    }
 }
