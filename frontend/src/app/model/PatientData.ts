@@ -19,6 +19,7 @@ export interface PatientData {
   vaccinatedOn?: Date;
   vaccinationSlotDtoOut?: VaccinationSlotDtoOut;
   isinId?: string;
+  isinReady?: boolean;
 
   [key: string]: undefined | unknown;
 }

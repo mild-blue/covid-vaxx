@@ -12,6 +12,8 @@
 
 
 export interface IsinJobDtoOut {
+  checkedVaccinationsErrors: number;
+  checkedVaccinationsSuccess: number;
   exportedPatientsInfoErrors: number;
   exportedPatientsInfoSuccess: number;
   exportedVaccinationsErrors: number;
