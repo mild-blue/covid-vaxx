@@ -48,8 +48,8 @@ export class PatientInfoFormComponent implements OnInit {
       const isForeigner = controls.isForeigner?.value === true;
 
       for (const name in controls) {
-        const isPersonalNumberInvalid = name === 'personalNumber' && !isForeigner && (controls[name].invalid || !controls[name].value);
-        const isInsuranceNumberInvalid = name === 'insuranceNumber' && isForeigner && (controls[name].invalid || !controls[name].value);
+        const isPersonalNumberInvalid = name === 'personalNumber' && !isForeigner && controls[name].invalid;
+        const isInsuranceNumberInvalid = name === 'insuranceNumber' && isForeigner && controls[name].invalid;
         const isOtherControlInvalid = name !== 'personalNumber' && name !== 'insuranceNumber' && controls[name].invalid;
 
         if (isOtherControlInvalid || isPersonalNumberInvalid || isInsuranceNumberInvalid) {

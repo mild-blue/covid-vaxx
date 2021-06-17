@@ -26,12 +26,13 @@
                         [invalid]="isControlInvalid('personalNumber')" [errors]="getControlErrors('personalNumber')">
           <input formControlName="personalNumber" name="personalNumber" placeholder="Vaše rodné číslo"
                  mask="000000/0009" [showMaskTyped]="patient.personalNumber === undefined || patient.personalNumber.length < 10"
-                 appPersonalNumberValidator trim>
+                 required appPersonalNumberValidator trim>
         </app-form-field>
 
         <app-form-field label="Číslo pojištěnce *" note="Číslo pojištěnce uvedené na kartičce zdravotní pojišťovny" *ngIf="patient.isForeigner"
                         [invalid]="isControlInvalid('insuranceNumber')" [errors]="getControlErrors('insuranceNumber')">
-          <input formControlName="insuranceNumber" name="insuranceNumber" placeholder="Vaše číslo pojištěnce" maxlength="256" trim>
+          <input formControlName="insuranceNumber" name="insuranceNumber" placeholder="Vaše číslo pojištěnce"
+                 required maxlength="256" trim>
         </app-form-field>
 
         <app-form-field label="Zdravotní pojišťovna *" note="Vyberte ze seznamu zdravotních pojišťoven"
