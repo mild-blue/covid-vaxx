@@ -12,7 +12,7 @@ import { BehaviorSubject, Observable } from 'rxjs';
 })
 export class StatisticsService {
 
-  private _statisticsnKey = 'questions';
+  private _statisticsKey = 'statistics';
   private _statisticsSubject: BehaviorSubject<Statistics | undefined> = new BehaviorSubject<Statistics | undefined>(undefined);
   public statistics: Observable<Statistics | undefined> = this._statisticsSubject.asObservable();
 
@@ -28,7 +28,7 @@ export class StatisticsService {
         const statistics = parseStatistics(response);
 
         this._statisticsSubject.next(statistics);
-        localStorage.setItem(this._statisticsnKey, JSON.stringify(statistics));
+        localStorage.setItem(this._statisticsKey, JSON.stringify(statistics));
 
         return statistics;
       })
@@ -36,7 +36,7 @@ export class StatisticsService {
   }
 
   private _initStatistics(): void {
-    const value = localStorage.getItem(this._statisticsnKey);
+    const value = localStorage.getItem(this._statisticsKey);
     const savedStatistics = value ? JSON.parse(value) : undefined;
     this._statisticsSubject.next(savedStatistics);
   }

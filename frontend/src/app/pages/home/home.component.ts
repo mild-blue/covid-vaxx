@@ -19,7 +19,7 @@ export class HomeComponent {
   @ViewChild('patientForm') patientForm?: NgForm;
 
   public patient?: PatientData;
-  public missingInfo: string[] = [];
+  public missingInfo?: string[];
 
   public agreementCheckboxValue: boolean = false;
   public confirmationCheckboxValue: boolean = false;

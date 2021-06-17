@@ -67,6 +67,7 @@ import { BodyPartInflectedPipe } from './pipes/body-part-inflected/body-part-inf
 import { FormFieldComponent } from './components/form-field/form-field.component';
 import { IConfig, NgxMaskModule } from 'ngx-mask';
 import { HeaderComponent } from './components/header/header.component';
+import { NgxTrimDirectiveModule } from 'ngx-trim-directive';
 
 registerLocaleData(localeCs);
 
@@ -156,6 +157,7 @@ declare global {
     NgxMatIntlTelInputModule,
     MatDatepickerModule,
     MatMomentDateModule,
+    NgxTrimDirectiveModule,
     NgxMaskModule.forRoot(maskConfig)
   ],
   providers: [
