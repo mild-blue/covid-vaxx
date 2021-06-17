@@ -26,6 +26,11 @@ class DummyIsinService : IsinServiceInterface {
         return IsinGetPatientByParametersResultDto("UsingDummyISIN", null, null)
     }
 
+    override suspend fun tryPatientIsReadyForVaccination(isinId: String): Boolean? {
+        logger.warn { "NOT GETTING vaccinations of patient ${isinId} from ISIN. This should not be in the production." }
+        return null
+    }
+
     override suspend fun tryExportPatientContactInfo(
         patient: PatientDtoOut,
         notes: String?

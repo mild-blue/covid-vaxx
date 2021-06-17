@@ -41,6 +41,7 @@ class IsinService(
     private companion object : KLogging() {
         const val URL_GET_PATIENT_BY_PARAMETERS = "pacienti/VyhledatDleJmenoPrijmeniRc";
         const val URL_GET_FOREIGNER_BY_INSURANCE_NUMBER = "pacienti/VyhledatCizinceDleCislaPojistence";
+        const val URL_GET_VACCINATIONS_BY_PATIENT_ID = "vakcinace/NacistVakcinacePacienta";
         const val URL_UPDATE_PATIENT_INFO = "pacienti/AktualizujKontaktniUdajePacienta";
         const val URL_CREATE_OR_CHANGE_VACCINATION = "vakcinace/VytvorNeboZmenVakcinaci";
         const val URL_CREATE_OR_CHANGE_DOSE = "vakcinace/VytvorNeboZmenDavku";
@@ -91,6 +92,49 @@ class IsinService(
         }
         return result
     }
+
+    private suspend fun getPatientVaccinations(isinId: String): List<IsinVaccinationDto> {
+        val url = createIsinURL(URL_GET_VACCINATIONS_BY_PATIENT_ID, parameters = listOf(
+            isinId.trim()
+        ))
+        logger.info { "Executing ISIN HTTP call ${URL_GET_VACCINATIONS_BY_PATIENT_ID}." }
+        return isinClient.get<HttpResponse>(url) {
+            contentType(ContentType.Application.Json)
+            accept(ContentType.Application.Json)
+        }.receive()
+    }
+
+    override suspend fun tryPatientIsReadyForVaccination(isinId: String): Boolean? =
+        runCatching {
+            val allVaccinations = getPatientVaccinations(isinId)
+            logger.info(
+                "Getting vaccination from ISIN for patient ${isinId } was successful. " +
+                "The following vaccinations were found: ${allVaccinations}"
+            )
+
+            val problematicVaccinations = allVaccinations.filter {
+                    vaccination -> vaccination.typOckovaniKod == "CO19" && vaccination.stav != "Zruseno"
+            }
+
+            if (problematicVaccinations.count() > 0) {
+                logger.info(
+                    "Some problematic vaccinations of patient ${isinId} were found in ISIN. " +
+                    "Patient is not ready for vaccination: ${problematicVaccinations}"
+                )
+                false
+            } else {
+                logger.info(
+                    "No problematic vaccination of patient ${isinId} were found in ISIN. " +
+                    "Patient is ready for vaccination."
+                )
+                true
+            }
+        }.getOrElse {
+            logger.error(it) {
+                "Getting vaccinations from ISIN failed for patient with ISIN ID ${isinId}."
+            }
+            null
+        }
 
     override suspend fun tryExportPatientContactInfo(patient: PatientDtoOut, notes: String?): Boolean {
         return if (patient.isinId != null) {

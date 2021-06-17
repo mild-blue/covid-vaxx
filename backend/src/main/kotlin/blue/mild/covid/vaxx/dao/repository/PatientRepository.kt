@@ -53,14 +53,16 @@ class PatientRepository(
         indication: String? = null,
         answers: Map<EntityId, Boolean>? = null,
         registrationEmailSent: Instant? = null,
-        isinId: String? = null
+        isinId: String? = null,
+        isinReady: Boolean? = null
     ): Boolean = newSuspendedTransaction {
         // check if any property is not null
         val isPatientEntityUpdateNecessary =
             firstName ?: lastName
             ?: district ?: zipCode
             ?: phoneNumber ?: personalNumber ?: insuranceNumber ?: email
-            ?: insuranceCompany ?: registrationEmailSent ?: indication ?: isinId
+            ?: insuranceCompany ?: registrationEmailSent ?: indication
+            ?: isinId ?: isinReady
         // if so, perform update query
         val patientUpdated = if (isPatientEntityUpdateNecessary != null) {
             Patients.update(
@@ -79,6 +81,7 @@ class PatientRepository(
                         updateIfNotNull(indication, Patients.indication)
                         updateIfNotNull(registrationEmailSent, Patients.registrationEmailSent)
                         updateIfNotNull(isinId, Patients.isinId)
+                        updateIfNotNull(isinReady, Patients.isinReady)
                     }
                 }
             )

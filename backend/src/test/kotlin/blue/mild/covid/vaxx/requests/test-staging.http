@@ -151,9 +151,10 @@ Content-Type: application/json
 Authorization: Bearer {{auth_token}}
 
 {
-  "exportPatientsInfo": true,
-  "exportVaccinations": true,
   "validatePatients": true,
+  "checkVaccinations": false,
+  "exportPatientsInfo": false,
+  "exportVaccinations": false,
 
   "patientsCount": null,
   "patientsOffset": 0

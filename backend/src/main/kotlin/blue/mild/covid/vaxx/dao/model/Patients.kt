@@ -77,4 +77,9 @@ object Patients : ManagedTable("patients") {
      * Patient was validated in isin
      */
     val isinId = varchar("isin_id", DatabaseTypeLength.PATIENT_ISIN_ID).nullable()
+
+    /**
+     * It was checked that patient has no COV-19 vaccines in ISIN yet
+     */
+    val isinReady = bool("isin_ready").nullable()
 }
