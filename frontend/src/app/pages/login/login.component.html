@@ -10,22 +10,20 @@
 
           <div class="stepper">
             <ul>
-              <li [class.active]="!nurses.length"><span>1</span></li>
-              <li [class.active]="nurses.length"><span>2</span></li>
+              <li [class.active]="activeStep === 1" (click)="cancel()"><span>1</span></li>
+              <li [class.active]="activeStep === 2"><span>2</span></li>
             </ul>
           </div>
 
-          <div class="form">
-            <form [formGroup]="loginForm" class="login-form" [class.visible]="!nurses.length">
+          <div class="form step-{{ activeStep }}">
+            <form [formGroup]="loginForm" class="login-form" [class.visible]="activeStep === 1">
               <div>
-                <mat-form-field>
-                  <mat-label>Přihlašovací jméno</mat-label>
-                  <input matInput formControlName="username" placeholder="Vaše přihlašovací jméno" required>
-                </mat-form-field>
-                <mat-form-field>
-                  <mat-label>Heslo</mat-label>
-                  <input matInput formControlName="password" placeholder="Vaše heslo" type="password" required>
-                </mat-form-field>
+                <app-form-field label="Přihlašovací jméno">
+                  <input formControlName="username" placeholder="Vaše přihlašovací jméno" required>
+                </app-form-field>
+                <app-form-field label="Heslo">
+                  <input formControlName="password" placeholder="Vaše heslo" type="password" required>
+                </app-form-field>
               </div>
               <button (click)="getNurses()"
                       [disabled]="loginForm.invalid || loading"
@@ -35,7 +33,7 @@
               </button>
             </form>
 
-            <form [formGroup]="nurseForm" class="nurse-form" [class.visible]="nurses.length">
+            <form [formGroup]="nurseForm" class="nurse-form" [class.visible]="activeStep === 2">
               <div>
                 <div *ngIf="email" class="user">
                   <div>
@@ -43,24 +41,27 @@
                   </div>
                   <button (click)="cancel()" mat-button color="primary" type="button">Zrušit</button>
                 </div>
-                <mat-form-field>
-                  <mat-label>Sestra</mat-label>
+                <app-form-field label="Sestra">
                   <mat-select formControlName="nurseId" [placeholder]="'Vyberte sestru'" required>
                     <mat-option *ngFor="let nurse of nurses" [value]="nurse.id">
                       {{ nurse.firstName }} {{ nurse.lastName }}
                     </mat-option>
                   </mat-select>
-                </mat-form-field>
-                <mat-form-field>
-                  <mat-label>Číslo šarže vakcíny</mat-label>
-                  <input matInput formControlName="vaccineSerialNumber" placeholder="Zadejte číslo šarže vakcíny" required>
-                </mat-form-field>
-                <mat-form-field>
-                  <mat-label>Datum expirace vakcíny</mat-label>
-                  <input matInput formControlName="vaccineExpiration" placeholder="Zadejte datum expirace vakcíny" required [matDatepicker]="picker">
-                  <mat-datepicker-toggle matSuffix [for]="picker"></mat-datepicker-toggle>
-                  <mat-datepicker #picker></mat-datepicker>
-                </mat-form-field>
+                </app-form-field>
+
+                <app-form-field label="Číslo šarže vakcíny">
+                  <input formControlName="vaccineSerialNumber" placeholder="Zadejte číslo šarže vakcíny" required>
+                </app-form-field>
+
+                <app-form-field label="Datum expirace vakcíny">
+                  <div class="datepicker">
+                    <input formControlName="vaccineExpiration" placeholder="Zadejte datum expirace vakcíny"
+                           (click)="picker.open()" readonly
+                           required [matDatepicker]="picker">
+                    <mat-datepicker-toggle matSuffix [for]="picker"></mat-datepicker-toggle>
+                    <mat-datepicker #picker></mat-datepicker>
+                  </div>
+                </app-form-field>
               </div>
               <button (click)="login()"
                       type="submit"
