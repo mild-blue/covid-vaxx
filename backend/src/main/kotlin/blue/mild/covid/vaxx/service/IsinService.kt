@@ -199,6 +199,10 @@ class IsinService(
             logger.info("No vaccine expiration provided for vaccination ${vaccination.vaccinationId}. Skipping vaccination creating in ISIN.")
             return false
         }
+        if (patient.isinReady != true) {
+            logger.info("Patient ${patient.id} is not ISIN ready. Skipping vaccination creating in ISIN.")
+            return false
+        }
 
         val vaccinationExpirationInstant = vaccination.vaccineExpiration.atTime(LocalTime.MIDNIGHT).atZone(ZoneId.systemDefault()).toInstant();
 
