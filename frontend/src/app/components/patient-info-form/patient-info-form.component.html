@@ -4,11 +4,11 @@
     <form [formGroup]="form">
       <div class="row">
         <app-form-field label="Jméno *" [invalid]="isControlInvalid('firstName')" [errors]="getControlErrors('firstName')">
-          <input formControlName="firstName" name="firstName" placeholder="Vaše jméno" required maxlength="256" trim>
+          <input formControlName="firstName" name="firstName" placeholder="Vaše jméno" required maxlength="256" trim="blur">
         </app-form-field>
 
         <app-form-field label="Příjmení *" [invalid]="isControlInvalid('lastName')" [errors]="getControlErrors('lastName')">
-          <input formControlName="lastName" name="lastName" placeholder="Vaše příjmení" required maxlength="256" trim>
+          <input formControlName="lastName" name="lastName" placeholder="Vaše příjmení" required maxlength="256" trim="blur">
         </app-form-field>
       </div>
 
@@ -26,13 +26,13 @@
                         [invalid]="isControlInvalid('personalNumber')" [errors]="getControlErrors('personalNumber')">
           <input formControlName="personalNumber" name="personalNumber" placeholder="Vaše rodné číslo"
                  mask="000000/0009" [showMaskTyped]="patient.personalNumber === undefined || patient.personalNumber.length < 10"
-                 required appPersonalNumberValidator trim>
+                 required appPersonalNumberValidator trim="blur">
         </app-form-field>
 
         <app-form-field label="Číslo pojištěnce *" note="Číslo pojištěnce uvedené na kartičce zdravotní pojišťovny" *ngIf="patient.isForeigner"
                         [invalid]="isControlInvalid('insuranceNumber')" [errors]="getControlErrors('insuranceNumber')">
           <input formControlName="insuranceNumber" name="insuranceNumber" placeholder="Vaše číslo pojištěnce"
-                 required maxlength="256" trim>
+                 required maxlength="256" trim="blur">
         </app-form-field>
 
         <app-form-field label="Zdravotní pojišťovna *" note="Vyberte ze seznamu zdravotních pojišťoven"
@@ -50,11 +50,11 @@
 
       <div class="row">
         <app-form-field label="Město / městská část *" [invalid]="isControlInvalid('district')" [errors]="getControlErrors('district')">
-          <input formControlName="district" name="district" placeholder="Vaše město (nebo městská část)" required maxlength="128" trim>
+          <input formControlName="district" name="district" placeholder="Vaše město (nebo městská část)" required maxlength="128" trim="blur">
         </app-form-field>
 
         <app-form-field label="PSČ *" [invalid]="isControlInvalid('zipCode')" [errors]="getControlErrors('zipCode')">
-          <input formControlName="zipCode" name="zipCode" placeholder="Vaše PSČ" mask="000 00" [showMaskTyped]="true" required appPostalCodeValidator trim>
+          <input formControlName="zipCode" name="zipCode" placeholder="Vaše PSČ" mask="000 00" [showMaskTyped]="true" required appPostalCodeValidator trim="blur">
         </app-form-field>
       </div>
 
@@ -75,14 +75,14 @@
         <app-form-field label="E-mail *"
                         info="Na tuto e-mailovou adresu vám bude doručeno potvrzení o provedené registraci a následně certifikát o provedeném očkování. Pokud e-mail nemáte, lze zadat e-mailovou adresu blízké osoby."
                         [invalid]="isControlInvalid('email')" [errors]="getControlErrors('email')">
-          <input formControlName="email" name="email" placeholder="Váš e-mail" required maxlength="256" appEmailValidator trim>
+          <input formControlName="email" name="email" placeholder="Váš e-mail" required maxlength="256" appEmailValidator trim="blur">
         </app-form-field>
       </div>
 
       <ng-container *ngIf="showExtraFields">
 
         <app-form-field label="Indikace" [invalid]="isControlInvalid('indication')" [errors]="getControlErrors('indication')">
-          <input formControlName="indication" name="indication" placeholder="Indikace pacienta (zdravotník, učitel, senior, soc. pracovník)" maxlength="256" trim>
+          <input formControlName="indication" name="indication" placeholder="Indikace pacienta (zdravotník, učitel, senior, soc. pracovník)" maxlength="256" trim="blur">
         </app-form-field>
 
         <!-- TODO: *Feature* Enable editing vaccinationDate on BE -->
