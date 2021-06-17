@@ -1,9 +1,0 @@
-<div mat-dialog-content class="centered">
-  <p>Pacient s {{data.isForeigner ? "číslem pojištěnce" : "rodným číslem"}} {{ data.personalOrInsuranceNumber }} neexistuje.</p>
-</div>
-<mat-dialog-actions>
-  <button mat-button mat-dialog-close>Zavřít</button>
-  <button mat-raised-button color="primary" mat-dialog-close *ngIf="!data.isForeigner"
-          [routerLink]="['/registration', { personalNumber: data.personalOrInsuranceNumber } ]">Přidat pacienta
-  </button>
-</mat-dialog-actions>

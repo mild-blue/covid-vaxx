@@ -2,7 +2,6 @@ import { Injectable } from '@angular/core';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { SuccessDialogComponent } from '@app/components/dialogs/success/success-dialog.component';
 import { MatDialog } from '@angular/material/dialog';
-import { NoPatientFoundComponent } from '@app/components/dialogs/no-patient-found/no-patient-found.component';
 import { GdprComponent } from '@app/components/dialogs/gdpr/gdpr.component';
 import { ErrorComponent } from '@app/components/error/error.component';
 import { AbstractConfirmInterface } from '@app/components/dialogs/abstract-confirm.interface';
@@ -36,12 +35,6 @@ export class AlertService {
     if (onClose) {
       dialog.afterClosed().subscribe(onClose);
     }
-  }
-
-  public noPatientFoundDialog(personalOrInsuranceNumber: string, isForeigner: boolean): void {
-    this._dialog.open(NoPatientFoundComponent, {
-      data: { personalOrInsuranceNumber, isForeigner }
-    });
   }
 
   public gdprDialog(): void {

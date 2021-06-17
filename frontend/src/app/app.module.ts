@@ -32,7 +32,6 @@ import { AuthInterceptor } from '@app/interceptors/auth/auth.interceptor';
 import { MatProgressBarModule } from '@angular/material/progress-bar';
 import { MatBadgeModule } from '@angular/material/badge';
 import { BackButtonComponent } from './components/back-button/back-button.component';
-import { NoPatientFoundComponent } from './components/dialogs/no-patient-found/no-patient-found.component';
 import { PatientDataComponent } from './components/patient-data/patient-data.component';
 import { PatientDataItemComponent } from './components/patient-data-item/patient-data-item.component';
 import { InfoComponent } from './pages/info/info.component';
@@ -97,7 +96,6 @@ declare global {
     AdminComponent,
     LoginComponent,
     BackButtonComponent,
-    NoPatientFoundComponent,
     PatientDataComponent,
     PatientDataItemComponent,
     InfoComponent,
