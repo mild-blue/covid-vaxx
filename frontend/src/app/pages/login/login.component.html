@@ -55,7 +55,9 @@
 
                 <app-form-field label="Datum expirace vakcíny">
                   <div class="datepicker">
-                    <input formControlName="vaccineExpiration" placeholder="Zadejte datum expirace vakcíny" required [matDatepicker]="picker">
+                    <input formControlName="vaccineExpiration" placeholder="Zadejte datum expirace vakcíny"
+                           (click)="picker.open()" readonly
+                           required [matDatepicker]="picker">
                     <mat-datepicker-toggle matSuffix [for]="picker"></mat-datepicker-toggle>
                     <mat-datepicker #picker></mat-datepicker>
                   </div>
