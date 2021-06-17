@@ -15,19 +15,19 @@ class DummyIsinService : IsinServiceInterface {
         lastName: String,
         personalNumber: String
     ): IsinGetPatientByParametersResultDto {
-        logger.warn { "NOT GETTING patient ${firstName}/${lastName}/${personalNumber} from ISIN. This should not be in the production." }
+        logger.warn { "NOT GETTING patient ${firstName}/${lastName}/${personalNumber} from ISIN. This should not be used in production." }
         return IsinGetPatientByParametersResultDto("UsingDummyISIN", null, null)
     }
 
     override suspend fun getForeignerByInsuranceNumber(
         insuranceNumber: String
     ): IsinGetPatientByParametersResultDto {
-        logger.warn { "NOT GETTING foreigner ${insuranceNumber} from ISIN. This should not be in the production." }
+        logger.warn { "NOT GETTING foreigner ${insuranceNumber} from ISIN. This should not be used in production." }
         return IsinGetPatientByParametersResultDto("UsingDummyISIN", null, null)
     }
 
     override suspend fun tryPatientIsReadyForVaccination(isinId: String): Boolean? {
-        logger.warn { "NOT GETTING vaccinations of patient ${isinId} from ISIN. This should not be in the production." }
+        logger.warn { "NOT GETTING vaccinations of patient ${isinId} from ISIN. This should not be used in production." }
         return null
     }
 
@@ -35,7 +35,7 @@ class DummyIsinService : IsinServiceInterface {
         patient: PatientDtoOut,
         notes: String?
     ): Boolean {
-        logger.warn { "NOT EXPORTING patient ${patient.personalNumber} to ISIN. This should not be in the production." }
+        logger.warn { "NOT EXPORTING patient ${patient.personalNumber} to ISIN. This should not be used in production." }
         return false
     }
 
@@ -43,7 +43,7 @@ class DummyIsinService : IsinServiceInterface {
         vaccination: StoreVaccinationRequestDto,
         patient: PatientDtoOut
     ): Boolean {
-        logger.warn { "NOT EXPORTING vaccination ${vaccination.vaccinationId} to ISIN. This should not be in the production." }
+        logger.warn { "NOT EXPORTING vaccination ${vaccination.vaccinationId} to ISIN. This should not be used in production." }
         return false
     }
 }

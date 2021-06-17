@@ -1,0 +1,90 @@
+POST {{url}}/admin/login?captcha=1234
+Content-Type: application/json
+
+{
+"credentials": {
+"email": "{{email}}",
+"password": "{{password}}"
+},
+"vaccineSerialNumber": "test",
+"vaccineExpiration": "2024-06-04T00:00:00.000Z"
+}
+> {% client.global.set("auth_token", response.body["token"]); %}
+
+###
+POST {{url}}/admin/run-isin-job
+Content-Type: application/json
+Authorization: Bearer {{auth_token}}
+
+{
+  "exportPatientsInfo": true,
+  "exportVaccinations": true,
+  "validatePatients": true,
+  "patientsCount": 6000,
+  "patientsOffset": 0
+}
+
+###
+POST {{url}}/admin/run-isin-job
+Content-Type: application/json
+Authorization: Bearer {{auth_token}}
+
+{
+  "exportPatientsInfo": true,
+  "exportVaccinations": true,
+  "validatePatients": true,
+  "patientsCount": 6000,
+  "patientsOffset": 5900
+}
+
+###
+POST {{url}}/admin/run-isin-job
+Content-Type: application/json
+Authorization: Bearer {{auth_token}}
+
+{
+  "exportPatientsInfo": true,
+  "exportVaccinations": true,
+  "validatePatients": true,
+  "patientsCount": 6000,
+  "patientsOffset": 11800
+}
+
+###
+POST {{url}}/admin/run-isin-job
+Content-Type: application/json
+Authorization: Bearer {{auth_token}}
+
+{
+  "exportPatientsInfo": true,
+  "exportVaccinations": true,
+  "validatePatients": true,
+  "patientsCount": 6000,
+  "patientsOffset": 17700
+}
+
+###
+POST {{url}}/admin/run-isin-job
+Content-Type: application/json
+Authorization: Bearer {{auth_token}}
+
+{
+  "exportPatientsInfo": true,
+  "exportVaccinations": true,
+  "validatePatients": true,
+  "patientsCount": 6000,
+  "patientsOffset": 23600
+}
+
+###
+POST {{url}}/admin/run-isin-job
+Content-Type: application/json
+Authorization: Bearer {{auth_token}}
+
+{
+  "exportPatientsInfo": true,
+  "exportVaccinations": true,
+  "validatePatients": true,
+  "patientsCount": 6000,
+  "patientsOffset": 200
+}

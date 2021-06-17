@@ -159,3 +159,16 @@ Authorization: Bearer {{auth_token}}
   "patientsCount": null,
   "patientsOffset": 0
 }
+
+###
+
+//create nurse
+PUT {{url}}/admin/nurse?captcha=1234
+Content-Type: application/json
+Authorization: Bearer {{auth_token}}
+
+{
+  "firstName": "Petr",
+  "lastName": "Kohout",
+  "email": "kohout@mild.blue"
+}
