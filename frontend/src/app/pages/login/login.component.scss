@@ -1,9 +1,11 @@
 @import "../../../styles/variables";
+@import "../../../styles/breakpoints";
 
 main {
   display: flex;
   justify-content: center;
   align-items: center;
+  padding-top: 65px;
 }
 
 app-back-button {
@@ -12,7 +14,6 @@ app-back-button {
 }
 
 .content {
-  min-height: 400px;
   display: flex;
   flex-direction: column;
 }
@@ -24,9 +25,20 @@ mat-card-content {
 
 .form {
   min-width: 420px;
-  min-height: 350px;
   position: relative;
   overflow: hidden;
+
+  @include media-breakpoint-down(sm) {
+    min-width: 100%;
+  }
+
+  &.step-1 {
+    min-height: 280px;
+  }
+
+  &.step-2 {
+    min-height: 460px;
+  }
 
   form {
     transition: left 0.2s ease-in-out, right 0.2s ease-in-out;
@@ -38,7 +50,7 @@ mat-card-content {
     justify-content: space-between;
 
     > div {
-      flex: 1;
+      margin-top: 20px;
       display: flex;
       flex-direction: column;
       justify-content: center;
@@ -128,7 +140,6 @@ mat-card-content {
 }
 
 .user {
-  margin-top: 20px;
   padding: 10px 15px;
   border-radius: 12px;
   background: rgba($primary, 0.1);
@@ -147,6 +158,15 @@ mat-card-content {
 .mat-select-panel .mat-option {
   line-height: 4em;
   height: 4em;
+}
+
+.datepicker {
+  display: flex;
+  align-items: center;
+
+  input {
+    flex: 1;
+  }
 }
 
 :host {
