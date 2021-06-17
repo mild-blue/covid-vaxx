@@ -619,24 +619,22 @@ export class DefaultService {
 
   /**
    * Get patient by personal or insurance number. Requires ADMIN, DOCTOR or RECEPTIONIST role.
-   * @param personalNumber Patient personal number
-   * @param insuranceNumber Patient insurance number
+   * @param personalOrInsuranceNumber Patient personal or insurance number
    * @param observe set whether or not to return the data Observable as the body, response or events. defaults to returning the body.
    * @param reportProgress flag to report request and response progress.
    */
-  public apiAdminPatientGet(personalNumber?: string, insuranceNumber?: string, observe?: 'body', reportProgress?: boolean, options?: { httpHeaderAccept?: 'application/json' }): Observable<PatientDtoOut>;
-  public apiAdminPatientGet(personalNumber?: string, insuranceNumber?: string, observe?: 'response', reportProgress?: boolean, options?: { httpHeaderAccept?: 'application/json' }): Observable<HttpResponse<PatientDtoOut>>;
-  public apiAdminPatientGet(personalNumber?: string, insuranceNumber?: string, observe?: 'events', reportProgress?: boolean, options?: { httpHeaderAccept?: 'application/json' }): Observable<HttpEvent<PatientDtoOut>>;
-  public apiAdminPatientGet(personalNumber?: string, insuranceNumber?: string, observe: any = 'body', reportProgress: boolean = false, options?: { httpHeaderAccept?: 'application/json' }): Observable<any> {
+  public apiAdminPatientGet(personalOrInsuranceNumber: string, observe?: 'body', reportProgress?: boolean, options?: { httpHeaderAccept?: 'application/json' }): Observable<PatientDtoOut>;
+  public apiAdminPatientGet(personalOrInsuranceNumber: string, observe?: 'response', reportProgress?: boolean, options?: { httpHeaderAccept?: 'application/json' }): Observable<HttpResponse<PatientDtoOut>>;
+  public apiAdminPatientGet(personalOrInsuranceNumber: string, observe?: 'events', reportProgress?: boolean, options?: { httpHeaderAccept?: 'application/json' }): Observable<HttpEvent<PatientDtoOut>>;
+  public apiAdminPatientGet(personalOrInsuranceNumber: string, observe: any = 'body', reportProgress: boolean = false, options?: { httpHeaderAccept?: 'application/json' }): Observable<any> {
+    if (personalOrInsuranceNumber === null || personalOrInsuranceNumber === undefined) {
+      throw new Error('Required parameter personalOrInsuranceNumber was null or undefined when calling apiAdminPatientGet.');
+    }
 
     let queryParameters = new HttpParams({ encoder: this.encoder });
-    if (personalNumber !== undefined && personalNumber !== null) {
+    if (personalOrInsuranceNumber !== undefined && personalOrInsuranceNumber !== null) {
       queryParameters = this.addToHttpParams(queryParameters,
-        <any>personalNumber, 'personalNumber');
-    }
-    if (insuranceNumber !== undefined && insuranceNumber !== null) {
-      queryParameters = this.addToHttpParams(queryParameters,
-        <any>insuranceNumber, 'insuranceNumber');
+        <any>personalOrInsuranceNumber, 'personalOrInsuranceNumber');
     }
 
     let headers = this.defaultHeaders;
@@ -905,7 +903,7 @@ export class DefaultService {
   }
 
   /**
-   * Checks patients where ISIN was failed and run isin client again.
+   * Checks patients where ISIN has failed and run ISIN client again.
    * @param isinJobDtoIn
    * @param observe set whether or not to return the data Observable as the body, response or events. defaults to returning the body.
    * @param reportProgress flag to report request and response progress.

@@ -15,6 +15,8 @@ interface IsinServiceInterface {
         insuranceNumber: String
     ): IsinGetPatientByParametersResultDto
 
+    suspend fun tryPatientIsReadyForVaccination(isinId: String): Boolean?
+
     suspend fun tryExportPatientContactInfo(
         patient: PatientDtoOut,
         notes: String?

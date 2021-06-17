@@ -22,5 +22,6 @@ data class PatientDtoOut(
     val vaccinated: VaccinationDtoOut? = null,
     val dataCorrect: DataCorrectnessConfirmationDtoOut? = null,
     val vaccinationSlotDtoOut: VaccinationSlotDtoOut? = null,
-    val isinId: String? = null
+    val isinId: String? = null,
+    val isinReady: Boolean? = null
 )

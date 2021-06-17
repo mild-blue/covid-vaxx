@@ -25,6 +25,9 @@ class IsinRetryService(
         var validatedPatientsSuccess: Int = 0
         var validatedPatientsErrors: Int = 0
 
+        var checkedVaccinationsSuccess: Int = 0
+        var checkedVaccinationsErrors: Int = 0
+
         var exportedPatientsInfoSuccess: Int = 0
         var exportedPatientsInfoErrors: Int = 0
 
@@ -68,7 +71,24 @@ class IsinRetryService(
 
             if (updatedPatient.isinId.isNullOrBlank()) continue
 
-            // 2. If data are correct but not exported to ISIN -> try export to isin
+            // 2. If isinReady is not set -> try to check vaccinations in ISIN
+            if (
+                isinJobDto.checkVaccinations &&
+                updatedPatient.isinReady == null
+            ) {
+                logger.debug("Retrying to check ISIN vaccinations of patient ${updatedPatient.id} in ISIN")
+                val wasChecked = retryPatientIsReadyForVaccination(updatedPatient)
+
+                logger.info("Vaccinations of patient ${patient.id} was checked in ISIN with result: ${wasChecked}")
+
+                if (wasChecked) {
+                    checkedVaccinationsSuccess++
+                } else {
+                    checkedVaccinationsErrors++
+                }
+            }
+
+            // 3. If data are correct but not exported to ISIN -> try export to isin
             logger.info("Checking correctness exported to ISIN of patient ${updatedPatient.id}")
             if (
                 isinJobDto.exportPatientsInfo &&
@@ -88,7 +108,7 @@ class IsinRetryService(
                 }
             }
 
-            // 3. If vaccinated but vaccination is not exported to ISIN -> try export vaccination to ISIN
+            // 4. If vaccinated but vaccination is not exported to ISIN -> try export vaccination to ISIN
             if (isinJobDto.exportVaccinations && updatedPatient.vaccinated != null && updatedPatient.vaccinated.exportedToIsinOn == null) {
                 logger.info("Retrying to create vaccination of patient ${updatedPatient.id} in ISIN")
                 val wasCreated = retryPatientVaccinationCreation(updatedPatient)
@@ -106,6 +126,8 @@ class IsinRetryService(
         return IsinJobDtoOut(
             validatedPatientsSuccess = validatedPatientsSuccess,
             validatedPatientsErrors = validatedPatientsErrors,
+            checkedVaccinationsSuccess = checkedVaccinationsSuccess,
+            checkedVaccinationsErrors = checkedVaccinationsErrors,
             exportedPatientsInfoSuccess = exportedPatientsInfoSuccess,
             exportedPatientsInfoErrors = exportedPatientsInfoErrors,
             exportedVaccinationsSuccess = exportedVaccinationsSuccess,
@@ -141,6 +163,21 @@ class IsinRetryService(
             logger.debug { "NOT updating ISIN id of patient ${patient.id}"}
         }
         return newIsinPatientId
+    }
+
+    private suspend fun retryPatientIsReadyForVaccination(patient: PatientDtoOut): Boolean {
+        requireNotNull(patient.isinId) { "ISIN id of patient ${patient.id} cannot be null." }
+
+        val isinReady = isinService.tryPatientIsReadyForVaccination(patient.isinId)
+
+        return if (isinReady != null) {
+            logger.debug { "Updating ISIN ready of patient ${patient.id} to value ${isinReady}"}
+            patientService.updateIsinReady(patient.id, isinReady)
+            true
+        } else {
+            logger.debug { "NOT updating ISIN ready of patient ${patient.id}"}
+            false
+        }
     }
 
     private suspend fun retryPatientContactInfoExport(patient: PatientDtoOut): Boolean {

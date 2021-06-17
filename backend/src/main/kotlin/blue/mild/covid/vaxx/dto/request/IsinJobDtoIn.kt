@@ -2,6 +2,7 @@ package blue.mild.covid.vaxx.dto.request
 
 data class IsinJobDtoIn(
     val validatePatients: Boolean = false,
+    val checkVaccinations: Boolean = false,
     val exportPatientsInfo: Boolean = false,
     val exportVaccinations: Boolean = false,
 
