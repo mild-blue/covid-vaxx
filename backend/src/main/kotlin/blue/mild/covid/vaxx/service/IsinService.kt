@@ -186,7 +186,7 @@ class IsinService(
         }.receive()
     }
 
-    @Suppress("ReturnCount")
+    @Suppress("ReturnCount", "LongMethod")
     override suspend fun tryCreateVaccinationAndDose(
         vaccination: StoreVaccinationRequestDto,
         patient: PatientDtoOut
