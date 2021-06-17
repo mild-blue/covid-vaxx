@@ -109,7 +109,7 @@ class IsinService(
             val allVaccinations = getPatientVaccinations(isinId)
             logger.info(
                 "Getting vaccination from ISIN for patient ${isinId } was successful. " +
-                "The following vaccinations were found: ${allVaccinations}"
+                "${allVaccinations.count()} vaccinations were found."
             )
 
             val problematicVaccinations = allVaccinations.filter {
@@ -118,7 +118,7 @@ class IsinService(
 
             if (problematicVaccinations.count() > 0) {
                 logger.info(
-                    "Some problematic vaccinations of patient ${isinId} were found in ISIN. " +
+                    "${problematicVaccinations.count()} problematic vaccinations of patient ${isinId} were found in ISIN. " +
                     "Patient is not ready for vaccination: ${problematicVaccinations}"
                 )
                 false

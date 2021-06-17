@@ -74,7 +74,7 @@ class IsinRetryService(
             // 2. If isinReady is not set -> try to check vaccinations in ISIN
             if (
                 isinJobDto.checkVaccinations &&
-                updatedPatient.isinReady != null
+                updatedPatient.isinReady == null
             ) {
                 logger.debug("Retrying to check ISIN vaccinations of patient ${updatedPatient.id} in ISIN")
                 val wasChecked = retryPatientIsReadyForVaccination(updatedPatient)

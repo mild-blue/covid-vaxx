@@ -216,7 +216,8 @@ class PatientRepository(
         vaccinated = row.mapVaccinated(),
         dataCorrect = row.mapDataCorrect(),
         vaccinationSlotDtoOut = row.mapVaccinationSlot(),
-        isinId = row[Patients.isinId]
+        isinId = row[Patients.isinId],
+        isinReady = row[Patients.isinReady]
     )
 
     private fun ResultRow.mapVaccinationSlot() = getOrNull(VaccinationSlots.id)?.let {

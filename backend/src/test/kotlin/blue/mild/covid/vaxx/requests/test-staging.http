@@ -152,7 +152,7 @@ Authorization: Bearer {{auth_token}}
 
 {
   "validatePatients": true,
-  "checkVaccinations": false,
+  "checkVaccinations": true,
   "exportPatientsInfo": false,
   "exportVaccinations": false,
 
