@@ -82,7 +82,7 @@ class PatientService(
         patientRepository.getAndMapPatientsBy(
             n = n,
             offset = offset
-        ){
+        ) {
             Op.TRUE
                 .andWithIfNotEmpty(email?.removeAllWhitespaces()?.lowercase(Locale.getDefault()), Patients.email)
                 .andWithIfNotEmpty(phoneNumber?.removeAllWhitespaces(), Patients.phoneNumber)

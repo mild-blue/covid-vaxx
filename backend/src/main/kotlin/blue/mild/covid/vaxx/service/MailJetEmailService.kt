@@ -82,7 +82,7 @@ class MailJetEmailService(
 
     private fun buildEmailRequest(emailRequest: PatientEmailRequestDto): MailjetRequest? {
         val stringWriter = StringWriter()
-        freemarkerConfiguration.getTemplate("RegistrationConfirmation.ftl")
+        freemarkerConfiguration.getTemplate("RegistrationReminder.ftl")
             .apply { process(mapOf("emailRequestDto" to emailRequest), stringWriter) }
 
         val emailHtmlPart = stringWriter.toString()
