@@ -259,7 +259,10 @@ class IsinService(
             logger.info("Exporting vaccination to ISIN was successful for patient with ISIN ID ${patient.isinId}.")
             true
         }.getOrElse {
-            logger.error(it) {
+            logger.warn { "Data retrieval from ISIN - failure." }
+            val wrappingException =
+                Exception("An exception ${it.javaClass.canonicalName} was thrown! - ${it.message}\n${it.stackTraceToString()}")
+            logger.error(wrappingException) {
                 "Exporting vaccination to ISIN failed for patient with ISIN ID ${patient.isinId}"
             }
             false
