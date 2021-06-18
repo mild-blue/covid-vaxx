@@ -39,12 +39,12 @@ class IsinService(
         "?pcz=${encodeValue(configuration.pracovnik.pcz)}&pracovnikNrzpCislo=${encodeValue(configuration.pracovnik.nrzpCislo)}"
 
     private companion object : KLogging() {
-        const val URL_GET_PATIENT_BY_PARAMETERS = "pacienti/VyhledatDleJmenoPrijmeniRc";
-        const val URL_GET_FOREIGNER_BY_INSURANCE_NUMBER = "pacienti/VyhledatCizinceDleCislaPojistence";
-        const val URL_GET_VACCINATIONS_BY_PATIENT_ID = "vakcinace/NacistVakcinacePacienta";
-        const val URL_UPDATE_PATIENT_INFO = "pacienti/AktualizujKontaktniUdajePacienta";
-        const val URL_CREATE_OR_CHANGE_VACCINATION = "vakcinace/VytvorNeboZmenVakcinaci";
-        const val URL_CREATE_OR_CHANGE_DOSE = "vakcinace/VytvorNeboZmenDavku";
+        const val URL_GET_PATIENT_BY_PARAMETERS = "pacienti/VyhledatDleJmenoPrijmeniRc"
+        const val URL_GET_FOREIGNER_BY_INSURANCE_NUMBER = "pacienti/VyhledatCizinceDleCislaPojistence"
+        const val URL_GET_VACCINATIONS_BY_PATIENT_ID = "vakcinace/NacistVakcinacePacienta"
+        const val URL_UPDATE_PATIENT_INFO = "pacienti/AktualizujKontaktniUdajePacienta"
+        const val URL_CREATE_OR_CHANGE_VACCINATION = "vakcinace/VytvorNeboZmenVakcinaci"
+        const val URL_CREATE_OR_CHANGE_DOSE = "vakcinace/VytvorNeboZmenDavku"
     }
 
     override suspend fun getPatientByParameters(
@@ -130,7 +130,10 @@ class IsinService(
                 true
             }
         }.getOrElse {
-            logger.error(it) {
+            logger.warn { "Data retrieval from ISIN - failure." }
+            val wrappingException =
+                Exception("An exception ${it.javaClass.canonicalName} was thrown! - ${it.message}\n${it.stackTraceToString()}")
+            logger.error(wrappingException) {
                 "Getting vaccinations from ISIN failed for patient with ISIN ID ${isinId}."
             }
             null
@@ -160,7 +163,10 @@ class IsinService(
                 logger.debug("Data obtained from ISIN: $contactInfoOut")
                 true
             }.getOrElse {
-                logger.error(it) {
+                logger.warn { "Data retrieval from ISIN - failure." }
+                val wrappingException =
+                    Exception("An exception ${it.javaClass.canonicalName} was thrown! - ${it.message}\n${it.stackTraceToString()}")
+                logger.error(wrappingException) {
                     "Exporting patient information to ISIN failed for patient with ISIN ID ${patient.isinId}"
                 }
                 false
@@ -204,7 +210,8 @@ class IsinService(
             return false
         }
 
-        val vaccinationExpirationInstant = vaccination.vaccineExpiration.atTime(LocalTime.MIDNIGHT).atZone(ZoneId.systemDefault()).toInstant();
+        val vaccinationExpirationInstant =
+            vaccination.vaccineExpiration.atTime(LocalTime.MIDNIGHT).atZone(ZoneId.systemDefault()).toInstant()
 
         val defaultIndication = "J01"
         val indication = if (patient.indication == null || patient.indication.isBlank())
@@ -311,7 +318,7 @@ class IsinService(
         return url
     }
 
-    private fun encodeValue(value: String): String? {
+    private fun encodeValue(value: String): String {
         return URLEncoder.encode(value, StandardCharsets.UTF_8.toString()).replace("+", "%20")
     }
 }
