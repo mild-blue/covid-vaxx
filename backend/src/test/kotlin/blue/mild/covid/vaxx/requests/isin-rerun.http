@@ -18,12 +18,12 @@ Authorization: Bearer {{auth_token}}
 
 {
   "exportPatientsInfo": true,
+  "checkVaccinations": true,
   "exportVaccinations": true,
   "validatePatients": true,
-  "patientsCount": 6000,
+  "patientsCount": 3000,
   "patientsOffset": 0
 }
-
 ###
 POST {{url}}/admin/run-isin-job
 Content-Type: application/json
@@ -31,10 +31,24 @@ Authorization: Bearer {{auth_token}}
 
 {
   "exportPatientsInfo": true,
+  "checkVaccinations": true,
   "exportVaccinations": true,
   "validatePatients": true,
-  "patientsCount": 6000,
-  "patientsOffset": 5900
+  "patientsCount": 3000,
+  "patientsOffset": 2999
+}
+###
+POST {{url}}/admin/run-isin-job
+Content-Type: application/json
+Authorization: Bearer {{auth_token}}
+
+{
+  "exportPatientsInfo": true,
+  "checkVaccinations": true,
+  "exportVaccinations": true,
+  "validatePatients": true,
+  "patientsCount": 3000,
+  "patientsOffset": 5998
 }
 
 ###
@@ -44,10 +58,11 @@ Authorization: Bearer {{auth_token}}
 
 {
   "exportPatientsInfo": true,
+  "checkVaccinations": true,
   "exportVaccinations": true,
   "validatePatients": true,
-  "patientsCount": 6000,
-  "patientsOffset": 11800
+  "patientsCount": 3000,
+  "patientsOffset": 8997
 }
 
 ###
@@ -57,10 +72,11 @@ Authorization: Bearer {{auth_token}}
 
 {
   "exportPatientsInfo": true,
+  "checkVaccinations": true,
   "exportVaccinations": true,
   "validatePatients": true,
-  "patientsCount": 6000,
-  "patientsOffset": 17700
+  "patientsCount": 3000,
+  "patientsOffset": 11996
 }
 
 ###
@@ -70,10 +86,11 @@ Authorization: Bearer {{auth_token}}
 
 {
   "exportPatientsInfo": true,
+  "checkVaccinations": true,
   "exportVaccinations": true,
   "validatePatients": true,
-  "patientsCount": 6000,
-  "patientsOffset": 23600
+  "patientsCount": 3000,
+  "patientsOffset": 14995
 }
 
 ###
@@ -83,8 +100,66 @@ Authorization: Bearer {{auth_token}}
 
 {
   "exportPatientsInfo": true,
+  "checkVaccinations": true,
   "exportVaccinations": true,
   "validatePatients": true,
-  "patientsCount": 6000,
-  "patientsOffset": 200
+  "patientsCount": 3000,
+  "patientsOffset": 17994
 }
+
+###
+POST {{url}}/admin/run-isin-job
+Content-Type: application/json
+Authorization: Bearer {{auth_token}}
+
+{
+  "exportPatientsInfo": true,
+  "checkVaccinations": true,
+  "exportVaccinations": true,
+  "validatePatients": true,
+  "patientsCount": 3000,
+  "patientsOffset": 20993
+}
+
+###
+POST {{url}}/admin/run-isin-job
+Content-Type: application/json
+Authorization: Bearer {{auth_token}}
+
+{
+  "exportPatientsInfo": true,
+  "checkVaccinations": true,
+  "exportVaccinations": true,
+  "validatePatients": true,
+  "patientsCount": 3000,
+  "patientsOffset": 22992
+}
+
+###
+POST {{url}}/admin/run-isin-job
+Content-Type: application/json
+Authorization: Bearer {{auth_token}}
+
+{
+  "exportPatientsInfo": true,
+  "checkVaccinations": true,
+  "exportVaccinations": true,
+  "validatePatients": true,
+  "patientsCount": 3000,
+  "patientsOffset": 24991
+}
+
+###
+POST {{url}}/admin/run-isin-job
+Content-Type: application/json
+Authorization: Bearer {{auth_token}}
+
+{
+  "exportPatientsInfo": true,
+  "checkVaccinations": true,
+  "exportVaccinations": true,
+  "validatePatients": true,
+  "patientsCount": 3000,
+  "patientsOffset": 26990
+}
+
