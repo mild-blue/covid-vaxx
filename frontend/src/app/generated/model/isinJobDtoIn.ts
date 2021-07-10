@@ -12,6 +12,7 @@
 
 
 export interface IsinJobDtoIn {
+  checkVaccinations: boolean;
   exportPatientsInfo: boolean;
   exportVaccinations: boolean;
   patientsCount?: number | null;

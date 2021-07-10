@@ -39,11 +39,12 @@ class IsinService(
         "?pcz=${encodeValue(configuration.pracovnik.pcz)}&pracovnikNrzpCislo=${encodeValue(configuration.pracovnik.nrzpCislo)}"
 
     private companion object : KLogging() {
-        const val URL_GET_PATIENT_BY_PARAMETERS = "pacienti/VyhledatDleJmenoPrijmeniRc";
-        const val URL_GET_FOREIGNER_BY_INSURANCE_NUMBER = "pacienti/VyhledatCizinceDleCislaPojistence";
-        const val URL_UPDATE_PATIENT_INFO = "pacienti/AktualizujKontaktniUdajePacienta";
-        const val URL_CREATE_OR_CHANGE_VACCINATION = "vakcinace/VytvorNeboZmenVakcinaci";
-        const val URL_CREATE_OR_CHANGE_DOSE = "vakcinace/VytvorNeboZmenDavku";
+        const val URL_GET_PATIENT_BY_PARAMETERS = "pacienti/VyhledatDleJmenoPrijmeniRc"
+        const val URL_GET_FOREIGNER_BY_INSURANCE_NUMBER = "pacienti/VyhledatCizinceDleCislaPojistence"
+        const val URL_GET_VACCINATIONS_BY_PATIENT_ID = "vakcinace/NacistVakcinacePacienta"
+        const val URL_UPDATE_PATIENT_INFO = "pacienti/AktualizujKontaktniUdajePacienta"
+        const val URL_CREATE_OR_CHANGE_VACCINATION = "vakcinace/VytvorNeboZmenVakcinaci"
+        const val URL_CREATE_OR_CHANGE_DOSE = "vakcinace/VytvorNeboZmenDavku"
     }
 
     override suspend fun getPatientByParameters(
@@ -92,6 +93,52 @@ class IsinService(
         return result
     }
 
+    private suspend fun getPatientVaccinations(isinId: String): List<IsinVaccinationDto> {
+        val url = createIsinURL(URL_GET_VACCINATIONS_BY_PATIENT_ID, parameters = listOf(
+            isinId.trim()
+        ))
+        logger.info { "Executing ISIN HTTP call ${URL_GET_VACCINATIONS_BY_PATIENT_ID}." }
+        return isinClient.get<HttpResponse>(url) {
+            contentType(ContentType.Application.Json)
+            accept(ContentType.Application.Json)
+        }.receive()
+    }
+
+    override suspend fun tryPatientIsReadyForVaccination(isinId: String): Boolean? =
+        runCatching {
+            val allVaccinations = getPatientVaccinations(isinId)
+            logger.info(
+                "Getting vaccination from ISIN for patient ${isinId } was successful. " +
+                "${allVaccinations.count()} vaccinations were found."
+            )
+
+            val problematicVaccinations = allVaccinations.filter {
+                    vaccination -> vaccination.typOckovaniKod == "CO19" && vaccination.stav != "Zruseno"
+            }
+
+            if (problematicVaccinations.count() > 0) {
+                logger.info(
+                    "${problematicVaccinations.count()} problematic vaccinations of patient ${isinId} were found in ISIN. " +
+                    "Patient is not ready for vaccination: ${problematicVaccinations}"
+                )
+                false
+            } else {
+                logger.info(
+                    "No problematic vaccination of patient ${isinId} were found in ISIN. " +
+                    "Patient is ready for vaccination."
+                )
+                true
+            }
+        }.getOrElse {
+            logger.warn { "Data retrieval from ISIN - failure." }
+            val wrappingException =
+                Exception("An exception ${it.javaClass.canonicalName} was thrown! - ${it.message}\n${it.stackTraceToString()}")
+            logger.error(wrappingException) {
+                "Getting vaccinations from ISIN failed for patient with ISIN ID ${isinId}."
+            }
+            null
+        }
+
     override suspend fun tryExportPatientContactInfo(patient: PatientDtoOut, notes: String?): Boolean {
         return if (patient.isinId != null) {
             runCatching {
@@ -116,7 +163,10 @@ class IsinService(
                 logger.debug("Data obtained from ISIN: $contactInfoOut")
                 true
             }.getOrElse {
-                logger.error(it) {
+                logger.warn { "Data retrieval from ISIN - failure." }
+                val wrappingException =
+                    Exception("An exception ${it.javaClass.canonicalName} was thrown! - ${it.message}\n${it.stackTraceToString()}")
+                logger.error(wrappingException) {
                     "Exporting patient information to ISIN failed for patient with ISIN ID ${patient.isinId}"
                 }
                 false
@@ -142,7 +192,7 @@ class IsinService(
         }.receive()
     }
 
-    @Suppress("ReturnCount")
+    @Suppress("ReturnCount", "LongMethod")
     override suspend fun tryCreateVaccinationAndDose(
         vaccination: StoreVaccinationRequestDto,
         patient: PatientDtoOut
@@ -155,8 +205,13 @@ class IsinService(
             logger.info("No vaccine expiration provided for vaccination ${vaccination.vaccinationId}. Skipping vaccination creating in ISIN.")
             return false
         }
+        if (patient.isinReady != true) {
+            logger.info("Patient ${patient.id} is not ISIN ready. Skipping vaccination creating in ISIN.")
+            return false
+        }
 
-        val vaccinationExpirationInstant = vaccination.vaccineExpiration.atTime(LocalTime.MIDNIGHT).atZone(ZoneId.systemDefault()).toInstant();
+        val vaccinationExpirationInstant =
+            vaccination.vaccineExpiration.atTime(LocalTime.MIDNIGHT).atZone(ZoneId.systemDefault()).toInstant()
 
         val defaultIndication = "J01"
         val indication = if (patient.indication == null || patient.indication.isBlank())
@@ -204,7 +259,10 @@ class IsinService(
             logger.info("Exporting vaccination to ISIN was successful for patient with ISIN ID ${patient.isinId}.")
             true
         }.getOrElse {
-            logger.error(it) {
+            logger.warn { "Data retrieval from ISIN - failure." }
+            val wrappingException =
+                Exception("An exception ${it.javaClass.canonicalName} was thrown! - ${it.message}\n${it.stackTraceToString()}")
+            logger.error(wrappingException) {
                 "Exporting vaccination to ISIN failed for patient with ISIN ID ${patient.isinId}"
             }
             false
@@ -263,7 +321,7 @@ class IsinService(
         return url
     }
 
-    private fun encodeValue(value: String): String? {
+    private fun encodeValue(value: String): String {
         return URLEncoder.encode(value, StandardCharsets.UTF_8.toString()).replace("+", "%20")
     }
 }

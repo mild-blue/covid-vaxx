@@ -26,6 +26,7 @@ export interface PatientDtoOut {
   insuranceCompany: PatientDtoOutInsuranceCompanyEnum;
   insuranceNumber?: string | null;
   isinId?: string | null;
+  isinReady?: boolean | null;
   lastName: string;
   personalNumber?: string | null;
   phoneNumber: string;
@@ -44,7 +45,7 @@ export enum PatientDtoOutInsuranceCompanyEnum {
   Zps = 'ZPS',
   Zpmv = 'ZPMV',
   Rbp = 'RBP'
-};
+}
 
 
 

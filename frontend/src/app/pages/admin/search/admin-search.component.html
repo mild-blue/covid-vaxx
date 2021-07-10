@@ -5,14 +5,14 @@
   <mat-card>
     <mat-card-content>
       <form (ngSubmit)="onSubmit()" #searchForm="ngForm">
-        <mat-form-field>
-          <mat-label>Rodné číslo nebo číslo pojištěnce očkovaného</mat-label>
-          <input matInput [(ngModel)]="searchQuery"
+
+        <app-form-field label="Rodné číslo nebo číslo pojištěnce očkovaného"
+                        note="Rodné číslo ve formátu RRMMDD/ČČČ(Č) nebo číslo pojištěnce uvedené na kartičce zdravotní pojišťovny">
+          <input [(ngModel)]="searchQuery"
                  placeholder="Zadejte rodné číslo nebo číslo pojištěnce"
                  name="searchQuery"
                  required trim="blur">
-          <mat-hint>Rodné číslo ve formátu RRMMDD/ČČČ(Č) nebo číslo pojištěnce uvedené na kartičce zdravotní pojišťovny</mat-hint>
-        </mat-form-field>
+        </app-form-field>
 
         <button color="primary"
                 [disabled]="submitted || searchForm.form.invalid"

@@ -38,15 +38,17 @@ class LocationRoutesTest : ServerTestBase() {
     }
 
     @Test
-    @Disabled
-    fun `get existing location from the database`() {
-        // Implement a test which tries to get all locations from the database
-        // and checks that it contains just a single record
-        // which has id of existingLocationId and address equals existingLocation.address
-        // once that is ready delete @Disabled annotation and TODO
+    fun `get existing location from the database`() = withTestApplication {
+        handleRequest(HttpMethod.Get, Routes.publicLocations) {
+            authorize()
+        }.run {
+            val locations = receive<List<LocationDtoOut>>()
+            assertEquals(1, locations.size)
 
-        // hint - see test "add location"
-        TODO("#256 Implement me.")
+            val location = locations.first()
+            assertEquals(existingLocationId, location.id)
+            assertEquals(existingLocation.address, location.address)
+        }
     }
 
     @Test

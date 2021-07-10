@@ -15,8 +15,8 @@ import blue.mild.covid.vaxx.security.ddos.CaptchaVerificationService
 import blue.mild.covid.vaxx.security.ddos.RequestVerificationService
 import blue.mild.covid.vaxx.service.DataCorrectnessService
 import blue.mild.covid.vaxx.service.IsinRetryService
-import blue.mild.covid.vaxx.service.IsinServiceInterface
 import blue.mild.covid.vaxx.service.IsinService
+import blue.mild.covid.vaxx.service.IsinServiceInterface
 import blue.mild.covid.vaxx.service.IsinValidationService
 import blue.mild.covid.vaxx.service.LocationService
 import blue.mild.covid.vaxx.service.MailJetEmailService
@@ -139,7 +139,7 @@ fun DI.MainBuilder.registerClasses() {
         val mapper = instance<ObjectMapper>()
 
         @Suppress("MagicNumber") // carefully chosen constant
-        val isinTimeOutMillis = 15000L
+        val isinTimeOutMillis = 30000L
         HttpClient(Apache) {
             install(JsonFeature) {
                 serializer = JacksonSerializer(mapper)

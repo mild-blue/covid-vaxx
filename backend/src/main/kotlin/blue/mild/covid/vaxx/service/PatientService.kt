@@ -119,6 +119,16 @@ class PatientService(
     }
 
     /**
+     * Updates patient ISIN ready.
+     */
+    suspend fun updateIsinReady(patientId: UUID, isinReady: Boolean) {
+        patientRepository.updatePatientChangeSet(
+            id = patientId,
+            isinReady = isinReady
+        ).whenFalse { throw entityNotFound<Patients>(Patients::id, patientId) }
+    }
+
+    /**
      * Saves patient to the database and return its id.
      */
     suspend fun savePatient(registrationDto: ContextAware<PatientRegistrationDtoIn>, isinId: String?): EntityId {

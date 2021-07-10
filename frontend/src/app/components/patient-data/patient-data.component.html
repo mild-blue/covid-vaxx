@@ -86,7 +86,8 @@
         <app-patient-data-item>
           <mat-label>Validováno v ISIN:</mat-label>
           <mat-label>
-            <app-chip [value]="!!patientData.isinId"></app-chip>
+            <app-chip [value]="!!patientData.isinId && !!patientData.isinReady"
+                      [title]="'isinId: ' + patientData.isinId + ', isinReady: ' + patientData.isinReady"></app-chip>
           </mat-label>
         </app-patient-data-item>
         <mat-divider></mat-divider>

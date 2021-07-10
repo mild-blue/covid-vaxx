@@ -17,6 +17,7 @@ export class LoginComponent {
   public nurseForm: FormGroup;
 
   public loading: boolean = false;
+  public activeStep: 1 | 2 = 1;
 
   public email?: string;
   public nurses: Nurse[] = [];
@@ -38,10 +39,14 @@ export class LoginComponent {
   }
 
   public cancel(): void {
+    if (this.activeStep === 1) {
+      return;
+    }
     this.loginForm.reset();
     this.nurseForm.reset();
     this.nurses = [];
     this.email = '';
+    this.activeStep = 1;
   }
 
   public getNurses(): void {
@@ -62,6 +67,8 @@ export class LoginComponent {
       (nurses: Nurse[]) => {
         this.email = username.value;
         this.nurses = nurses;
+
+        this.activeStep = 2;
       },
       (error: Error) => {
         this._alertService.error(error.message);
