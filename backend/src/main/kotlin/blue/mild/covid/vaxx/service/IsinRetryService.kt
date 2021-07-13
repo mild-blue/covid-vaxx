@@ -74,11 +74,11 @@ class IsinRetryService(
 
             if (updatedPatient.isinId.isNullOrBlank()) continue
 
-            // Uncomment to cancel all vaccinations for this patient.
-            // This is used in testing to clean the test environment.
-            // if (updatedPatient.isinId == "3646928931")
-            //     isinService.cancelAllVaccinations(updatedPatient.isinId)
-            // continue
+//            // Uncomment to cancel all vaccinations for this patient.
+//            // This is used in testing to clean the test environment.
+//             if (updatedPatient.isinId == "3646928931")
+//                 isinService.cancelAllVaccinations(updatedPatient.isinId)
+//             continue
 
             // 2. If isinReady is not set -> try to check vaccinations in ISIN
             if (
@@ -132,7 +132,11 @@ class IsinRetryService(
             }
 
             // 5. If has second dose but it is not exported to ISIN -> try export second dose to ISIN
-            if (isinJobDto.exportVaccinationsSecondDose && updatedPatient.vaccinatedSecondDose != null && updatedPatient.vaccinatedSecondDose.exportedToIsinOn == null) {
+            if (
+                isinJobDto.exportVaccinationsSecondDose &&
+                updatedPatient.vaccinatedSecondDose != null &&
+                updatedPatient.vaccinatedSecondDose.exportedToIsinOn == null
+            ) {
                 logger.info("Retrying to create second dose of patient ${updatedPatient.id} in ISIN")
                 val wasCreated = retryPatientVaccinationSecondDoseCreation(updatedPatient)
 

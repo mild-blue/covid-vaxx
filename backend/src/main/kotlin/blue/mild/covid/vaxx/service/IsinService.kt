@@ -30,6 +30,7 @@ import java.time.ZoneId
 import java.util.Locale
 
 
+@Suppress("TooManyFunctions")
 class IsinService(
     private val configuration: IsinConfigurationDto,
     private val isinClient: HttpClient
