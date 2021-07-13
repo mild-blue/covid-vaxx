@@ -14,5 +14,6 @@ data class StoreVaccinationRequestDto(
     val vaccineExpiration: LocalDate?,
     val userPerformingVaccination: EntityId,
     val nurseId: EntityId?,
-    val notes: String?
+    val notes: String?,
+    val doseNumber: Int
 )

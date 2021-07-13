@@ -99,16 +99,30 @@
         </app-patient-data-item>
         <mat-divider></mat-divider>
         <app-patient-data-item>
-          <mat-label>Očkování proběhlo:</mat-label>
+          <mat-label>Očkování 1. dávkou proběhlo:</mat-label>
           <mat-label>
             <app-chip [value]="!!patientData.vaccinatedOn"></app-chip>
           </mat-label>
         </app-patient-data-item>
         <mat-divider></mat-divider>
         <app-patient-data-item *ngIf="patientData.vaccinatedOn">
-          <mat-label>Datum očkování:</mat-label>
+          <mat-label>Datum očkování 1. dávkou:</mat-label>
           <mat-label>
             {{ patientData.vaccinatedOn | date:'EEEE, d. MMMM y' }}
+          </mat-label>
+        </app-patient-data-item>
+        <mat-divider></mat-divider>
+        <app-patient-data-item>
+        <mat-label>Očkování 2. dávkou proběhlo:</mat-label>
+        <mat-label>
+          <app-chip [value]="!!patientData.vaccinatedSecondDoseOn"></app-chip>
+        </mat-label>
+      </app-patient-data-item>
+        <mat-divider></mat-divider>
+        <app-patient-data-item *ngIf="patientData.vaccinatedSecondDoseOn">
+          <mat-label>Datum očkování 2. dávkou:</mat-label>
+          <mat-label>
+            {{ patientData.vaccinatedSecondDoseOn | date:'EEEE, d. MMMM y' }}
           </mat-label>
         </app-patient-data-item>
         <mat-divider></mat-divider>

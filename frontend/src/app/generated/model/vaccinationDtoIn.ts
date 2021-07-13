@@ -13,6 +13,7 @@
 
 export interface VaccinationDtoIn {
   bodyPart: VaccinationDtoInBodyPartEnum;
+  doseNumber: number;
   notes?: string | null;
   patientId: string;
   vaccinatedOn: string;

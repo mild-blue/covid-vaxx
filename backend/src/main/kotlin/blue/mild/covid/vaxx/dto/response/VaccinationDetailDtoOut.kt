@@ -16,7 +16,8 @@ data class VaccinationDetailDtoOut(
     val doctor: PersonnelDtoOut,
     val nurse: PersonnelDtoOut?,
     val notes: String?,
-    val exportedToIsinOn: Instant?
+    val exportedToIsinOn: Instant?,
+    val doseNumber: Int
 )
 
 fun VaccinationDetailDtoOut.toPatientVaccinationDetailDto() = StoreVaccinationRequestDto(
@@ -28,5 +29,6 @@ fun VaccinationDetailDtoOut.toPatientVaccinationDetailDto() = StoreVaccinationRe
     vaccineExpiration = vaccineExpiration,
     userPerformingVaccination = doctor.id,
     nurseId = nurse?.id,
-    notes = notes
+    notes = notes,
+    doseNumber = doseNumber
 )

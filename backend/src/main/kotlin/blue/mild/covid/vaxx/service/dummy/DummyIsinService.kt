@@ -39,11 +39,18 @@ class DummyIsinService : IsinServiceInterface {
         return false
     }
 
-    override suspend fun tryCreateVaccinationAndDose(
+    override suspend fun tryCreateVaccination(
         vaccination: StoreVaccinationRequestDto,
         patient: PatientDtoOut
     ): Boolean {
         logger.warn { "NOT EXPORTING vaccination ${vaccination.vaccinationId} to ISIN. This should not be used in production." }
         return false
+    }
+
+    // This is used to clean the test data and should never be used in production
+    override suspend fun cancelAllVaccinations(
+        isinId: String
+    ) {
+        logger.warn { "NOT CANCELLING vaccinations for patient ${isinId} in ISIN. This should not be used in production." }
     }
 }

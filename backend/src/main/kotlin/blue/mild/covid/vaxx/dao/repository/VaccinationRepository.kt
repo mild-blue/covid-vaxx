@@ -10,6 +10,7 @@ import blue.mild.covid.vaxx.dto.response.PersonnelDtoOut
 import blue.mild.covid.vaxx.dto.response.VaccinationDetailDtoOut
 import org.jetbrains.exposed.sql.Op
 import org.jetbrains.exposed.sql.SqlExpressionBuilder
+import org.jetbrains.exposed.sql.and
 import org.jetbrains.exposed.sql.insert
 import org.jetbrains.exposed.sql.leftJoin
 import org.jetbrains.exposed.sql.select
@@ -30,9 +31,14 @@ class VaccinationRepository {
         vaccineSerialNumber: String,
         vaccineExpiration: LocalDate,
         userPerformingVaccination: EntityId,
+        doseNumber: Int,
         nurseId: EntityId? = null,
         notes: String? = null
     ): EntityId = newSuspendedTransaction {
+        if (doseNumber != 1 && doseNumber != 2) {
+            throw IllegalArgumentException("Dose number was ${doseNumber} which is not valid.")
+        }
+
         val id = Vaccinations.insert {
             it[Vaccinations.patientId] = patientId
             it[Vaccinations.bodyPart] = bodyPart
@@ -40,15 +46,23 @@ class VaccinationRepository {
             it[Vaccinations.vaccineSerialNumber] = vaccineSerialNumber
             it[Vaccinations.vaccineExpiration] = vaccineExpiration
             it[Vaccinations.userPerformingVaccination] = userPerformingVaccination
+            it[Vaccinations.doseNumber] = doseNumber
             it[Vaccinations.nurseId] = nurseId
             it[Vaccinations.notes] = notes
         }[Vaccinations.id]
 
         // now set backref
-        Patients.update(
-            where = { Patients.id eq patientId },
-            body = { it[vaccination] = id }
-        )
+        if(doseNumber == 1) {
+            Patients.update(
+                where = { Patients.id eq patientId },
+                body = { it[vaccination] = id }
+            )
+        } else {
+            Patients.update(
+                where = { Patients.id eq patientId },
+                body = { it[vaccinationSecondDose] = id }
+            )
+        }
         id
     }
 
@@ -95,8 +109,8 @@ class VaccinationRepository {
     /**
      * Returns [VaccinationDetailDtoOut] if the patient was vaccinated.
      */
-    suspend fun getForPatient(patientId: EntityId): VaccinationDetailDtoOut? =
-        get { Vaccinations.patientId eq patientId }
+    suspend fun getForPatient(patientId: EntityId, doseNumber: Int): VaccinationDetailDtoOut? =
+        get { (Vaccinations.patientId eq patientId) and (Vaccinations.doseNumber eq doseNumber)}
 
     /**
      * Returns [VaccinationDetailDtoOut] if the vaccination id is found.
@@ -132,7 +146,8 @@ class VaccinationRepository {
                             email = it[Nurses.email]
                         ) else null,
                         notes = it[Vaccinations.notes],
-                        exportedToIsinOn = it[Vaccinations.exportedToIsinOn]
+                        exportedToIsinOn = it[Vaccinations.exportedToIsinOn],
+                        doseNumber = it[Vaccinations.doseNumber]
                     )
                 }
         }

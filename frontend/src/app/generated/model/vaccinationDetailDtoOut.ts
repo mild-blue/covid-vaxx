@@ -15,6 +15,7 @@ import { PersonnelDtoOut } from './personnelDtoOut';
 export interface VaccinationDetailDtoOut {
   bodyPart: VaccinationDetailDtoOutBodyPartEnum;
   doctor: PersonnelDtoOut;
+  doseNumber: number;
   exportedToIsinOn?: string | null;
   notes?: string | null;
   nurse?: PersonnelDtoOut;

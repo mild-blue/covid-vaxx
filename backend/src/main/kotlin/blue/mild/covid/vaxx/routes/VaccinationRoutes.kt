@@ -43,19 +43,24 @@ fun NormalOpenAPIRoute.vaccinationRoutes() {
                 respond(vaccinationService.get(vaccinationId))
             }
 
+            // The following endpoint gets first dose only, which is currently ok because we do not use it
             get<PatientIdQueryDtoIn, VaccinationDetailDtoOut, UserPrincipal>(
-                info("Get vaccination detail for given patient ID.")
+                info("Get first dose vaccination detail for given patient ID.")
             ) { (patientId) ->
                 val userId = principal().userId
                 logger.info { "User $userId requested vaccination data about patient with ID $patientId." }
-                respond(vaccinationService.getForPatient(patientId))
+                respond(vaccinationService.getForPatient(patientId, 1))
             }
 
             post<Unit, VaccinationDetailDtoOut, VaccinationDtoIn, UserPrincipal>(
                 info("Register that the patient was vaccinated. Returns vaccination detail.")
             ) { _, request ->
+                if (request.doseNumber != 1 && request.doseNumber != 2) {
+                    throw IllegalArgumentException("Vaccination creation failed because doseNumber was set to ${request.doseNumber}")
+                }
+
                 val principal = principal()
-                logger.info { "User ${principal.userId} vaccinated patient ${request.patientId}." }
+                logger.info { "User ${principal.userId} vaccinated patient ${request.patientId} with dose number ${request.doseNumber}." }
 
                 val vaccinationId = vaccinationService.addVaccination(asContextAware(request))
 
@@ -65,7 +70,7 @@ fun NormalOpenAPIRoute.vaccinationRoutes() {
                 val patient = patientService.getPatientById(request.patientId)
 
                 // Try to export vaccination to ISIN
-                val wasExportedToIsin = isinService.tryCreateVaccinationAndDose(
+                val wasExportedToIsin = isinService.tryCreateVaccination(
                     vaccination.toPatientVaccinationDetailDto(),
                     patient = patient
                 )

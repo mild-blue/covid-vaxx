@@ -18,8 +18,8 @@ class VaccinationService(
     /**
      * Returns [VaccinationDetailDtoOut] if the patient was vaccinated.
      */
-    suspend fun getForPatient(patientId: EntityId): VaccinationDetailDtoOut =
-        vaccinationRepository.getForPatient(patientId)
+    suspend fun getForPatient(patientId: EntityId, doseNumber: Int): VaccinationDetailDtoOut =
+        vaccinationRepository.getForPatient(patientId, doseNumber)
             ?: throw entityNotFound<Vaccinations>(Vaccinations::patientId, patientId)
 
     /**
@@ -56,7 +56,8 @@ class VaccinationService(
             vaccineExpiration = principal.vaccineExpiration,
             userPerformingVaccination = principal.userId,
             nurseId = principal.nurseId,
-            notes = vaxx.notes?.trim()
+            notes = vaxx.notes?.trim(),
+            doseNumber = vaxx.doseNumber
         )
     }
 }
