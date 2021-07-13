@@ -34,6 +34,7 @@ class VaccinationRouteTest : ServerTestBase() {
         patient2 = patientRepository.generatePatientInDatabase()
     }
 
+    @Suppress("LongMethod") // This is test, it is ok here
     @Test
     fun `test vaccination flow`() = withTestApplication {
         // verify that only authorized users can access vaccination data
