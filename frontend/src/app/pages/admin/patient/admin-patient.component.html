@@ -22,8 +22,14 @@
     </button>
 
     <button *ngIf="patient.verified && !patient.vaccinatedOn" mat-raised-button
-            (click)="vaccinate()" color="accent" [disabled]="loading">
-      Potvrdit proběhlé očkování
+            (click)="vaccinate(1)" color="accent" [disabled]="loading">
+      Potvrdit proběhlé 1. očkování
+      <mat-icon>health_and_safety</mat-icon>
+    </button>
+
+    <button *ngIf="patient.verified && patient.vaccinatedOn && !patient.vaccinatedSecondDoseOn" mat-raised-button
+            (click)="vaccinate(2)" color="accent" [disabled]="loading">
+      Potvrdit proběhlé 2. očkování
       <mat-icon>health_and_safety</mat-icon>
     </button>
 

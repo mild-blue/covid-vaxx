@@ -8,5 +8,6 @@ data class VaccinationDtoIn(
     val patientId: EntityId,
     val bodyPart: VaccinationBodyPart,
     val vaccinatedOn: Instant,
-    val notes: String? = null
+    val notes: String? = null,
+    val doseNumber: Int
 )

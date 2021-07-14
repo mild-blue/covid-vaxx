@@ -14,7 +14,8 @@
 export interface IsinJobDtoIn {
   checkVaccinations: boolean;
   exportPatientsInfo: boolean;
-  exportVaccinations: boolean;
+  exportVaccinationsFirstDose: boolean;
+  exportVaccinationsSecondDose: boolean;
   patientsCount?: number | null;
   patientsOffset: number;
   validatePatients: boolean;

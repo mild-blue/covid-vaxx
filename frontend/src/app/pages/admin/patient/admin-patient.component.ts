@@ -33,8 +33,11 @@ export class AdminPatientComponent extends AdminPatientAbstractComponent impleme
     this._alertService.confirmDialog(ConfirmPatientDataComponent, this._handleVerification.bind(this));
   }
 
-  public vaccinate(): void {
-    this._alertService.confirmDialog(ConfirmVaccinationComponent, this._handleConfirmation.bind(this));
+  public vaccinate(doseNumber: 1 | 2): void {
+    this._alertService.confirmDialog(
+      ConfirmVaccinationComponent,
+      async confirmation => this._handleConfirmation(confirmation, doseNumber)
+    );
   }
 
   private async _handleVerification(note: string): Promise<void> {
@@ -54,14 +57,14 @@ export class AdminPatientComponent extends AdminPatientAbstractComponent impleme
     }
   }
 
-  private async _handleConfirmation(confirmation: VaccinationConfirmation): Promise<void> {
+  private async _handleConfirmation(confirmation: VaccinationConfirmation, doseNumber: 1 | 2): Promise<void> {
     if (!this.patient) {
       return;
     }
 
     this.loading = true;
     try {
-      await this._patientService.confirmVaccination(this.patient.id, confirmation.bodyPart, confirmation.note);
+      await this._patientService.confirmVaccination(this.patient.id, confirmation.bodyPart, confirmation.note, doseNumber);
       this._alertService.successDialog('Očkování bylo zaznamenáno.', this.initPatient.bind(this));
     } catch (e) {
       this._alertService.error(e.message);

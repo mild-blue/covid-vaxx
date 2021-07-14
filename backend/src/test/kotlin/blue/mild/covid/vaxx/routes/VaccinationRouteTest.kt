@@ -34,6 +34,7 @@ class VaccinationRouteTest : ServerTestBase() {
         patient2 = patientRepository.generatePatientInDatabase()
     }
 
+    @Suppress("LongMethod") // This is test, it is ok here
     @Test
     fun `test vaccination flow`() = withTestApplication {
         // verify that only authorized users can access vaccination data
@@ -48,31 +49,33 @@ class VaccinationRouteTest : ServerTestBase() {
             expectStatus(HttpStatusCode.NotFound)
         }
 
-        val input = VaccinationDtoIn(
+        // create vaccination first dose
+        val inputFirstDose = VaccinationDtoIn(
             patientId = patient1.id,
             bodyPart = VaccinationBodyPart.BUTTOCK,
             vaccinatedOn = Instant.EPOCH.plus(10, ChronoUnit.DAYS),
-            notes = "ok"
+            notes = "ok",
+            doseNumber = 1
         )
-        // create vaccination
-        val vaccinationId = handleRequest(HttpMethod.Post, Routes.vaccination) {
+        val vaccinationFirstDoseId = handleRequest(HttpMethod.Post, Routes.vaccination) {
             authorize()
-            jsonBody(input)
+            jsonBody(inputFirstDose)
         }.run {
             expectStatus(HttpStatusCode.OK)
             val output = receive<VaccinationDetailDtoOut>()
             assertEquals(defaultPrincipal.userId, output.doctor.id)
             assertEquals(defaultPrincipal.nurseId, output.nurse?.id)
             assertEquals(defaultPrincipal.vaccineSerialNumber, output.vaccineSerialNumber)
-            assertEquals(input.notes, output.notes)
-            assertEquals(input.patientId, output.patientId)
-            assertEquals(input.bodyPart, output.bodyPart)
-            assertEquals(input.vaccinatedOn, output.vaccinatedOn)
+            assertEquals(inputFirstDose.notes, output.notes)
+            assertEquals(inputFirstDose.patientId, output.patientId)
+            assertEquals(inputFirstDose.bodyPart, output.bodyPart)
+            assertEquals(inputFirstDose.vaccinatedOn, output.vaccinatedOn)
+            assertEquals(inputFirstDose.doseNumber, output.doseNumber)
             output.vaccinationId
         }
 
-        // verify that getting correctness by correctness id works
-        handleRequest(HttpMethod.Get, "${Routes.vaccination}/$vaccinationId") {
+        // verify that getting vaccination first dose by vaccination id works
+        handleRequest(HttpMethod.Get, "${Routes.vaccination}/$vaccinationFirstDoseId") {
             // authorize with different user then the one that created the vaccination
             authorize(
                 UserPrincipal(
@@ -88,10 +91,62 @@ class VaccinationRouteTest : ServerTestBase() {
             assertEquals(defaultPrincipal.userId, output.doctor.id)
             assertEquals(defaultPrincipal.nurseId, output.nurse?.id)
             assertEquals(defaultPrincipal.vaccineSerialNumber, output.vaccineSerialNumber)
-            assertEquals(input.notes, output.notes)
-            assertEquals(input.patientId, output.patientId)
-            assertEquals(input.bodyPart, output.bodyPart)
-            assertEquals(input.vaccinatedOn, output.vaccinatedOn)
+            assertEquals(inputFirstDose.notes, output.notes)
+            assertEquals(inputFirstDose.patientId, output.patientId)
+            assertEquals(inputFirstDose.bodyPart, output.bodyPart)
+            assertEquals(inputFirstDose.vaccinatedOn, output.vaccinatedOn)
+            assertEquals(inputFirstDose.doseNumber, output.doseNumber)
+
+            assertEquals(patient1.id, output.patientId)
+        }
+
+        // create vaccination second dose
+        val inputSecondDose = VaccinationDtoIn(
+            patientId = patient1.id,
+            bodyPart = VaccinationBodyPart.NON_DOMINANT_HAND,
+            vaccinatedOn = Instant.EPOCH.plus(20, ChronoUnit.DAYS),
+            notes = "ok",
+            doseNumber = 2
+        )
+        val vaccinationSecondDoseId = handleRequest(HttpMethod.Post, Routes.vaccination) {
+            authorize()
+            jsonBody(inputSecondDose)
+        }.run {
+            expectStatus(HttpStatusCode.OK)
+            val output = receive<VaccinationDetailDtoOut>()
+            assertEquals(defaultPrincipal.userId, output.doctor.id)
+            assertEquals(defaultPrincipal.nurseId, output.nurse?.id)
+            assertEquals(defaultPrincipal.vaccineSerialNumber, output.vaccineSerialNumber)
+            assertEquals(inputSecondDose.notes, output.notes)
+            assertEquals(inputSecondDose.patientId, output.patientId)
+            assertEquals(inputSecondDose.bodyPart, output.bodyPart)
+            assertEquals(inputSecondDose.vaccinatedOn, output.vaccinatedOn)
+            assertEquals(inputSecondDose.doseNumber, output.doseNumber)
+            output.vaccinationId
+        }
+
+        // verify that getting vaccination second dose by vaccination id works
+        handleRequest(HttpMethod.Get, "${Routes.vaccination}/$vaccinationSecondDoseId") {
+            // authorize with different user then the one that created the vaccination
+            authorize(
+                UserPrincipal(
+                    userId = UUID.randomUUID(),
+                    userRole = UserRole.DOCTOR,
+                    vaccineSerialNumber = "",
+                    vaccineExpiration = LocalDate.now()
+                )
+            )
+        }.run {
+            expectStatus(HttpStatusCode.OK)
+            val output = receive<VaccinationDetailDtoOut>()
+            assertEquals(defaultPrincipal.userId, output.doctor.id)
+            assertEquals(defaultPrincipal.nurseId, output.nurse?.id)
+            assertEquals(defaultPrincipal.vaccineSerialNumber, output.vaccineSerialNumber)
+            assertEquals(inputSecondDose.notes, output.notes)
+            assertEquals(inputSecondDose.patientId, output.patientId)
+            assertEquals(inputSecondDose.bodyPart, output.bodyPart)
+            assertEquals(inputSecondDose.vaccinatedOn, output.vaccinatedOn)
+            assertEquals(inputSecondDose.doseNumber, output.doseNumber)
 
             assertEquals(patient1.id, output.patientId)
         }

@@ -154,7 +154,8 @@ Authorization: Bearer {{auth_token}}
   "validatePatients": true,
   "checkVaccinations": true,
   "exportPatientsInfo": true,
-  "exportVaccinations": true,
+  "exportVaccinationsFirstDose": true,
+  "exportVaccinationsSecondDose": true,
 
   "patientsCount": null,
   "patientsOffset": 0

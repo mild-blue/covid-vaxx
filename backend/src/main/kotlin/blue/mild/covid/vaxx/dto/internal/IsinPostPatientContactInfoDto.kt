@@ -27,5 +27,8 @@ data class IsinPostPatientContactInfoDto (
     val zemeNarozeniKod: String?,
     val mistoNarozeniNazev: String?,
     val obecNarozeniRuianId: String?,
-    val obvodNarozeniRuianId: String?
+    val obvodNarozeniRuianId: String?,
+
+    // properties not in documentation
+    val pohlaviKod: String?
 )

@@ -17,6 +17,7 @@ export interface PatientData {
   indication?: string;
   verified?: boolean;
   vaccinatedOn?: Date;
+  vaccinatedSecondDoseOn?: Date;
   vaccinationSlotDtoOut?: VaccinationSlotDtoOut;
   isinId?: string;
   isinReady?: boolean;

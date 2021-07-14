@@ -12,9 +12,11 @@ import blue.mild.covid.vaxx.dto.response.DataCorrectnessConfirmationDtoOut
 import blue.mild.covid.vaxx.dto.response.PatientDtoOut
 import blue.mild.covid.vaxx.dto.response.VaccinationDtoOut
 import blue.mild.covid.vaxx.dto.response.VaccinationSlotDtoOut
+import org.jetbrains.exposed.sql.Alias
 import org.jetbrains.exposed.sql.Op
 import org.jetbrains.exposed.sql.ResultRow
 import org.jetbrains.exposed.sql.SqlExpressionBuilder
+import org.jetbrains.exposed.sql.alias
 import org.jetbrains.exposed.sql.and
 import org.jetbrains.exposed.sql.batchInsert
 import org.jetbrains.exposed.sql.deleteWhere
@@ -183,10 +185,14 @@ class PatientRepository(
         newSuspendedTransaction { Patients.deleteWhere(op = where) }
 
 
-    private fun getAndMapPatients(n: Int? = null, offset: Long = 0, where: (SqlExpressionBuilder.() -> Op<Boolean>)? = null) =
-        Patients
+    private fun getAndMapPatients(n: Int? = null, offset: Long = 0, where: (SqlExpressionBuilder.() -> Op<Boolean>)? = null): List<PatientDtoOut> {
+        val vaccination1 = Vaccinations.alias("vaccination1")
+        val vaccination2 = Vaccinations.alias("vaccination2")
+
+        return Patients
             .leftJoin(Answers, { id }, { patientId })
-            .leftJoin(Vaccinations, { Patients.vaccination }, { id })
+            .leftJoin(vaccination1, { Patients.vaccination }, { vaccination1[Vaccinations.id] })
+            .leftJoin(vaccination2, { Patients.vaccinationSecondDose }, { vaccination2[Vaccinations.id] })
             .leftJoin(PatientDataCorrectnessConfirmation, { Patients.dataCorrectness }, { id })
             .leftJoin(VaccinationSlots, { Patients.id }, { patientId })
             .let { if (where != null) it.select(where) else it.selectAll() }
@@ -195,10 +201,15 @@ class PatientRepository(
             .let { data ->
                 val answers = data.groupBy({ it[Patients.id] }, { it.mapAnswer() })
                 data.distinctBy { it[Patients.id] }
-                    .map { mapPatient(it, answers.getValue(it[Patients.id])) }
+                    .map { mapPatient(it, answers.getValue(it[Patients.id]), vaccination1, vaccination2) }
             }
+    }
 
-    private fun mapPatient(row: ResultRow, answers: List<AnswerDtoOut>) = PatientDtoOut(
+    private fun mapPatient(
+        row: ResultRow, answers: List<AnswerDtoOut>,
+        vaccination1Alias: Alias<Vaccinations>,
+        vaccination2Alias: Alias<Vaccinations>
+    ) = PatientDtoOut(
         id = row[Patients.id],
         firstName = row[Patients.firstName],
         lastName = row[Patients.lastName],
@@ -213,7 +224,8 @@ class PatientRepository(
         registrationEmailSentOn = row[Patients.registrationEmailSent],
         answers = answers,
         registeredOn = row[Patients.created],
-        vaccinated = row.mapVaccinated(),
+        vaccinated = row.mapVaccinated(vaccination1Alias),
+        vaccinatedSecondDose = row.mapVaccinated(vaccination2Alias),
         dataCorrect = row.mapDataCorrect(),
         vaccinationSlotDtoOut = row.mapVaccinationSlot(),
         isinId = row[Patients.isinId],
@@ -240,12 +252,12 @@ class PatientRepository(
         )
     }
 
-    private fun ResultRow.mapVaccinated() = getOrNull(Vaccinations.id)?.let {
+    private fun ResultRow.mapVaccinated(alias: Alias<Vaccinations>) = getOrNull(alias[Vaccinations.id])?.let {
         VaccinationDtoOut(
-            id = this[Vaccinations.id],
-            vaccinatedOn = this[Vaccinations.vaccinatedOn],
-            exportedToIsinOn = this[Vaccinations.exportedToIsinOn],
-            notes = this[Vaccinations.notes]
+            id = this[alias[Vaccinations.id]],
+            vaccinatedOn = this[alias[Vaccinations.vaccinatedOn]],
+            exportedToIsinOn = this[alias[Vaccinations.exportedToIsinOn]],
+            notes = this[alias[Vaccinations.notes]]
         )
     }
 
