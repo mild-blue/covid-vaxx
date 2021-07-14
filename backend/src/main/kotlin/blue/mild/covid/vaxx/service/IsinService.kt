@@ -47,6 +47,11 @@ class IsinService(
         const val URL_CREATE_OR_CHANGE_VACCINATION = "vakcinace/VytvorNeboZmenVakcinaci"
         const val URL_CREATE_OR_CHANGE_DOSE = "vakcinace/VytvorNeboZmenDavku"
         const val URL_UPDATE_VACCINATION_STATE = "vakcinace/ZmenStavVakcinace" // This is used to clean the test data
+
+        const val VACCINATION_TYPE_CODE = "CO19"
+        const val VACCINATION_STATE_CANCELED = "Zruseno"
+        const val VACCINATION_STATE_ONGOING = "Probihajici"
+        const val VACCINATION_DEFAULT_INDICATION = "J01"
     }
 
     override suspend fun getPatientByParameters(
@@ -114,8 +119,9 @@ class IsinService(
                 "${allVaccinations.count()} vaccinations were found."
             )
 
-            val problematicVaccinations = allVaccinations.filter {
-                    vaccination -> vaccination.typOckovaniKod == "CO19" && vaccination.stav != "Zruseno"
+            val problematicVaccinations = allVaccinations.filter { vaccination ->
+                vaccination.typOckovaniKod == VACCINATION_TYPE_CODE &&
+                vaccination.stav != VACCINATION_STATE_CANCELED
             }
 
             if (problematicVaccinations.count() > 0) {
@@ -216,16 +222,18 @@ class IsinService(
             return false
         }
         if (vaccination.doseNumber == 1 && patient.isinReady != true) {
-            logger.info("Patient ${patient.id} is not ISIN ready. Skipping vaccination creating in ISIN.")
+            logger.info(
+                "Patient ${patient.id} is not ISIN ready which is required for first dose. " +
+                "Skipping first dose vaccination creating in ISIN."
+            )
             return false
         }
 
         val vaccinationExpirationInstant =
             vaccination.vaccineExpiration.atTime(LocalTime.MIDNIGHT).atZone(ZoneId.systemDefault()).toInstant()
 
-        val defaultIndication = "J01"
         val indication = if (patient.indication == null || patient.indication.isBlank())
-            defaultIndication
+            VACCINATION_DEFAULT_INDICATION
         else
             patient.indication
 
@@ -235,9 +243,9 @@ class IsinService(
                     IsinVaccinationCreateOrUpdateDtoIn(
                         id = null,
                         pacientId = patient.isinId,
-                        typOckovaniKod = "CO19",
+                        typOckovaniKod = VACCINATION_TYPE_CODE,
                         indikace = listOf(indication),
-                        indikaceJina = if (indication == defaultIndication) configuration.indikaceJina else null
+                        indikaceJina = if (indication == VACCINATION_DEFAULT_INDICATION) configuration.indikaceJina else null
                     )
                 )
             } else {
@@ -247,7 +255,7 @@ class IsinService(
             if (isinVaccination == null) {
                 logger.info(
                     "No vaccination with first dose was found in ISIN for patient ${patient.id}. " +
-                            "Skipping vaccination creating in ISIN."
+                    "Skipping second dose vaccination creating in ISIN."
                 )
                 return false
             }
@@ -299,8 +307,9 @@ class IsinService(
                 "${allVaccinations.count()} vaccinations were found."
             )
 
-            val ongoingVaccinations = allVaccinations.filter {
-                    vaccination -> vaccination.typOckovaniKod == "CO19" && vaccination.stav == "Probihajici"
+            val ongoingVaccinations = allVaccinations.filter { vaccination ->
+                vaccination.typOckovaniKod == VACCINATION_TYPE_CODE &&
+                vaccination.stav == VACCINATION_STATE_ONGOING
             }
 
             if (ongoingVaccinations.count() != 1) {
@@ -365,8 +374,8 @@ class IsinService(
         var canceled = 0
 
         allVaccinations.filter { vaccination ->
-            vaccination.typOckovaniKod == "CO19" &&
-                    vaccination.stav != "Zruseno"
+            vaccination.typOckovaniKod == VACCINATION_TYPE_CODE &&
+            vaccination.stav != VACCINATION_STATE_CANCELED
         }.forEach { vaccination ->
             if(vaccination.id != null) {
                 cancelVaccination(vaccination.id)
@@ -380,7 +389,7 @@ class IsinService(
     private suspend fun cancelVaccination(vaccinationId: String): HttpResponse {
         val url = createIsinURL(URL_UPDATE_VACCINATION_STATE, parameters = listOf(
             vaccinationId,
-            "Zruseno"
+            VACCINATION_STATE_CANCELED
         ))
         val data = mapOf("pracovnik" to configuration.pracovnik)
 
