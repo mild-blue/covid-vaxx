@@ -36,6 +36,7 @@ class VaccinationRouteTest : ServerTestBase() {
 
     @Suppress("LongMethod") // This is test, it is ok here
     @Test
+    @Suppress("LongMethod")
     fun `test vaccination flow`() = withTestApplication {
         // verify that only authorized users can access vaccination data
         handleRequest(HttpMethod.Get, "${Routes.vaccination}?id=${patient1.id}").run {
@@ -158,10 +159,13 @@ class VaccinationRouteTest : ServerTestBase() {
             expectStatus(HttpStatusCode.NotFound)
         }
 
-        // TODO #259 implement me!
         // verify that the patient1 really has the vaccination
-        // by calling the API and requesting data for patient1.id and expecting Ok status
-        // and then comparing vaccinationId with the ID you received in the test
-        // hint: see first part of the test
+        handleRequest(HttpMethod.Get, "${Routes.vaccination}?id=${patient1.id}") {
+            authorize()
+        }.run {
+            expectStatus(HttpStatusCode.OK)
+            val output = receive<VaccinationDetailDtoOut>()
+            assertEquals(vaccinationId, output.vaccinationId)
+        }
     }
 }
