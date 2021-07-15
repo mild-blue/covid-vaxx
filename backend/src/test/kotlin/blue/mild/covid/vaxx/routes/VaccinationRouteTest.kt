@@ -36,7 +36,6 @@ class VaccinationRouteTest : ServerTestBase() {
 
     @Suppress("LongMethod") // This is test, it is ok here
     @Test
-    @Suppress("LongMethod")
     fun `test vaccination flow`() = withTestApplication {
         // verify that only authorized users can access vaccination data
         handleRequest(HttpMethod.Get, "${Routes.vaccination}?id=${patient1.id}").run {
@@ -165,7 +164,7 @@ class VaccinationRouteTest : ServerTestBase() {
         }.run {
             expectStatus(HttpStatusCode.OK)
             val output = receive<VaccinationDetailDtoOut>()
-            assertEquals(vaccinationId, output.vaccinationId)
+            assertEquals(vaccinationFirstDoseId, output.vaccinationId)
         }
     }
 }
