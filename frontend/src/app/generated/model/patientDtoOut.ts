@@ -33,6 +33,7 @@ export interface PatientDtoOut {
   registeredOn: string;
   registrationEmailSentOn?: string | null;
   vaccinated?: VaccinationDtoOut;
+  vaccinatedSecondDose?: VaccinationDtoOut;
   vaccinationSlotDtoOut?: VaccinationSlotDtoOut;
   zipCode: number;
 }
@@ -45,7 +46,7 @@ export enum PatientDtoOutInsuranceCompanyEnum {
   Zps = 'ZPS',
   Zpmv = 'ZPMV',
   Rbp = 'RBP'
-}
+};
 
 
 

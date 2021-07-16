@@ -31,8 +31,11 @@ class IsinRetryService(
         var exportedPatientsInfoSuccess: Int = 0
         var exportedPatientsInfoErrors: Int = 0
 
-        var exportedVaccinationsSuccess: Int = 0
-        var exportedVaccinationsErrors: Int = 0
+        var exportedVaccinationsFirstDoseSuccess: Int = 0
+        var exportedVaccinationsFirstDoseErrors: Int = 0
+
+        var exportedVaccinationsSecondDoseSuccess: Int = 0
+        var exportedVaccinationsSecondDoseErrors: Int = 0
 
         val patients = patientService.getPatientsByConjunctionOf(
             n = isinJobDto.patientsCount,
@@ -42,7 +45,7 @@ class IsinRetryService(
         logger.info("${patients.count()} patients will be processed.")
 
         for (patient in patients) {
-            logger.info("Checking ISIN id of patient ${patient.id}")
+            logger.info("ISIN retry for patient ${patient.id}")
 
             // 1. If patient ISIN id is not set -> try ISIN validation
             val updatedPatient = if (!patient.isinId.isNullOrBlank()) {
@@ -70,6 +73,12 @@ class IsinRetryService(
             }
 
             if (updatedPatient.isinId.isNullOrBlank()) continue
+
+//            // Uncomment to cancel all vaccinations for this patient.
+//            // This is used in testing to clean the test environment.
+//             if (updatedPatient.isinId == "3646928931")
+//                 isinService.cancelAllVaccinations(updatedPatient.isinId)
+//             continue
 
             // 2. If isinReady is not set -> try to check vaccinations in ISIN
             if (
@@ -109,16 +118,34 @@ class IsinRetryService(
             }
 
             // 4. If vaccinated but vaccination is not exported to ISIN -> try export vaccination to ISIN
-            if (isinJobDto.exportVaccinations && updatedPatient.vaccinated != null && updatedPatient.vaccinated.exportedToIsinOn == null) {
+            if (isinJobDto.exportVaccinationsFirstDose && updatedPatient.vaccinated != null && updatedPatient.vaccinated.exportedToIsinOn == null) {
                 logger.info("Retrying to create vaccination of patient ${updatedPatient.id} in ISIN")
-                val wasCreated = retryPatientVaccinationCreation(updatedPatient)
+                val wasCreated = retryPatientVaccinationFirstDoseCreation(updatedPatient)
 
                 logger.info("Patient ${patient.id} vaccination was created in ISIN with result: ${wasCreated}")
 
                 if (wasCreated) {
-                    exportedVaccinationsSuccess++
+                    exportedVaccinationsFirstDoseSuccess++
                 } else {
-                    exportedVaccinationsErrors++
+                    exportedVaccinationsFirstDoseErrors++
+                }
+            }
+
+            // 5. If has second dose but it is not exported to ISIN -> try export second dose to ISIN
+            if (
+                isinJobDto.exportVaccinationsSecondDose &&
+                updatedPatient.vaccinatedSecondDose != null &&
+                updatedPatient.vaccinatedSecondDose.exportedToIsinOn == null
+            ) {
+                logger.info("Retrying to create second dose of patient ${updatedPatient.id} in ISIN")
+                val wasCreated = retryPatientVaccinationSecondDoseCreation(updatedPatient)
+
+                logger.info("Patient ${patient.id} 2nd dose vaccination was created in ISIN with result: ${wasCreated}")
+
+                if (wasCreated) {
+                    exportedVaccinationsSecondDoseSuccess++
+                } else {
+                    exportedVaccinationsSecondDoseErrors++
                 }
             }
         }
@@ -130,8 +157,10 @@ class IsinRetryService(
             checkedVaccinationsErrors = checkedVaccinationsErrors,
             exportedPatientsInfoSuccess = exportedPatientsInfoSuccess,
             exportedPatientsInfoErrors = exportedPatientsInfoErrors,
-            exportedVaccinationsSuccess = exportedVaccinationsSuccess,
-            exportedVaccinationsErrors = exportedVaccinationsErrors
+            exportedVaccinationsFirstDoseSuccess = exportedVaccinationsFirstDoseSuccess,
+            exportedVaccinationsFirstDoseErrors = exportedVaccinationsFirstDoseErrors,
+            exportedVaccinationsSecondDoseSuccess = exportedVaccinationsSecondDoseSuccess,
+            exportedVaccinationsSecondDoseErrors = exportedVaccinationsSecondDoseErrors
         )
     }
 
@@ -194,13 +223,13 @@ class IsinRetryService(
         return wasExported
     }
 
-    private suspend fun retryPatientVaccinationCreation(patient: PatientDtoOut): Boolean {
+    private suspend fun retryPatientVaccinationFirstDoseCreation(patient: PatientDtoOut): Boolean {
         requireNotNull(patient.vaccinated) { "Vaccination of patient ${patient.id} cannot be null." }
 
         val vaccination = vaccinationService.get(patient.vaccinated.id)
 
         // Try to export vaccination to ISIN
-        val wasExported = isinService.tryCreateVaccinationAndDose(
+        val wasExported = isinService.tryCreateVaccination(
             vaccination.toPatientVaccinationDetailDto(),
             patient = patient
         )
@@ -210,6 +239,26 @@ class IsinRetryService(
             vaccinationService.exportedToIsin(patient.vaccinated.id)
         } else {
             logger.debug { "NOT updating exported to ISIN of vaccination ${patient.vaccinated.id} (patient ${patient.id})"}
+        }
+        return wasExported
+    }
+
+    private suspend fun retryPatientVaccinationSecondDoseCreation(patient: PatientDtoOut): Boolean {
+        requireNotNull(patient.vaccinatedSecondDose) { "Vaccination 2nd dose of patient ${patient.id} cannot be null." }
+
+        val vaccination = vaccinationService.get(patient.vaccinatedSecondDose.id)
+
+        // Try to export vaccination to ISIN
+        val wasExported = isinService.tryCreateVaccination(
+            vaccination.toPatientVaccinationDetailDto(),
+            patient = patient
+        )
+
+        if (wasExported) {
+            logger.debug { "Updating exported to ISIN of vaccination ${patient.vaccinatedSecondDose.id} (patient ${patient.id})"}
+            vaccinationService.exportedToIsin(patient.vaccinatedSecondDose.id)
+        } else {
+            logger.debug { "NOT updating exported to ISIN of vaccination ${patient.vaccinatedSecondDose.id} (patient ${patient.id})"}
         }
         return wasExported
     }

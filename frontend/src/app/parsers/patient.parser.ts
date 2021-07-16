@@ -13,6 +13,7 @@ export const parsePatient = (data: PatientDtoOut, questions: AnsweredQuestion[])
     questionnaire: answeredQuestions.filter(notEmpty),
     insuranceCompany: data.insuranceCompany,
     vaccinatedOn: data.vaccinated?.vaccinatedOn ? new Date(data.vaccinated.vaccinatedOn) : undefined,
+    vaccinatedSecondDoseOn: data.vaccinatedSecondDose?.vaccinatedOn ? new Date(data.vaccinatedSecondDose.vaccinatedOn) : undefined,
     verified: !!data.dataCorrect?.dataAreCorrect,
     indication: data.indication ?? '',
     personalNumber: data.personalNumber ?? '',

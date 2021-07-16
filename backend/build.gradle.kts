@@ -6,7 +6,7 @@ plugins {
     application
     distribution
     id("net.nemerosa.versioning") version "2.14.0"
-    id("io.gitlab.arturbosch.detekt") version "1.17.0"
+    id("io.gitlab.arturbosch.detekt") version "1.17.1"
 }
 
 group = "blue.mild.covid.vaxx"
@@ -75,7 +75,7 @@ dependencies {
     implementation("com.fasterxml.jackson.datatype", "jackson-datatype-jsr310", jacksonVersion)
 
     // logging
-    implementation("io.github.microutils", "kotlin-logging", "2.0.6")
+    implementation("io.github.microutils", "kotlin-logging", "2.0.8")
     implementation("ch.qos.logback", "logback-classic", "1.2.3")
     // if-else in logback.xml
     implementation("org.codehaus.janino", "janino", "3.1.3")
@@ -91,21 +91,21 @@ dependencies {
     // database
     implementation("org.postgresql", "postgresql", "42.2.20")
 
-    val exposedVersion = "0.31.1"
+    val exposedVersion = "0.32.1"
     implementation("org.jetbrains.exposed", "exposed-core", exposedVersion)
     implementation("org.jetbrains.exposed", "exposed-dao", exposedVersion)
     implementation("org.jetbrains.exposed", "exposed-jdbc", exposedVersion)
     implementation("org.jetbrains.exposed", "exposed-java-time", exposedVersion)
 
     // database migrations from the code
-    implementation("org.flywaydb", "flyway-core", "7.9.1")
+    implementation("org.flywaydb", "flyway-core", "7.10.0")
 
     // sending emails
     implementation("com.mailjet", "mailjet-client", "5.1.1")
     implementation("org.freemarker", "freemarker", "2.3.31")
 
     // validation
-    implementation("com.googlecode.libphonenumber", "libphonenumber", "8.12.23")
+    implementation("com.googlecode.libphonenumber", "libphonenumber", "8.12.25")
 
     // tests
     testImplementation("io.mockk", "mockk", "1.11.0")

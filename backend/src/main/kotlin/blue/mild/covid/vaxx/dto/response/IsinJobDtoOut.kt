@@ -10,6 +10,9 @@ data class IsinJobDtoOut(
     val exportedPatientsInfoSuccess: Int,
     val exportedPatientsInfoErrors: Int,
 
-    val exportedVaccinationsSuccess: Int,
-    val exportedVaccinationsErrors: Int
+    val exportedVaccinationsFirstDoseSuccess: Int,
+    val exportedVaccinationsFirstDoseErrors: Int,
+
+    val exportedVaccinationsSecondDoseSuccess: Int,
+    val exportedVaccinationsSecondDoseErrors: Int
 )

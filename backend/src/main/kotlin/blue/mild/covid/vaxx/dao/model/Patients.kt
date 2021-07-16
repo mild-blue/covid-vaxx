@@ -69,9 +69,14 @@ object Patients : ManagedTable("patients") {
     val dataCorrectness = (entityId("data_correctness_id") references PatientDataCorrectnessConfirmation.id).nullable()
 
     /**
-     * Data about patient's vaccination.
+     * Data about patient's vaccination - first dose.
      */
     val vaccination = (entityId("vaccination_id") references Vaccinations.id).nullable()
+
+    /**
+     * Data about patient's vaccination - second dose.
+     */
+    val vaccinationSecondDose = (entityId("vaccination_second_dose_id") references Vaccinations.id).nullable()
 
     /**
      * Patient was validated in isin

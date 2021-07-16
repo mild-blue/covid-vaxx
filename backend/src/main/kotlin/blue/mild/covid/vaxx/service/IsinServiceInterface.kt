@@ -22,8 +22,13 @@ interface IsinServiceInterface {
         notes: String?
     ): Boolean
 
-    suspend fun tryCreateVaccinationAndDose(
+    suspend fun tryCreateVaccination(
         vaccination: StoreVaccinationRequestDto,
         patient: PatientDtoOut
     ): Boolean
+
+    // This is used to clean the test data and should never be used in production
+    suspend fun cancelAllVaccinations(
+        isinId: String
+    )
 }

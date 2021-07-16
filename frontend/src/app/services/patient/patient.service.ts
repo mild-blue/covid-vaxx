@@ -82,7 +82,7 @@ export class PatientService {
     ).pipe(first()).toPromise();
   }
 
-  public async confirmVaccination(id: string, bodyPart: BodyPart, note: string): Promise<HttpResponse<unknown>> {
+  public async confirmVaccination(id: string, bodyPart: BodyPart, note: string, doseNumber: 1 | 2): Promise<HttpResponse<unknown>> {
     const now = new Date();
 
     // we do not care about time, just about date
@@ -94,7 +94,8 @@ export class PatientService {
         patientId: id,
         bodyPart: bodyPart.valueOf(),
         notes: note,
-        vaccinatedOn: now.toISOString()
+        vaccinatedOn: now.toISOString(),
+        doseNumber
       }
     ).pipe(
       first()

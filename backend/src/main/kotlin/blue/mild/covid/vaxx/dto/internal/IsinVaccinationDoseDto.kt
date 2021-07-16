@@ -19,6 +19,8 @@ data class IsinVaccinationDoseDto (
     val mistoAplikaceNazev: String?,
     val subjekt: IsinSubjectDto,
 
-    // not in documentation
-    val odeslaniCertifikatu: String?
+    // properties not in documentation
+    val odeslaniCertifikatu: String?,
+    val uznatJinouZemi: String?,
+    val uznanaZemeKod: String?
 )
