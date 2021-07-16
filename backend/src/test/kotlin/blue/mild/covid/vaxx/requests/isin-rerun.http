@@ -163,3 +163,17 @@ Authorization: Bearer {{auth_token}}
   "patientsOffset": 26990
 }
 
+###
+POST {{url}}/admin/run-isin-job
+Content-Type: application/json
+Authorization: Bearer {{auth_token}}
+
+{
+  "exportPatientsInfo": true,
+  "checkVaccinations": true,
+  "exportVaccinations": true,
+  "validatePatients": true,
+  "patientsCount": 3000,
+  "patientsOffset": 29989
+}
+
