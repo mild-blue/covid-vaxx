@@ -1,11 +1,11 @@
 run: db
-	./gradlew run
+	gradlew run
 
 detekt:
-	./gradlew detekt
+	gradlew detekt
 
 test: test-db
-	./gradlew test;
+	gradlew test
 	$(MAKE) stop-test-db
 
 check: detekt test
