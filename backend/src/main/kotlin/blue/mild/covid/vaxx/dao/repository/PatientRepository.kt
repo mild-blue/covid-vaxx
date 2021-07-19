@@ -185,7 +185,11 @@ class PatientRepository(
         newSuspendedTransaction { Patients.deleteWhere(op = where) }
 
 
-    private fun getAndMapPatients(n: Int? = null, offset: Long = 0, where: (SqlExpressionBuilder.() -> Op<Boolean>)? = null): List<PatientDtoOut> {
+    private fun getAndMapPatients(
+        n: Int? = null,
+        offset: Long = 0,
+        where: (SqlExpressionBuilder.() -> Op<Boolean>)? = null
+    ): List<PatientDtoOut> {
         val vaccination1 = Vaccinations.alias("vaccination1")
         val vaccination2 = Vaccinations.alias("vaccination2")
 
@@ -206,7 +210,7 @@ class PatientRepository(
     }
 
     private fun mapPatient(
-        row: ResultRow, answers: List<AnswerDtoOut>,
+        row: ResultRow, answers: List<AnswerDtoOut?>,
         vaccination1Alias: Alias<Vaccinations>,
         vaccination2Alias: Alias<Vaccinations>
     ) = PatientDtoOut(
@@ -261,8 +265,10 @@ class PatientRepository(
         )
     }
 
-    private fun ResultRow.mapAnswer() = AnswerDtoOut(
-        questionId = this[Answers.questionId],
-        value = this[Answers.value]
-    )
+    private fun ResultRow.mapAnswer() = getOrNull(Answers.patientId)?.let {
+        AnswerDtoOut(
+            questionId = this[Answers.questionId],
+            value = this[Answers.value]
+        )
+    }
 }
