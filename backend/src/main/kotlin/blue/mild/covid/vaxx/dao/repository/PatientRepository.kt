@@ -185,7 +185,11 @@ class PatientRepository(
         newSuspendedTransaction { Patients.deleteWhere(op = where) }
 
 
-    private fun getAndMapPatients(n: Int? = null, offset: Long = 0, where: (SqlExpressionBuilder.() -> Op<Boolean>)? = null): List<PatientDtoOut> {
+    private fun getAndMapPatients(
+        n: Int? = null,
+        offset: Long = 0,
+        where: (SqlExpressionBuilder.() -> Op<Boolean>)? = null
+    ): List<PatientDtoOut> {
         val vaccination1 = Vaccinations.alias("vaccination1")
         val vaccination2 = Vaccinations.alias("vaccination2")
 
@@ -199,9 +203,11 @@ class PatientRepository(
             .let { if (n != null) it.limit(n, offset) else it }
             .toList() // eager fetch all data from the database
             .let { data ->
-                val answers = data.groupBy({ it[Patients.id] }, { it.mapAnswer() })
+                val answers = data.groupBy({ it[Patients.id] }, { it.mapAnswerOrNull() })
                 data.distinctBy { it[Patients.id] }
-                    .map { mapPatient(it, answers.getValue(it[Patients.id]), vaccination1, vaccination2) }
+                    .map {
+                        mapPatient(it, answers.getValue(it[Patients.id]).filterNotNull(), vaccination1, vaccination2)
+                    }
             }
     }
 
@@ -261,8 +267,10 @@ class PatientRepository(
         )
     }
 
-    private fun ResultRow.mapAnswer() = AnswerDtoOut(
-        questionId = this[Answers.questionId],
-        value = this[Answers.value]
-    )
+    private fun ResultRow.mapAnswerOrNull() = getOrNull(Answers.patientId)?.let {
+        AnswerDtoOut(
+            questionId = this[Answers.questionId],
+            value = this[Answers.value]
+        )
+    }
 }
