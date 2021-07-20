@@ -203,14 +203,16 @@ class PatientRepository(
             .let { if (n != null) it.limit(n, offset) else it }
             .toList() // eager fetch all data from the database
             .let { data ->
-                val answers = data.groupBy({ it[Patients.id] }, { it.mapAnswer() })
+                val answers = data.groupBy({ it[Patients.id] }, { it.mapAnswerOrNull() })
                 data.distinctBy { it[Patients.id] }
-                    .map { mapPatient(it, answers.getValue(it[Patients.id]), vaccination1, vaccination2) }
+                    .map {
+                        mapPatient(it, answers.getValue(it[Patients.id]).filterNotNull(), vaccination1, vaccination2)
+                    }
             }
     }
 
     private fun mapPatient(
-        row: ResultRow, answers: List<AnswerDtoOut?>,
+        row: ResultRow, answers: List<AnswerDtoOut>,
         vaccination1Alias: Alias<Vaccinations>,
         vaccination2Alias: Alias<Vaccinations>
     ) = PatientDtoOut(
@@ -265,7 +267,7 @@ class PatientRepository(
         )
     }
 
-    private fun ResultRow.mapAnswer() = getOrNull(Answers.patientId)?.let {
+    private fun ResultRow.mapAnswerOrNull() = getOrNull(Answers.patientId)?.let {
         AnswerDtoOut(
             questionId = this[Answers.questionId],
             value = this[Answers.value]

@@ -170,7 +170,7 @@ class PatientService(
 
     private fun List<PatientDtoOut>.sorted() = map { it.withSortedAnswers() }.sortedBy { it.registeredOn }
 
-    private fun PatientDtoOut.withSortedAnswers() = copy(answers = answers.sortedBy { it?.questionId })
+    private fun PatientDtoOut.withSortedAnswers() = copy(answers = answers.sortedBy { it.questionId })
 
     private fun <T> Op<Boolean>.andWithIfNotEmpty(value: T?, column: Column<T>): Op<Boolean> =
         value?.let { and { column eq value } } ?: this
