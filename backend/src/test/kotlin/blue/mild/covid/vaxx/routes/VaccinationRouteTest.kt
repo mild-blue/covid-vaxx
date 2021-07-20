@@ -58,7 +58,7 @@ class VaccinationRouteTest : ServerTestBase() {
             doseNumber = 1
         )
         val vaccinationFirstDoseId = handleRequest(HttpMethod.Post, Routes.vaccination) {
-            authorize()
+                authorize()
             jsonBody(inputFirstDose)
         }.run {
             expectStatus(HttpStatusCode.OK)
