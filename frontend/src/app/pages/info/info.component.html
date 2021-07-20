@@ -3,6 +3,12 @@
 <main>
   <app-container [wide]="true">
 
+    <h3>
+      Očkování již proběhlo. Více si můžete přečíst v
+      <a href="https://www.praha7.cz/ockovani-v-praze-7-pomuze-take-lekarum-bez-hranic-obcim-postizenym-tornadem-a-bouremi-a-dalsim-potrebnym/" target="_blank">
+        tiskové zprávě</a>.
+    </h3>
+
     <div class="welcome">
       <div class="welcome__item">
         <img src="assets/vaccine-icon.svg" alt="Vaccine icon">
@@ -10,38 +16,36 @@
           Sedmička a Poliklinika Prahy 7 pro vás zajistily možnost očkování proti nemoci COVID-19 vakcínou Comirnaty od společnosti
           <strong>Pfizer/BioNTech</strong>. <br>
 
-          <ng-container *ngIf="statistics">
+          <!--<ng-container *ngIf="statistics">
             <ng-container *ngIf="statistics.availableSlots > 0">
               Zbývá <strong>{{statistics.availableSlots}} volných termínů</strong>.
             </ng-container>
             <ng-container *ngIf="statistics.availableSlots == 0">
               Bohužel už není <strong>žádný volný termín</strong>.
             </ng-container>
-          </ng-container>
+          </ng-container>-->
         </p>
       </div>
       <div class="welcome__item">
         <mat-icon>place</mat-icon>
         <p>
-          Očkování se uskuteční ve dvou pevně stanovených termínech v budově školy
+          Očkování se uskutečnilo ve dvou pevně stanovených termínech v budově školy
           <strong>ZŠ Strossmayerovo náměstí</strong> (Strossmayerovo náměstí 4, Praha 7).
         </p>
       </div>
       <div class="welcome__item">
         <mat-icon>people</mat-icon>
         <p>
-          K vakcinaci se mohou přihlásit zájemci ve věku <strong>od 16 let</strong>.
-          Očkování je hrazené z veřejného zdravotního pojištění, a proto se mohou nechat <strong>zdarma</strong> očkovat všechny osoby, které
-          jsou přihlášené k veřejnému zdravotnímu pojištění v České republice.
+          K vakcinaci se mohli přihlásit zájemci ve věku <strong>od 16 let</strong>.
+          Očkování bylo hrazené z veřejného zdravotního pojištění, a proto se mohly nechat <strong>zdarma</strong> očkovat všechny osoby, které
+          byly přihlášené k veřejnému zdravotnímu pojištění v České republice.
         </p>
       </div>
       <div class="welcome__item">
         <mat-icon>schedule</mat-icon>
         <p>
-          První dávku obdržíte v pátek <strong>18. června 2021</strong>.
-          Přeočkování druhou dávkou proběhne v pátek <strong>16. července 2021</strong>.
-          V obou termínech v čase 15 - 22 hodin. Přesný čas očkování pro vás bude na základě volných kapacit vygenerován po dokončení registrace.
-          Místo, termín a čas jsou pevně dané a nelze je měnit. Komu zvolené termíny nevyhovují, může využít pražská očkovací centra. Čekací doby jsou krátké.
+          První dávku zájemci obdrželi v pátek <strong>18. června 2021</strong>.
+          Přeočkování druhou dávkou probělo v pátek <strong>16. července 2021</strong>.
         </p>
       </div>
       <div class="welcome__item">
@@ -53,10 +57,10 @@
       <div class="welcome__item">
         <mat-icon>computer</mat-icon>
         <p>
-          Podporované prohlížeče jsou (aktuální verze) Mozilla Firefox, Google Chrome a Safari.
+          <!--Podporované prohlížeče jsou (aktuální verze) Mozilla Firefox, Google Chrome a Safari.
           Naopak Internet Explorer není a nebude podporován a důrazně doporučujeme jej přestat používat obecně.
-        <br>
-          Projekt je vytvořen jako opensource a dostupný na <a href="https://github.com/mild-blue/covid-vaxx" target="blank">Githubu</a>.
+        <br>-->
+          Projekt byl vytvořen jako opensource a je dostupný na <a href="https://github.com/mild-blue/covid-vaxx" target="blank">Githubu</a>.
           Pokud máte technické dotazy, připomínky nebo se chcete dozvědět více o Mild Blue, kontaktujte nás na ockovani@mild.blue.
         </p>
       </div>
@@ -67,7 +71,7 @@
       <mat-icon>favorite_border</mat-icon>
     </h3>
 
-    <ng-container *ngIf="statistics !== undefined">
+    <!--<ng-container *ngIf="statistics !== undefined">
       <ng-container *ngIf="statistics.availableSlots > 0 else content">
         <button class="mt-30" color="primary" mat-raised-button routerLink="/registration">
           Registrovat se k očkování
@@ -80,7 +84,7 @@
           Bohužel už není žádný volný termín
         </button>
       </ng-template>
-    </ng-container>
+    </ng-container>-->
   </app-container>
 
 </main>
