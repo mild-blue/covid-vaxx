@@ -1,5 +1,8 @@
 FROM node:alpine as frontend-build
 
+# see https://github.com/webpack/webpack/issues/14532
+ENV NODE_OPTIONS=--openssl-legacy-provider
+
 COPY frontend/ ./frontend
 WORKDIR ./frontend
 RUN npm i
