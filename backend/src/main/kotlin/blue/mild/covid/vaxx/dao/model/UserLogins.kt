@@ -1,6 +1,6 @@
 package blue.mild.covid.vaxx.dao.model
 
-import org.jetbrains.exposed.sql.`java-time`.date
+import org.jetbrains.exposed.sql.javatime.date
 
 /**
  * Table that contains login requests.

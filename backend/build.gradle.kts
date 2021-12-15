@@ -2,11 +2,11 @@ import java.net.URI
 
 
 plugins {
-    kotlin("jvm") version "1.5.10"
+    kotlin("jvm") version "1.6.10"
     application
     distribution
     id("net.nemerosa.versioning") version "2.14.0"
-    id("io.gitlab.arturbosch.detekt") version "1.17.1"
+    id("io.gitlab.arturbosch.detekt") version "1.19.0"
 }
 
 group = "blue.mild.covid.vaxx"
@@ -39,11 +39,11 @@ repositories {
 
 dependencies {
     // extension functions
-    implementation("pw.forst", "katlib", "2.0.1")
-    implementation("org.jetbrains.kotlin", "kotlin-reflect", "1.5.10")
+    implementation("pw.forst", "katlib", "2.0.3")
+    implementation(kotlin("reflect"))
 
     // Ktor server dependencies
-    val ktorVersion = "1.6.0"
+    val ktorVersion = "1.6.7"
     implementation("io.ktor", "ktor-server-core", ktorVersion)
     implementation("io.ktor", "ktor-server-netty", ktorVersion)
     implementation("io.ktor", "ktor-jackson", ktorVersion)
@@ -69,13 +69,13 @@ dependencies {
     implementation("io.ktor", "ktor-client-logging-jvm", ktorVersion)
 
     // Jackson JSON
-    val jacksonVersion = "2.12.3"
+    val jacksonVersion = "2.13.0"
     implementation("com.fasterxml.jackson.core", "jackson-databind", jacksonVersion)
     implementation("com.fasterxml.jackson.module", "jackson-module-kotlin", jacksonVersion)
     implementation("com.fasterxml.jackson.datatype", "jackson-datatype-jsr310", jacksonVersion)
 
     // logging
-    implementation("io.github.microutils", "kotlin-logging", "2.0.8")
+    implementation("io.github.microutils", "kotlin-logging", "2.1.16")
     implementation("ch.qos.logback", "logback-classic", "1.2.3")
     // if-else in logback.xml
     implementation("org.codehaus.janino", "janino", "3.1.3")
@@ -84,33 +84,34 @@ dependencies {
     implementation("com.lambdaworks", "scrypt", "1.4.0")
 
     // DI
-    val kodeinVersion = "7.6.0"
+    val kodeinVersion = "7.9.0"
     implementation("org.kodein.di", "kodein-di-jvm", kodeinVersion)
     implementation("org.kodein.di", "kodein-di-framework-ktor-server-jvm", kodeinVersion)
 
     // database
-    implementation("org.postgresql", "postgresql", "42.2.20")
+    implementation("org.postgresql", "postgresql", "42.3.1")
 
-    val exposedVersion = "0.32.1"
+    val exposedVersion = "0.36.2"
     implementation("org.jetbrains.exposed", "exposed-core", exposedVersion)
     implementation("org.jetbrains.exposed", "exposed-dao", exposedVersion)
     implementation("org.jetbrains.exposed", "exposed-jdbc", exposedVersion)
     implementation("org.jetbrains.exposed", "exposed-java-time", exposedVersion)
 
     // database migrations from the code
-    implementation("org.flywaydb", "flyway-core", "7.10.0")
+    implementation("org.flywaydb", "flyway-core", "8.2.2")
 
     // sending emails
     implementation("com.mailjet", "mailjet-client", "5.1.1")
     implementation("org.freemarker", "freemarker", "2.3.31")
 
     // validation
-    implementation("com.googlecode.libphonenumber", "libphonenumber", "8.12.25")
+    implementation("com.googlecode.libphonenumber", "libphonenumber", "8.12.39")
 
     // tests
-    testImplementation("io.mockk", "mockk", "1.11.0")
+    testImplementation(kotlin("test"))
+    testImplementation("io.mockk", "mockk", "1.12.1")
 
-    val junitVersion = "5.7.2"
+    val junitVersion = "5.8.2"
     testImplementation("org.junit.jupiter", "junit-jupiter-api", junitVersion) // junit testing framework
     testImplementation("org.junit.jupiter", "junit-jupiter-params", junitVersion) // generated parameters for tests
     testImplementation("io.ktor", "ktor-server-test-host", ktorVersion)

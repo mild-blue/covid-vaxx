@@ -1,8 +1,7 @@
 package blue.mild.covid.vaxx.dao.model
 
-import blue.mild.covid.vaxx.dao.model.UserLogins.nullable
-import org.jetbrains.exposed.sql.`java-time`.date
-import org.jetbrains.exposed.sql.`java-time`.timestamp
+import org.jetbrains.exposed.sql.javatime.date
+import org.jetbrains.exposed.sql.javatime.timestamp
 
 /**
  * Administered vaccination of the [Patients].
