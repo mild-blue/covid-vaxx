@@ -40,7 +40,7 @@ repositories {
 dependencies {
     // extension functions
     implementation("pw.forst", "katlib", "2.0.3")
-    implementation("org.jetbrains.kotlin", "kotlin-reflect", "1.6.10")
+    implementation(kotlin("reflect"))
 
     // Ktor server dependencies
     val ktorVersion = "1.6.7"
@@ -108,6 +108,7 @@ dependencies {
     implementation("com.googlecode.libphonenumber", "libphonenumber", "8.12.39")
 
     // tests
+    testImplementation(kotlin("test"))
     testImplementation("io.mockk", "mockk", "1.12.1")
 
     val junitVersion = "5.8.2"
