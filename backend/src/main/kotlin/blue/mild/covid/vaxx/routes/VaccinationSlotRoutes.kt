@@ -15,6 +15,7 @@ import com.papsign.ktor.openapigen.route.path.auth.get
 import com.papsign.ktor.openapigen.route.path.auth.post
 import com.papsign.ktor.openapigen.route.path.auth.principal
 import com.papsign.ktor.openapigen.route.path.normal.NormalOpenAPIRoute
+import com.papsign.ktor.openapigen.route.path.normal.get
 import com.papsign.ktor.openapigen.route.response.respond
 import com.papsign.ktor.openapigen.route.route
 import org.kodein.di.instance
@@ -26,6 +27,12 @@ fun NormalOpenAPIRoute.vaccinationSlotRoutes() {
     val vaccinationSlotService by closestDI().instance<VaccinationSlotService>()
 
     val logger = createLogger("LocationRoutes")
+
+    route(Routes.vaccinationSlots).get<Unit, VaccinationSlotDtoOut>(
+        info("Returns first available vaccination slot.")
+    ) {
+        // TODO #361 implement me
+    }
 
     authorizeRoute(requireOneOf = setOf(UserRole.ADMIN)) {
         route(Routes.vaccinationSlots).post<Unit, List<EntityId>, CreateVaccinationSlotsDtoIn, UserPrincipal>(

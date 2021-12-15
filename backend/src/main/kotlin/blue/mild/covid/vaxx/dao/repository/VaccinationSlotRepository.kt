@@ -7,6 +7,7 @@ import blue.mild.covid.vaxx.dto.response.VaccinationSlotDtoOut
 import mu.KLogging
 import org.jetbrains.exposed.sql.Column
 import org.jetbrains.exposed.sql.Op
+import org.jetbrains.exposed.sql.Query
 import org.jetbrains.exposed.sql.ResultRow
 import org.jetbrains.exposed.sql.SqlExpressionBuilder
 import org.jetbrains.exposed.sql.batchInsert
@@ -44,16 +45,29 @@ class VaccinationSlotRepository(private val instantTimeProvider: TimeProvider<In
     /**
      * Retrieves all vaccination slots from the database with given filter.
      */
-    suspend fun getAndMap(where: SqlExpressionBuilder.() -> Op<Boolean>) =
+    suspend fun getAndMap(where: SqlExpressionBuilder.() -> Op<Boolean>) = getAndMap(where) { this }
+
+    /**
+     * Retrieves all vaccination slots from the database with given filter.
+     */
+    private suspend fun getAndMap(where: SqlExpressionBuilder.() -> Op<Boolean>, queryMutation: Query.() -> Query) =
         newSuspendedTransaction {
             VaccinationSlots
                 .select(where)
                 .orderBy(VaccinationSlots.from)
                 .orderBy(VaccinationSlots.queue)
                 .orderBy(VaccinationSlots.id)
+                .queryMutation()
                 .toList()
                 .let { data -> data.map { it.mapVaccinationSlot() } }
         }
+
+    /**
+     * Return first available slot.
+     */
+    suspend fun getFirstAvailableSlot(): VaccinationSlotDtoOut? =
+        getAndMap(where = { VaccinationSlots.patientId.isNull() }, queryMutation = { limit(1) })
+            .firstOrNull()
 
     /**
      * Tries to book slot for patient [patientId], returns null if no slot was booked.
