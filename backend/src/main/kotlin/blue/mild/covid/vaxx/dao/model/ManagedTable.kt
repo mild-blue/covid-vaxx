@@ -1,6 +1,6 @@
 package blue.mild.covid.vaxx.dao.model
 
-import org.jetbrains.exposed.sql.`java-time`.timestamp
+import org.jetbrains.exposed.sql.javatime.timestamp
 
 /**
  * Table that contains [created] and [updated] fields.

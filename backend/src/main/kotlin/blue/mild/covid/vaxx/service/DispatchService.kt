@@ -1,6 +1,7 @@
 package blue.mild.covid.vaxx.service
 
-import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.asCoroutineDispatcher
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.channels.Channel.Factory.UNLIMITED
@@ -27,7 +28,7 @@ abstract class DispatchService<T>(private val nThreads: Int) {
         // create a dispatcher that is used solely for this dispatch service
         val dispatcher = Executors.newFixedThreadPool(nThreads).asCoroutineDispatcher()
         // create a single coroutine, that will handle all emails
-        GlobalScope.launch(dispatcher) {
+        CoroutineScope(Dispatchers.Unconfined).launch(dispatcher) {
             while (true) {
                 runCatching {
                     val work = channel.receive()
