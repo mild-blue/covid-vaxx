@@ -20,6 +20,7 @@ private val logger = createLogger("JobRegistration")
 fun DI.MainBuilder.registerPeriodicJobs() {
     // register jobs
     bind<EmailRetryJob>() with singleton { EmailRetryJob(instance(), instance()) }
+    bind<IsinSyncJob>() with singleton { IsinSyncJob(instance()) }
 
     // register infrastructure
     bind<PeriodicExecutorLoop>() with singleton {
@@ -30,7 +31,8 @@ fun DI.MainBuilder.registerPeriodicJobs() {
         JobsRegistrationService(
             instance(),
             jobsToRun = listOfNotNull(
-                registerIfEnvEnabled(EnvVariables.ENABLE_PERIODIC_EMAIL_RETRY) { repeatedEmailJob(instance()) }
+                registerIfEnvEnabled(EnvVariables.ENABLE_PERIODIC_EMAIL_RETRY) { repeatedEmailJob(instance()) },
+                registerIfEnvEnabled(EnvVariables.ENABLE_PERIODIC_ISIN_SYNC) { repeatedIsinSyncJob(instance()) }
             )
         )
     }
@@ -48,5 +50,12 @@ private fun repeatedEmailJob(job: EmailRetryJob) = PeriodicJob(
     name = requireNotNull(job::class.simpleName) { "Classes do have a name." },
     delay = 1, // once in an hour we try to send the emails
     unit = TimeUnit.HOURS,
+    job = job
+)
+
+private fun repeatedIsinSyncJob(job: IsinSyncJob) = PeriodicJob(
+    name = requireNotNull(job::class.simpleName) { "Classes do have a name." },
+    delay = getEnv(EnvVariables.ISIN_SYNC_PERIOD.name)?.toLong() ?: TimeUnit.HOURS.toMillis(1), // once in an sync period (default 1 hour) synchronize with ISIN
+    unit = TimeUnit.MILLISECONDS,
     job = job
 )

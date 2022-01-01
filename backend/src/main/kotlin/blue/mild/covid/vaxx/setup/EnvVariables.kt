@@ -169,5 +169,19 @@ enum class EnvVariables {
      *
      * By default are all jobs disabled.
      */
-    ENABLE_PERIODIC_EMAIL_RETRY
+    ENABLE_PERIODIC_EMAIL_RETRY,
+
+    /**
+     * Enable cron job [blue.mild.covid.vaxx.jobs.IsinRetryJob].
+     *
+     * By default are all jobs disabled.
+     */
+    ENABLE_PERIODIC_ISIN_SYNC,
+
+    /**
+     * Sets period of ISIN periodic synchronization in milliseconds
+     *
+     * By default 1 hour (3,600,000 millis) is used
+     */
+    ISIN_SYNC_PERIOD
 }
