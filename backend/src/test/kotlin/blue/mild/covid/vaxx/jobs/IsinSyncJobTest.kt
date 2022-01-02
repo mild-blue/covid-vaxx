@@ -6,7 +6,7 @@ import io.mockk.coVerify
 import io.mockk.mockk
 import org.junit.jupiter.api.Test
 
-class IsinSynJobTest {
+class IsinSyncJobTest {
 
     @Test
     fun `job should initiate synchronization of database with ISIN`() {

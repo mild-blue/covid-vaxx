@@ -23,7 +23,9 @@ class IsinSyncJob(private val isinRetryService: IsinRetryService) : Job {
             checkVaccinations = true,
             exportVaccinationsFirstDose = true,
             exportVaccinationsSecondDose = true,
-            validatePatients = true
+            validatePatients = true,
+            patientsCount = null, //check all patients in the database
+            patientsOffset = 0
         ))
         
         logger.info(marker) { "ISIN retry service finished." }
