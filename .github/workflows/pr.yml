@@ -62,6 +62,7 @@ jobs:
         uses: JetBrains/qodana-action@v4.2.2
         with:
           linter: jetbrains/qodana-jvm
+          project-dir: backend
 
   build-container:
     runs-on: ubuntu-20.04
