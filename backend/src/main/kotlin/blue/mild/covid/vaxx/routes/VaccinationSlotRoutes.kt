@@ -28,10 +28,15 @@ fun NormalOpenAPIRoute.vaccinationSlotRoutes() {
 
     val logger = createLogger("LocationRoutes")
 
-    route(Routes.vaccinationSlots).get<Unit, VaccinationSlotDtoOut>(
-        info("Returns first available vaccination slot.")
-    ) {
-        // TODO #361 implement me
+    route(Routes.vaccinationSlots) {
+        get<Unit, VaccinationSlotDtoOut>(
+            info("Returns first available vaccination slot.")
+        ) {
+            var firstSlot = vaccinationSlotService.vaccinationSlotRepository.getFirstAvailableSlot()
+            if (firstSlot != null) {
+                respond(firstSlot)
+            }
+        }
     }
 
     authorizeRoute(requireOneOf = setOf(UserRole.ADMIN)) {

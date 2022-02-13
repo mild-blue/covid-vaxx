@@ -25,7 +25,7 @@ import java.time.Instant
 
 class VaccinationSlotService(
     private val locationRepository: LocationRepository,
-    private val vaccinationSlotRepository: VaccinationSlotRepository,
+    public val vaccinationSlotRepository: VaccinationSlotRepository,
 ) {
     private companion object : KLogging() {
         val DEFAULT_STATUS: VaccinationSlotStatus = VaccinationSlotStatus.ONLY_FREE
