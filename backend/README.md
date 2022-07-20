@@ -45,6 +45,9 @@ macOS. However, we believe that everything should work on Windows as well.*
 
 **Note:** If you use Windows, all commands that contain `./gradlew ...` must be changed to `./gradlew.bat ...`.
 
+**Note:** If you are using Compose V2, all commands that contain `docker-compose` must be changed to `docker compose`.
+Especailly in the [Makefile](Makefile).
+
 ### Preconditions
 
 In order to fully set up the project, one needs to have following software installed:
@@ -69,6 +72,17 @@ not have any user in the database and for that reason you won't be able to perfo
 must be created manually in the database - this is because we don't want to ship this dummy user to our production
 environment. There's an SQL insert in the [Test data](#test-user)
 section that you should use to create this first admin user.
+
+```bash
+docker container exec -it covid-vaxx-db-1 psql -U mildblue -d covid-vaxx
+```
+Then:
+```sql
+INSERT INTO users (first_name, last_name, email, password_hash, "role")
+VALUES ('Mild', 'Blue', 'vaxx@mild.blue',
+        '$s0$e0801$asDyD5znh458o/+vCMIaLw==$zydsv6Cw2fKxkIGqFNFMDWQ47pKdHIInLURYOeVlYuA=', 'ADMIN');
+```
+
 
 #### Bare Metal
 
