@@ -70,17 +70,11 @@ in [docker-compose.yml](../docker-compose.yml). The credentials for inspecting t
 Please note, that when you run the application for the first time it does not contain any data. This means that it does
 not have any user in the database and for that reason you won't be able to perform most of the actions. The first user
 must be created manually in the database - this is because we don't want to ship this dummy user to our production
-environment. There's an SQL insert in the [Test data](#test-user)
-section that you should use to create this first admin user.
+environment. There's an SQL insert in the [Test data](#test-data)
+section that you should use to create this first admin user. To interact with the database using psql throught Docker run:
 
 ```bash
 docker container exec -it covid-vaxx-db-1 psql -U mildblue -d covid-vaxx
-```
-Then:
-```sql
-INSERT INTO users (first_name, last_name, email, password_hash, "role")
-VALUES ('Mild', 'Blue', 'vaxx@mild.blue',
-        '$s0$e0801$asDyD5znh458o/+vCMIaLw==$zydsv6Cw2fKxkIGqFNFMDWQ47pKdHIInLURYOeVlYuA=', 'ADMIN');
 ```
 
 
@@ -143,7 +137,7 @@ for default values.
 
 Following data might be useful during testing.
 
-### Test user:
+### Test user
 
 ```json
 {
@@ -153,7 +147,7 @@ Following data might be useful during testing.
 }
 ```
 
-use following SQL insert
+use following SQL insert to add the test user:
 
 ```sql
 INSERT INTO users (first_name, last_name, email, password_hash, "role")

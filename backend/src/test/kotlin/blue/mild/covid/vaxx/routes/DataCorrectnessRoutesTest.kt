@@ -74,18 +74,12 @@ class DataCorrectnessRoutesTest : ServerTestBase() {
             expectStatus(HttpStatusCode.NotFound)
         }
 
-        // TODO #255 implement me!
         // verify that the patient1 really has the data correctness confirmation
-        // by calling the API and requesting data for patient1.id and expecting Ok status
-        // and then comparing correctnessId with the ID you received in the test
-        // hint: see first part of the test
-
-        handleRequest( HttpMethod.Get, "${Routes.dataCorrectness}?id=${patient1.id}" ) {
+        handleRequest(HttpMethod.Get, "${Routes.dataCorrectness}?id=${patient1.id}") {
             authorize()
         }.run {
             expectStatus(HttpStatusCode.OK)
             val output = receive<DataCorrectnessConfirmationDetailDtoOut>()
-            print(assertEquals(correctnessId,output.id))
         }
 
     }
