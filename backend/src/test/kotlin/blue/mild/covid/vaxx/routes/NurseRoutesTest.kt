@@ -1,8 +1,12 @@
+@file:Suppress("UNREACHABLE_CODE")
+
 package blue.mild.covid.vaxx.routes
 
 import blue.mild.covid.vaxx.dao.model.Nurses
 import blue.mild.covid.vaxx.dao.model.UserRole
 import blue.mild.covid.vaxx.dao.repository.NurseRepository
+import blue.mild.covid.vaxx.dto.request.CredentialsDtoIn
+import blue.mild.covid.vaxx.dto.request.LoginDtoIn
 import blue.mild.covid.vaxx.dto.request.NurseCreationDtoIn
 import blue.mild.covid.vaxx.security.auth.UserPrincipal
 import blue.mild.covid.vaxx.utils.DatabaseData
@@ -24,13 +28,35 @@ import kotlin.test.assertTrue
 
 class NurseRoutesTest : ServerTestBase() {
     @Test
-    @Disabled
+    // @Disabled
     fun `should respond with all nurses`() = withTestApplication {
-        TODO("implement this test for file NurseRoutes.kt")
+      //  TODO("implement this test for file NurseRoutes.kt")
         // verify two cases:
         // 1. when user submits correct credentials, server should respond with all nurses in the database
-        // 2. in case of invalid credentials, the server should respond with status 401
+        val validLogin= LoginDtoIn(
+            credentials = CredentialsDtoIn("${UUID.randomUUID()}@mild.blue", UUID.randomUUID().toString()),
+            nurseId = DatabaseData.nurses.random().id,
+            vaccineSerialNumber = "#123",
+            vaccineExpiration =  LocalDate.now()
+        )
 
+        handleRequest(HttpMethod.Post, Routes.registeredUserLogin){
+            jsonBody(validLogin)
+        }.run{
+            println("correct credentials")
+            handleRequest(HttpMethod.Get, Routes.nurse) {
+                authorize()
+        }
+        // 2. in case of invalid credentials, the server should respond with status 401
+        val invalidLogin = LoginDtoIn(
+            credentials = CredentialsDtoIn("non-existing@email.com", "wrong-password"),
+            nurseId = null,
+            vaccineSerialNumber = "",
+            vaccineExpiration = LocalDate.now()
+        )
+        handleRequest(HttpMethod.Post, Routes.registeredUserLogin) { jsonBody(invalidLogin) }.run {
+            expectStatus(HttpStatusCode.Unauthorized)
+        }
         // very similar test is for example UserRoutesTest, where we try to log in and then check
         // what status code the server returned
 
