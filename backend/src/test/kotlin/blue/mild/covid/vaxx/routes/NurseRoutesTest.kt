@@ -1,5 +1,3 @@
-@file:Suppress("UNREACHABLE_CODE")
-
 package blue.mild.covid.vaxx.routes
 
 import blue.mild.covid.vaxx.dao.model.Nurses
