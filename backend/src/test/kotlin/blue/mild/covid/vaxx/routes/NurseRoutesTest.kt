@@ -29,7 +29,6 @@ import kotlin.test.assertTrue
 
 class NurseRoutesTest : ServerTestBase() {
     @Test
-    // @Disabled
     fun `should respond with all nurses`() = withTestApplication {
         // 1. when user submits correct credentials, server should respond with all nurses in the database
         val validLogin = LoginDtoIn(
