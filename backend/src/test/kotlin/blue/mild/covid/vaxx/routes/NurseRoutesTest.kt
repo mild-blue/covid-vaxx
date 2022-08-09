@@ -6,6 +6,7 @@ import blue.mild.covid.vaxx.dao.repository.NurseRepository
 import blue.mild.covid.vaxx.dto.request.CredentialsDtoIn
 import blue.mild.covid.vaxx.dto.request.LoginDtoIn
 import blue.mild.covid.vaxx.dto.request.NurseCreationDtoIn
+import blue.mild.covid.vaxx.dto.response.PersonnelDtoOut
 import blue.mild.covid.vaxx.dto.response.UserLoginResponseDtoOut
 import blue.mild.covid.vaxx.security.auth.UserPrincipal
 import blue.mild.covid.vaxx.utils.DatabaseData
@@ -29,29 +30,29 @@ class NurseRoutesTest : ServerTestBase() {
     @Test
     fun `should respond with all nurses`() = withTestApplication {
         // 1. when user submits correct credentials, server should respond with all nurses in the database
-        val validLogin = LoginDtoIn(
-            credentials = CredentialsDtoIn(DatabaseData.admin.email, DatabaseData.admin.password),
-            nurseId = null,
-            vaccineSerialNumber = "",
-            vaccineExpiration = LocalDate.now()
+        val validLogin = CredentialsDtoIn(
+            email = DatabaseData.admin.email,
+            password = DatabaseData.admin.password
         )
 
-        handleRequest(HttpMethod.Post, Routes.registeredUserLogin) {
+        handleRequest(HttpMethod.Post, Routes.nurse) {
             jsonBody(validLogin)
         }.run {
             expectStatus(HttpStatusCode.OK)
+            val response = receive<List<PersonnelDtoOut>>()
             val nurseRepository by closestDI().instance<NurseRepository>()
-            runBlocking { nurseRepository.getAll() }
+            val allNurses = runBlocking { nurseRepository.getAll() }
+            assertEquals(allNurses, response)
         }
 
         // 2. in case of invalid credentials, the server should respond with status 401
-        val invalidLogin = LoginDtoIn(
-            credentials = CredentialsDtoIn("non-existing@email.com", "wrong-password"),
-            nurseId = null,
-            vaccineSerialNumber = "",
-            vaccineExpiration = LocalDate.now()
+        val invalidLogin = CredentialsDtoIn(
+            email = "non-existing@email.com",
+            password = "wrong-password"
         )
-        handleRequest(HttpMethod.Post, Routes.registeredUserLogin) { jsonBody(invalidLogin) }.run {
+        handleRequest(HttpMethod.Post, Routes.nurse) {
+            jsonBody(invalidLogin)
+        }.run {
             expectStatus(HttpStatusCode.Unauthorized)
         }
 
