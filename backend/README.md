@@ -45,6 +45,9 @@ macOS. However, we believe that everything should work on Windows as well.*
 
 **Note:** If you use Windows, all commands that contain `./gradlew ...` must be changed to `./gradlew.bat ...`.
 
+**Note:** If you are using Compose V2, all commands that contain `docker-compose` must be changed to `docker compose`.
+Especailly in the [Makefile](Makefile).
+
 ### Preconditions
 
 In order to fully set up the project, one needs to have following software installed:
@@ -67,8 +70,13 @@ in [docker-compose.yml](../docker-compose.yml). The credentials for inspecting t
 Please note, that when you run the application for the first time it does not contain any data. This means that it does
 not have any user in the database and for that reason you won't be able to perform most of the actions. The first user
 must be created manually in the database - this is because we don't want to ship this dummy user to our production
-environment. There's an SQL insert in the [Test data](#test-user)
-section that you should use to create this first admin user.
+environment. There's an SQL insert in the [Test data](#test-data)
+section that you should use to create this first admin user. To interact with the database using psql throught Docker run:
+
+```bash
+docker container exec -it covid-vaxx-db-1 psql -U mildblue -d covid-vaxx
+```
+
 
 #### Bare Metal
 
@@ -129,7 +137,7 @@ for default values.
 
 Following data might be useful during testing.
 
-### Test user:
+### Test user
 
 ```json
 {
@@ -139,7 +147,7 @@ Following data might be useful during testing.
 }
 ```
 
-use following SQL insert
+use following SQL insert to add the test user:
 
 ```sql
 INSERT INTO users (first_name, last_name, email, password_hash, "role")
