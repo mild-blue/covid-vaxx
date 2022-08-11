@@ -3,7 +3,11 @@ package blue.mild.covid.vaxx.routes
 import blue.mild.covid.vaxx.dao.model.Nurses
 import blue.mild.covid.vaxx.dao.model.UserRole
 import blue.mild.covid.vaxx.dao.repository.NurseRepository
+import blue.mild.covid.vaxx.dto.request.CredentialsDtoIn
+import blue.mild.covid.vaxx.dto.request.LoginDtoIn
 import blue.mild.covid.vaxx.dto.request.NurseCreationDtoIn
+import blue.mild.covid.vaxx.dto.response.PersonnelDtoOut
+import blue.mild.covid.vaxx.dto.response.UserLoginResponseDtoOut
 import blue.mild.covid.vaxx.security.auth.UserPrincipal
 import blue.mild.covid.vaxx.utils.DatabaseData
 import blue.mild.covid.vaxx.utils.ServerTestBase
@@ -24,19 +28,34 @@ import kotlin.test.assertTrue
 
 class NurseRoutesTest : ServerTestBase() {
     @Test
-    @Disabled
     fun `should respond with all nurses`() = withTestApplication {
-        TODO("implement this test for file NurseRoutes.kt")
-        // verify two cases:
         // 1. when user submits correct credentials, server should respond with all nurses in the database
+        val validLogin = CredentialsDtoIn(
+            email = DatabaseData.admin.email,
+            password = DatabaseData.admin.password
+        )
+
+        handleRequest(HttpMethod.Post, Routes.nurse) {
+            jsonBody(validLogin)
+        }.run {
+            expectStatus(HttpStatusCode.OK)
+            val response = receive<List<PersonnelDtoOut>>()
+            val nurseRepository by closestDI().instance<NurseRepository>()
+            val allNurses = runBlocking { nurseRepository.getAll() }
+            assertEquals(allNurses, response)
+        }
+
         // 2. in case of invalid credentials, the server should respond with status 401
+        val invalidLogin = CredentialsDtoIn(
+            email = "non-existing@email.com",
+            password = "wrong-password"
+        )
+        handleRequest(HttpMethod.Post, Routes.nurse) {
+            jsonBody(invalidLogin)
+        }.run {
+            expectStatus(HttpStatusCode.Unauthorized)
+        }
 
-        // very similar test is for example UserRoutesTest, where we try to log in and then check
-        // what status code the server returned
-
-        // check the next test case to see how to get all nurses
-
-        // once the test is created, delete @Disabled annotation and this TODO comments
     }
 
     @Test
@@ -61,10 +80,12 @@ class NurseRoutesTest : ServerTestBase() {
         // try to create nurse as Doctor
         handleRequest(HttpMethod.Put, Routes.nurse) {
             // we can safely use ID that exists with different role
-            authorize(UserPrincipal(
-                DatabaseData.admin.id, UserRole.DOCTOR,
-                "", LocalDate.now(),null
-            ))
+            authorize(
+                UserPrincipal(
+                    DatabaseData.admin.id, UserRole.DOCTOR,
+                    "", LocalDate.now(), null
+                )
+            )
             jsonBody(nurseToCreate)
         }.run {
             expectStatus(HttpStatusCode.Forbidden)
