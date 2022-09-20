@@ -13,11 +13,11 @@ import blue.mild.covid.vaxx.error.entityNotFound
 import blue.mild.covid.vaxx.utils.formatPhoneNumber
 import blue.mild.covid.vaxx.utils.normalizePersonalNumber
 import blue.mild.covid.vaxx.utils.removeAllWhitespaces
+import dev.forst.katlib.whenFalse
 import mu.KLogging
 import org.jetbrains.exposed.sql.Column
 import org.jetbrains.exposed.sql.Op
 import org.jetbrains.exposed.sql.and
-import pw.forst.katlib.whenFalse
 import java.util.Locale
 import java.util.UUID
 
@@ -109,7 +109,7 @@ class PatientService(
             zipCode = changeSet.zipCode,
             district = changeSet.district?.trim(),
             phoneNumber = changeSet.phoneNumber?.formatPhoneNumber(),
-            personalNumber = changeSet.personalNumber?.let { it.normalizePersonalNumber() },
+            personalNumber = changeSet.personalNumber?.normalizePersonalNumber(),
             insuranceNumber = changeSet.insuranceNumber?.trim(),
             email = changeSet.email?.trim()?.lowercase(Locale.getDefault()),
             insuranceCompany = changeSet.insuranceCompany,

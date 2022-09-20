@@ -93,6 +93,12 @@ enum class EnvVariables {
     ENABLE_CORS,
 
     /**
+     * If the CSP headers should be allowed or not.
+     * By default, they're enabled.
+     */
+    ENABLE_CSP,
+
+    /**
      * Allowed origins if [ENABLE_CORS] is enabled separated by ','.
      *
      * Example:

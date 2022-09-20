@@ -2,7 +2,7 @@ package blue.mild.covid.vaxx.security.auth
 
 import blue.mild.covid.vaxx.dao.model.EntityId
 import blue.mild.covid.vaxx.dao.model.UserRole
-import io.ktor.auth.Principal
+import io.ktor.server.auth.Principal
 import java.time.LocalDate
 
 /**

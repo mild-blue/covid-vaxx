@@ -6,14 +6,14 @@ import blue.mild.covid.vaxx.dto.internal.PatientEmailRequestDto
 import com.mailjet.client.MailjetClient
 import com.mailjet.client.MailjetRequest
 import com.mailjet.client.resource.Emailv31
+import dev.forst.katlib.TimeProvider
+import dev.forst.katlib.whenNull
 import io.ktor.http.HttpStatusCode
 import mu.KLogging
 import org.jetbrains.exposed.sql.transactions.transaction
 import org.jetbrains.exposed.sql.update
 import org.json.JSONArray
 import org.json.JSONObject
-import pw.forst.katlib.TimeProvider
-import pw.forst.katlib.whenNull
 import java.io.StringWriter
 import java.time.Instant
 import freemarker.template.Configuration as FreemarkerConfiguration

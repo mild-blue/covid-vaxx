@@ -12,6 +12,7 @@ import blue.mild.covid.vaxx.dto.response.DataCorrectnessConfirmationDtoOut
 import blue.mild.covid.vaxx.dto.response.PatientDtoOut
 import blue.mild.covid.vaxx.dto.response.VaccinationDtoOut
 import blue.mild.covid.vaxx.dto.response.VaccinationSlotDtoOut
+import dev.forst.katlib.TimeProvider
 import org.jetbrains.exposed.sql.Alias
 import org.jetbrains.exposed.sql.Op
 import org.jetbrains.exposed.sql.ResultRow
@@ -26,7 +27,6 @@ import org.jetbrains.exposed.sql.select
 import org.jetbrains.exposed.sql.selectAll
 import org.jetbrains.exposed.sql.transactions.experimental.newSuspendedTransaction
 import org.jetbrains.exposed.sql.update
-import pw.forst.katlib.TimeProvider
 import java.time.Instant
 
 @Suppress("LongParameterList") // it's a repository, we're fine with this

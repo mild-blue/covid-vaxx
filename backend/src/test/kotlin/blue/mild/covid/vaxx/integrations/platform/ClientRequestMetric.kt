@@ -1,7 +1,7 @@
 package blue.mild.covid.vaxx.integrations.platform
 
 import io.ktor.client.HttpClient
-import io.ktor.client.features.HttpClientFeature
+import io.ktor.client.plugins.HttpClientPlugin
 import io.ktor.client.statement.HttpReceivePipeline
 import io.ktor.client.statement.HttpResponse
 import io.ktor.client.statement.request
@@ -30,7 +30,7 @@ class ClientRequestMetric(private val metricHandler: RequestMetricHandler) {
         }
     }
 
-    companion object Feature : HttpClientFeature<Config, ClientRequestMetric>, KLogging() {
+    companion object Plugin : HttpClientPlugin<Config, ClientRequestMetric>, KLogging() {
 
         override val key: AttributeKey<ClientRequestMetric> =
             AttributeKey("ClientRequestMetric")
@@ -38,13 +38,13 @@ class ClientRequestMetric(private val metricHandler: RequestMetricHandler) {
         override fun prepare(block: Config.() -> Unit) =
             ClientRequestMetric(Config().apply(block).metricHandler)
 
-        override fun install(feature: ClientRequestMetric, scope: HttpClient) {
+        override fun install(plugin: ClientRequestMetric, scope: HttpClient) {
             // synchronous response pipeline hook
             // instead of ResponseObserver - which spawns a new coroutine
             scope.receivePipeline.intercept(HttpReceivePipeline.After) { response ->
                 // WARNING: Do not consume HttpResponse.content here,
                 // or you will corrupt the client response.
-                runCatching { feature.metricHandler(response.toRequestMetric()) }
+                runCatching { plugin.metricHandler(response.toRequestMetric()) }
                     .onFailure { logger.error(it) { "Error during metering!" } }
             }
         }

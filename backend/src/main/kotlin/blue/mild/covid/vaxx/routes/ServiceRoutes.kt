@@ -25,7 +25,7 @@ import com.papsign.ktor.openapigen.route.path.normal.get
 import com.papsign.ktor.openapigen.route.response.respond
 import com.papsign.ktor.openapigen.route.route
 import io.ktor.http.HttpStatusCode
-import io.ktor.response.respond
+import io.ktor.server.response.respond
 import org.kodein.di.instance
 
 /**

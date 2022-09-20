@@ -2,12 +2,12 @@ package blue.mild.covid.vaxx.jobs
 
 import blue.mild.covid.vaxx.extensions.createLogger
 import blue.mild.covid.vaxx.setup.EnvVariables
+import dev.forst.katlib.getEnv
+import dev.forst.katlib.whenNull
 import org.kodein.di.DI
 import org.kodein.di.bind
 import org.kodein.di.instance
 import org.kodein.di.singleton
-import pw.forst.katlib.getEnv
-import pw.forst.katlib.whenNull
 import java.util.concurrent.TimeUnit
 
 private val logger = createLogger("JobRegistration")

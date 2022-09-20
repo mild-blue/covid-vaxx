@@ -2,7 +2,7 @@ package blue.mild.covid.vaxx.utils
 
 import blue.mild.covid.vaxx.dao.model.EntityId
 import blue.mild.covid.vaxx.dao.model.UserRole
-import pw.forst.katlib.toUuid
+import dev.forst.katlib.toUuid
 
 /**
  * This object contains data that are already in the database.

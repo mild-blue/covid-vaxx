@@ -3,6 +3,7 @@ package blue.mild.covid.vaxx.setup
 
 import blue.mild.covid.vaxx.dao.model.DatabaseSetup
 import blue.mild.covid.vaxx.dto.config.CorsConfigurationDto
+import blue.mild.covid.vaxx.dto.config.CspConfigurationDto
 import blue.mild.covid.vaxx.dto.config.DatabaseConfigurationDto
 import blue.mild.covid.vaxx.dto.config.JwtConfigurationDto
 import blue.mild.covid.vaxx.dto.config.RateLimitConfigurationDto
@@ -19,44 +20,43 @@ import blue.mild.covid.vaxx.monitoring.REMOTE_HOST
 import blue.mild.covid.vaxx.routes.Routes
 import blue.mild.covid.vaxx.routes.registerRoutes
 import blue.mild.covid.vaxx.security.auth.JwtService
-import blue.mild.covid.vaxx.security.auth.RoleBasedAuthorization
 import blue.mild.covid.vaxx.security.auth.registerJwtAuth
-import blue.mild.covid.vaxx.security.ddos.RateLimiting
 import com.auth0.jwt.JWTVerifier
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.papsign.ktor.openapigen.OpenAPIGen
-import com.papsign.ktor.openapigen.openAPIGen
 import com.papsign.ktor.openapigen.route.apiRouting
 import com.papsign.ktor.openapigen.schema.namer.DefaultSchemaNamer
 import com.papsign.ktor.openapigen.schema.namer.SchemaNamer
-import io.ktor.application.Application
-import io.ktor.application.call
-import io.ktor.application.install
-import io.ktor.auth.Authentication
-import io.ktor.auth.jwt.jwt
-import io.ktor.features.CORS
-import io.ktor.features.CallId
-import io.ktor.features.CallLogging
-import io.ktor.features.ContentNegotiation
-import io.ktor.features.DefaultHeaders
-import io.ktor.features.ForwardedHeaderSupport
-import io.ktor.features.XForwardedHeaderSupport
-import io.ktor.features.callId
+import dev.forst.ktor.csp.ContentSecurityPolicy
+import dev.forst.ktor.ratelimiting.RateLimiting
 import io.ktor.http.ContentType
 import io.ktor.http.HttpHeaders
 import io.ktor.http.HttpMethod
-import io.ktor.http.content.default
-import io.ktor.http.content.files
-import io.ktor.http.content.static
-import io.ktor.jackson.JacksonConverter
-import io.ktor.request.header
-import io.ktor.request.httpMethod
-import io.ktor.request.path
-import io.ktor.request.uri
-import io.ktor.response.respond
-import io.ktor.response.respondRedirect
-import io.ktor.routing.get
-import io.ktor.routing.routing
+import io.ktor.serialization.jackson.JacksonConverter
+import io.ktor.server.application.Application
+import io.ktor.server.application.call
+import io.ktor.server.application.install
+import io.ktor.server.auth.Authentication
+import io.ktor.server.auth.jwt.jwt
+import io.ktor.server.http.content.default
+import io.ktor.server.http.content.files
+import io.ktor.server.http.content.static
+import io.ktor.server.plugins.callid.CallId
+import io.ktor.server.plugins.callid.callId
+import io.ktor.server.plugins.callloging.CallLogging
+import io.ktor.server.plugins.contentnegotiation.ContentNegotiation
+import io.ktor.server.plugins.cors.CORSConfig
+import io.ktor.server.plugins.cors.routing.CORS
+import io.ktor.server.plugins.defaultheaders.DefaultHeaders
+import io.ktor.server.plugins.forwardedheaders.ForwardedHeaders
+import io.ktor.server.plugins.forwardedheaders.XForwardedHeaders
+import io.ktor.server.request.header
+import io.ktor.server.request.httpMethod
+import io.ktor.server.request.path
+import io.ktor.server.request.uri
+import io.ktor.server.response.respondRedirect
+import io.ktor.server.routing.get
+import io.ktor.server.routing.routing
 import org.flywaydb.core.Flyway
 import org.kodein.di.instance
 import org.kodein.di.instanceOrNull
@@ -184,6 +184,7 @@ private fun Application.installFrameworks() {
     installSwagger()
     installExceptionHandling()
     installRateLimiting()
+    installCsp()
 }
 
 // Install basic extensions and necessary features to the Ktor.
@@ -199,16 +200,16 @@ private fun Application.installBasics() {
     }
 
     // as we're running behind the proxy, we take remote host from X-Forwarded-From
-    install(XForwardedHeaderSupport)
-    install(ForwardedHeaderSupport)
+    install(XForwardedHeaders)
+    install(ForwardedHeaders)
 }
 
 // Allow CORS.
 private fun Application.setupCors() {
     // enable CORS if necessary
     val corsHosts by closestDI().instance<CorsConfigurationDto>()
-    val allowAndExpose: CORS.Configuration.(String) -> Unit = { headerName ->
-        header(headerName)
+    val allowAndExpose: CORSConfig.(String) -> Unit = { headerName ->
+        allowHeader(headerName)
         exposeHeader(headerName)
     }
     if (corsHosts.enableCors) {
@@ -216,11 +217,11 @@ private fun Application.setupCors() {
             allowCredentials = true
             allowNonSimpleContentTypes = true
 
-            method(HttpMethod.Options)
-            method(HttpMethod.Get)
-            method(HttpMethod.Post)
-            method(HttpMethod.Put)
-            method(HttpMethod.Delete)
+            allowMethod(HttpMethod.Options)
+            allowMethod(HttpMethod.Get)
+            allowMethod(HttpMethod.Post)
+            allowMethod(HttpMethod.Put)
+            allowMethod(HttpMethod.Delete)
 
             allowAndExpose(HttpHeaders.AccessControlAllowHeaders)
             allowAndExpose(HttpHeaders.AccessControlAllowOrigin)
@@ -247,7 +248,7 @@ private fun Application.installAuthentication() {
         }
     }
     // Role based auth
-    install(RoleBasedAuthorization)
+//    install(RoleBasedAuthorization)
 }
 
 // Install swagger features.
@@ -274,18 +275,12 @@ private fun Application.installSwagger() {
                 .replace(Regex("[A-Za-z0-9_.]+")) { it.value.split(".").last() }
                 .replace(Regex(">|<|, "), "_")
         })
-    }
-    // install swagger routes
-    if (enableSwagger) {
-        routing {
-            // register swagger routes
-            get(Routes.openApiJson) {
-                call.respond(openAPIGen.api.serialize())
-            }
-            get(Routes.swaggerUi) {
-                call.respondRedirect("/swagger-ui/index.html?url=${Routes.openApiJson}", true)
-            }
-        }
+
+        serveSwaggerUi = enableSwagger
+        swaggerUiPath = Routes.swaggerUi
+
+        serveOpenApiJson = enableSwagger
+        openApiJsonPath = Routes.openApiJson
     }
 }
 
@@ -330,14 +325,43 @@ private fun Application.installRateLimiting() {
     val configuration by closestDI().instance<RateLimitConfigurationDto>()
     if (configuration.enableRateLimiting) {
         install(RateLimiting) {
-            limit = configuration.rateLimit
-            resetTime = configuration.rateLimitDuration
-            keyExtraction = { call.request.determineRealIp() }
-            requestExclusion = {
-                it.httpMethod == HttpMethod.Options
-                        || it.uri.endsWith(Routes.status)
-                        || it.uri.endsWith(Routes.statusHealth)
+            excludeRequestWhen {
+                request.httpMethod == HttpMethod.Options
+                        || request.uri.endsWith(Routes.status)
+                        || request.uri.endsWith(Routes.statusHealth)
+            }
+            registerLimit(configuration.rateLimit, configuration.rateLimitDuration) {
+                request.determineRealIp()
             }
         }
     }
 }
+
+/**
+ * Install Content Security Policy.
+ */
+@Suppress("StringLiteralDuplication") // this case is ok
+private fun Application.installCsp() {
+    val cspConfig by closestDI().instance<CspConfigurationDto>()
+    if (!cspConfig.enabled) return
+
+    install(ContentSecurityPolicy) {
+        policy { call, _ ->
+            val path = call.request.path()
+            when {
+                // disallow swagger to connect anywhere else than to the current domain
+                path.startsWith(Routes.swaggerUi) || path == Routes.openApiJson -> mapOf(
+                    "default-src" to "'self'",
+                    "connect-src" to "'self'",
+                    "media-src" to "data:",
+                    "img-src" to "'self' data:",
+                    "style-src" to "'self' 'unsafe-inline'",
+                    "script-src" to "'self' 'unsafe-inline'",
+                )
+
+                else -> null
+            }
+        }
+    }
+}
+

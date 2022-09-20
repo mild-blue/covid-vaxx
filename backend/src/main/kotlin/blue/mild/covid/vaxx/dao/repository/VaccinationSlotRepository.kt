@@ -4,6 +4,7 @@ import blue.mild.covid.vaxx.dao.model.EntityId
 import blue.mild.covid.vaxx.dao.model.VaccinationSlots
 import blue.mild.covid.vaxx.dto.internal.VaccinationSlotDto
 import blue.mild.covid.vaxx.dto.response.VaccinationSlotDtoOut
+import dev.forst.katlib.TimeProvider
 import mu.KLogging
 import org.jetbrains.exposed.sql.Column
 import org.jetbrains.exposed.sql.Op
@@ -14,7 +15,6 @@ import org.jetbrains.exposed.sql.batchInsert
 import org.jetbrains.exposed.sql.select
 import org.jetbrains.exposed.sql.transactions.TransactionManager
 import org.jetbrains.exposed.sql.transactions.experimental.newSuspendedTransaction
-import pw.forst.katlib.TimeProvider
 import java.time.Instant
 
 class VaccinationSlotRepository(private val instantTimeProvider: TimeProvider<Instant>) {

@@ -6,6 +6,7 @@ import blue.mild.covid.vaxx.security.auth.UserPrincipal
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties
 import com.fasterxml.jackson.annotation.JsonProperty
 import io.ktor.client.HttpClient
+import io.ktor.client.call.body
 import io.ktor.client.request.get
 import io.ktor.client.request.parameter
 import mu.KLogging
@@ -24,11 +25,11 @@ class CaptchaVerificationService(
      */
     override suspend fun verify(token: String, host: String?) {
         val captchaResponse = runCatching {
-            client.get<CaptchaResponseDto>(configurationDto.googleUrl) {
+            client.get(configurationDto.googleUrl) {
                 parameter("secret", configurationDto.secretKey)
                 parameter("response", token)
                 parameter("remoteip", host)
-            }
+            }.body<CaptchaResponseDto>()
         }.onFailure {
             logger.error(it) { "Captcha call to Google failed." }
         }.getOrNull() ?: throw CaptchaFailedException()

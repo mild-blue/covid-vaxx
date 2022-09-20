@@ -5,7 +5,7 @@ import ch.qos.logback.classic.spi.IThrowableProxy
 import ch.qos.logback.classic.spi.ThrowableProxyUtil
 import ch.qos.logback.core.CoreConstants
 import ch.qos.logback.core.LayoutBase
-import pw.forst.katlib.createJson
+import dev.forst.katlib.createJson
 import java.time.Instant
 import java.time.ZoneOffset
 import java.time.format.DateTimeFormatter
@@ -32,9 +32,8 @@ class JsonLoggingLayout : LayoutBase<ILoggingEvent>() {
             "level" to (event.level.levelStr ?: event.level.levelInt),
         )
         // add marker to the final json
-        event.marker?.name?.also {
-            finalMap["marker"] = it
-        }
+        event.markerList?.joinToString(", ")
+            ?.also { finalMap["marker"] = it }
         // include all MDCs
         event.mdcPropertyMap.forEach { (key, entry) -> finalMap[key] = entry }
         // if this was an exception, include necessary data

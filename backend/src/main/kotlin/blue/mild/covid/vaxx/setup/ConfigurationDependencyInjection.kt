@@ -1,6 +1,7 @@
 package blue.mild.covid.vaxx.setup
 
 import blue.mild.covid.vaxx.dto.config.CorsConfigurationDto
+import blue.mild.covid.vaxx.dto.config.CspConfigurationDto
 import blue.mild.covid.vaxx.dto.config.DatabaseConfigurationDto
 import blue.mild.covid.vaxx.dto.config.IsinConfigurationDto
 import blue.mild.covid.vaxx.dto.config.JwtConfigurationDto
@@ -10,11 +11,11 @@ import blue.mild.covid.vaxx.dto.config.ReCaptchaVerificationConfigurationDto
 import blue.mild.covid.vaxx.dto.response.ApplicationInformationDtoOut
 import blue.mild.covid.vaxx.extensions.createLogger
 import blue.mild.covid.vaxx.isin.Pracovnik
+import dev.forst.katlib.getEnv
+import dev.forst.katlib.whenNull
 import org.kodein.di.DI
 import org.kodein.di.bind
 import org.kodein.di.singleton
-import pw.forst.katlib.getEnv
-import pw.forst.katlib.whenNull
 import java.io.File
 import java.time.Duration
 import java.util.UUID
@@ -93,6 +94,11 @@ fun DI.MainBuilder.bindConfiguration() {
                 .map { it.trim() }
         } else emptyList()
         CorsConfigurationDto(enableCors, hosts)
+    }
+
+    bind<CspConfigurationDto>() with singleton {
+        val enableCsp = getEnvOrLogDefault(EnvVariables.ENABLE_CSP, "true").toBoolean()
+        CspConfigurationDto(enableCsp)
     }
 
     bind<Boolean>(EnvVariables.ENABLE_RECAPTCHA_VERIFICATION) with singleton {
