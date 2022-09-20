@@ -6,11 +6,10 @@ import blue.mild.covid.vaxx.dto.response.UserLoginResponseDtoOut
 import com.auth0.jwt.JWT
 import com.auth0.jwt.JWTVerifier
 import com.auth0.jwt.algorithms.Algorithm
-import io.ktor.auth.jwt.JWTCredential
-import io.ktor.http.toHttpDateString
+import dev.forst.katlib.applyIf
+import dev.forst.katlib.toUuid
+import io.ktor.server.auth.jwt.JWTCredential
 import mu.KLogging
-import pw.forst.katlib.applyIf
-import pw.forst.katlib.toUuid
 import java.time.LocalDate
 import java.time.format.DateTimeFormatter
 import java.util.Date

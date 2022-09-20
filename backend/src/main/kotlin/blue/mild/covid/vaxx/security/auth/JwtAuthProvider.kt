@@ -7,9 +7,9 @@ import com.papsign.ktor.openapigen.model.security.SecuritySchemeType
 import com.papsign.ktor.openapigen.modules.providers.AuthProvider
 import com.papsign.ktor.openapigen.route.path.auth.OpenAPIAuthenticatedRoute
 import com.papsign.ktor.openapigen.route.path.normal.NormalOpenAPIRoute
-import io.ktor.application.ApplicationCall
-import io.ktor.auth.authenticate
-import io.ktor.auth.authentication
+import io.ktor.server.application.ApplicationCall
+import io.ktor.server.auth.authenticate
+import io.ktor.server.auth.authentication
 import io.ktor.util.pipeline.PipelineContext
 
 /**
@@ -24,10 +24,11 @@ class JwtAuthProvider : AuthProvider<UserPrincipal> {
             listOf(
                 AuthProvider.Security(
                     SecuritySchemeModel(
+                        referenceName = "jwtAuth",
                         type = SecuritySchemeType.http,
                         scheme = HttpSecurityScheme.bearer,
                         bearerFormat = "JWT",
-                        name = "jwtAuth"
+                        name = "Authorization"
                     ),
                     listOf(Scopes.Default)
                 )

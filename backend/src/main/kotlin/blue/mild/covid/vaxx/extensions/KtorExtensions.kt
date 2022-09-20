@@ -1,8 +1,8 @@
 package blue.mild.covid.vaxx.extensions
 
-import io.ktor.features.origin
-import io.ktor.request.ApplicationRequest
-import io.ktor.request.header
+import io.ktor.server.plugins.origin
+import io.ktor.server.request.ApplicationRequest
+import io.ktor.server.request.header
 
 /**
  * Determine real IP address of the request call from the proxy headers.

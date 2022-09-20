@@ -6,11 +6,10 @@ import blue.mild.covid.vaxx.routes.Routes
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule
 import io.ktor.client.HttpClient
 import io.ktor.client.engine.apache.Apache
-import io.ktor.client.features.HttpTimeout
-import io.ktor.client.features.json.JacksonSerializer
-import io.ktor.client.features.json.Json
+import io.ktor.client.plugins.HttpTimeout
+import io.ktor.client.plugins.contentnegotiation.ContentNegotiation
 import io.ktor.client.request.get
-import io.ktor.client.statement.HttpResponse
+import io.ktor.serialization.jackson.jackson
 import mu.KLogging
 import java.util.concurrent.ConcurrentLinkedQueue
 import java.util.concurrent.atomic.AtomicInteger
@@ -27,12 +26,9 @@ abstract class ApiCallTestHelper(
 
     protected val meteredClient by lazy {
         HttpClient(Apache) {
-            Json {
-                serializer = JacksonSerializer {
-                    registerModule(JavaTimeModule())
-                }
+            install(ContentNegotiation) {
+                jackson { registerModule(JavaTimeModule()) }
             }
-
             install(ClientRequestMetric) {
                 onResponse {
                     callsCollection.add(it)
@@ -49,12 +45,12 @@ abstract class ApiCallTestHelper(
     abstract suspend fun execute(): List<RequestMetric>
 
     protected suspend fun loadClientSource() =
-        meteredClient.get<HttpResponse>(targetHost)
+        meteredClient.get(targetHost)
 
     protected suspend fun getInsuranceCompanies() =
-        meteredClient.get<HttpResponse>("${targetHost}${Routes.insuranceCompanies}")
+        meteredClient.get("${targetHost}${Routes.insuranceCompanies}")
 
     protected suspend fun getQuestions() =
-        meteredClient.get<HttpResponse>("${targetHost}${Routes.questions}")
+        meteredClient.get("${targetHost}${Routes.questions}")
 
 }

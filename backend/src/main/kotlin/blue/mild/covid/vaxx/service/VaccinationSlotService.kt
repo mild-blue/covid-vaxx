@@ -14,12 +14,12 @@ import blue.mild.covid.vaxx.error.NoVaccinationSlotsFoundException
 import blue.mild.covid.vaxx.error.entityNotFound
 import blue.mild.covid.vaxx.utils.defaultPostgresFrom
 import blue.mild.covid.vaxx.utils.defaultPostgresTo
+import dev.forst.katlib.validate
+import dev.forst.katlib.whenFalse
 import mu.KLogging
 import org.jetbrains.exposed.sql.Column
 import org.jetbrains.exposed.sql.Op
 import org.jetbrains.exposed.sql.and
-import pw.forst.katlib.validate
-import pw.forst.katlib.whenFalse
 import java.time.Instant
 
 

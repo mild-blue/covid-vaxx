@@ -39,24 +39,25 @@ import com.fasterxml.jackson.databind.SerializationFeature
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule
 import com.mailjet.client.ClientOptions
 import com.mailjet.client.MailjetClient
+import dev.forst.katlib.InstantTimeProvider
+import dev.forst.katlib.TimeProvider
+import dev.forst.katlib.jacksonMapper
 import freemarker.template.Configuration
 import freemarker.template.Version
 import io.ktor.client.HttpClient
 import io.ktor.client.HttpClientConfig
 import io.ktor.client.engine.apache.Apache
 import io.ktor.client.engine.apache.ApacheEngineConfig
-import io.ktor.client.features.HttpTimeout
-import io.ktor.client.features.json.JacksonSerializer
-import io.ktor.client.features.json.JsonFeature
+import io.ktor.client.plugins.HttpTimeout
+import io.ktor.client.plugins.contentnegotiation.ContentNegotiation
+import io.ktor.http.ContentType
+import io.ktor.serialization.jackson.JacksonConverter
 import org.apache.http.ssl.SSLContextBuilder
 import org.flywaydb.core.Flyway
 import org.kodein.di.DI
 import org.kodein.di.bind
 import org.kodein.di.instance
 import org.kodein.di.singleton
-import pw.forst.katlib.InstantTimeProvider
-import pw.forst.katlib.TimeProvider
-import pw.forst.katlib.jacksonMapper
 import java.io.ByteArrayInputStream
 import java.security.KeyStore
 import java.time.Instant
@@ -125,24 +126,20 @@ fun DI.MainBuilder.registerClasses() {
     }
 
     bind<HttpClient>() with singleton {
-        val mapper = instance<ObjectMapper>()
-
         HttpClient(Apache) {
-            install(JsonFeature) {
-                serializer = JacksonSerializer(mapper)
+            install(ContentNegotiation) {
+                register(ContentType.Application.Json, JacksonConverter(instance()))
             }
         }
     }
 
     val isinHttpClientTag = "isin"
     bind<HttpClient>(isinHttpClientTag) with singleton {
-        val mapper = instance<ObjectMapper>()
-
         @Suppress("MagicNumber") // carefully chosen constant
         val isinTimeOutMillis = 30000L
         HttpClient(Apache) {
-            install(JsonFeature) {
-                serializer = JacksonSerializer(mapper)
+            install(ContentNegotiation) {
+                register(ContentType.Application.Json, JacksonConverter(instance()))
             }
 
             install(HttpTimeout) {

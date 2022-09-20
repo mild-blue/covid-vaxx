@@ -7,8 +7,8 @@ import blue.mild.covid.vaxx.dto.internal.ContextAware
 import blue.mild.covid.vaxx.dto.request.VaccinationDtoIn
 import blue.mild.covid.vaxx.dto.response.VaccinationDetailDtoOut
 import blue.mild.covid.vaxx.error.entityNotFound
-import pw.forst.katlib.TimeProvider
-import pw.forst.katlib.whenFalse
+import dev.forst.katlib.TimeProvider
+import dev.forst.katlib.whenFalse
 import java.time.Instant
 
 class VaccinationService(

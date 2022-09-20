@@ -2,10 +2,10 @@ package blue.mild.covid.vaxx
 
 import blue.mild.covid.vaxx.setup.EnvVariables
 import blue.mild.covid.vaxx.setup.init
-import io.ktor.application.Application
+import dev.forst.katlib.getEnv
+import io.ktor.server.application.Application
 import io.ktor.server.engine.embeddedServer
 import io.ktor.server.netty.Netty
-import pw.forst.katlib.getEnv
 
 
 fun main() {

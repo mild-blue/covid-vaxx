@@ -11,11 +11,11 @@ import blue.mild.covid.vaxx.security.auth.AuthorizationException
 import blue.mild.covid.vaxx.security.auth.CredentialsMismatchException
 import blue.mild.covid.vaxx.security.auth.NonExistingNurseException
 import blue.mild.covid.vaxx.security.auth.UserPrincipal
+import dev.forst.katlib.whenFalse
+import dev.forst.katlib.whenTrue
 import mu.KLogging
 import org.jetbrains.exposed.sql.select
 import org.jetbrains.exposed.sql.transactions.experimental.newSuspendedTransaction
-import pw.forst.katlib.whenFalse
-import pw.forst.katlib.whenTrue
 import java.util.Locale
 
 class UserService(

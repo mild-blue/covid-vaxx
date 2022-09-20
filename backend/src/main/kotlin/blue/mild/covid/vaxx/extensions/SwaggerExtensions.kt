@@ -6,9 +6,9 @@ import com.papsign.ktor.openapigen.route.OpenAPIRoute
 import com.papsign.ktor.openapigen.route.path.auth.principal
 import com.papsign.ktor.openapigen.route.response.OpenAPIPipelineAuthContext
 import com.papsign.ktor.openapigen.route.response.OpenAPIPipelineResponseContext
-import io.ktor.features.callId
 import io.ktor.http.HttpStatusCode
-import io.ktor.response.respond
+import io.ktor.server.plugins.callid.callId
+import io.ktor.server.response.respond
 import org.kodein.di.ktor.closestDI
 
 /**

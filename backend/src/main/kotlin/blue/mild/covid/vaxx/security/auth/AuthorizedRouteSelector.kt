@@ -1,8 +1,9 @@
 package blue.mild.covid.vaxx.security.auth
 
-import io.ktor.routing.RouteSelector
-import io.ktor.routing.RouteSelectorEvaluation
-import io.ktor.routing.RoutingResolveContext
+import io.ktor.server.routing.RouteSelector
+import io.ktor.server.routing.RouteSelectorEvaluation
+import io.ktor.server.routing.RoutingResolveContext
+
 
 /**
  * Routing selector for our role based authorization.

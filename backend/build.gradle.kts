@@ -1,8 +1,5 @@
-import java.net.URI
-
-
 plugins {
-    kotlin("jvm") version "1.6.10"
+    kotlin("jvm") version "1.7.10"
     application
     distribution
     id("net.nemerosa.versioning") version "2.14.0"
@@ -31,52 +28,50 @@ application {
 
 repositories {
     mavenCentral()
-    maven {
-        // for swagger
-        url = URI.create("https://jitpack.io")
-    }
 }
 
 dependencies {
     // extension functions
-    implementation("pw.forst", "katlib", "2.0.3")
+    implementation("dev.forst", "katlib", "2.2.1")
     implementation(kotlin("reflect"))
 
     // Ktor server dependencies
-    val ktorVersion = "1.6.7"
+    val ktorVersion = "2.1.1"
     implementation("io.ktor", "ktor-server-core", ktorVersion)
     implementation("io.ktor", "ktor-server-netty", ktorVersion)
-    implementation("io.ktor", "ktor-jackson", ktorVersion)
-    implementation("io.ktor", "ktor-auth", ktorVersion)
-    implementation("io.ktor", "ktor-auth-jwt", ktorVersion)
-
-    // these two are here because OpenAPI generator needs then
-    // however, we don't use them directly
-    implementation("io.ktor", "ktor-metrics", ktorVersion)
-    implementation("io.ktor", "ktor-server-sessions", ktorVersion)
-
-    // ktor swagger
-    implementation("com.github.papsign", "Ktor-OpenAPI-Generator", "0.2-beta.18") {
-        // exclude obsolete libraries from the generator
-        exclude("io.ktor", "ktor-metrics")
-        exclude("io.ktor", "ktor-server-sessions")
-    }
+    implementation("io.ktor", "ktor-server-content-negotiation", ktorVersion)
+    implementation("io.ktor", "ktor-server-cors", ktorVersion)
+    implementation("io.ktor", "ktor-server-default-headers", ktorVersion)
+    implementation("io.ktor", "ktor-server-forwarded-header", ktorVersion)
+    implementation("io.ktor", "ktor-server-status-pages", ktorVersion)
+    implementation("io.ktor", "ktor-server-auth", ktorVersion)
+    implementation("io.ktor", "ktor-server-auth-jwt", ktorVersion)
+    implementation("io.ktor", "ktor-server-call-id", ktorVersion)
+    implementation("io.ktor", "ktor-serialization-jackson", ktorVersion)
 
     // Ktor client dependencies
     implementation("io.ktor", "ktor-client-json", ktorVersion)
-    implementation("io.ktor", "ktor-client-jackson", ktorVersion)
     implementation("io.ktor", "ktor-client-apache", ktorVersion)
     implementation("io.ktor", "ktor-client-logging-jvm", ktorVersion)
+    implementation("io.ktor", "ktor-client-content-negotiation", ktorVersion)
+    implementation("io.ktor", "ktor-client-jackson", ktorVersion)
+
+
+    // ktor swagger
+    implementation("dev.forst", "ktor-openapi-generator", "0.5.0")
+    // rate limiting
+    implementation("dev.forst", "ktor-rate-limiting", ktorVersion)
+    implementation("dev.forst", "ktor-content-security-policy", "2.1.1-1")
 
     // Jackson JSON
-    val jacksonVersion = "2.13.0"
+    val jacksonVersion = "2.13.4"
     implementation("com.fasterxml.jackson.core", "jackson-databind", jacksonVersion)
     implementation("com.fasterxml.jackson.module", "jackson-module-kotlin", jacksonVersion)
     implementation("com.fasterxml.jackson.datatype", "jackson-datatype-jsr310", jacksonVersion)
 
     // logging
-    implementation("io.github.microutils", "kotlin-logging", "2.1.16")
-    implementation("ch.qos.logback", "logback-classic", "1.2.3")
+    implementation("io.github.microutils", "kotlin-logging-jvm", "3.0.0")
+    implementation("ch.qos.logback", "logback-classic", "1.3.1")
     // if-else in logback.xml
     implementation("org.codehaus.janino", "janino", "3.1.3")
 
@@ -84,14 +79,14 @@ dependencies {
     implementation("com.lambdaworks", "scrypt", "1.4.0")
 
     // DI
-    val kodeinVersion = "7.9.0"
+    val kodeinVersion = "7.14.0"
     implementation("org.kodein.di", "kodein-di-jvm", kodeinVersion)
     implementation("org.kodein.di", "kodein-di-framework-ktor-server-jvm", kodeinVersion)
 
     // database
     implementation("org.postgresql", "postgresql", "42.3.1")
 
-    val exposedVersion = "0.36.2"
+    val exposedVersion = "0.39.2"
     implementation("org.jetbrains.exposed", "exposed-core", exposedVersion)
     implementation("org.jetbrains.exposed", "exposed-dao", exposedVersion)
     implementation("org.jetbrains.exposed", "exposed-jdbc", exposedVersion)
@@ -111,7 +106,7 @@ dependencies {
     testImplementation(kotlin("test"))
     testImplementation("io.mockk", "mockk", "1.12.1")
 
-    val junitVersion = "5.8.2"
+    val junitVersion = "5.9.0"
     testImplementation("org.junit.jupiter", "junit-jupiter-api", junitVersion) // junit testing framework
     testImplementation("org.junit.jupiter", "junit-jupiter-params", junitVersion) // generated parameters for tests
     testImplementation("io.ktor", "ktor-server-test-host", ktorVersion)

@@ -14,10 +14,11 @@ import blue.mild.covid.vaxx.dto.response.PatientDtoOut
 import blue.mild.covid.vaxx.utils.normalizePersonalNumber
 import com.fasterxml.jackson.databind.JsonNode
 import io.ktor.client.HttpClient
-import io.ktor.client.call.receive
+import io.ktor.client.call.body
 import io.ktor.client.request.accept
 import io.ktor.client.request.get
 import io.ktor.client.request.post
+import io.ktor.client.request.setBody
 import io.ktor.client.statement.HttpResponse
 import io.ktor.http.ContentType
 import io.ktor.http.contentType
@@ -65,7 +66,7 @@ class IsinService(
             personalNumber.normalizePersonalNumber()
         ))
         logger.info { "Executing ISIN HTTP call ${URL_GET_PATIENT_BY_PARAMETERS}." }
-        val json =  isinClient.get<JsonNode>(url)
+        val json = isinClient.get(url).body<JsonNode>()
 
         val result = IsinGetPatientByParametersResultDto(
             result = json.get("vysledek").textValue(),
@@ -73,8 +74,8 @@ class IsinService(
             patientId = json.get("pacient")?.get("id")?.textValue()
         )
         logger.info {
-            "Data from ISIN for patient ${firstName} ${lastName}, personalNumber=${personalNumber}: " +
-            "result=${result.result}, resultMessage=${result.resultMessage}, patientId=${result.patientId}."
+            "Data from ISIN for patient $firstName ${lastName}, personalNumber=${personalNumber}: " +
+                    "result=${result.result}, resultMessage=${result.resultMessage}, patientId=${result.patientId}."
         }
         return result
     }
@@ -86,7 +87,7 @@ class IsinService(
             insuranceNumber.trim()
         ))
         logger.info { "Executing ISIN HTTP call ${URL_GET_FOREIGNER_BY_INSURANCE_NUMBER}." }
-        val json =  isinClient.get<JsonNode>(url)
+        val json = isinClient.get(url).body<JsonNode>()
 
         val result = IsinGetPatientByParametersResultDto(
             result = json.get("vysledek").textValue(),
@@ -105,18 +106,18 @@ class IsinService(
             isinId.trim()
         ))
         logger.info { "Executing ISIN HTTP call ${URL_GET_VACCINATIONS_BY_PATIENT_ID}." }
-        return isinClient.get<HttpResponse>(url) {
+        return isinClient.get(url) {
             contentType(ContentType.Application.Json)
             accept(ContentType.Application.Json)
-        }.receive()
+        }.body()
     }
 
     override suspend fun tryPatientIsReadyForVaccination(isinId: String): Boolean? =
         runCatching {
             val allVaccinations = getPatientVaccinations(isinId)
             logger.info(
-                "Getting vaccination from ISIN for patient ${isinId } was successful. " +
-                "${allVaccinations.count()} vaccinations were found."
+                "Getting vaccination from ISIN for patient $isinId was successful. " +
+                        "${allVaccinations.count()} vaccinations were found."
             )
 
             val problematicVaccinations = allVaccinations.filter { vaccination ->
@@ -124,16 +125,16 @@ class IsinService(
                 vaccination.stav != VACCINATION_STATE_CANCELED
             }
 
-            if (problematicVaccinations.count() > 0) {
+            if (problematicVaccinations.isNotEmpty()) {
                 logger.info(
-                    "${problematicVaccinations.count()} problematic vaccinations of patient ${isinId} were found in ISIN. " +
-                    "Patient is not ready for vaccination: ${problematicVaccinations}"
+                    "${problematicVaccinations.count()} problematic vaccinations of patient $isinId were found in ISIN. " +
+                            "Patient is not ready for vaccination: $problematicVaccinations"
                 )
                 false
             } else {
                 logger.info(
-                    "No problematic vaccination of patient ${isinId} were found in ISIN. " +
-                    "Patient is ready for vaccination."
+                    "No problematic vaccination of patient $isinId were found in ISIN. " +
+                            "Patient is ready for vaccination."
                 )
                 true
             }
@@ -193,11 +194,11 @@ class IsinService(
             contactInfo
 
         logger.info { "Executing ISIN HTTP call ${URL_UPDATE_PATIENT_INFO}." }
-        return isinClient.post<HttpResponse>(url) {
+        return isinClient.post(url) {
             contentType(ContentType.Application.Json)
             accept(ContentType.Application.Json)
-            body = data
-        }.receive()
+            setBody(data)
+        }.body()
     }
 
     /**
@@ -303,8 +304,8 @@ class IsinService(
         runCatching {
             val allVaccinations = getPatientVaccinations(isinId)
             logger.info(
-                "Getting vaccination from ISIN for patient ${isinId} was successful. " +
-                "${allVaccinations.count()} vaccinations were found."
+                "Getting vaccination from ISIN for patient $isinId was successful. " +
+                        "${allVaccinations.count()} vaccinations were found."
             )
 
             val ongoingVaccinations = allVaccinations.filter { vaccination ->
@@ -345,11 +346,11 @@ class IsinService(
             vaccinationDtoIn
 
         logger.info { "Executing ISIN HTTP call ${URL_CREATE_OR_CHANGE_VACCINATION}." }
-        return isinClient.post<HttpResponse>(url) {
+        return isinClient.post(url) {
             contentType(ContentType.Application.Json)
             accept(ContentType.Application.Json)
-            body = data
-        }.receive()
+            setBody(data)
+        }.body()
     }
 
     // TODO share logic with createVaccination function
@@ -361,11 +362,11 @@ class IsinService(
             vaccinationDoseDtoIn
 
         logger.info { "Executing ISIN HTTP call ${URL_CREATE_OR_CHANGE_DOSE}." }
-        return isinClient.post<HttpResponse>(url) {
+        return isinClient.post(url) {
             contentType(ContentType.Application.Json)
             accept(ContentType.Application.Json)
-            body = data
-        }.receive()
+            setBody(data)
+        }.body()
     }
 
     // This is used to clean the test data and should never be used in production
@@ -383,7 +384,7 @@ class IsinService(
             }
         }
 
-        logger.info { "${canceled} vaccinations canceled successfully for patient with ISIN id ${isinId}" }
+        logger.info { "$canceled vaccinations canceled successfully for patient with ISIN id $isinId" }
     }
 
     private suspend fun cancelVaccination(vaccinationId: String): HttpResponse {
@@ -394,11 +395,11 @@ class IsinService(
         val data = mapOf("pracovnik" to configuration.pracovnik)
 
         logger.info { "Executing ISIN HTTP call ${URL_UPDATE_VACCINATION_STATE}." }
-        return isinClient.post<HttpResponse>(url) {
+        return isinClient.post(url) {
             contentType(ContentType.Application.Json)
             accept(ContentType.Application.Json)
-            body = data
-        }.receive()
+            setBody(data)
+        }.body()
     }
 
     private fun String.isUrl() = runCatching {

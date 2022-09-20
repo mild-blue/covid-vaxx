@@ -1,29 +1,32 @@
 @file:Suppress("TooManyFunctions")
+
 package blue.mild.covid.vaxx.isin
 
 import blue.mild.covid.vaxx.extensions.createLogger
 import com.fasterxml.jackson.databind.JsonNode
+import com.fasterxml.jackson.databind.ObjectMapper
+import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
+import dev.forst.katlib.getEnv
 import io.ktor.client.HttpClient
 import io.ktor.client.HttpClientConfig
-import io.ktor.client.call.receive
+import io.ktor.client.call.body
 import io.ktor.client.engine.apache.Apache
 import io.ktor.client.engine.apache.ApacheEngineConfig
-import io.ktor.client.features.ClientRequestException
-import io.ktor.client.features.ServerResponseException
-import io.ktor.client.features.json.JacksonSerializer
-import io.ktor.client.features.json.JsonFeature
-import io.ktor.client.features.logging.LogLevel
-import io.ktor.client.features.logging.Logger
-import io.ktor.client.features.logging.Logging
+import io.ktor.client.plugins.ClientRequestException
+import io.ktor.client.plugins.ServerResponseException
+import io.ktor.client.plugins.contentnegotiation.ContentNegotiation
+import io.ktor.client.plugins.logging.LogLevel
+import io.ktor.client.plugins.logging.Logger
+import io.ktor.client.plugins.logging.Logging
 import io.ktor.client.request.accept
 import io.ktor.client.request.get
 import io.ktor.client.request.post
-import io.ktor.client.statement.HttpResponse
+import io.ktor.client.request.setBody
 import io.ktor.http.ContentType
 import io.ktor.http.contentType
+import io.ktor.serialization.jackson.JacksonConverter
 import kotlinx.coroutines.runBlocking
 import org.apache.http.ssl.SSLContextBuilder
-import pw.forst.katlib.getEnv
 import java.io.File
 import java.security.KeyStore
 
@@ -45,6 +48,7 @@ private const val PRODUCTION_ROOT = "https://api.uzis.cz/api/v1"
 // https://nrpzs.uzis.cz/detail-66375-clinicum-a-s.html#fndtn-detail_uzis
 private const val PCZ = "000"
 private const val NRZP_CISLO = "123456789"
+
 // rodne cislo pracovnika je z PDFka
 private val pracovnikO = Pracovnik(pcz = PCZ, nrzpCislo = NRZP_CISLO, rodneCislo = "1234567890")
 private const val URL_VYTVOR_NEBO_ZMEN_VAKCINACI = "vakcinace/VytvorNeboZmenVakcinaci"
@@ -71,6 +75,7 @@ data class InputPacient(
     val prijmeni: String,
     val rodneCislo: String
 )
+
 private val patients = mapOf(
     IsinEnvironment.PUBLIC to InputPacient("Jan", "Kubant", "1234567890"),
     IsinEnvironment.TEST to InputPacient("VICTOR", "BUDIUC", "8208258201"),
@@ -86,9 +91,17 @@ data class InputPracovnik(
     val rodneCislo: String,
     val pcz: String,
 )
+
 private val workers = mapOf(
     // Public - hardcoded one
-    IsinEnvironment.PUBLIC to InputPracovnik(pracovnikO.nrzpCislo, "", "", datumNarozeni = "", rodneCislo = pracovnikO.rodneCislo, pcz=PCZ),
+    IsinEnvironment.PUBLIC to InputPracovnik(
+        pracovnikO.nrzpCislo,
+        "",
+        "",
+        datumNarozeni = "",
+        rodneCislo = pracovnikO.rodneCislo,
+        pcz = PCZ
+    ),
     // Test is one worker received by nactiPracovniky
     IsinEnvironment.TEST to InputPracovnik("172319367", "Jmeno2", "Prijmeni26", "1924-05-10T00:00:00", "245510064", PCZ),
     // Prod - hardcoded one
@@ -98,7 +111,7 @@ private val workers = mapOf(
 private val root = roots.getValue(useEnvironment)
 private val pacient = patients.getValue(useEnvironment)
 private val iPracovnik = workers.getValue(useEnvironment)
-private val pracovnik = Pracovnik(nrzpCislo= iPracovnik.cislo, rodneCislo = iPracovnik.rodneCislo, pcz = iPracovnik.pcz)
+private val pracovnik = Pracovnik(nrzpCislo = iPracovnik.cislo, rodneCislo = iPracovnik.rodneCislo, pcz = iPracovnik.pcz)
 
 
 private val userIdentification = "?pcz=${pracovnik.pcz}&pracovnikNrzpCislo=${pracovnik.nrzpCislo}"
@@ -114,11 +127,12 @@ private val configuration = KeyStoreConfiguration(
  * Prepares HTTP Client with given keystore.
  */
 fun client(
-    config: KeyStoreConfiguration
+    config: KeyStoreConfiguration,
+    objectMapper: ObjectMapper = jacksonObjectMapper()
 ) =
     HttpClient(Apache) {
-        install(JsonFeature) {
-            serializer = JacksonSerializer()
+        install(ContentNegotiation) {
+            register(ContentType.Application.Json, JacksonConverter(objectMapper))
         }
 
         install(Logging) {
@@ -185,27 +199,27 @@ private val Logger.Companion.TRACE: Logger
         }
     }
 
-private fun createIsinURL(requestUrl: String, baseUrl: String = root, parameters: List<Any> = listOf(), includeIdentification: Boolean = true): String {
+private fun createIsinURL(
+    requestUrl: String,
+    baseUrl: String = root,
+    parameters: List<Any> = listOf(),
+    includeIdentification: Boolean = true
+): String {
     val parametersUrl = parameters.map { it.toString() }.joinToString(separator = "/")
     return "$baseUrl/$requestUrl/$parametersUrl${if (includeIdentification) userIdentification else ""}"
 }
 
-suspend fun getUrl(isinClient: HttpClient, url: String): JsonNode {
-    return isinClient.get<HttpResponse>(url).receive<JsonNode>()
-}
+suspend fun getUrl(isinClient: HttpClient, url: String): JsonNode = isinClient.get(url).body()
 
 suspend fun postUrlData(
     isinClient: HttpClient,
     url: String,
     data: Any = {}
-): JsonNode {
-
-    return isinClient.post<HttpResponse>(url) {
-        contentType(ContentType.Application.Json)
-        accept(ContentType.Application.Json)
-        body = data
-    }.receive<JsonNode>()
-}
+): JsonNode = isinClient.post(url) {
+    contentType(ContentType.Application.Json)
+    accept(ContentType.Application.Json)
+    setBody(data)
+}.body()
 
 suspend fun getPatientId(isinClient: HttpClient, jmeno: String, prijmeni: String, rodneCislo: String): String? {
     val url = createIsinURL(URL_NAJDI_PACIENTA, parameters = listOf(jmeno, prijmeni, rodneCislo))
