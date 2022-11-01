@@ -36,7 +36,7 @@ jobs:
       # extract metadata for labels https://github.com/crazy-max/ghaction-docker-meta
       - name: Docker meta
         id: docker_meta
-        uses: crazy-max/ghaction-docker-meta@v1
+        uses: crazy-max/ghaction-docker-meta@v4
         with:
           images: ${{ steps.login-ecr.outputs.registry }}/${{ env.AWS_ECR_REPOSITORY }}
 
