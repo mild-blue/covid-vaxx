@@ -15,7 +15,6 @@ import org.kodein.di.DI
 import org.kodein.di.instance
 import kotlin.test.assertEquals
 
-
 class DataCorrectnessRoutesTest : ServerTestBase() {
 
     private lateinit var patient1: PatientDtoOut
@@ -81,7 +80,5 @@ class DataCorrectnessRoutesTest : ServerTestBase() {
             expectStatus(HttpStatusCode.OK)
             val output = receive<DataCorrectnessConfirmationDetailDtoOut>()
         }
-
     }
-
 }

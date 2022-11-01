@@ -63,7 +63,6 @@ class EmailRetryJobTest : DatabaseTestBase() {
         }
     }
 
-
     @Test
     fun `job should resend email only to patients with slots and no emails`() {
         val locationService by rootDI.instance<LocationService>()

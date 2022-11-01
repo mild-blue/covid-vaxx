@@ -3,9 +3,8 @@ package blue.mild.covid.vaxx.dto.internal
 import blue.mild.covid.vaxx.isin.Pracovnik
 import java.time.Instant
 
-
 // Fields according to api documentation https://apidoc.uzis.cz/index.html - VakcinaceDavkaCreateOrUpdate
-data class IsinVaccinationDoseCreateOrUpdateDtoIn (
+data class IsinVaccinationDoseCreateOrUpdateDtoIn(
     val id: String?,
     val vakcinaceId: String,
     val ockovaciLatkaKod: String,

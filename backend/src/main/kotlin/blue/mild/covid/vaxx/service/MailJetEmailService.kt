@@ -18,7 +18,6 @@ import java.io.StringWriter
 import java.time.Instant
 import freemarker.template.Configuration as FreemarkerConfiguration
 
-
 class MailJetEmailService(
     private val freemarkerConfiguration: FreemarkerConfiguration,
     private val mailJetConfig: MailJetConfigurationDto,

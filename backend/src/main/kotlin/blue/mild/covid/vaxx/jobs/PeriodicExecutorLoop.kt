@@ -24,7 +24,6 @@ class PeriodicExecutorLoop(
         job: PeriodicJob
     ) = scheduleSafe(job.delay, job.unit, job.name, job.job)
 
-
     private fun scheduleSafe(delay: Long, unit: TimeUnit, jobName: String, job: Job) {
         val marker = MarkerFactory.getMarker("executor:$jobName")
         logger.info(marker) { "Adding job \"$jobName\" to execution pool with delay $delay $unit." }
@@ -36,4 +35,3 @@ class PeriodicExecutorLoop(
         }, 0, delay, unit)
     }
 }
-

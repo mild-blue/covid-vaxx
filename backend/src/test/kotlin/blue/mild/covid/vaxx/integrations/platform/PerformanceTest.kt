@@ -19,7 +19,6 @@ fun main() {
     }
 }
 
-
 private fun timeTest() = TimeLoadTest(
     targetHost = TARGET_HOST,
     requestTimeoutsSeconds = 10,

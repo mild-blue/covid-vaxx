@@ -62,7 +62,6 @@ private const val URL_NACTI_PRACOVNIKA = "nrzp/NactiPracovnika"
 private const val URL_AKTUALIZUJ_KONTAKTNI_UDAJE_PACIENTA = "pacienti/AktualizujKontaktniUdajePacienta"
 private const val URL_NAJDI_PACIENTA = "pacienti/VyhledatDleJmenoPrijmeniRc"
 
-
 private val roots = mapOf(
     IsinEnvironment.PUBLIC to PUBLIC_ROOT,
     IsinEnvironment.TEST to TEST_ROOT,
@@ -113,7 +112,6 @@ private val pacient = patients.getValue(useEnvironment)
 private val iPracovnik = workers.getValue(useEnvironment)
 private val pracovnik = Pracovnik(nrzpCislo = iPracovnik.cislo, rodneCislo = iPracovnik.rodneCislo, pcz = iPracovnik.pcz)
 
-
 private val userIdentification = "?pcz=${pracovnik.pcz}&pracovnikNrzpCislo=${pracovnik.nrzpCislo}"
 
 private val configuration = KeyStoreConfiguration(
@@ -145,7 +143,6 @@ fun client(
         }
     }
 
-
 /**
  * Tries to read and create key store.
  */
@@ -161,7 +158,6 @@ private fun readStore(config: KeyStoreConfiguration): KeyStore? =
     }.onSuccess {
         logger.debug { "KeyStore loaded." }
     }.getOrNull()
-
 
 /**
  * Prepares client engine and sets certificates from [config].
@@ -179,10 +175,10 @@ private fun HttpClientConfig<ApacheEngineConfig>.configureCertificates(config: K
     }
 }
 //
-///**
+// /**
 // * Debug logger for HTTP requests.
 // */
-//private val Logger.Companion.DEBUG: Logger
+// private val Logger.Companion.DEBUG: Logger
 //    get() = object : Logger, org.slf4j.Logger by createLogger("HttpCallsLogging") {
 //        override fun log(message: String) {
 //            debug(message)
@@ -238,12 +234,10 @@ suspend fun vytvorVakcinaci(isinClient: HttpClient, data: VytvorNeboZmenVakcinac
     return response.get("id").textValue()
 }
 
-
 suspend fun vytvorDavku(isinClient: HttpClient, data: VytvorNeboZmenDavku): JsonNode {
     val url = createIsinURL(URL_VYTVOR_NEBO_ZMEN_DAVKU)
     return postUrlData(isinClient, url, data)
 }
-
 
 suspend fun uzavriVakcinaci(isinClient: HttpClient, idVakcinace: String): JsonNode {
     val url = createIsinURL(URL_ZMEN_STAV_VAKCINACE, parameters = listOf(idVakcinace, "Ukoncene"))
@@ -267,7 +261,7 @@ suspend fun getVakcinaceSeznamRegistraciARezervaci(isinClient: HttpClient, idPac
 }
 
 suspend fun nactiPracovnika(isinClient: HttpClient, pracovnikCislo: String): JsonNode {
-    val url = "${createIsinURL(URL_NACTI_PRACOVNIKA, includeIdentification = false)}?pracovnikCislo=${pracovnikCislo}"
+    val url = "${createIsinURL(URL_NACTI_PRACOVNIKA, includeIdentification = false)}?pracovnikCislo=$pracovnikCislo"
     return getUrl(isinClient, url)
 }
 
@@ -278,7 +272,7 @@ suspend fun nactiPracovniky(isinClient: HttpClient): JsonNode {
 
 @Suppress("LongMethod")
 fun main() {
-    println("Using environment: ${useEnvironment} => ${root}; ${pacient}; ${pracovnik}")
+    println("Using environment: $useEnvironment => $root; $pacient; $pracovnik")
 
     runBlocking {
 
@@ -345,7 +339,7 @@ fun main() {
         )
             ?: throw IllegalArgumentException("Vaccination creation failed, no vaccitaion id was returned")
 
-        println("vakcinaceId: ${vakcinaceId}")
+        println("vakcinaceId: $vakcinaceId")
 
         // datum vakcinace musi byt v minulosti
         val vytvor1 = vytvorDavku(
@@ -384,5 +378,4 @@ fun main() {
         println("Pocet davek ${vysledneDavky2.size()}")
         println(vysledneDavky2)
     }
-
 }

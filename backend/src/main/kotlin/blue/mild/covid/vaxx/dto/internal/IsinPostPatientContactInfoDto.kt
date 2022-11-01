@@ -1,8 +1,7 @@
 package blue.mild.covid.vaxx.dto.internal
 
-
 // Fields according to api documentation https://apidoc.uzis.cz/index.html - /api/v1/pacienti/AktualizujKontaktniUdajePacienta
-data class IsinPostPatientContactInfoDto (
+data class IsinPostPatientContactInfoDto(
     val zdravotniPojistovnaKod: String?,
     val kontaktniMobilniTelefon: String?,
     val kontaktniEmail: String?,

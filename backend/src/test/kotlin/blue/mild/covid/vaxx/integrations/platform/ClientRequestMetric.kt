@@ -13,7 +13,6 @@ import mu.KLogging
  */
 typealias RequestMetricHandler = suspend (RequestMetric) -> Unit
 
-
 /**
  * Enables callback after HttpClient sends a request with [RequestMetric].
  */
@@ -59,7 +58,6 @@ class ClientRequestMetric(private val metricHandler: RequestMetricHandler) {
         )
     }
 }
-
 
 data class RequestMetric(
     // number of epoch milliseconds

@@ -20,7 +20,6 @@ import kotlin.test.assertEquals
 import kotlin.test.assertNotNull
 import kotlin.test.assertTrue
 
-
 class UserRoutesTest : ServerTestBase() {
 
     @Test
@@ -65,7 +64,7 @@ class UserRoutesTest : ServerTestBase() {
             credentials = CredentialsDtoIn(user.email, user.password),
             nurseId = DatabaseData.nurses.random().id,
             vaccineSerialNumber = "#123",
-            vaccineExpiration =  LocalDate.now()
+            vaccineExpiration = LocalDate.now()
         )
         handleRequest(HttpMethod.Post, Routes.registeredUserLogin) {
             jsonBody(validLogin)

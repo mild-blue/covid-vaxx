@@ -41,7 +41,6 @@ enum class EnvVariables {
     MAIL_FROM,
     MAIL_SUBJECT,
 
-
     /**
      * From which path should backend serve static
      * frontend files. Set during Docker Image build.

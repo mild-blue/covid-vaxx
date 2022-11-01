@@ -37,5 +37,4 @@ class TimeLoadTest(
         }
         return callsCollection.toList()
     }
-
 }

@@ -98,7 +98,7 @@ fun NormalOpenAPIRoute.patientRoutes() {
             logger.info { "Saving patient to the database." }
             // TODO maybe run this in the transaction and then do rollback
             val patientId = patientService.savePatient(asContextAware(patientRegistration), patientIsinId)
-            logger.info { "Patient saved to the database with id: ${patientId}. Booking slot." }
+            logger.info { "Patient saved to the database with id: $patientId. Booking slot." }
 
             val (slot, location) = runCatching {
                 val slot = vaccinationSlotService.bookSlotForPatient(patientId)
@@ -171,7 +171,7 @@ fun NormalOpenAPIRoute.patientRoutes() {
                 info("Delete user by ID.")
             ) { (patientId) ->
                 val principal = principal()
-                logger.info { "User ${principal.userId} deleted patient ${patientId}." }
+                logger.info { "User ${principal.userId} deleted patient $patientId." }
                 patientService.deletePatientById(patientId)
                 respond(OK)
             }
@@ -183,7 +183,7 @@ fun NormalOpenAPIRoute.patientRoutes() {
                 )
             ) { (patientId), updateDto ->
                 val principal = principal()
-                logger.info { "User ${principal.userId} requests update of patient ${patientId}: $updateDto." }
+                logger.info { "User ${principal.userId} requests update of patient $patientId: $updateDto." }
 
                 patientService.updatePatientWithChangeSet(patientId, updateDto)
                 logger.info { "Patient $patientId updated." }

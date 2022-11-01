@@ -8,7 +8,6 @@ import io.ktor.server.auth.AuthenticationChecked
 import io.ktor.server.auth.authentication
 import io.ktor.server.response.respond
 
-
 /**
  * Plugin for a scope that allows role based authorization.
  */

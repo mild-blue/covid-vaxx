@@ -89,7 +89,6 @@ class DataCorrectnessRepository {
                 }
         }
 
-
     /**
      * Updates correctness entity with id [correctnessId].
      */

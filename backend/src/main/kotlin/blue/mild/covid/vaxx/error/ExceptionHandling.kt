@@ -24,7 +24,6 @@ import org.jetbrains.exposed.exceptions.ExposedSQLException
 
 private val logger = createLogger("ExceptionHandler")
 
-
 /**
  * Registers exception handling.
  */

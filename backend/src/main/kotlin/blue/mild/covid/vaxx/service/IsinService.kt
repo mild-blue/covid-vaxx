@@ -30,7 +30,6 @@ import java.time.LocalTime
 import java.time.ZoneId
 import java.util.Locale
 
-
 @Suppress("TooManyFunctions")
 class IsinService(
     private val configuration: IsinConfigurationDto,
@@ -65,7 +64,7 @@ class IsinService(
             lastName.trim().uppercase(Locale.getDefault()),
             personalNumber.normalizePersonalNumber()
         ))
-        logger.info { "Executing ISIN HTTP call ${URL_GET_PATIENT_BY_PARAMETERS}." }
+        logger.info { "Executing ISIN HTTP call $URL_GET_PATIENT_BY_PARAMETERS." }
         val json = isinClient.get(url).body<JsonNode>()
 
         val result = IsinGetPatientByParametersResultDto(
@@ -74,7 +73,7 @@ class IsinService(
             patientId = json.get("pacient")?.get("id")?.textValue()
         )
         logger.info {
-            "Data from ISIN for patient $firstName ${lastName}, personalNumber=${personalNumber}: " +
+            "Data from ISIN for patient $firstName $lastName, personalNumber=$personalNumber: " +
                     "result=${result.result}, resultMessage=${result.resultMessage}, patientId=${result.patientId}."
         }
         return result
@@ -86,7 +85,7 @@ class IsinService(
         val url = createIsinURL(URL_GET_FOREIGNER_BY_INSURANCE_NUMBER, parameters = listOf(
             insuranceNumber.trim()
         ))
-        logger.info { "Executing ISIN HTTP call ${URL_GET_FOREIGNER_BY_INSURANCE_NUMBER}." }
+        logger.info { "Executing ISIN HTTP call $URL_GET_FOREIGNER_BY_INSURANCE_NUMBER." }
         val json = isinClient.get(url).body<JsonNode>()
 
         val result = IsinGetPatientByParametersResultDto(
@@ -95,8 +94,8 @@ class IsinService(
             patientId = json.get("pacient")?.get("id")?.textValue()
         )
         logger.info {
-            "Data from ISIN for foreigner insuranceNumber=${insuranceNumber}: " +
-            "result=${result.result}, resultMessage=${result.resultMessage}, patientId=${result.patientId}."
+            "Data from ISIN for foreigner insuranceNumber=$insuranceNumber: " +
+                    "result=${result.result}, resultMessage=${result.resultMessage}, patientId=${result.patientId}."
         }
         return result
     }
@@ -105,7 +104,7 @@ class IsinService(
         val url = createIsinURL(URL_GET_VACCINATIONS_BY_PATIENT_ID, parameters = listOf(
             isinId.trim()
         ))
-        logger.info { "Executing ISIN HTTP call ${URL_GET_VACCINATIONS_BY_PATIENT_ID}." }
+        logger.info { "Executing ISIN HTTP call $URL_GET_VACCINATIONS_BY_PATIENT_ID." }
         return isinClient.get(url) {
             contentType(ContentType.Application.Json)
             accept(ContentType.Application.Json)
@@ -143,7 +142,7 @@ class IsinService(
             val wrappingException =
                 Exception("An exception ${it.javaClass.canonicalName} was thrown! - ${it.message}\n${it.stackTraceToString()}")
             logger.error(wrappingException) {
-                "Getting vaccinations from ISIN failed for patient with ISIN ID ${isinId}."
+                "Getting vaccinations from ISIN failed for patient with ISIN ID $isinId."
             }
             null
         }
@@ -188,12 +187,13 @@ class IsinService(
 
     private suspend fun exportPatientContactInfo(contactInfo: IsinPostPatientContactInfoDtoIn): IsinPostPatientContactInfoDto {
         val url = createIsinURL(URL_UPDATE_PATIENT_INFO)
-        val data = if (contactInfo.pracovnik == null)
+        val data = if (contactInfo.pracovnik == null) {
             contactInfo.copy(pracovnik = configuration.pracovnik)
-        else
+        } else {
             contactInfo
+        }
 
-        logger.info { "Executing ISIN HTTP call ${URL_UPDATE_PATIENT_INFO}." }
+        logger.info { "Executing ISIN HTTP call $URL_UPDATE_PATIENT_INFO." }
         return isinClient.post(url) {
             contentType(ContentType.Application.Json)
             accept(ContentType.Application.Json)
@@ -233,10 +233,11 @@ class IsinService(
         val vaccinationExpirationInstant =
             vaccination.vaccineExpiration.atTime(LocalTime.MIDNIGHT).atZone(ZoneId.systemDefault()).toInstant()
 
-        val indication = if (patient.indication == null || patient.indication.isBlank())
+        val indication = if (patient.indication == null || patient.indication.isBlank()) {
             VACCINATION_DEFAULT_INDICATION
-        else
+        } else {
             patient.indication
+        }
 
         return runCatching {
             val isinVaccination: IsinVaccinationDto? = if (vaccination.doseNumber == 1) {
@@ -316,13 +317,13 @@ class IsinService(
             if (ongoingVaccinations.count() != 1) {
                 logger.info(
                     "1 ongoing covid vaccination is expected. ${ongoingVaccinations.count()} " +
-                            "ongoing vaccinations were found in ISIN for ISIN id ${isinId}. " +
+                            "ongoing vaccinations were found in ISIN for ISIN id $isinId. " +
                             "Patient is not ready for 2nd dose"
                 )
                 null
             } else {
                 logger.info(
-                    "1 ongoing covid vaccination was found in ISIN for ISIN id ${isinId}. " +
+                    "1 ongoing covid vaccination was found in ISIN for ISIN id $isinId. " +
                             "Patient is ready for 2nd dose."
                 )
                 ongoingVaccinations[0]
@@ -332,7 +333,7 @@ class IsinService(
             val wrappingException =
                 Exception("An exception ${it.javaClass.canonicalName} was thrown! - ${it.message}\n${it.stackTraceToString()}")
             logger.error(wrappingException) {
-                "Getting vaccinations from ISIN failed for patient with ISIN ID ${isinId}."
+                "Getting vaccinations from ISIN failed for patient with ISIN ID $isinId."
             }
             null
         }
@@ -340,12 +341,13 @@ class IsinService(
     // TODO share logic with createVaccinationDose function
     private suspend fun createVaccination(vaccinationDtoIn: IsinVaccinationCreateOrUpdateDtoIn): IsinVaccinationDto {
         val url = createIsinURL(URL_CREATE_OR_CHANGE_VACCINATION)
-        val data = if (vaccinationDtoIn.pracovnik == null)
+        val data = if (vaccinationDtoIn.pracovnik == null) {
             vaccinationDtoIn.copy(pracovnik = configuration.pracovnik)
-        else
+        } else {
             vaccinationDtoIn
+        }
 
-        logger.info { "Executing ISIN HTTP call ${URL_CREATE_OR_CHANGE_VACCINATION}." }
+        logger.info { "Executing ISIN HTTP call $URL_CREATE_OR_CHANGE_VACCINATION." }
         return isinClient.post(url) {
             contentType(ContentType.Application.Json)
             accept(ContentType.Application.Json)
@@ -356,12 +358,13 @@ class IsinService(
     // TODO share logic with createVaccination function
     private suspend fun createVaccinationDose(vaccinationDoseDtoIn: IsinVaccinationDoseCreateOrUpdateDtoIn): IsinVaccinationDoseDto {
         val url = createIsinURL(URL_CREATE_OR_CHANGE_DOSE)
-        val data = if (vaccinationDoseDtoIn.pracovnik == null)
+        val data = if (vaccinationDoseDtoIn.pracovnik == null) {
             vaccinationDoseDtoIn.copy(pracovnik = configuration.pracovnik)
-        else
+        } else {
             vaccinationDoseDtoIn
+        }
 
-        logger.info { "Executing ISIN HTTP call ${URL_CREATE_OR_CHANGE_DOSE}." }
+        logger.info { "Executing ISIN HTTP call $URL_CREATE_OR_CHANGE_DOSE." }
         return isinClient.post(url) {
             contentType(ContentType.Application.Json)
             accept(ContentType.Application.Json)
@@ -378,7 +381,7 @@ class IsinService(
             vaccination.typOckovaniKod == VACCINATION_TYPE_CODE &&
             vaccination.stav != VACCINATION_STATE_CANCELED
         }.forEach { vaccination ->
-            if(vaccination.id != null) {
+            if (vaccination.id != null) {
                 cancelVaccination(vaccination.id)
                 canceled++
             }
@@ -394,7 +397,7 @@ class IsinService(
         ))
         val data = mapOf("pracovnik" to configuration.pracovnik)
 
-        logger.info { "Executing ISIN HTTP call ${URL_UPDATE_VACCINATION_STATE}." }
+        logger.info { "Executing ISIN HTTP call $URL_UPDATE_VACCINATION_STATE." }
         return isinClient.post(url) {
             contentType(ContentType.Application.Json)
             accept(ContentType.Application.Json)
@@ -412,7 +415,7 @@ class IsinService(
         parameters: List<String> = listOf(),
         includeIdentification: Boolean = true
     ): String {
-        val parametersUrl = parameters.map{encodeValue(it)}.joinToString(separator = "/")
+        val parametersUrl = parameters.map { encodeValue(it) }.joinToString(separator = "/")
         val url = "$baseUrl/$requestUrl/$parametersUrl${if (includeIdentification) userIdentification else ""}"
         if (!url.isUrl()) {
             // we want to print that to the log as well as we're facing a stack overflow somewhere here

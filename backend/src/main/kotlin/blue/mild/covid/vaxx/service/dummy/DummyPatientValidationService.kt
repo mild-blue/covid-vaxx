@@ -15,8 +15,7 @@ class DummyPatientValidationService : PatientValidationService {
         personalNumber: String?,
         insuranceNumber: String?
     ): PatientValidationResultDto {
-        logger.warn { "NOT VERIFYING patient ${personalNumber}. This should not be in the production." }
+        logger.warn { "NOT VERIFYING patient $personalNumber. This should not be in the production." }
         return IsinValidationResultDto(PatientValidationResult.WAS_NOT_VERIFIED)
     }
 }
-

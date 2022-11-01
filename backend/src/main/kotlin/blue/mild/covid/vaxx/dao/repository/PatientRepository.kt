@@ -122,7 +122,6 @@ class PatientRepository(
     suspend fun getAndMapById(patientId: EntityId): PatientDtoOut? =
         getAndMapPatientsBy { Patients.id eq patientId }.singleOrNull()
 
-
     /**
      * Saves the given data to the database as a new patient registration record.
      *
@@ -184,7 +183,6 @@ class PatientRepository(
     suspend fun deletePatientsBy(where: (SqlExpressionBuilder.() -> Op<Boolean>)): Int =
         newSuspendedTransaction { Patients.deleteWhere(op = where) }
 
-
     private fun getAndMapPatients(
         n: Int? = null,
         offset: Long = 0,
@@ -212,7 +210,8 @@ class PatientRepository(
     }
 
     private fun mapPatient(
-        row: ResultRow, answers: List<AnswerDtoOut>,
+        row: ResultRow,
+        answers: List<AnswerDtoOut>,
         vaccination1Alias: Alias<Vaccinations>,
         vaccination2Alias: Alias<Vaccinations>
     ) = PatientDtoOut(

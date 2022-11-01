@@ -36,7 +36,7 @@ fun DI.MainBuilder.bindConfiguration() {
         DatabaseConfigurationDto(
             userName = getEnvOrLogDefault(EnvVariables.POSTGRES_USER, "mildblue"),
             password = getEnvOrLogDefault(EnvVariables.POSTGRES_PASSWORD, "mildblue-password"),
-            url = "jdbc:postgresql://${dbHost}/${db}"
+            url = "jdbc:postgresql://$dbHost/$db"
         )
     }
 
@@ -164,4 +164,3 @@ private fun requireEnv(env: EnvVariables) =
 private fun loadVersion(defaultVersion: String = "development"): String = runCatching {
     getEnv(EnvVariables.RELEASE_FILE_PATH.name)?.let { File(it).readText().trim() } ?: defaultVersion
 }.getOrNull() ?: defaultVersion
-

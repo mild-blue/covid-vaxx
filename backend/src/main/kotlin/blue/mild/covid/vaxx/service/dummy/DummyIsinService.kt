@@ -15,19 +15,19 @@ class DummyIsinService : IsinServiceInterface {
         lastName: String,
         personalNumber: String
     ): IsinGetPatientByParametersResultDto {
-        logger.warn { "NOT GETTING patient ${firstName}/${lastName}/${personalNumber} from ISIN. This should not be used in production." }
+        logger.warn { "NOT GETTING patient $firstName/$lastName/$personalNumber from ISIN. This should not be used in production." }
         return IsinGetPatientByParametersResultDto("UsingDummyISIN", null, null)
     }
 
     override suspend fun getForeignerByInsuranceNumber(
         insuranceNumber: String
     ): IsinGetPatientByParametersResultDto {
-        logger.warn { "NOT GETTING foreigner ${insuranceNumber} from ISIN. This should not be used in production." }
+        logger.warn { "NOT GETTING foreigner $insuranceNumber from ISIN. This should not be used in production." }
         return IsinGetPatientByParametersResultDto("UsingDummyISIN", null, null)
     }
 
     override suspend fun tryPatientIsReadyForVaccination(isinId: String): Boolean? {
-        logger.warn { "NOT GETTING vaccinations of patient ${isinId} from ISIN. This should not be used in production." }
+        logger.warn { "NOT GETTING vaccinations of patient $isinId from ISIN. This should not be used in production." }
         return null
     }
 
@@ -51,6 +51,6 @@ class DummyIsinService : IsinServiceInterface {
     override suspend fun cancelAllVaccinations(
         isinId: String
     ) {
-        logger.warn { "NOT CANCELLING vaccinations for patient ${isinId} in ISIN. This should not be used in production." }
+        logger.warn { "NOT CANCELLING vaccinations for patient $isinId in ISIN. This should not be used in production." }
     }
 }

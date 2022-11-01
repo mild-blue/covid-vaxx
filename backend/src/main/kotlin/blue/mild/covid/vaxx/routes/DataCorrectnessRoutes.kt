@@ -62,7 +62,7 @@ fun NormalOpenAPIRoute.dataCorrectnessRoutes() {
 
                 // Try to export patient information in ISIN
                 val patient = patientService.getPatientById(request.patientId)
-                val wasExportedToIsin = isinService.tryExportPatientContactInfo(patient, notes=request.notes)
+                val wasExportedToIsin = isinService.tryExportPatientContactInfo(patient, notes = request.notes)
 
                 val correctnessId = dataCorrectnessService.registerCorrectness(asContextAware(request), wasExportedToIsin)
                 logger.info { "Correctness saved successfully under id $correctnessId." }

@@ -42,7 +42,6 @@ suspend fun generatePatientRegistrationDto() = newSuspendedTransaction {
     Questions.selectAll().map { AnswerDtoIn(it[Questions.id], true) }
 }.let { generatePatientRegistrationDto(it) }
 
-
 fun generatePatientRegistrationDto(answers: List<AnswerDtoIn>) = PatientRegistrationDtoIn(
     firstName = UUID.randomUUID().toString(),
     lastName = UUID.randomUUID().toString(),

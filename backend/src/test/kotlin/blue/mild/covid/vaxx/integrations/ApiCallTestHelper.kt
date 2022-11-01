@@ -52,5 +52,4 @@ abstract class ApiCallTestHelper(
 
     protected suspend fun getQuestions() =
         meteredClient.get("${targetHost}${Routes.questions}")
-
 }

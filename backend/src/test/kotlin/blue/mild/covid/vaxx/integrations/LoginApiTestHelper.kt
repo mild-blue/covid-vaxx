@@ -11,7 +11,6 @@ import io.ktor.http.HttpStatusCode
 import io.ktor.http.contentType
 import mu.KLogging
 
-
 abstract class LoginApiTestHelper(
    targetHost: String,
    requestTimeoutsSeconds: Int

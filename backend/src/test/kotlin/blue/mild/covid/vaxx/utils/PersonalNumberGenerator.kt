@@ -24,4 +24,3 @@ private fun generateWithLeadingZero(from: Int, to: Int): String {
     val missingZeroes = charCount - num.length
     return "0".repeat(missingZeroes) + num
 }
-

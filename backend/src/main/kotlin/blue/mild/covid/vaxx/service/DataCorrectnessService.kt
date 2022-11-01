@@ -33,7 +33,10 @@ class DataCorrectnessService(
     /**
      * Store that the patient's data were verified.
      */
-    suspend fun registerCorrectness(request: ContextAware.AuthorizedContext<DataCorrectnessDtoIn>, wasExportedToIsin: Boolean): EntityId {
+    suspend fun registerCorrectness(
+        request: ContextAware.AuthorizedContext<DataCorrectnessDtoIn>,
+        wasExportedToIsin: Boolean
+    ): EntityId {
         // todo perform some validation
 
         val dataCorrectness = request.payload
@@ -54,7 +57,6 @@ class DataCorrectnessService(
             exportedToIsinOn = exportedToIsinOn
         )
     }
-
 
     /**
      * Register in database that [correctnessId] was exported to ISIN.

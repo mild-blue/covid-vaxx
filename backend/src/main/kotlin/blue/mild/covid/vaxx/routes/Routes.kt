@@ -42,5 +42,3 @@ object Routes {
     private fun adminRoute(name: String) = apiName("admin/$name")
     private fun apiName(name: String) = "/api/$name"
 }
-
-

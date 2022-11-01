@@ -13,7 +13,6 @@ class LoginApiTest(
 
     private companion object : KLogging()
 
-
     override suspend fun execute(): List<RequestMetric> {
 
         runPatientLogin(
@@ -31,6 +30,5 @@ class LoginApiTest(
         )
 
         return callsCollection.toList()
-
     }
 }

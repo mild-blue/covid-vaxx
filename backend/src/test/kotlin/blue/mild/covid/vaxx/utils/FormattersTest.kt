@@ -4,7 +4,6 @@ import blue.mild.covid.vaxx.dto.request.PhoneNumberDtoIn
 import org.junit.jupiter.api.Test
 import kotlin.test.assertEquals
 
-
 class FormattersTest {
     @Test
     fun `should format phone number`() {
