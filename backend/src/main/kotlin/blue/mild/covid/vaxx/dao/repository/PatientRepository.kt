@@ -14,6 +14,7 @@ import blue.mild.covid.vaxx.dto.response.VaccinationDtoOut
 import blue.mild.covid.vaxx.dto.response.VaccinationSlotDtoOut
 import dev.forst.katlib.TimeProvider
 import org.jetbrains.exposed.sql.Alias
+import org.jetbrains.exposed.sql.ISqlExpressionBuilder
 import org.jetbrains.exposed.sql.Op
 import org.jetbrains.exposed.sql.ResultRow
 import org.jetbrains.exposed.sql.SqlExpressionBuilder
@@ -180,7 +181,7 @@ class PatientRepository(
     /**
      * Deletes patient entity by given [where]. Returns number of deleted entities.
      */
-    suspend fun deletePatientsBy(where: (SqlExpressionBuilder.() -> Op<Boolean>)): Int =
+    suspend fun deletePatientsBy(where: (Patients.(ISqlExpressionBuilder) -> Op<Boolean>)): Int =
         newSuspendedTransaction { Patients.deleteWhere(op = where) }
 
     private fun getAndMapPatients(
