@@ -47,7 +47,7 @@ jobs:
 
       - name: Build and Push Docker Image
         id: docker_build
-        uses: docker/build-push-action@v2
+        uses: docker/build-push-action@v3
         with:
           tags: |
             ${{ steps.login-ecr.outputs.registry }}/${{ env.AWS_ECR_REPOSITORY }}:${{ env.RELEASE_VERSION }}
