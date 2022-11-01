@@ -70,7 +70,7 @@ dependencies {
     implementation("com.fasterxml.jackson.datatype:jackson-datatype-jsr310:2.13.4")
 
     // logging
-    implementation("io.github.microutils:kotlin-logging-jvm:3.0.0")
+    implementation("io.github.microutils:kotlin-logging-jvm:3.0.3")
     implementation("ch.qos.logback:logback-classic:1.3.1")
     // if-else in logback.xml
     implementation("org.codehaus.janino:janino:3.1.3")
