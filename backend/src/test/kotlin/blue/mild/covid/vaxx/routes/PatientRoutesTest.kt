@@ -235,7 +235,6 @@ class PatientRoutesTest : ServerTestBase() {
         }
     }
 
-
     @Test
     fun `test concurrent booking`() = withTestApplication {
         val from = 1000000L
@@ -290,7 +289,6 @@ class PatientRoutesTest : ServerTestBase() {
         assertEquals(totalSlots, patientsSlots.size)
         patientsSlots.forEach { (_, count) -> assertEquals(1, count) }
     }
-
 
     @Test
     fun `patient should not be registered due to the ISIN rejection`() = withTestApplication {

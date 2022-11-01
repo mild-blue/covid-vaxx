@@ -24,7 +24,6 @@ import kotlin.test.assertEquals
 import kotlin.test.assertNull
 import kotlin.test.assertTrue
 
-
 class VaccinationSlotRoutesTest : ServerTestBase() {
 
     private fun Instant.toUrlString() = mapper.writeValueAsString(this)
@@ -247,7 +246,7 @@ class VaccinationSlotRoutesTest : ServerTestBase() {
         }
 
         // restrict by location
-        handleRequest(HttpMethod.Get, "${Routes.vaccinationSlots}/filter?locationId=${locationId1}") {
+        handleRequest(HttpMethod.Get, "${Routes.vaccinationSlots}/filter?locationId=$locationId1") {
             authorize()
         }.run {
             expectStatus(HttpStatusCode.OK)
@@ -287,7 +286,7 @@ class VaccinationSlotRoutesTest : ServerTestBase() {
         // create patient
         val patientId = runBlocking {
             patientRepository.savePatient(
-                "alice", "alice", 12345, "alice", "1", "1", null,"email", InsuranceCompany.CPZP, "indication", "remoteHost", mapOf(), null
+                "alice", "alice", 12345, "alice", "1", "1", null, "email", InsuranceCompany.CPZP, "indication", "remoteHost", mapOf(), null
             )
         }
         // reserve slot - it should be the first one
@@ -336,7 +335,7 @@ class VaccinationSlotRoutesTest : ServerTestBase() {
         }
 
         // get slots - ALL with given patient
-        handleRequest(HttpMethod.Get, "${Routes.vaccinationSlots}/filter?status=${VaccinationSlotStatus.ALL}&patientId=${patientId}") {
+        handleRequest(HttpMethod.Get, "${Routes.vaccinationSlots}/filter?status=${VaccinationSlotStatus.ALL}&patientId=$patientId") {
             authorize()
         }.run {
             expectStatus(HttpStatusCode.OK)

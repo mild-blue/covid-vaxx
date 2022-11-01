@@ -35,7 +35,6 @@ import java.time.LocalDate
 import kotlin.test.assertEquals
 import kotlin.test.assertNotNull
 
-
 /**
  * Test base that has access to initialized dependency injection.
  *
@@ -149,7 +148,7 @@ open class ServerTestBase(needsDatabase: Boolean = true) : DatabaseTestBase(need
 
     protected inline fun <reified T> TestApplicationCall.receiveOrNull(): T? {
         val content = response.content ?: return null
-        logger.info { "received content:\n${content}" }
+        logger.info { "received content:\n$content" }
         return mapper.readValue(content)
     }
 

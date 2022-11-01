@@ -20,13 +20,11 @@ import io.ktor.http.isSuccess
 import mu.KLogging
 import kotlin.random.Random
 
-
 abstract class RegistrationApiTestHelper(
     targetHost: String,
     requestTimeoutsSeconds: Int
 ) : ApiCallTestHelper(targetHost, requestTimeoutsSeconds) {
     private companion object : KLogging()
-
 
     protected suspend fun runPatientRegistrationWithBuilder(
         registrationBuilder: PatientRegistrationBuilder = defaultPatientRegistrationBuilder(),

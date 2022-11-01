@@ -11,7 +11,6 @@ import dev.forst.katlib.mapToSet
 import mu.KLogging
 import java.time.LocalDate
 
-
 @Suppress("TooManyFunctions") // this can't be split right now
 class ValidationService(private val questionService: QuestionService) {
     private companion object : KLogging() {
@@ -132,9 +131,9 @@ class ValidationService(private val questionService: QuestionService) {
     }
 
     private fun requireValidPersonalOrInsuranceNumber(personalNumber: String?, insuranceNumber: String?) {
-        if (personalNumber != null && personalNumber.isNotBlank())
+        if (personalNumber != null && personalNumber.isNotBlank()) {
             requireValidPersonalNumber(personalNumber)
-        else if (insuranceNumber != null && insuranceNumber.isNotBlank()){
+        } else if (insuranceNumber != null && insuranceNumber.isNotBlank()) {
             requireNotEmptyString("insuranceNumber", insuranceNumber)
         } else {
             throw NoPersonalAndInsuranceNumberException()
@@ -266,4 +265,3 @@ class ValidationService(private val questionService: QuestionService) {
 
     private fun String.isNumber(): Boolean = this.isNotEmpty() && this.toIntOrNull() != null
 }
-

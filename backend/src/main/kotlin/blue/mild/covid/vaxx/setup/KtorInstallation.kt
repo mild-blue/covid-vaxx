@@ -67,7 +67,6 @@ import java.util.UUID
 import kotlin.reflect.KType
 import kotlin.system.exitProcess
 
-
 private val installationLogger = createLogger("ApplicationSetup")
 
 /**
@@ -115,7 +114,7 @@ private fun Application.installRouting() {
         // configure static routes to serve frontend
         static {
             files(staticContentPath)
-            default("${staticContentPath}/index.html")
+            default("$staticContentPath/index.html")
         }
 
         // configure redirects on the frontend static pages
@@ -153,7 +152,7 @@ private fun Application.connectDatabase() {
 // Migrate database using flyway.
 private fun Application.migrateDatabase() {
     val shouldMigrate by closestDI().instanceOrNull<Boolean>("should-migrate")
-    installationLogger.info { "Migrating database - should migrate: ${shouldMigrate}." }
+    installationLogger.info { "Migrating database - should migrate: $shouldMigrate." }
 
     // enable migration by default
     if (shouldMigrate != false) {
@@ -231,7 +230,6 @@ private fun Application.setupCors() {
             hosts.addAll(corsHosts.allowedHosts)
         }
     }
-
 }
 
 // Install authentication.
@@ -302,9 +300,9 @@ private fun Application.installMonitoring() {
         filter {
             val path = it.request.path()
             // log just requests that goes to api
-            path.startsWith("/api")
-                    && !ignoredPaths.contains(path) // without ignored service paths
-                    && !ignoredMethods.contains(it.request.httpMethod) // and ignored, not used, methods
+            path.startsWith("/api") &&
+                    !ignoredPaths.contains(path) && // without ignored service paths
+                    !ignoredMethods.contains(it.request.httpMethod) // and ignored, not used, methods
         }
         level = Level.INFO // we want to log especially the results of the requests
         logger = createLogger("HttpCallLogger")
@@ -326,9 +324,9 @@ private fun Application.installRateLimiting() {
     if (configuration.enableRateLimiting) {
         install(RateLimiting) {
             excludeRequestWhen {
-                request.httpMethod == HttpMethod.Options
-                        || request.uri.endsWith(Routes.status)
-                        || request.uri.endsWith(Routes.statusHealth)
+                request.httpMethod == HttpMethod.Options ||
+                        request.uri.endsWith(Routes.status) ||
+                        request.uri.endsWith(Routes.statusHealth)
             }
             registerLimit(configuration.rateLimit, configuration.rateLimitDuration) {
                 request.determineRealIp()
@@ -364,4 +362,3 @@ private fun Application.installCsp() {
         }
     }
 }
-

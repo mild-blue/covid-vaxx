@@ -1,7 +1,6 @@
 package blue.mild.covid.vaxx.dto.internal
 
-
-data class IsinGetPatientByParametersResultDto (
+data class IsinGetPatientByParametersResultDto(
     val result: String,
     val resultMessage: String?,
     val patientId: String?

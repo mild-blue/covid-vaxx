@@ -22,7 +22,6 @@ import org.jetbrains.exposed.sql.Op
 import org.jetbrains.exposed.sql.and
 import java.time.Instant
 
-
 class VaccinationSlotService(
     private val locationRepository: LocationRepository,
     private val vaccinationSlotRepository: VaccinationSlotRepository,
@@ -110,4 +109,3 @@ class VaccinationSlotService(
         vaccinationSlotRepository.tryToBookSlotForPatient(patientId)
             ?: throw NoVaccinationSlotsFoundException()
 }
-

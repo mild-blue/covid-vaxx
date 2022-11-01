@@ -8,7 +8,6 @@ import blue.mild.covid.vaxx.dto.response.PatientDtoOut
 import blue.mild.covid.vaxx.dto.response.toPatientVaccinationDetailDto
 import mu.KLogging
 
-
 class IsinRetryService(
     private val patientService: PatientService,
     private val patientValidation: PatientValidationService,
@@ -58,13 +57,13 @@ class IsinRetryService(
 
                 logger.info(
                     "Patient ${patient.id} was validated in ISIN with " +
-                    "obtained ISIN id: ${newIsinPatientId}."
+                    "obtained ISIN id: $newIsinPatientId."
                 )
 
                 if (newIsinPatientId != null) {
-                    validatedPatientsSuccess++;
+                    validatedPatientsSuccess++
                 } else {
-                    validatedPatientsErrors++;
+                    validatedPatientsErrors++
                 }
                 patient.copy(isinId = newIsinPatientId)
             } else {
@@ -88,7 +87,7 @@ class IsinRetryService(
                 logger.debug("Retrying to check ISIN vaccinations of patient ${updatedPatient.id} in ISIN")
                 val wasChecked = retryPatientIsReadyForVaccination(updatedPatient)
 
-                logger.info("Vaccinations of patient ${patient.id} was checked in ISIN with result: ${wasChecked}")
+                logger.info("Vaccinations of patient ${patient.id} was checked in ISIN with result: $wasChecked")
 
                 if (wasChecked) {
                     checkedVaccinationsSuccess++
@@ -108,7 +107,7 @@ class IsinRetryService(
                 logger.debug("Retrying to export contact info of patient ${updatedPatient.id} to ISIN")
                 val wasExported = retryPatientContactInfoExport(updatedPatient)
 
-                logger.info("Patient ${patient.id} was exported to ISIN with result: ${wasExported}")
+                logger.info("Patient ${patient.id} was exported to ISIN with result: $wasExported")
 
                 if (wasExported) {
                     exportedPatientsInfoSuccess++
@@ -122,7 +121,7 @@ class IsinRetryService(
                 logger.info("Retrying to create vaccination of patient ${updatedPatient.id} in ISIN")
                 val wasCreated = retryPatientVaccinationFirstDoseCreation(updatedPatient)
 
-                logger.info("Patient ${patient.id} vaccination was created in ISIN with result: ${wasCreated}")
+                logger.info("Patient ${patient.id} vaccination was created in ISIN with result: $wasCreated")
 
                 if (wasCreated) {
                     exportedVaccinationsFirstDoseSuccess++
@@ -140,7 +139,7 @@ class IsinRetryService(
                 logger.info("Retrying to create second dose of patient ${updatedPatient.id} in ISIN")
                 val wasCreated = retryPatientVaccinationSecondDoseCreation(updatedPatient)
 
-                logger.info("Patient ${patient.id} 2nd dose vaccination was created in ISIN with result: ${wasCreated}")
+                logger.info("Patient ${patient.id} 2nd dose vaccination was created in ISIN with result: $wasCreated")
 
                 if (wasCreated) {
                     exportedVaccinationsSecondDoseSuccess++
@@ -186,10 +185,10 @@ class IsinRetryService(
         }
 
         if (newIsinPatientId != null) {
-            logger.debug { "Updating ISIN id of patient ${patient.id} to $newIsinPatientId"}
+            logger.debug { "Updating ISIN id of patient ${patient.id} to $newIsinPatientId" }
             patientRepository.updatePatientChangeSet(id = patient.id, isinId = newIsinPatientId.trim())
         } else {
-            logger.debug { "NOT updating ISIN id of patient ${patient.id}"}
+            logger.debug { "NOT updating ISIN id of patient ${patient.id}" }
         }
         return newIsinPatientId
     }
@@ -200,11 +199,11 @@ class IsinRetryService(
         val isinReady = isinService.tryPatientIsReadyForVaccination(patient.isinId)
 
         return if (isinReady != null) {
-            logger.debug { "Updating ISIN ready of patient ${patient.id} to value ${isinReady}"}
+            logger.debug { "Updating ISIN ready of patient ${patient.id} to value $isinReady" }
             patientService.updateIsinReady(patient.id, isinReady)
             true
         } else {
-            logger.debug { "NOT updating ISIN ready of patient ${patient.id}"}
+            logger.debug { "NOT updating ISIN ready of patient ${patient.id}" }
             false
         }
     }
@@ -212,13 +211,13 @@ class IsinRetryService(
     private suspend fun retryPatientContactInfoExport(patient: PatientDtoOut): Boolean {
         requireNotNull(patient.dataCorrect) { "Data correctness of patient ${patient.id} cannot be null." }
 
-        val wasExported = isinService.tryExportPatientContactInfo(patient, notes= patient.dataCorrect.notes)
+        val wasExported = isinService.tryExportPatientContactInfo(patient, notes = patient.dataCorrect.notes)
 
         if (wasExported) {
-            logger.debug { "Updating exported to ISIN of correctness ${patient.dataCorrect.id} (patient ${patient.id})"}
+            logger.debug { "Updating exported to ISIN of correctness ${patient.dataCorrect.id} (patient ${patient.id})" }
             dataCorrectnessService.exportedToIsin(patient.dataCorrect.id)
         } else {
-            logger.debug { "NOT updating exported to ISIN of correctness ${patient.dataCorrect.id} (patient ${patient.id})"}
+            logger.debug { "NOT updating exported to ISIN of correctness ${patient.dataCorrect.id} (patient ${patient.id})" }
         }
         return wasExported
     }
@@ -235,10 +234,10 @@ class IsinRetryService(
         )
 
         if (wasExported) {
-            logger.debug { "Updating exported to ISIN of vaccination ${patient.vaccinated.id} (patient ${patient.id})"}
+            logger.debug { "Updating exported to ISIN of vaccination ${patient.vaccinated.id} (patient ${patient.id})" }
             vaccinationService.exportedToIsin(patient.vaccinated.id)
         } else {
-            logger.debug { "NOT updating exported to ISIN of vaccination ${patient.vaccinated.id} (patient ${patient.id})"}
+            logger.debug { "NOT updating exported to ISIN of vaccination ${patient.vaccinated.id} (patient ${patient.id})" }
         }
         return wasExported
     }
@@ -255,10 +254,10 @@ class IsinRetryService(
         )
 
         if (wasExported) {
-            logger.debug { "Updating exported to ISIN of vaccination ${patient.vaccinatedSecondDose.id} (patient ${patient.id})"}
+            logger.debug { "Updating exported to ISIN of vaccination ${patient.vaccinatedSecondDose.id} (patient ${patient.id})" }
             vaccinationService.exportedToIsin(patient.vaccinatedSecondDose.id)
         } else {
-            logger.debug { "NOT updating exported to ISIN of vaccination ${patient.vaccinatedSecondDose.id} (patient ${patient.id})"}
+            logger.debug { "NOT updating exported to ISIN of vaccination ${patient.vaccinatedSecondDose.id} (patient ${patient.id})" }
         }
         return wasExported
     }

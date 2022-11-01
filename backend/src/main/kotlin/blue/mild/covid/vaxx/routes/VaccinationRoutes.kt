@@ -74,8 +74,9 @@ fun NormalOpenAPIRoute.vaccinationRoutes() {
                     vaccination.toPatientVaccinationDetailDto(),
                     patient = patient
                 )
-                if (wasExportedToIsin)
+                if (wasExportedToIsin) {
                     vaccinationService.exportedToIsin(vaccinationId)
+                }
 
                 logger.info { "Job sent successfully." }
 

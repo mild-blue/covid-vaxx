@@ -4,7 +4,6 @@ import ch.qos.logback.classic.spi.ThrowableProxy
 import org.junit.jupiter.api.Disabled
 import org.junit.jupiter.api.Test
 
-
 // see https://github.com/mild-blue/covid-vaxx/issues/287
 internal class LogbackExtensionsKtTest {
     @Test

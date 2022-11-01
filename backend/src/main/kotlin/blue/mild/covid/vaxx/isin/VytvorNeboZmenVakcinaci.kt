@@ -16,7 +16,6 @@ data class VytvorNeboZmenVakcinaci(
         val indikaceJina: String? = null,
 )
 
-
 data class Pracovnik(
         // Todle bylo pracovnikNrzpCislo,
         // zmenil jsem to podle /api/v1/pacienti/AktualizujKontaktniUdajePacienta
@@ -28,9 +27,7 @@ data class Pracovnik(
 
         val pcz: String,
 
-
 )
-
 
 /**
  * Configuration for /api/v1/vakcinace/VytvorNeboZmenVakcinaci
@@ -53,7 +50,6 @@ data class VytvorNeboZmenDavku(
 
         val mistoAplikaceKod: String
 )
-
 
 /**
  * Configuration for /api/v1/vakcinace/VytvorNeboZmenVakcinaci

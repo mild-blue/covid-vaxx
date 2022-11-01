@@ -55,4 +55,3 @@ package blue.mild.covid.vaxx.service
 //                }
 //        } ?: throw NoVaccinationSlotsFoundException()
 //    }
-

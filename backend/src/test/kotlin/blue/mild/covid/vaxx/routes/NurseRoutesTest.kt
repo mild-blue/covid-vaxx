@@ -4,10 +4,8 @@ import blue.mild.covid.vaxx.dao.model.Nurses
 import blue.mild.covid.vaxx.dao.model.UserRole
 import blue.mild.covid.vaxx.dao.repository.NurseRepository
 import blue.mild.covid.vaxx.dto.request.CredentialsDtoIn
-import blue.mild.covid.vaxx.dto.request.LoginDtoIn
 import blue.mild.covid.vaxx.dto.request.NurseCreationDtoIn
 import blue.mild.covid.vaxx.dto.response.PersonnelDtoOut
-import blue.mild.covid.vaxx.dto.response.UserLoginResponseDtoOut
 import blue.mild.covid.vaxx.security.auth.UserPrincipal
 import blue.mild.covid.vaxx.utils.DatabaseData
 import blue.mild.covid.vaxx.utils.ServerTestBase
@@ -17,7 +15,6 @@ import io.ktor.server.testing.handleRequest
 import kotlinx.coroutines.runBlocking
 import org.jetbrains.exposed.sql.select
 import org.jetbrains.exposed.sql.transactions.transaction
-import org.junit.jupiter.api.Disabled
 import org.junit.jupiter.api.Test
 import org.kodein.di.instance
 import java.time.LocalDate
@@ -55,7 +52,6 @@ class NurseRoutesTest : ServerTestBase() {
         }.run {
             expectStatus(HttpStatusCode.Unauthorized)
         }
-
     }
 
     @Test

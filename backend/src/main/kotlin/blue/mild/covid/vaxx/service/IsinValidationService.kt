@@ -5,7 +5,6 @@ import blue.mild.covid.vaxx.dto.internal.IsinValidationResultDto
 import blue.mild.covid.vaxx.dto.internal.PatientValidationResult
 import mu.KLogging
 
-
 class IsinValidationService(
     private val isinService: IsinServiceInterface
 ) : PatientValidationService {
@@ -35,7 +34,7 @@ class IsinValidationService(
                     personalNumber = personalNumber
                 )
                 convertResult(result)
-            } else if (insuranceNumber != null){
+            } else if (insuranceNumber != null) {
                 val byInsuranceNumberResult = isinService.getForeignerByInsuranceNumber(
                     insuranceNumber = insuranceNumber
                 )
@@ -44,8 +43,8 @@ class IsinValidationService(
                     validationResult
                 } else {
                     logger.info {
-                        "Foreigner was not found in ISIN by insurance number ${insuranceNumber}. Trying to find the " +
-                        "patient by first name, last name and personal number "
+                        "Foreigner was not found in ISIN by insurance number $insuranceNumber. Trying to find the " +
+                                "patient by first name, last name and personal number "
                     }
                     val byPersonalNumberResult = isinService.getPatientByParameters(
                         firstName = firstName,
@@ -56,8 +55,8 @@ class IsinValidationService(
                 }
             } else {
                 logger.error {
-                    "Both personal and insurance numbers are not set for patient ${firstName} ${lastName}. " +
-                    "This should not happen. Skipping ISIN validation."
+                    "Both personal and insurance numbers are not set for patient $firstName $lastName. " +
+                            "This should not happen. Skipping ISIN validation."
                 }
                 IsinValidationResultDto(status = PatientValidationResult.WAS_NOT_VERIFIED)
             }
@@ -69,11 +68,10 @@ class IsinValidationService(
             val wrappingException =
                 Exception("An exception ${it.javaClass.canonicalName} was thrown! - ${it.message}\n${it.stackTraceToString()}")
             logger.error(wrappingException) {
-                "Getting data from ISIN server failed for patient ${firstName} ${lastName}, " +
-                "personalNumber=${personalNumber}, insuranceNumber=${insuranceNumber}"
+                "Getting data from ISIN server failed for patient $firstName $lastName, " +
+                        "personalNumber=$personalNumber, insuranceNumber=$insuranceNumber"
             }
         }.getOrNull() ?: IsinValidationResultDto(status = PatientValidationResult.WAS_NOT_VERIFIED)
-
     }
 
     private fun convertResult(result: IsinGetPatientByParametersResultDto): IsinValidationResultDto =

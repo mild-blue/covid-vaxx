@@ -10,7 +10,6 @@ import kotlin.test.assertEquals
 
 class CspHeadersAreExposedForSwagger : ServerTestBase(needsDatabase = false) {
 
-
     @Test
     fun `test server has CSP set when accessing swagger UI`() = withTestApplication {
         val swaggerCspHeader = "default-src 'self';connect-src 'self';media-src data:;img-src 'self' data:;" +

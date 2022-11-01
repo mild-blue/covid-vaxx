@@ -19,7 +19,6 @@ fun OpenAPIRoute<*>.closestDI() = ktorRoute.closestDI()
 val OpenAPIPipelineResponseContext<*>.context
     get() = pipeline.context
 
-
 val OpenAPIPipelineResponseContext<*>.request
     get() = context.request
 

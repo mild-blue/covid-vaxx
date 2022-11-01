@@ -11,12 +11,10 @@ import io.ktor.http.HttpMethod
 import io.ktor.http.HttpStatusCode
 import io.ktor.server.testing.handleRequest
 import kotlinx.coroutines.runBlocking
-import org.junit.jupiter.api.Disabled
 import org.junit.jupiter.api.Test
 import org.kodein.di.DI
 import org.kodein.di.instance
 import kotlin.test.assertEquals
-
 
 class LocationRoutesTest : ServerTestBase() {
 

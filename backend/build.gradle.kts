@@ -2,8 +2,8 @@ plugins {
     kotlin("jvm") version "1.7.10"
     application
     distribution
-    id("net.nemerosa.versioning") version "2.14.0"
-    id("io.gitlab.arturbosch.detekt") version "1.19.0"
+    id("net.nemerosa.versioning") version "3.0.0"
+    id("io.gitlab.arturbosch.detekt") version "1.21.0"
 }
 
 group = "blue.mild.covid.vaxx"
@@ -31,86 +31,83 @@ repositories {
 }
 
 dependencies {
+    // compile only detekt plugin
+    detektPlugins("io.gitlab.arturbosch.detekt", "detekt-formatting", "1.21.0")
     // extension functions
-    implementation("dev.forst", "katlib", "2.2.1")
+    implementation("dev.forst:katlib:2.2.2")
     implementation(kotlin("reflect"))
 
     // Ktor server dependencies
-    val ktorVersion = "2.1.1"
-    implementation("io.ktor", "ktor-server-core", ktorVersion)
-    implementation("io.ktor", "ktor-server-netty", ktorVersion)
-    implementation("io.ktor", "ktor-server-content-negotiation", ktorVersion)
-    implementation("io.ktor", "ktor-server-cors", ktorVersion)
-    implementation("io.ktor", "ktor-server-default-headers", ktorVersion)
-    implementation("io.ktor", "ktor-server-forwarded-header", ktorVersion)
-    implementation("io.ktor", "ktor-server-status-pages", ktorVersion)
-    implementation("io.ktor", "ktor-server-auth", ktorVersion)
-    implementation("io.ktor", "ktor-server-auth-jwt", ktorVersion)
-    implementation("io.ktor", "ktor-server-call-id", ktorVersion)
-    implementation("io.ktor", "ktor-serialization-jackson", ktorVersion)
+    implementation("io.ktor:ktor-server-core:2.1.3")
+    implementation("io.ktor:ktor-server-netty:2.1.3")
+    implementation("io.ktor:ktor-server-content-negotiation:2.1.3")
+    implementation("io.ktor:ktor-server-cors:2.1.3")
+    implementation("io.ktor:ktor-server-default-headers:2.1.3")
+    implementation("io.ktor:ktor-server-forwarded-header:2.1.3")
+    implementation("io.ktor:ktor-server-status-pages:2.1.3")
+    implementation("io.ktor:ktor-server-auth:2.1.3")
+    implementation("io.ktor:ktor-server-auth-jwt:2.1.3")
+    implementation("io.ktor:ktor-server-call-id:2.1.3")
+    implementation("io.ktor:ktor-serialization-jackson:2.1.3")
 
     // Ktor client dependencies
-    implementation("io.ktor", "ktor-client-json", ktorVersion)
-    implementation("io.ktor", "ktor-client-apache", ktorVersion)
-    implementation("io.ktor", "ktor-client-logging-jvm", ktorVersion)
-    implementation("io.ktor", "ktor-client-content-negotiation", ktorVersion)
-    implementation("io.ktor", "ktor-client-jackson", ktorVersion)
+    implementation("io.ktor:ktor-client-json:2.1.3")
+    implementation("io.ktor:ktor-client-apache:2.1.3")
+    implementation("io.ktor:ktor-client-logging-jvm:2.1.3")
+    implementation("io.ktor:ktor-client-content-negotiation:2.1.3")
+    implementation("io.ktor:ktor-client-jackson:2.1.3")
 
 
     // ktor swagger
-    implementation("dev.forst", "ktor-openapi-generator", "0.5.0")
+    implementation("dev.forst:ktor-openapi-generator:0.5.2")
     // rate limiting
-    implementation("dev.forst", "ktor-rate-limiting", ktorVersion)
-    implementation("dev.forst", "ktor-content-security-policy", "2.1.1-1")
+    implementation("dev.forst:ktor-rate-limiting:2.1.3")
+    implementation("dev.forst:ktor-content-security-policy:2.1.3")
 
     // Jackson JSON
-    val jacksonVersion = "2.13.4"
-    implementation("com.fasterxml.jackson.core", "jackson-databind", jacksonVersion)
-    implementation("com.fasterxml.jackson.module", "jackson-module-kotlin", jacksonVersion)
-    implementation("com.fasterxml.jackson.datatype", "jackson-datatype-jsr310", jacksonVersion)
+    implementation("com.fasterxml.jackson.core:jackson-databind:2.13.4")
+    implementation("com.fasterxml.jackson.module:jackson-module-kotlin:2.13.4")
+    implementation("com.fasterxml.jackson.datatype:jackson-datatype-jsr310:2.13.4")
 
     // logging
-    implementation("io.github.microutils", "kotlin-logging-jvm", "3.0.0")
-    implementation("ch.qos.logback", "logback-classic", "1.3.1")
+    implementation("io.github.microutils:kotlin-logging-jvm:3.0.0")
+    implementation("ch.qos.logback:logback-classic:1.3.1")
     // if-else in logback.xml
-    implementation("org.codehaus.janino", "janino", "3.1.3")
+    implementation("org.codehaus.janino:janino:3.1.3")
 
     // crypto
-    implementation("com.lambdaworks", "scrypt", "1.4.0")
+    implementation("com.lambdaworks:scrypt:1.4.0")
 
     // DI
-    val kodeinVersion = "7.14.0"
-    implementation("org.kodein.di", "kodein-di-jvm", kodeinVersion)
-    implementation("org.kodein.di", "kodein-di-framework-ktor-server-jvm", kodeinVersion)
+    implementation("org.kodein.di:kodein-di-jvm:7.14.0")
+    implementation("org.kodein.di:kodein-di-framework-ktor-server-jvm:7.14.0")
 
     // database
-    implementation("org.postgresql", "postgresql", "42.3.1")
+    implementation("org.postgresql:postgresql:42.3.1")
 
-    val exposedVersion = "0.39.2"
-    implementation("org.jetbrains.exposed", "exposed-core", exposedVersion)
-    implementation("org.jetbrains.exposed", "exposed-dao", exposedVersion)
-    implementation("org.jetbrains.exposed", "exposed-jdbc", exposedVersion)
-    implementation("org.jetbrains.exposed", "exposed-java-time", exposedVersion)
+    implementation("org.jetbrains.exposed:exposed-core:0.39.2")
+    implementation("org.jetbrains.exposed:exposed-dao:0.39.2")
+    implementation("org.jetbrains.exposed:exposed-jdbc:0.39.2")
+    implementation("org.jetbrains.exposed:exposed-java-time:0.39.2")
 
     // database migrations from the code
-    implementation("org.flywaydb", "flyway-core", "8.2.2")
+    implementation("org.flywaydb:flyway-core:8.2.2")
 
     // sending emails
-    implementation("com.mailjet", "mailjet-client", "5.1.1")
-    implementation("org.freemarker", "freemarker", "2.3.31")
+    implementation("com.mailjet:mailjet-client:5.1.1")
+    implementation("org.freemarker:freemarker:2.3.31")
 
     // validation
-    implementation("com.googlecode.libphonenumber", "libphonenumber", "8.12.39")
+    implementation("com.googlecode.libphonenumber:libphonenumber:8.12.39")
 
     // tests
     testImplementation(kotlin("test"))
-    testImplementation("io.mockk", "mockk", "1.12.1")
+    testImplementation("io.mockk:mockk:1.12.1")
 
-    val junitVersion = "5.9.0"
-    testImplementation("org.junit.jupiter", "junit-jupiter-api", junitVersion) // junit testing framework
-    testImplementation("org.junit.jupiter", "junit-jupiter-params", junitVersion) // generated parameters for tests
-    testImplementation("io.ktor", "ktor-server-test-host", ktorVersion)
-    testRuntimeOnly("org.junit.jupiter", "junit-jupiter-engine", junitVersion)
+    testImplementation("org.junit.jupiter:junit-jupiter-api:5.9.1") // junit testing framework
+    testImplementation("org.junit.jupiter:junit-jupiter-params:5.9.1") // generated parameters for tests
+    testImplementation("io.ktor:ktor-server-test-host:2.1.3")
+    testRuntimeOnly("org.junit.jupiter:junit-jupiter-engine:5.9.1")
 }
 
 tasks {

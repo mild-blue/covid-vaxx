@@ -1,7 +1,7 @@
 version: '3.8'
 services:
   db:
-    image: postgres:13
+    image: postgres:15
     environment:
       - POSTGRES_USER=mildblue
       - POSTGRES_PASSWORD=mildblue-password

@@ -36,7 +36,7 @@ class VaccinationRepository {
         notes: String? = null
     ): EntityId = newSuspendedTransaction {
         if (doseNumber != 1 && doseNumber != 2) {
-            throw IllegalArgumentException("Dose number was ${doseNumber} which is not valid.")
+            throw IllegalArgumentException("Dose number was $doseNumber which is not valid.")
         }
 
         val id = Vaccinations.insert {
@@ -52,7 +52,7 @@ class VaccinationRepository {
         }[Vaccinations.id]
 
         // now set backref
-        if(doseNumber == 1) {
+        if (doseNumber == 1) {
             Patients.update(
                 where = { Patients.id eq patientId },
                 body = { it[vaccination] = id }
@@ -110,7 +110,7 @@ class VaccinationRepository {
      * Returns [VaccinationDetailDtoOut] if the patient was vaccinated.
      */
     suspend fun getForPatient(patientId: EntityId, doseNumber: Int): VaccinationDetailDtoOut? =
-        get { (Vaccinations.patientId eq patientId) and (Vaccinations.doseNumber eq doseNumber)}
+        get { (Vaccinations.patientId eq patientId) and (Vaccinations.doseNumber eq doseNumber) }
 
     /**
      * Returns [VaccinationDetailDtoOut] if the vaccination id is found.
@@ -151,5 +151,4 @@ class VaccinationRepository {
                     )
                 }
         }
-
 }

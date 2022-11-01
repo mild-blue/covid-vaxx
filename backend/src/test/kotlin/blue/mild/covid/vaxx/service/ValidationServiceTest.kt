@@ -25,7 +25,6 @@ import java.util.UUID
 import java.util.stream.Stream
 import kotlin.random.Random
 
-
 class ValidationServiceTest {
     private companion object {
         @JvmStatic
@@ -308,5 +307,4 @@ class ValidationServiceTest {
         "+420736 ${(1..6).map { Random.nextInt(0, 10) }.joinToString("")}",
         "CZ"
     )
-
 }

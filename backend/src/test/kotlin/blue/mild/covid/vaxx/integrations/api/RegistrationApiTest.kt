@@ -69,36 +69,31 @@ open class RegistrationApiTest(
         ) { }
 
         runPatientRegistrationWithBuilder(
-            defaultPatientRegistrationBuilder(
-            ),
+            defaultPatientRegistrationBuilder(),
             maybeAnswers = listOf("a"),
             httpStatus = HttpStatusCode.BadRequest
         ) { }
 
         runPatientRegistrationWithBuilder(
-            defaultPatientRegistrationBuilder(
-            ),
+            defaultPatientRegistrationBuilder(),
             maybeAnswers = listOf(AnswerDtoInForTest(UUID.randomUUID(), "a")),
             httpStatus = HttpStatusCode.BadRequest
         ) { }
 
         runPatientRegistrationWithBuilder(
-            defaultPatientRegistrationBuilder(
-            ),
+            defaultPatientRegistrationBuilder(),
             maybeAnswers = listOf(AnswerDtoInForTest("a", "a")),
             httpStatus = HttpStatusCode.BadRequest
         ) { }
 
         runPatientRegistrationWithBuilder(
-            defaultPatientRegistrationBuilder(
-            ),
+            defaultPatientRegistrationBuilder(),
             maybeAnswers = "a",
             httpStatus = HttpStatusCode.BadRequest
         ) { }
 
         runPatientRegistrationWithBuilder(
-            defaultPatientRegistrationBuilder(
-            ),
+            defaultPatientRegistrationBuilder(),
             maybeInsuranceCompany = "a",
             httpStatus = HttpStatusCode.BadRequest
         ) { }
@@ -125,6 +120,5 @@ open class RegistrationApiTest(
         ) { }
 
         return callsCollection.toList()
-
     }
 }

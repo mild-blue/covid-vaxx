@@ -280,7 +280,7 @@ formatting:
     continuationIndentSize: 4
   MaximumLineLength:
     active: true
-    maxLineLength: 120
+    maxLineLength: 160
   ModifierOrdering:
     active: true
     autoCorrect: true

@@ -1,8 +1,7 @@
 package blue.mild.covid.vaxx.dto.internal
 
-
 // Fields according to api documentation https://apidoc.uzis.cz/index.html - VakcinaceDavkaView
-data class IsinVaccinationDoseDto (
+data class IsinVaccinationDoseDto(
     val id: String?,
     val vakcinaceId: String,
     val ockovaciLatkaKod: String,

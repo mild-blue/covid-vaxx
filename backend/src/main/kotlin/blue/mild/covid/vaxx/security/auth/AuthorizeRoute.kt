@@ -37,5 +37,3 @@ fun NormalOpenAPIRoute.authorizeRoute(
     // and register this route in the swagger
     return OpenAPIAuthenticatedRoute(authorizedKtorRoute, provider.child(), jwtProvider).apply { route() }
 }
-
-

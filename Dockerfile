@@ -1,4 +1,4 @@
-FROM node:alpine as frontend-build
+FROM node:lts-slim as frontend-build
 
 # see https://github.com/webpack/webpack/issues/14532
 ENV NODE_OPTIONS=--openssl-legacy-provider
@@ -8,7 +8,7 @@ WORKDIR ./frontend
 RUN npm i
 RUN npm run build-prod
 
-FROM openjdk:11-slim AS backend-build
+FROM eclipse-temurin:17-jdk AS backend-build
 
 ENV PROJECT_ROOT /src
 WORKDIR $PROJECT_ROOT
@@ -29,7 +29,7 @@ COPY backend/ $PROJECT_ROOT
 RUN ./gradlew distTar --no-daemon
 
 # Runtime
-FROM openjdk:11-jre-slim
+FROM eclipse-temurin:17-jre as runtime
 LABEL description="Mild Blue Covid Vaxx"
 LABEL project="mild-blue:covid-vaxx"
 

@@ -150,7 +150,6 @@ fun DI.MainBuilder.registerClasses() {
         }
     }
 
-
     bind<CaptchaVerificationService>() with singleton { CaptchaVerificationService(instance(), instance()) }
     bind<DummyRequestVerificationService>() with singleton { DummyRequestVerificationService() }
 

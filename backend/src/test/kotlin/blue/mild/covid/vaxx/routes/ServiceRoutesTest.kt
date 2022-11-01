@@ -10,7 +10,6 @@ import blue.mild.covid.vaxx.dto.request.UserRegistrationDtoIn
 import blue.mild.covid.vaxx.dto.response.ApplicationInformationDtoOut
 import blue.mild.covid.vaxx.dto.response.IsinJobDtoOut
 import blue.mild.covid.vaxx.dto.response.SystemStatisticsDtoOut
-import blue.mild.covid.vaxx.service.PasswordHashProvider
 import blue.mild.covid.vaxx.service.UserService
 import blue.mild.covid.vaxx.utils.ServerTestBase
 import io.ktor.http.HttpMethod
@@ -26,7 +25,6 @@ import java.time.Instant
 import java.time.LocalDate
 import java.time.format.DateTimeFormatter
 import kotlin.test.assertEquals
-
 
 class ServiceRoutesTest : ServerTestBase() {
 
@@ -112,7 +110,6 @@ class ServiceRoutesTest : ServerTestBase() {
                 userPerformingVaccination = userId.id,
                 doseNumber = 2
             )
-
         }
 
         val expected = IsinJobDtoOut(
@@ -127,7 +124,6 @@ class ServiceRoutesTest : ServerTestBase() {
             exportVaccinationsSecondDose = true,
             validatePatients = true
         )
-
 
         handleRequest(HttpMethod.Post, Routes.runIsinJob) {
             authorize()
