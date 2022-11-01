@@ -33,6 +33,7 @@ repositories {
 dependencies {
     // compile only detekt plugin
     detektPlugins("io.gitlab.arturbosch.detekt", "detekt-formatting", "1.21.0")
+
     // extension functions
     implementation("dev.forst:katlib:2.2.2")
     implementation(kotlin("reflect"))
@@ -71,9 +72,9 @@ dependencies {
 
     // logging
     implementation("io.github.microutils:kotlin-logging-jvm:3.0.3")
-    implementation("ch.qos.logback:logback-classic:1.3.1")
+    implementation("ch.qos.logback:logback-classic:1.4.4")
     // if-else in logback.xml
-    implementation("org.codehaus.janino:janino:3.1.3")
+    implementation("org.codehaus.janino:janino:3.1.8")
 
     // crypto
     implementation("com.lambdaworks:scrypt:1.4.0")
@@ -83,26 +84,26 @@ dependencies {
     implementation("org.kodein.di:kodein-di-framework-ktor-server-jvm:7.15.0")
 
     // database
-    implementation("org.postgresql:postgresql:42.3.1")
+    implementation("org.postgresql:postgresql:42.5.0")
 
-    implementation("org.jetbrains.exposed:exposed-core:0.39.2")
-    implementation("org.jetbrains.exposed:exposed-dao:0.39.2")
-    implementation("org.jetbrains.exposed:exposed-jdbc:0.39.2")
-    implementation("org.jetbrains.exposed:exposed-java-time:0.39.2")
+    implementation("org.jetbrains.exposed:exposed-core:0.40.1")
+    implementation("org.jetbrains.exposed:exposed-dao:0.40.1")
+    implementation("org.jetbrains.exposed:exposed-jdbc:0.40.1")
+    implementation("org.jetbrains.exposed:exposed-java-time:0.40.1")
 
     // database migrations from the code
-    implementation("org.flywaydb:flyway-core:8.2.2")
+    implementation("org.flywaydb:flyway-core:9.5.1")
 
     // sending emails
-    implementation("com.mailjet:mailjet-client:5.1.1")
+    implementation("com.mailjet:mailjet-client:5.2.1")
     implementation("org.freemarker:freemarker:2.3.31")
 
     // validation
-    implementation("com.googlecode.libphonenumber:libphonenumber:8.12.39")
+    implementation("com.googlecode.libphonenumber:libphonenumber:8.12.57")
 
     // tests
     testImplementation(kotlin("test"))
-    testImplementation("io.mockk:mockk:1.12.1")
+    testImplementation("io.mockk:mockk:1.13.2")
 
     testImplementation("org.junit.jupiter:junit-jupiter-api:5.9.1") // junit testing framework
     testImplementation("org.junit.jupiter:junit-jupiter-params:5.9.1") // generated parameters for tests

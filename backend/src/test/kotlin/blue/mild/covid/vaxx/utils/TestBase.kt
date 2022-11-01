@@ -58,6 +58,15 @@ open class DiAwareTestBase {
             )
         }
 
+        bind<Flyway>() with singleton {
+            val dbConfig = instance<DatabaseConfigurationDto>()
+            Flyway
+                .configure()
+                .cleanDisabled(false)
+                .dataSource(dbConfig.url, dbConfig.userName, dbConfig.password)
+                .load()
+        }
+
         overrideDIContainer()?.let { extend(it, allowOverride = true) }
     }
 

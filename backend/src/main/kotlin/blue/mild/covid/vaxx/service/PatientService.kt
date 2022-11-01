@@ -17,6 +17,7 @@ import dev.forst.katlib.whenFalse
 import mu.KLogging
 import org.jetbrains.exposed.sql.Column
 import org.jetbrains.exposed.sql.Op
+import org.jetbrains.exposed.sql.SqlExpressionBuilder.eq
 import org.jetbrains.exposed.sql.and
 import java.util.Locale
 import java.util.UUID
