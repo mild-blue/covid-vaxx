@@ -81,7 +81,7 @@ dependencies {
 
     // DI
     implementation("org.kodein.di:kodein-di-jvm:7.15.0")
-    implementation("org.kodein.di:kodein-di-framework-ktor-server-jvm:7.15.0")
+    implementation("org.kodein.di:kodein-di-framework-ktor-server-jvm:7.15.1")
 
     // database
     implementation("org.postgresql:postgresql:42.5.0")
