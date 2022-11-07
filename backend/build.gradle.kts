@@ -68,7 +68,7 @@ dependencies {
     // Jackson JSON
     implementation("com.fasterxml.jackson.core:jackson-databind:2.13.4.2")
     implementation("com.fasterxml.jackson.module:jackson-module-kotlin:2.14.0")
-    implementation("com.fasterxml.jackson.datatype:jackson-datatype-jsr310:2.13.4")
+    implementation("com.fasterxml.jackson.datatype:jackson-datatype-jsr310:2.14.0")
 
     // logging
     implementation("io.github.microutils:kotlin-logging-jvm:3.0.3")
