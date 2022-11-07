@@ -99,7 +99,7 @@ dependencies {
     implementation("org.freemarker:freemarker:2.3.31")
 
     // validation
-    implementation("com.googlecode.libphonenumber:libphonenumber:8.12.57")
+    implementation("com.googlecode.libphonenumber:libphonenumber:8.13.0")
 
     // tests
     testImplementation(kotlin("test"))
