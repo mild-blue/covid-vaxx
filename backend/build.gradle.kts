@@ -92,7 +92,7 @@ dependencies {
     implementation("org.jetbrains.exposed:exposed-java-time:0.40.1")
 
     // database migrations from the code
-    implementation("org.flywaydb:flyway-core:9.6.0")
+    implementation("org.flywaydb:flyway-core:9.10.2")
 
     // sending emails
     implementation("com.mailjet:mailjet-client:5.2.1")
