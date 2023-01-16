@@ -80,7 +80,7 @@ dependencies {
     implementation("com.lambdaworks:scrypt:1.4.0")
 
     // DI
-    implementation("org.kodein.di:kodein-di-jvm:7.15.0")
+    implementation("org.kodein.di:kodein-di-jvm:7.18.0")
     implementation("org.kodein.di:kodein-di-framework-ktor-server-jvm:7.15.1")
 
     // database
